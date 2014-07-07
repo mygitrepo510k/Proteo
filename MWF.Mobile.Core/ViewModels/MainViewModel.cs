@@ -4,12 +4,12 @@ namespace MWF.Mobile.Core.ViewModels
 {
 
     public class MainViewModel 
-		: MvxViewModel
+		: BaseActivityViewModel
     {
 
-        public void Init()
+        public MainViewModel()
         {
-            ShowViewModel<ManifestViewModel>();
+            this.InitialViewModel = new ManifestViewModel();
         }
 
     }

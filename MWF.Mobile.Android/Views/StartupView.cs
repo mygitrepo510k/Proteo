@@ -8,19 +8,25 @@ using Cirrious.MvvmCross.Droid.FullFragging;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views
 {
 
     [Activity]
     public class StartupView
-        : MvxActivity, Presenters.IFragmentHost
+        : BaseActivityView, Presenters.IFragmentHost
     {
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.Page_Startup);
+        }
+
+        protected override Type GetFragmentTypeForViewModel(Type viewModelType)
+        {
+            return _supportedFragmentViewModels[viewModelType];
         }
 
 		#region Fragment host

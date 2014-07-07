@@ -46,6 +46,7 @@
     <Compile Include="ViewModels\ManifestViewModel.cs" />
     <Compile Include="ViewModels\PasscodeViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\BaseActivityViewModel.cs" />
     <Compile Include="ViewModels\StartupViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

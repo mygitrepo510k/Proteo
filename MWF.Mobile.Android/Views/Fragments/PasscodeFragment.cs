@@ -18,11 +18,6 @@ namespace MWF.Mobile.Android.Views.Fragments
     public class PasscodeFragment : MvxFragment
     {
 
-        public Core.ViewModels.PasscodeViewModel PasscodeViewModel
-        {
-            get { return (Core.ViewModels.PasscodeViewModel)ViewModel; }
-        }
-
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code

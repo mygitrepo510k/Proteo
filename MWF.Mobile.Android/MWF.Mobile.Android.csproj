@@ -113,6 +113,7 @@
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
     <Compile Include="Views\MainView.cs" />
+    <Compile Include="Views\BaseActivityView.cs" />
     <Compile Include="Views\StartupView.cs" />
   </ItemGroup>
   <ItemGroup>

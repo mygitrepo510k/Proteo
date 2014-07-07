@@ -4,12 +4,12 @@ namespace MWF.Mobile.Core.ViewModels
 {
 
     public class StartupViewModel 
-		: MvxViewModel
+		: BaseActivityViewModel
     {
 
-        public void Init()
+        public StartupViewModel(Services.IAuthenticationService authenticationService)
         {
-            ShowViewModel<PasscodeViewModel>();
+            this.InitialViewModel = new PasscodeViewModel(authenticationService);
         }
 
     }

@@ -13,13 +13,18 @@ namespace MWF.Mobile.Android.Views
 
     [Activity]
     public class MainView
-        : MvxActivity, Presenters.IFragmentHost
+        : BaseActivityView, Presenters.IFragmentHost
     {
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.Page_Main);
+        }
+
+        protected override Type GetFragmentTypeForViewModel(Type viewModelType)
+        {
+            return _supportedFragmentViewModels[viewModelType];
         }
 
         public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)

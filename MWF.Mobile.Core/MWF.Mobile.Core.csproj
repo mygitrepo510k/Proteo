@@ -43,6 +43,7 @@
     <Compile Include="Services\AuthenticationService.cs" />
     <Compile Include="Services\IAuthenticationService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
+    <Compile Include="ViewModels\CustomerCodeViewModel.cs" />
     <Compile Include="ViewModels\ManifestViewModel.cs" />
     <Compile Include="ViewModels\PasscodeViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

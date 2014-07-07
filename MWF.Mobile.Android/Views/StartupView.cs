@@ -34,6 +34,7 @@ namespace MWF.Mobile.Android.Views
         private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
         {
             { typeof(Core.ViewModels.PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
+            { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)}
         };
 
         public bool Show(MvxViewModelRequest request)

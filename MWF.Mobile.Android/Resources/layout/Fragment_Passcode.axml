@@ -17,6 +17,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:textSize="40dp"
+    android:inputType="numberPassword"
+    android:password="true"
     local:MvxBind="Text Passcode"
     />
   <Button

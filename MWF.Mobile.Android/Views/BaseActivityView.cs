@@ -9,6 +9,9 @@ using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.ViewModels;
+using Cirrious.MvvmCross.Binding.BindingContext;
+using MWF.Mobile.Android.Views.Fragments;
+
 
 namespace MWF.Mobile.Android.Views
 {
@@ -19,6 +22,8 @@ namespace MWF.Mobile.Android.Views
     {
 
         protected abstract Type GetFragmentTypeForViewModel(Type viewModelType);
+
+        
 
         protected BaseActivityViewModel BaseActivityViewModel
         {
@@ -35,10 +40,11 @@ namespace MWF.Mobile.Android.Views
 
             var fragment = (MvxFragment)Activator.CreateInstance(fragmentType);
             fragment.ViewModel = initialViewModel;
-            
+
             var transaction = FragmentManager.BeginTransaction();
             transaction.Replace(Resource.Id.fragment_host, fragment);
             transaction.Commit();
+
         }
 
     }

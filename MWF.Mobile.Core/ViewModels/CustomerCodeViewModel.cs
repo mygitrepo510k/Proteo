@@ -28,6 +28,14 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Please enter your Customer Code"; }
         }
 
+        private bool _isBusy = false;
+        public bool IsBusy
+        {
+            get { return _isBusy; }
+            set { _isBusy = value; RaisePropertyChanged(() => IsBusy); }
+        }
+        
+
         private MvxCommand _enterCodeCommand;
         public System.Windows.Input.ICommand EnterCodeCommand
         {
@@ -40,6 +48,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task EnterCodeAsync()
         {
+
+            IsBusy = true;
+
             //TODO fire this off to BlueSphere
 
             //TODO if success then save code to database

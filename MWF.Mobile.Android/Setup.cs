@@ -1,8 +1,11 @@
 using Android.Content;
+using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Droid.Platform;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Android.Portable;
+using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Android
 {
@@ -29,6 +32,12 @@ namespace MWF.Mobile.Android
             var presenter = new Presenters.CustomPresenter();
             Mvx.RegisterSingleton<Presenters.ICustomPresenter>(presenter);
             return presenter;
+        }
+
+        protected override void InitializeLastChance()
+        {
+            base.InitializeLastChance();
+            Mvx.RegisterSingleton<IReachability>(() => new Reachability());
         }
 
     }

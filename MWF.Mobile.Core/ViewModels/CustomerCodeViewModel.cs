@@ -5,11 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Portable;
+using Chance.MvvmCross.Plugins.UserInteraction;
 
 namespace MWF.Mobile.Core.ViewModels
 {
     public class CustomerCodeViewModel : MvxViewModel
     {
+        IReachability _reachability;
+        public CustomerCodeViewModel()
+        {
+            _reachability = Mvx.Resolve<IReachability>();
+        }
+
         private string _customerCode = null;
         public string CustomerCode
         {
@@ -48,8 +56,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task EnterCodeAsync()
         {
-            IsBusy = true;
 
+            if(!_reachability.IsConnected())
+            {
+                await Mvx.Resolve<IUserInteraction>().AlertAsync("An Internet connection is required");
+            }
+            else
+            {
+                IsBusy = true;
+            }
+
+            
             //TODO fire this off to BlueSphere
 
             //TODO if success then save code to database

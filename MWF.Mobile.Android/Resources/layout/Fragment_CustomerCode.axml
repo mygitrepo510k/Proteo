@@ -15,4 +15,8 @@
         android:layout_height="wrap_content"
         android:textSize="40dp"
         local:MvxBind="Text CustomerCode" />
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        local:MvxBind="Text EnterButtonLabel; Click EnterCodeCommand" />
 </LinearLayout>

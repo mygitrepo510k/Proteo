@@ -40,6 +40,15 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\Device.cs" />
+    <Compile Include="Models\SafetyCheckFaultType.cs" />
+    <Compile Include="Models\SafetyProfile.cs" />
+    <Compile Include="Models\Vehicle.cs" />
+    <Compile Include="Models\VehicleView.cs" />
+    <Compile Include="Models\Driver.cs" />
+    <Compile Include="Models\VerbProfile.cs" />
+    <Compile Include="Models\ApplicationProfile.cs" />
+    <Compile Include="Models\VerbProfileItem.cs" />
     <Compile Include="Portable\Reachability.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
@@ -69,6 +78,9 @@
     </Reference>
     <Reference Include="Cirrious.MvvmCross.Localization">
       <HintPath>..\packages\MvvmCross.HotTuna.CrossCore.3.2.1-beta1\lib\portable-win+net45+wp8+win8+wpa81+MonoTouch+MonoAndroid\Cirrious.MvvmCross.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

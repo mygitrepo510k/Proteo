@@ -1,0 +1,30 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using Newtonsoft.Json;
+
+namespace MWF.Mobile.Core.Models
+{
+    public class VerbProfile
+    {
+        [Unique]
+        [JsonProperty("id")]
+        public Guid ID { get; set; }
+
+        [JsonProperty("t")]
+        public string Title { get; set; }
+
+        [JsonProperty("l")]
+        public int IntLink { get; set; }
+
+        [JsonProperty("c")]
+        public string Code { get; set; }
+
+        [Ignore]
+        [JsonProperty("vpis")]
+        public List<VerbProfileItem> Items { get; set; }
+
+    }
+}

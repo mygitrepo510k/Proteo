@@ -48,7 +48,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task EnterCodeAsync()
         {
-
             IsBusy = true;
 
             //TODO fire this off to BlueSphere

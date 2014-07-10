@@ -38,6 +38,16 @@ namespace MWF.Mobile.Core.ViewModels
                 return new MvxCommand<Vehicle>(item => ShowViewModel<VehicleDetailViewModel>(new VehicleDetailViewModel.Nav() { ID = item.ID }));
             }
         }
+
+
+        private string _searchText;
+        public string SearchText
+        {
+            get { return _searchText; }
+            set { _searchText = value; RaisePropertyChanged(() => SearchText); }
+        }
+
+
         
     }
 }

@@ -182,6 +182,7 @@
     <AndroidResource Include="Resources\menu\main_activity_actions.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\menu\vehicle_activity_actions.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

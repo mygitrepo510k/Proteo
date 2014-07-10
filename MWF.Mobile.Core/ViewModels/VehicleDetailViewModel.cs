@@ -33,6 +33,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get { return _item; }
             set { _item = value; RaisePropertyChanged(() => Item); }
-        }
+        }        
+
     }
 }

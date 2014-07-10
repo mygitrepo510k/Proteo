@@ -10,12 +10,14 @@ using System.Windows.Input;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class AllVehicleDisplayViewModel 
+
+    public class VehicleListViewModel 
         :MvxViewModel
     {
 
-        public AllVehicleDisplayViewModel(IVehicleExtractService service)
+        public VehicleListViewModel(IVehicleExtractService service)
         {
+            //Just filling the model with 10 random Vehicles
             var newList = new List<Vehicle>();
             for (var i = 0; i < 10; i++)
             {
@@ -31,13 +33,12 @@ namespace MWF.Mobile.Core.ViewModels
             set { _vehicles = value; RaisePropertyChanged(() => Vehicles); }
         }
 
-        public ICommand ShowDetailCommand
+        public ICommand ShowVehicleDetailCommand
         {
             get
             {
-                return new MvxCommand<Vehicle>(item => ShowViewModel<VehicleDetailViewModel>(new VehicleDetailViewModel.Nav() { ID = item.ID }));
+                return new MvxCommand<Vehicle>(v => ShowViewModel<VehicleDetailViewModel>(new VehicleDetailViewModel.Nav { ID = v.ID }));
             }
-        }
-        
+        }  
     }
 }

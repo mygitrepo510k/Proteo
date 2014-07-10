@@ -60,7 +60,7 @@
     <Compile Include="Services\IVehicleExtractService.cs" />
     <Compile Include="Services\VehicleExtractService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
-    <Compile Include="ViewModels\AllVehicleDisplayViewModel.cs" />
+    <Compile Include="ViewModels\VehicleListViewModel.cs" />
     <Compile Include="ViewModels\CustomerCodeViewModel.cs" />
     <Compile Include="ViewModels\ManifestViewModel.cs" />
     <Compile Include="ViewModels\PasscodeViewModel.cs" />

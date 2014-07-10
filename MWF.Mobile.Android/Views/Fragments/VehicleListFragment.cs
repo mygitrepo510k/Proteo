@@ -15,7 +15,7 @@ using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class AllVehicleDisplayFragment : MvxFragment
+    public class VehicleListFragment : MvxFragment
     {
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

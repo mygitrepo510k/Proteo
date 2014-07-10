@@ -12,27 +12,26 @@ namespace MWF.Mobile.Core.ViewModels
         :MvxViewModel
     {
 
-        private Vehicle _item;
+        private Vehicle _vehicle;
 
         public class Nav
         {
             public Guid ID { get; set; }
         }
 
-        public void Init(Nav navigation)
+        public void Init(Nav nav)
         {
-            Item = new Vehicle
+            Vehicle = new Vehicle
             {
-                ID = System.Guid.NewGuid(),
-                Registration = "EG11 ULT",
-                Title = "test truck"
+                ID = nav.ID
+                
             };
         }
 
-        public Vehicle Item
+        public Vehicle Vehicle
         {
-            get { return _item; }
-            set { _item = value; RaisePropertyChanged(() => Item); }
+            get { return _vehicle; }
+            set { _vehicle = value; RaisePropertyChanged(() => Vehicle); }
         }
     }
 }

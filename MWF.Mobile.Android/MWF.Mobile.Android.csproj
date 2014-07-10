@@ -186,6 +186,9 @@
     <AndroidResource Include="Resources\menu\main_activity_actions.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\drawable\proteoLogo.jpg" />
+    <AndroidResource Include="Resources\drawable\triangleIcon.png" />
+    <AndroidResource Include="Resources\drawable\arrowIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

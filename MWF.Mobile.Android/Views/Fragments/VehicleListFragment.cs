@@ -37,7 +37,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             var item = menu.FindItem(Resource.Id.action_search).ActionView;
             _searchView = item.JavaCast<SearchView>();
             
-            _searchView.QueryTextChange += (s, e) => ((AllVehicleDisplayViewModel)this.ViewModel).SearchText = e.NewText;
+            _searchView.QueryTextChange += (s, e) => ((VehicleListViewModel)this.ViewModel).SearchText = e.NewText;
         }
 
         public override void OnCreate(Bundle savedInstanceState)

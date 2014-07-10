@@ -7,6 +7,13 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="30.0dp"
-        local:MvxBind="Text ID + ' - ' + Registration" />
+        android:textSize="20.0dp"
+        android:layout_marginTop="15dp"
+        local:MvxBind="Text Registration" />
+    <ImageView
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/arrowIcon"
+        android:layout_gravity="right" />
 </LinearLayout>

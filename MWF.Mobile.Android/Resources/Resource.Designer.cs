@@ -66,16 +66,22 @@ namespace MWF.Mobile.Android
 		{
 			
 			// aapt resource value: 0x7f020000
-			public const int ic_action_search = 2130837504;
+			public const int arrowIcon = 2130837504;
 			
 			// aapt resource value: 0x7f020001
-			public const int Icon = 2130837505;
+			public const int ic_action_search = 2130837505;
 			
 			// aapt resource value: 0x7f020002
-			public const int monoandroidsplash = 2130837506;
+			public const int Icon = 2130837506;
 			
 			// aapt resource value: 0x7f020003
-			public const int splash = 2130837507;
+			public const int monoandroidsplash = 2130837507;
+			
+			// aapt resource value: 0x7f020004
+			public const int proteoLogo = 2130837508;
+			
+			// aapt resource value: 0x7f020005
+			public const int splash = 2130837509;
 			
 			static Drawable()
 			{
@@ -93,14 +99,17 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f050000
 			public const int MvxBindingTagUnique = 2131034112;
 			
-			// aapt resource value: 0x7f050003
-			public const int action_search = 2131034115;
+			// aapt resource value: 0x7f050004
+			public const int action_search = 2131034116;
 			
-			// aapt resource value: 0x7f050002
-			public const int action_settings = 2131034114;
+			// aapt resource value: 0x7f050003
+			public const int action_settings = 2131034115;
 			
 			// aapt resource value: 0x7f050001
-			public const int fragment_host = 2131034113;
+			public const int button1 = 2131034113;
+			
+			// aapt resource value: 0x7f050002
+			public const int fragment_host = 2131034114;
 			
 			static Id()
 			{
@@ -116,28 +125,28 @@ namespace MWF.Mobile.Android
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int Fragment_AllVehicleDisplay = 2130903040;
+			public const int Fragment_CustomerCode = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int Fragment_CustomerCode = 2130903041;
+			public const int Fragment_Manifest = 2130903041;
 			
 			// aapt resource value: 0x7f030002
-			public const int Fragment_Manifest = 2130903042;
+			public const int Fragment_Passcode = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int Fragment_Passcode = 2130903043;
+			public const int Item_Vehicle = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int Item_Vehicle = 2130903044;
+			public const int Page_Main = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int Page_Main = 2130903045;
+			public const int Page_Startup = 2130903045;
 			
 			// aapt resource value: 0x7f030006
-			public const int Page_Startup = 2130903046;
+			public const int SplashScreen = 2130903046;
 			
 			// aapt resource value: 0x7f030007
-			public const int SplashScreen = 2130903047;
+			public const int VehicleDetailView = 2130903047;
 			
 			// aapt resource value: 0x7f030008
 			public const int VehicleListView = 2130903048;

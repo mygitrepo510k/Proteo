@@ -125,14 +125,18 @@
     <Compile Include="Views\BindableProgress.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
-    <Compile Include="Views\Fragments\AllVehicleDisplayFragment.cs" />
+    <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\BaseActivityView.cs" />
     <Compile Include="Views\StartupView.cs" />
+    <Compile Include="Views\VehicleDetailView.cs" />
     <Compile Include="Views\VehicleListView.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
@@ -151,13 +155,13 @@
     <AndroidResource Include="Resources\layout\Fragment_CustomerCode.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\Fragment_AllVehicleDisplay.axml">
-      <SubType>AndroidResource</SubType>
-    </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Vehicle.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\VehicleListView.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\VehicleDetailView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -183,6 +187,8 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\menu\vehicle_activity_actions.xml" />
+    <AndroidResource Include="Resources\drawable\proteoLogo.jpg" />
+    <AndroidResource Include="Resources\drawable\arrowIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

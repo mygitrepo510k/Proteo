@@ -37,7 +37,7 @@ namespace MWF.Mobile.Android.Views
         {
             { typeof(Core.ViewModels.PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
             { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
-            { typeof(Core.ViewModels.AllVehicleDisplayViewModel), typeof(Fragments.AllVehicleDisplayFragment)}
+            { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)}
 
         };
 

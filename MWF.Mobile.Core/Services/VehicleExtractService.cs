@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.Services
 {
+
     class VehicleExtractService : IVehicleExtractService
     {
+
         public Vehicle ExtractVehicle()
         {
             //TODO: This would be where you extract the vehicles from the database.
@@ -17,7 +19,6 @@ namespace MWF.Mobile.Core.Services
             {
                 ID = System.Guid.NewGuid(),
                 Registration = "EG11 ULT",
-                Title = "test truck"
             };
         }
     }

@@ -79,6 +79,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceTests\DataServiceTests.cs" />
     <Compile Include="ServiceTests\AuthenticationServiceTests.cs" />
+    <Compile Include="ViewModelTests\CustomerCodeViewModelTests.cs" />
     <Compile Include="ViewModelTests\PasscodeViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>

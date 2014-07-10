@@ -4,22 +4,24 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
+
     public class Driver
     {
+
         [Unique]
-        [JsonProperty("id")]
+        [JsonProperty("@id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("title")]
+        [JsonProperty("@title")]
         public string Title { get; set; }
 
-        [JsonProperty("intlink")]
+        [JsonProperty("@intlink")]
         public int IntLink { get; set; }
 
-        [JsonProperty("firstname")]
+        [JsonProperty("@firstname")]
         public string FirstName { get; set; }
 
-        [JsonProperty("lastname")]
+        [JsonProperty("@lastname")]
         public string LastName { get; set; }
 
         [Ignore]
@@ -36,4 +38,5 @@ namespace MWF.Mobile.Core.Models
         public DateTime LastLoggedOn { get; set; }
 
     }
+
 }

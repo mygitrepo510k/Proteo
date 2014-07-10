@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
+
     public enum DeviceType
     {
 
@@ -16,24 +17,26 @@ namespace MWF.Mobile.Core.Models
 
     public class Device
     {
+    
         [Unique]
-        [JsonProperty("id")]
+        [JsonProperty("@id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("type")]
+        [JsonProperty("@title")]
         public string Title { get; set; }
 
-        [JsonProperty("identifier")]
+        [JsonProperty("@type")]
         public DeviceType Type { get; set; }
 
-        [JsonProperty("identifier")]
+        [JsonProperty("@identifier")]
         public string DeviceIdentifier { get; set; }
 
-        [JsonProperty("customer_id")]
+        [JsonProperty("@customer_id")]
         public Guid CustomerID{ get; set; }
 
-        [JsonProperty("customer_title")]
+        [JsonProperty("@customer_title")]
         public string CustomerTitle { get; set; }
 
     }
+    
 }

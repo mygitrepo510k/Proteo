@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading.Tasks;
+﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Models;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
-
 
 
 namespace MWF.Mobile.Core.Services
@@ -27,7 +20,8 @@ namespace MWF.Mobile.Core.Services
         public DataService(ISQLiteConnectionFactory connectionFactory)
         {
             _connection = connectionFactory.Create(DBNAME);
-            _connection.CreateTable<Customer>();
+            CreateTablesIfRequired();
+
         }
 
         #endregion
@@ -39,6 +33,29 @@ namespace MWF.Mobile.Core.Services
             get { return _connection; }
         }
         
+        #endregion
+
+        #region Private Methods
+
+
+        /// <summary>
+        /// Creates all the tables required for local storage.
+        /// If tables already exist connection.CreateTable handles
+        /// this gracefully
+        /// </summary>
+        private void CreateTablesIfRequired()
+        {
+            _connection.CreateTable<ApplicationProfile>();
+            _connection.CreateTable<Customer>();
+            _connection.CreateTable<Device>();
+            _connection.CreateTable<Driver>();
+            _connection.CreateTable<SafetyCheckFaultType>();
+            _connection.CreateTable<SafetyProfile>();
+            _connection.CreateTable<Vehicle>();
+            _connection.CreateTable<VehicleView>();
+            _connection.CreateTable<VerbProfile>();
+            _connection.CreateTable<VerbProfileItem>();
+        }
 
         #endregion
 

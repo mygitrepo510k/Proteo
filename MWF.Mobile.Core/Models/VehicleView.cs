@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class Customer
+    public class VehicleView
     {
         [Unique]
         [JsonProperty("id")]
@@ -12,5 +12,7 @@ namespace MWF.Mobile.Core.Models
 
         [JsonProperty("title")]
         public string Title { get; set; }
+
+
     }
 }

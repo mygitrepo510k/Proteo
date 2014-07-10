@@ -16,14 +16,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public class Nav
         {
-            public int ID { get; set; }
+            public Guid ID { get; set; }
         }
 
         public void Init(Nav navigation)
         {
             Item = new Vehicle
             {
-                ID = 1,
+                ID = System.Guid.NewGuid(),
                 Registration = "EG11 ULT",
                 Title = "test truck"
             };

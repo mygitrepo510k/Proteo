@@ -15,7 +15,7 @@ namespace MWF.Mobile.Core.Services
 
             return new Vehicle()
             {
-                ID = 1,
+                ID = System.Guid.NewGuid(),
                 Registration = "EG11 ULT",
                 Title = "test truck"
             };

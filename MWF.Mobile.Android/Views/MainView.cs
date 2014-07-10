@@ -7,11 +7,12 @@ using Cirrious.MvvmCross.Droid.FullFragging;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.ViewModels;
+using Android.Content.PM;
 
 namespace MWF.Mobile.Android.Views
 {
 
-    [Activity]
+    [Activity(ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainView
         : BaseActivityView, Presenters.IFragmentHost
     {

@@ -35,7 +35,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void DataService_CreateCustomerTable()
+        public void DataService_CreateTables()
         {
             base.ClearAll();
 
@@ -48,9 +48,18 @@ namespace MWF.Mobile.Tests.ServiceTests
             DataService dataService = new DataService(connectionFactoryMock.Object);
             ISQLiteConnection connection = dataService.Connection;
 
-            // Check that the customer table has been created
+            // Check that the various tables has been created
+            connectionMock.Verify(c => c.CreateTable<ApplicationProfile>(CreateFlags.None), Times.Once);
             connectionMock.Verify(c => c.CreateTable<Customer>(CreateFlags.None), Times.Once);
-    
+            connectionMock.Verify(c => c.CreateTable<Driver>(CreateFlags.None), Times.Once);
+            connectionMock.Verify(c => c.CreateTable<Device>(CreateFlags.None), Times.Once);
+            connectionMock.Verify(c => c.CreateTable<SafetyCheckFaultType>(CreateFlags.None), Times.Once);
+            connectionMock.Verify(c => c.CreateTable<SafetyProfile>(CreateFlags.None), Times.Once);
+            connectionMock.Verify(c => c.CreateTable<Vehicle>(CreateFlags.None), Times.Once);
+            connectionMock.Verify(c => c.CreateTable<VehicleView>(CreateFlags.None), Times.Once);
+            connectionMock.Verify(c => c.CreateTable<VerbProfile>(CreateFlags.None), Times.Once);
+            connectionMock.Verify(c => c.CreateTable<VerbProfileItem>(CreateFlags.None), Times.Once);
+
 
         }
 

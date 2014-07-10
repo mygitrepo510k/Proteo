@@ -7,36 +7,39 @@ namespace MWF.Mobile.Core.Models
     public class VerbProfileItem
     {
         [Unique]
-        [JsonProperty("id")]
+        [JsonProperty("@id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("tle")]
+        [JsonProperty("@tle")]
         public string Title { get; set; }
 
-        [JsonProperty("seq")]
+        [JsonProperty("@seq")]
         public string Order { get; set; }
 
-        [JsonProperty("hlt")]
+        [JsonProperty("@hlt")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IsHighlighted { get; set; }
 
-        [JsonProperty("cde")]
+        [JsonProperty("@cde")]
         public string Code { get; set; }
 
-        [JsonProperty("sig")]
+        [JsonProperty("@sig")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool ShowSignature { get; set; }
 
-        [JsonProperty("com")]
+        [JsonProperty("@com")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool ShowComment { get; set; }
 
-        [JsonProperty("img")]
+        [JsonProperty("@img")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool ShowImage { get; set; }
 
-        [JsonProperty("cat")]
+        [JsonProperty("@cat")]
         public string Category { get; set; }
 
         [Indexed]
         public Guid VerbProfileID { get; set; }
-
 
     }
 }

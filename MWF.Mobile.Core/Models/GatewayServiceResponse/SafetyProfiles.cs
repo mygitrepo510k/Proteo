@@ -8,10 +8,11 @@ using Newtonsoft.Json;
 namespace MWF.Mobile.Core.Models.GatewayServiceResponse
 {
 
-    public class Response<TData>
+    [JsonConverter(typeof(JsonWrappedItemConverter<SafetyProfiles>))]
+    public class SafetyProfiles
     {
-        public IEnumerable<ResponseAction<TData>> Actions { get; set; }
+        [JsonProperty("safetyprofile")]
+        public List<SafetyProfile> List { get; set; }
     }
-
 
 }

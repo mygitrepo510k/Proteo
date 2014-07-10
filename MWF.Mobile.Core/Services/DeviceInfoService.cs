@@ -24,6 +24,11 @@ namespace MWF.Mobile.Core.Services
             get { return "fleetwoodmobile"; }
         }
 
+        public string MobileApplication
+        {
+            get { return "Orchestrator"; }
+        }
+
     }
 
 }

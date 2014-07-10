@@ -8,16 +8,11 @@ using Newtonsoft.Json;
 namespace MWF.Mobile.Core.Models.GatewayServiceResponse
 {
 
-    public class DriversWrapper
-    {
-        [JsonProperty("drivers")]
-        public DriversInnerWrapper Drivers { get; set; }
-    }
-
-    public class DriversInnerWrapper
+    [JsonConverter(typeof(JsonWrappedItemConverter<Drivers>))]
+    public class Drivers
     {
         [JsonProperty("driver")]
-        public IEnumerable<Driver> List { get; set; }
+        public List<Driver> List { get; set; }
     }
 
 }

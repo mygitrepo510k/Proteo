@@ -7,19 +7,20 @@ namespace MWF.Mobile.Core.Models
     public class Vehicle
     {
         [Unique]
-        [JsonProperty("id")]
+        [JsonProperty("@id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("title")]
+        [JsonProperty("@title")]
         public string Title { get; set; }
 
-        [JsonProperty("registration")]
+        [JsonProperty("@registration")]
         public string Registration { get; set; }
 
-        [JsonProperty("safetyprofile")]
+        [JsonProperty("@safetyprofile")]
         public int SafetyCheckProfileIntLink { get; set; }
 
-        [JsonProperty("istrailer")]
+        [JsonProperty("@istrailer")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IsTrailer { get; set; }
 
     }

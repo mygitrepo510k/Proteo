@@ -7,19 +7,20 @@ namespace MWF.Mobile.Core.Models
     public class SafetyCheckFaultType
     {
         [Unique]
-        [JsonProperty("id")]
+        [JsonProperty("@id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("title")]
+        [JsonProperty("@title")]
         public string Title { get; set; }
 
-        [JsonProperty("category")]
+        [JsonProperty("@category")]
         public string Category { get; set; }
 
-        [JsonProperty("order")]
+        [JsonProperty("@order")]
         public int Order { get; set; }
 
-        [JsonProperty("order")]
+        [JsonProperty("@highlight")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IsHighlighted { get; set; }
 
         public Guid SafetyProfileID { get; set; }

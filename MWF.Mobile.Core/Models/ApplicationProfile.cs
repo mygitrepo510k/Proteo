@@ -7,8 +7,11 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
+
+    [JsonConverter(typeof(JsonWrappedItemConverter<ApplicationProfile>))]
     public class ApplicationProfile
     {
+
         [Unique]
         [JsonProperty("id")]
         public Guid ID { get; set; }
@@ -32,6 +35,7 @@ namespace MWF.Mobile.Core.Models
         public int PollingStop { get; set; }
 
         [JsonProperty("pollgprs")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool PollOnGPRS { get; set; }
 
         [JsonProperty("pollquantity")]
@@ -50,6 +54,7 @@ namespace MWF.Mobile.Core.Models
         public int UploadStop { get; set; }
 
         [JsonProperty("uploadgprs")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool UploadGPRS { get; set; }
 
         [JsonProperty("uploadquantity")]
@@ -68,12 +73,14 @@ namespace MWF.Mobile.Core.Models
         public int DownloadStop { get; set; }
 
         [JsonProperty("downloadgprs")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool DownloadGPRS { get; set; }
 
         [JsonProperty("downloadquantity")]
         public int DownloadQuantity { get; set; }
 
         [JsonProperty("events")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool OnEvents { get; set; }
 
         [JsonProperty("events_delay")]
@@ -86,16 +93,20 @@ namespace MWF.Mobile.Core.Models
         public int DataSpan { get; set; }
 
         [JsonProperty("weekends")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IncludeWeekends { get; set; }
 
         [JsonProperty("timeout")]
         public int Timeout { get; set; }
 
         [JsonProperty("instantmsg")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool UseInstantMessaging { get; set; }
 
         [JsonProperty("transactions")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool UseTransactions { get; set; }
 
     }
+
 }

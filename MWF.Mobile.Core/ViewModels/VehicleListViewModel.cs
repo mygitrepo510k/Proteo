@@ -1,4 +1,6 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Services;
 using System;
@@ -33,12 +35,24 @@ namespace MWF.Mobile.Core.ViewModels
             set { _vehicles = value; RaisePropertyChanged(() => Vehicles); }
         }
 
+        private MvxCommand<Vehicle> _showVehicleDetailCommand;
         public ICommand ShowVehicleDetailCommand
         {
             get
             {
-                return new MvxCommand<Vehicle>(v => ShowViewModel<VehicleDetailViewModel>(new VehicleDetailViewModel.Nav { ID = v.ID }));
+                return(_showVehicleDetailCommand = _showVehicleDetailCommand ?? new MvxCommand<Vehicle>(v => VehicleDetail(v)));
             }
+        }
+
+        private void VehicleDetail(Vehicle vehicle)
+        {
+            Mvx.Resolve<IUserInteraction>().Confirm("Vehicle ID: " + vehicle.ID, isConfirmed => {
+                if (isConfirmed)
+                {
+                    ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = vehicle.ID });
+                }
+            },"Is this your vehicle?");
+            
         }  
     }
 }

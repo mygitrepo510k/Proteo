@@ -146,7 +146,7 @@ namespace MWF.Mobile.Android
 			public const int SplashScreen = 2130903046;
 			
 			// aapt resource value: 0x7f030007
-			public const int VehicleDetailView = 2130903047;
+			public const int TrailerSelectionView = 2130903047;
 			
 			// aapt resource value: 0x7f030008
 			public const int VehicleListView = 2130903048;

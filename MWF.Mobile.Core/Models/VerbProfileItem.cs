@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class VerbProfileItem
+    public class VerbProfileItem : IBlueSphereChildEntity
     {
         [Unique]
         [JsonProperty("id")]

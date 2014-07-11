@@ -5,9 +5,9 @@ using System.Text;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Newtonsoft.Json;
 
-namespace MWF.Mobile.Core.Models
+namespace MWF.Mobile.Core.Models 
 {
-    public class VerbProfile
+    public class VerbProfile : IBlueSphereParentEntity<VerbProfileItem>
     {
         [Unique]
         [JsonProperty("id")]
@@ -24,7 +24,7 @@ namespace MWF.Mobile.Core.Models
 
         [Ignore]
         [JsonProperty("vpis")]
-        public List<VerbProfileItem> Items { get; set; }
+        public List<VerbProfileItem> Children { get; set; }
 
     }
 }

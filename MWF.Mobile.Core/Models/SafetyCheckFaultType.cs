@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class SafetyCheckFaultType
+    public class SafetyCheckFaultType : IBlueSphereChildEntity
     {
         [Unique]
         [JsonProperty("id")]

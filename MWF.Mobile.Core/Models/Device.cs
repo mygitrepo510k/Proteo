@@ -15,7 +15,7 @@ namespace MWF.Mobile.Core.Models
         Any = 10
     }
 
-    public class Device
+    public class Device : IBlueSphereEntity
     {
     
         [Unique]

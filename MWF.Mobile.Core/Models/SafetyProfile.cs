@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class SafetyProfile
+    public class SafetyProfile : IBlueSphereParentEntity<SafetyCheckFaultType>
     {
         [Unique]
         [JsonProperty("id")]
@@ -38,8 +38,7 @@ namespace MWF.Mobile.Core.Models
         public bool IsTrailerProfile { get; set; }
 
         [Ignore]
-        List<SafetyCheckFaultType> faults { get; set; }
-
+        public List<SafetyCheckFaultType> Children { get; set; }
 
 
     }

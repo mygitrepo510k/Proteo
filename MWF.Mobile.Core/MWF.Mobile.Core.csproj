@@ -53,6 +53,7 @@
     <Compile Include="Helpers\HttpResultOfT.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Device.cs" />
+    <Compile Include="Models\IBlueSphereEntity.cs" />
     <Compile Include="Models\SafetyCheckFaultType.cs" />
     <Compile Include="Models\SafetyProfile.cs" />
     <Compile Include="Models\Vehicle.cs" />
@@ -63,6 +64,25 @@
     <Compile Include="Models\VerbProfileItem.cs" />
     <Compile Include="Portable\Reachability.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\ApplicationProfileRepository.cs" />
+    <Compile Include="Repositories\CustomerRepository.cs" />
+    <Compile Include="Repositories\RepositoryWithChildren.cs" />
+    <Compile Include="Repositories\VehicleRepository.cs" />
+    <Compile Include="Repositories\SafetyProfileRepository.cs" />
+    <Compile Include="Repositories\DriverRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IApplicationProfileRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ICustomerRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IDriverRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IVerbProfileRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IVehicleViewRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ISafetyProfileRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IDeviceRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IVehicleRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IRepository.cs" />
+    <Compile Include="Repositories\DeviceRepository.cs" />
+    <Compile Include="Repositories\Repository.cs" />
+    <Compile Include="Repositories\VerbProfileRepository.cs" />
+    <Compile Include="Repositories\VehicleViewRepository.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\DeviceInfoService.cs" />
@@ -117,6 +137,7 @@
       <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

@@ -19,21 +19,55 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mockDeviceInfoService = new Mock<Core.Services.IDeviceInfoService>();
             mockDeviceInfoService.SetupGet(m => m.DeviceIdentifier).Returns("021PROTEO0000001");
             mockDeviceInfoService.SetupGet(m => m.GatewayPassword).Returns("fleetwoodmobile");
+            mockDeviceInfoService.SetupGet(m => m.MobileApplication).Returns("Orchestrator");
             Ioc.RegisterSingleton<Core.Services.IDeviceInfoService>(mockDeviceInfoService.Object);
         }
 
         /// <summary>
-        /// End-to-end test of gateway service.  Note this depends on a specific device existing in the database on BlueSphere.
+        /// End-to-end test of gateway service.  Note this depends on the "021PROTEO0000001" device existing in the database on BlueSphere.
         /// </summary>
         [Fact]
-        public async Task GatewayService_GetDeviceReturnsCorrectDeviceID()
+        public async Task GatewayService_EndToEnd_GetDeviceReturnsCorrectID()
         {
             base.ClearAll();
 
-            var service = new Core.Services.GatewayService(Ioc.Resolve<Core.Services.IDeviceInfoService>(), new Core.Services.HttpService());
+            Ioc.RegisterSingleton<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = Ioc.IoCConstruct<Core.Services.GatewayService>();
             var device = await service.GetDevice();
 
             Assert.Equal(device.ID, new Guid("32de3ed3-ce3b-4a53-876d-442c351df668"));
+        }
+
+        /// <summary>
+        /// End-to-end test of gateway service.  Note this depends on the "Palletforce" verb profile existing in the database on BlueSphere.
+        /// </summary>
+        [Fact]
+        public async Task GatewayService_EndToEnd_GetVerbProfileReturnsCorrectData()
+        {
+            base.ClearAll();
+
+            Ioc.RegisterSingleton<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = Ioc.IoCConstruct<Core.Services.GatewayService>();
+            var verbProfile = await service.GetVerbProfile("Palletforce");
+
+            Assert.Equal(verbProfile.ID, new Guid("d7af04cd-1857-42f1-a8c1-d019bd1d6223"));
+            Assert.Equal(verbProfile.Items.Count(), 2);
+            Assert.Equal(verbProfile.Items.First().ID, new Guid("3cdb1c6b-1997-423f-a9ea-08b62bee9a30"));
+        }
+
+        /// <summary>
+        /// End-to-end test of gateway service.
+        /// </summary>
+        [Fact]
+        public async Task GatewayService_EndToEnd_GetSafetyProfilesReturnsData()
+        {
+            base.ClearAll();
+
+            Ioc.RegisterSingleton<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = Ioc.IoCConstruct<Core.Services.GatewayService>();
+            var safetyProfiles = await service.GetSafetyProfiles();
+
+            Assert.NotEqual(safetyProfiles.Count(), 0);
         }
 
         /// <summary>
@@ -46,31 +80,29 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var testDriverID = Guid.NewGuid();
 
-            // Mimic the response that comes back from the BlueSphere MWF Mobile gateway service - yes, it is convoluted!
+            // Mimic the response that comes back from the BlueSphere MWF Mobile gateway service
             var responseActions = new[]
             {
-                new Core.Models.GatewayServiceResponse.ResponseAction<Core.Models.GatewayServiceResponse.DriversWrapper>
+                new Core.Models.GatewayServiceResponse.ResponseAction<Core.Models.GatewayServiceResponse.Drivers>
                 {
-                    Data = new Core.Models.GatewayServiceResponse.DriversWrapper
+                    Data = new Core.Models.GatewayServiceResponse.Drivers
                     {
-                        Drivers = new Core.Models.GatewayServiceResponse.DriversInnerWrapper
-                        {
-                            List = new[] { new Core.Models.Driver { ID = testDriverID } }
-                        }
+                        List = new List<Core.Models.Driver> { new Core.Models.Driver { ID = testDriverID } }
                     }
                 }
             };
 
-            var response = new Core.HttpResult<Core.Models.GatewayServiceResponse.Response<Core.Models.GatewayServiceResponse.DriversWrapper>>
+            var response = new Core.HttpResult<Core.Models.GatewayServiceResponse.Response<Core.Models.GatewayServiceResponse.Drivers>>
             {
                 StatusCode = System.Net.HttpStatusCode.Accepted,
-                Content = new Core.Models.GatewayServiceResponse.Response<Core.Models.GatewayServiceResponse.DriversWrapper> { Actions = responseActions },
+                Content = new Core.Models.GatewayServiceResponse.Response<Core.Models.GatewayServiceResponse.Drivers> { Actions = responseActions },
             };
 
             var mockHttpService = new Mock<Core.Services.IHttpService>();
-            mockHttpService.Setup(m => m.PostAsJsonAsync<Core.Models.GatewayServiceRequest.Content, Core.Models.GatewayServiceResponse.Response<Core.Models.GatewayServiceResponse.DriversWrapper>>(It.IsAny<Core.Models.GatewayServiceRequest.Content>(), It.IsAny<string>())).ReturnsAsync(response);
+            mockHttpService.Setup(m => m.PostAsJsonAsync<Core.Models.GatewayServiceRequest.Content, Core.Models.GatewayServiceResponse.Response<Core.Models.GatewayServiceResponse.Drivers>>(It.IsAny<Core.Models.GatewayServiceRequest.Content>(), It.IsAny<string>())).ReturnsAsync(response);
+            Ioc.RegisterSingleton<Core.Services.IHttpService>(mockHttpService.Object);
 
-            var service = new Core.Services.GatewayService(Ioc.Resolve<Core.Services.IDeviceInfoService>(), mockHttpService.Object);
+            var service = Ioc.IoCConstruct<Core.Services.GatewayService>();
             var drivers = await service.GetDrivers();
 
             Assert.Equal(drivers.Count(), 1);

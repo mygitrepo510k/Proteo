@@ -42,12 +42,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Helpers\JsonDigitToBooleanConverter.cs" />
+    <Compile Include="Helpers\JsonWrappedListConverter.cs" />
+    <Compile Include="Helpers\JsonWrappedItemConverter.cs" />
     <Compile Include="Models\GatewayServiceRequest\Action.cs" />
     <Compile Include="Models\GatewayServiceRequest\Content.cs" />
     <Compile Include="Models\GatewayServiceRequest\Parameter.cs" />
-    <Compile Include="Models\GatewayServiceResponse\DeviceWrapper.cs" />
+    <Compile Include="Models\GatewayServiceResponse\SafetyProfiles.cs" />
+    <Compile Include="Models\GatewayServiceResponse\Vehicles.cs" />
+    <Compile Include="Models\GatewayServiceResponse\VehicleViews.cs" />
+    <Compile Include="Models\GatewayServiceResponse\Drivers.cs" />
     <Compile Include="Models\GatewayServiceResponse\ResponseAction.cs" />
-    <Compile Include="Models\GatewayServiceResponse\DriversWrapper.cs" />
     <Compile Include="Models\GatewayServiceResponse\Response.cs" />
     <Compile Include="Helpers\HttpResult.cs" />
     <Compile Include="Helpers\HttpResultOfT.cs" />

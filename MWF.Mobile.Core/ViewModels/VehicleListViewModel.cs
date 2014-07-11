@@ -13,8 +13,8 @@ using System.Windows.Input;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class VehicleListViewModel 
-        :MvxViewModel
+    public class VehicleListViewModel
+        : MvxViewModel
     {
 
         public VehicleListViewModel(IVehicleExtractService service)
@@ -40,19 +40,27 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return(_showVehicleDetailCommand = _showVehicleDetailCommand ?? new MvxCommand<Vehicle>(v => VehicleDetail(v)));
+                return (_showVehicleDetailCommand = _showVehicleDetailCommand ?? new MvxCommand<Vehicle>(v => VehicleDetail(v)));
             }
         }
 
         private void VehicleDetail(Vehicle vehicle)
         {
-            Mvx.Resolve<IUserInteraction>().Confirm("Vehicle ID: " + vehicle.ID, isConfirmed => {
+            Mvx.Resolve<IUserInteraction>().Confirm("Vehicle ID: " + vehicle.ID, isConfirmed =>
+            {
                 if (isConfirmed)
                 {
                     ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = vehicle.ID });
                 }
-            },"Is this your vehicle?");
-            
-        }  
-    }
+            }, "Is this your vehicle?");
+
+        }
+
+        private string _searchText;
+        public string SearchText
+        {
+            get { return _searchText; }
+            set { _searchText = value; RaisePropertyChanged(() => SearchText); }
+        }
+    } 
 }

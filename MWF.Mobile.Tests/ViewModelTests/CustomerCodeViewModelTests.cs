@@ -19,10 +19,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var mockUserInteraction = new Mock<IUserInteraction>();
             Ioc.RegisterSingleton<IUserInteraction>(mockUserInteraction.Object);
 
-            var mockOfflineReachability = new Mock<IReachability>();
-            Ioc.RegisterSingleton<IReachability>(mockOfflineReachability.Object);
+            var mockGatewayService = new Mock<Core.Services.IGatewayService>();
+            Ioc.RegisterSingleton<Core.Services.IGatewayService>(mockGatewayService.Object);
 
+            var mockOfflineReachability = new Mock<IReachability>();
             mockOfflineReachability.Setup(m => m.IsConnected()).Returns(false);
+            Ioc.RegisterSingleton<IReachability>(mockOfflineReachability.Object);
         }
 
         [Fact]
@@ -30,7 +32,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var ccvm = new CustomerCodeViewModel() { CustomerCode = "123" };
+            var ccvm = new CustomerCodeViewModel(Ioc.Resolve<Core.Services.IGatewayService>(), Ioc.Resolve<IReachability>())
+            {
+                CustomerCode = "123"
+            };
 
             ccvm.EnterCodeCommand.Execute(null);
 

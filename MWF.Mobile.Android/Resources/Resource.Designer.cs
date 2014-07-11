@@ -99,11 +99,11 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f050000
 			public const int MvxBindingTagUnique = 2131034112;
 			
-			// aapt resource value: 0x7f050003
-			public const int action_search = 2131034115;
-			
 			// aapt resource value: 0x7f050004
-			public const int action_settings = 2131034116;
+			public const int action_search = 2131034116;
+			
+			// aapt resource value: 0x7f050003
+			public const int action_settings = 2131034115;
 			
 			// aapt resource value: 0x7f050001
 			public const int button1 = 2131034113;
@@ -166,6 +166,9 @@ namespace MWF.Mobile.Android
 			
 			// aapt resource value: 0x7f070000
 			public const int main_activity_actions = 2131165184;
+			
+			// aapt resource value: 0x7f070001
+			public const int vehicle_activity_actions = 2131165185;
 			
 			static Menu()
 			{

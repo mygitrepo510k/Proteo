@@ -30,6 +30,7 @@ namespace MWF.Mobile.Android.Views
             return _supportedFragmentViewModels[viewModelType];
         }
 
+
 		#region Fragment host
 
         private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
@@ -68,6 +69,12 @@ namespace MWF.Mobile.Android.Views
 
  		#endregion Fragment host
 
+
+        public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
+        {
+            this.MenuInflater.Inflate(Resource.Menu.main_activity_actions, menu);
+            return base.OnCreateOptionsMenu(menu);
+        }
     }
 
 }

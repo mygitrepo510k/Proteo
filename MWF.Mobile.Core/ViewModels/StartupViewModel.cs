@@ -13,7 +13,5 @@ namespace MWF.Mobile.Core.ViewModels
             //this.InitialViewModel = new CustomerCodeViewModel();
             this.InitialViewModel = new VehicleListViewModel(new Services.VehicleExtractService());
         }
-
     }
-
 }

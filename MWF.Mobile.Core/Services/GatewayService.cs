@@ -24,40 +24,89 @@ namespace MWF.Mobile.Core.Services
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
         }
 
-        public async Task<Models.Device> GetDevice()
+        public Task<Models.ApplicationProfile> GetApplicationProfile()
         {
-            var requestContent = CreateRequestContent(new[] { new Core.Models.GatewayServiceRequest.Action { Command = "fwGetDevice" } });
-            var response = await this.CallGatewayServiceAsync<Core.Models.GatewayServiceResponse.DeviceWrapper>(requestContent);
+            return GetData<Core.Models.ApplicationProfile>("fwGetApplicationProfile");
+        }
 
-            if (!response.Succeeded)
-                return null;
-
-            return response.Content.Actions.First().Data.Device;
+        public Task<Models.Device> GetDevice()
+        {
+            return GetData<Core.Models.Device>("fwGetDevice");
         }
 
         public async Task<IEnumerable<Models.Driver>> GetDrivers()
         {
-            var requestContent = CreateRequestContent(new[] { new Core.Models.GatewayServiceRequest.Action { Command = "fwGetDrivers" } });
-            var response = await this.CallGatewayServiceAsync<Core.Models.GatewayServiceResponse.DriversWrapper>(requestContent);
+            var data = await GetData<Models.GatewayServiceResponse.Drivers>("fwGetDrivers");
+            return data.List;
+        }
+
+        public async Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfiles()
+        {
+            var data = await GetData<Models.GatewayServiceResponse.SafetyProfiles>("fwGetSafetyProfiles");
+            return data.List;
+        }
+
+        public async Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle)
+        {
+            var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle} };
+            var data = await GetData<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles");
+            return data.List;
+        }
+
+        public async Task<IEnumerable<Models.VehicleView>> GetVehicleViews()
+        {
+            var data = await GetData<Models.GatewayServiceResponse.VehicleViews>("fwGetVehicleViews");
+            return data.List;
+        }
+
+        public Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle)
+        {
+            var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VerbProfileTitle", Value = verbProfileTitle } };
+            return GetData<Core.Models.VerbProfile>("fwGetVerbProfile", parameters);
+        }
+
+        private async Task<T> GetData<T>(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
+        {
+            var requestContent = CreateRequestContent(command, parameters);
+            var response = await this.CallGatewayServiceAsync<T>(requestContent);
 
             if (!response.Succeeded)
-                return null;
+                //TODO: should we throw an exception here or something?
+                return default(T);
 
-            return response.Content.Actions.First().Data.Drivers.List;
+            return response.Content.Actions.First().Data;
         }
 
         private Task<HttpResult<Models.GatewayServiceResponse.Response<TData>>> CallGatewayServiceAsync<TData>(Models.GatewayServiceRequest.Content content)
-            where TData : new()
         {
             return _httpService.PostAsJsonAsync<Models.GatewayServiceRequest.Content, Models.GatewayServiceResponse.Response<TData>>(content, _gatewayDeviceRequestUrl);
         }
 
+        /// <summary>
+        /// Create a single-action request's content
+        /// </summary>
+        private Models.GatewayServiceRequest.Content CreateRequestContent(string command, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
+        {
+            return this.CreateRequestContent(new[]
+            {
+                new Core.Models.GatewayServiceRequest.Action
+                {
+                    Command = command,
+                    Parameters = parameters,
+                }
+            });
+        }
+
+        /// <summary>
+        /// Create the request content, allowing multiple actions per request
+        /// </summary>
         private Models.GatewayServiceRequest.Content CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
         {
             return new Core.Models.GatewayServiceRequest.Content
             {
                 DeviceIdentifier = _deviceInfoService.DeviceIdentifier,
                 Password = _deviceInfoService.GatewayPassword,
+                MobileApplication = _deviceInfoService.MobileApplication,
                 Actions = actions,
             };
         }

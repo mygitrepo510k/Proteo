@@ -1,6 +1,7 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.ViewModels;
 using System;
@@ -21,6 +22,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var mockGatewayService = new Mock<Core.Services.IGatewayService>();
             Ioc.RegisterSingleton<Core.Services.IGatewayService>(mockGatewayService.Object);
+
+
+            Ioc.RegisterSingleton<IApplicationProfileRepository>(() => Mock.Of<IApplicationProfileRepository>());
+            Ioc.RegisterSingleton<ICustomerRepository>(() => Mock.Of<ICustomerRepository>());
+            Ioc.RegisterSingleton<IDriverRepository>(() => Mock.Of<IDriverRepository>());
+            Ioc.RegisterSingleton<IDeviceRepository>(() => Mock.Of<IDeviceRepository>());
+            Ioc.RegisterSingleton<ISafetyProfileRepository>(() => Mock.Of<ISafetyProfileRepository>());
+            Ioc.RegisterSingleton<IVehicleRepository>(() => Mock.Of<IVehicleRepository>());
+            Ioc.RegisterSingleton<IVehicleViewRepository>(() => Mock.Of<IVehicleViewRepository>());
+            Ioc.RegisterSingleton<IVerbProfileRepository>(() => Mock.Of<IVerbProfileRepository>());
 
             var mockOfflineReachability = new Mock<IReachability>();
             mockOfflineReachability.Setup(m => m.IsConnected()).Returns(false);

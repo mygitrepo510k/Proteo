@@ -32,6 +32,19 @@ namespace MWF.Mobile.Core.Repositories
                 _connection.Insert(entity);
             }
 
+            public virtual void Insert(List<T> entities)
+            {
+                _connection.RunInTransaction(() =>
+                {
+                    foreach (var entity in entities)
+                    {
+                        Insert(entity);
+                    }
+
+                });
+
+            }
+
             public virtual void Delete(T entity)
             {
                 _connection.Delete(entity);

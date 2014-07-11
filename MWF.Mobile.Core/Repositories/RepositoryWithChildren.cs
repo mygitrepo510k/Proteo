@@ -41,6 +41,20 @@ namespace MWF.Mobile.Core.Repositories
 
         }
 
+        public override void Insert(List<T1> entities)
+        {
+            _connection.RunInTransaction(() =>
+            {
+                foreach (var entity in entities)
+                {
+                    Insert(entity);
+                }
+
+            });
+
+        }
+
+
         public override void Delete(T1 entity)
         {
             _connection.RunInTransaction(() =>

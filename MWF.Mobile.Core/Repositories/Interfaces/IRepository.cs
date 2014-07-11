@@ -11,5 +11,6 @@ namespace MWF.Mobile.Core.Repositories
         T GetByID(Guid ID);
         IEnumerable<T> GetWhere(System.Linq.Expressions.Expression<Func<T, bool>> predicate);
         void Insert(T entity);
+        void Insert(List<T> entities);
     }
 }

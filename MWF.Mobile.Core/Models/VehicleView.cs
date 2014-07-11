@@ -7,10 +7,10 @@ namespace MWF.Mobile.Core.Models
     public class VehicleView : IBlueSphereEntity
     {
         [Unique]
-        [JsonProperty("id")]
+        [JsonProperty("@id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("title")]
+        [JsonProperty("@title")]
         public string Title { get; set; }
 
 

@@ -30,13 +30,15 @@ namespace MWF.Mobile.Android.Views
             return _supportedFragmentViewModels[viewModelType];
         }
 
+
 		#region Fragment host
 
         private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
         {
             { typeof(Core.ViewModels.PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
             { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
-            { typeof(Core.ViewModels.AllVehicleDisplayViewModel), typeof(Fragments.AllVehicleDisplayFragment)}
+            { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
+            { typeof(Core.ViewModels.TrailerSelectionViewModel), typeof(Fragments.TrailerSelectionFragment)}
 
         };
 
@@ -67,6 +69,12 @@ namespace MWF.Mobile.Android.Views
 
  		#endregion Fragment host
 
+
+        public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
+        {
+            this.MenuInflater.Inflate(Resource.Menu.main_activity_actions, menu);
+            return base.OnCreateOptionsMenu(menu);
+        }
     }
 
 }

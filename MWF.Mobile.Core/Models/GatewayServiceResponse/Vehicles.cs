@@ -8,10 +8,11 @@ using Newtonsoft.Json;
 namespace MWF.Mobile.Core.Models.GatewayServiceResponse
 {
 
-    public class DeviceWrapper
+    [JsonConverter(typeof(JsonWrappedItemConverter<Vehicles>))]
+    public class Vehicles
     {
-        [JsonProperty("device")]
-        public Device Device { get; set; }
+        [JsonProperty("vehicle")]
+        public List<Vehicle> List { get; set; }
     }
 
 }

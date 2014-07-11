@@ -15,6 +15,7 @@ namespace MWF.Mobile.Core.Models
         Any = 10
     }
 
+    [JsonConverter(typeof(JsonWrappedItemConverter<Device>))]
     public class Device : IBlueSphereEntity
     {
     

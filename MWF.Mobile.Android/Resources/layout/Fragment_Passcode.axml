@@ -1,30 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:local="http://schemas.android.com/apk/res-auto"
-  android:orientation="vertical"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
->
-  <TextView
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="30dp"
-    android:gravity="center_horizontal"
-    local:MvxBind="Text PasscodeLabel"
-    />
-  <EditText
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="40dp"
-    android:inputType="numberPassword"
-    android:password="true"
-    local:MvxBind="Text Passcode"
-    />
-  <Button
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:text="Login"
-    local:MvxBind="Click LoginCommand"
-  />
+    android:layout_height="fill_parent">
+    <ImageView
+        android:layout_marginTop="10dp"
+        android:layout_width="227.5dp"
+        android:layout_height="117.0dp"
+        android:src="@drawable/proteoLogo"
+        android:layout_marginRight="0.0dp"
+        android:layout_gravity="center_horizontal" />
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="30dp"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        local:MvxBind="Text PasscodeLabel" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="40dp"
+        android:gravity="center_horizontal"
+        android:inputType="numberPassword"
+        android:password="true"
+        android:background="#cccfd1"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        local:MvxBind="Text Passcode" />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffcf7b"
+        android:text="enter passcode"
+        android:id="@+id/button1"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        local:MvxBind="Click LoginCommand" />
 </LinearLayout>

@@ -10,34 +10,42 @@ namespace MWF.Mobile.Core.Models
     public class SafetyProfile : IBlueSphereParentEntity<SafetyCheckFaultType>
     {
         [Unique]
-        [JsonProperty("id")]
+        [JsonProperty("@id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("title")]
+        [JsonProperty("@title")]
         public string Title { get; set; }
 
-        [JsonProperty("intlink")]
+        [JsonProperty("@intlink")]
         public int IntLink { get; set; }
 
-        [JsonProperty("odo")]
+        [JsonProperty("@odo")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool OdometerRequired { get; set; }
 
-        [JsonProperty("sig")]
+        [JsonProperty("@sig")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool SignatureRequired { get; set; }
 
-        [JsonProperty("checklist")]
+        [JsonProperty("@checklist")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool DisplayAsChecklist { get; set; }
 
-        [JsonProperty("logon")]
+        [JsonProperty("@logon")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool DisplayAtLogon { get; set; }
 
-        [JsonProperty("logoff")]
+        [JsonProperty("@logoff")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool DisplayAtLogoff { get; set; }
 
-        [JsonProperty("strailerprofile")]
+        [JsonProperty("@strailerprofile")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IsTrailerProfile { get; set; }
 
         [Ignore]
+        [JsonProperty("faults")]
+        [JsonConverter(typeof(JsonWrappedListConverter<SafetyCheckFaultType>))]
         public List<SafetyCheckFaultType> Children { get; set; }
 
 

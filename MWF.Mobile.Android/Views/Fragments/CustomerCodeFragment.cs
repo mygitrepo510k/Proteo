@@ -40,7 +40,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             //Hide the action bar
             this.Activity.ActionBar.Hide();
-
+            
             base.OnViewCreated(view, savedInstanceState);
             var set = this.CreateBindingSet<CustomerCodeFragment, CustomerCodeViewModel>();
             set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsBusy);

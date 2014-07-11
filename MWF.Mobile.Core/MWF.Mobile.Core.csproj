@@ -42,12 +42,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Helpers\JsonDigitToBooleanConverter.cs" />
+    <Compile Include="Helpers\JsonWrappedListConverter.cs" />
+    <Compile Include="Helpers\JsonWrappedItemConverter.cs" />
     <Compile Include="Models\GatewayServiceRequest\Action.cs" />
     <Compile Include="Models\GatewayServiceRequest\Content.cs" />
     <Compile Include="Models\GatewayServiceRequest\Parameter.cs" />
-    <Compile Include="Models\GatewayServiceResponse\DeviceWrapper.cs" />
+    <Compile Include="Models\GatewayServiceResponse\SafetyProfiles.cs" />
+    <Compile Include="Models\GatewayServiceResponse\Vehicles.cs" />
+    <Compile Include="Models\GatewayServiceResponse\VehicleViews.cs" />
+    <Compile Include="Models\GatewayServiceResponse\Drivers.cs" />
     <Compile Include="Models\GatewayServiceResponse\ResponseAction.cs" />
-    <Compile Include="Models\GatewayServiceResponse\DriversWrapper.cs" />
     <Compile Include="Models\GatewayServiceResponse\Response.cs" />
     <Compile Include="Helpers\HttpResult.cs" />
     <Compile Include="Helpers\HttpResultOfT.cs" />
@@ -96,14 +101,14 @@
     <Compile Include="Services\IGatewayService.cs" />
     <Compile Include="Services\IHttpService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
-    <Compile Include="ViewModels\AllVehicleDisplayViewModel.cs" />
+    <Compile Include="ViewModels\VehicleListViewModel.cs" />
     <Compile Include="ViewModels\CustomerCodeViewModel.cs" />
     <Compile Include="ViewModels\ManifestViewModel.cs" />
     <Compile Include="ViewModels\PasscodeViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\BaseActivityViewModel.cs" />
     <Compile Include="ViewModels\StartupViewModel.cs" />
-    <Compile Include="ViewModels\VehicleDetailViewModel.cs" />
+    <Compile Include="ViewModels\TrailerSelectionViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Chance.MvvmCross.Plugins.UserInteraction">

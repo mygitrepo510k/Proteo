@@ -7,6 +7,6 @@
     <Mvx.MvxListView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        local:MvxBind="ItemsSource Vehicles; ItemClick ShowDetailCommand"
+        local:MvxBind="ItemsSource Vehicles; ItemClick ShowVehicleDetailCommand"
         local:MvxItemTemplate="@layout/item_vehicle" />
 </LinearLayout>

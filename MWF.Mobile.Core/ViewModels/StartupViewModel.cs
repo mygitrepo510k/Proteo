@@ -10,11 +10,8 @@ namespace MWF.Mobile.Core.ViewModels
         public StartupViewModel(Services.IAuthenticationService authenticationService)
         {
            // this.InitialViewModel = new PasscodeViewModel(authenticationService);
-           // this.InitialViewModel = new CustomerCodeViewModel();
-            Services.VehicleExtractService vehicleService = new Services.VehicleExtractService();
-            this.InitialViewModel = new AllVehicleDisplayViewModel(vehicleService);
+            //this.InitialViewModel = new CustomerCodeViewModel();
+            this.InitialViewModel = new VehicleListViewModel(new Services.VehicleExtractService());
         }
-
     }
-
 }

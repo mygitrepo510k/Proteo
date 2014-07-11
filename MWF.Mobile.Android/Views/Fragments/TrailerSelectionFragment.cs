@@ -15,14 +15,14 @@ using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class AllVehicleDisplayFragment : MvxFragment
+    public class TrailerSelectionFragment : MvxFragment
     {
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            return this.BindingInflate(Resource.Layout.VehicleListView, null);
+            return this.BindingInflate(Resource.Layout.TrailerSelectionView, null);
         }
 
     }

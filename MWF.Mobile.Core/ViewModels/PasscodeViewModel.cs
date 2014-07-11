@@ -19,7 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string PasscodeLabel
         {
-            get { return "Please enter your passcode"; }
+            get { return "driver passcode"; }
         }
 
         private string _passcode = null;

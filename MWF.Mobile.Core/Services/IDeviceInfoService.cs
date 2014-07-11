@@ -11,6 +11,7 @@ namespace MWF.Mobile.Core.Services
     {
         string DeviceIdentifier { get; }
         string GatewayPassword { get; }
+        string MobileApplication { get; }
     }
 
 }

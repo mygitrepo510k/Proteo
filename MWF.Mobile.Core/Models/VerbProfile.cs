@@ -7,24 +7,29 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models 
 {
+
+    [JsonConverter(typeof(JsonWrappedItemConverter<VerbProfile>))]
     public class VerbProfile : IBlueSphereParentEntity<VerbProfileItem>
     {
+
         [Unique]
-        [JsonProperty("id")]
+        [JsonProperty("@id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("t")]
+        [JsonProperty("@t")]
         public string Title { get; set; }
 
-        [JsonProperty("l")]
+        [JsonProperty("@l")]
         public int IntLink { get; set; }
 
-        [JsonProperty("c")]
+        [JsonProperty("@c")]
         public string Code { get; set; }
 
         [Ignore]
         [JsonProperty("vpis")]
+        [JsonConverter(typeof(JsonWrappedListConverter<VerbProfileItem>))]
         public List<VerbProfileItem> Children { get; set; }
 
     }
+
 }

@@ -14,23 +14,36 @@ namespace MWF.Mobile.Core.Services
         : IHttpService
     {
 
-        public async Task<HttpResult<TResponse>> PostAsJsonAsync<TRequest, TResponse>(TRequest content, string url)
+        public Task<HttpResult<TResponse>> PostAsync<TResponse>(string content, string url)
         {
-            var client = new HttpClient();
+            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            {
+                request.Content = new StringContent(content);
+                return SendAsync<TResponse>(request);
+            }
+        }
 
+        public Task<HttpResult<TResponse>> PostAsJsonAsync<TRequest, TResponse>(TRequest content, string url)
+        {
             using (var request = new HttpRequestMessage(HttpMethod.Post, url))
             {
                 request.Content = new ObjectContent<TRequest>(content, GetJsonFormatter());
+                return SendAsync<TResponse>(request);
+            }
+        }
 
-                using (var response = await client.SendAsync(request))
-                {
-                    var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
-                    
-                    if (response.Content != null)
-                        result.Content = await response.Content.ReadAsAsync<TResponse>();
+        private static async Task<HttpResult<TResponse>> SendAsync<TResponse>(HttpRequestMessage request)
+        {
+            var client = new HttpClient();
 
-                    return result;
-                }
+            using (var response = await client.SendAsync(request))
+            {
+                var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
+
+                if (response.Content != null)
+                    result.Content = await response.Content.ReadAsAsync<TResponse>();
+
+                return result;
             }
         }
 

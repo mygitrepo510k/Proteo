@@ -11,8 +11,7 @@ using MWF.Mobile.Core.Services;
 namespace MWF.Mobile.Core.Repositories
 {
 
-    public class SafetyProfileRepository : RepositoryWithChidren<SafetyProfile, SafetyCheckFaultType>,
-                                           ISafetyProfileRepository
+    public class SafetyProfileRepository : Repository<SafetyProfile>, ISafetyProfileRepository
     {
 
         #region Construction
@@ -21,18 +20,7 @@ namespace MWF.Mobile.Core.Repositories
             : base(dataService)
         { }
 
-
         #endregion
-
-
-        protected override void PopulateChildren(IEnumerable<SafetyProfile> parents)
-        {
-            foreach (var parent in parents)
-            {
-                parent.Children = _connection.Table<SafetyCheckFaultType>().Where(e => e.SafetyProfileID == parent.ID).ToList();
-            }
-
-        }
 
     }
 

@@ -11,7 +11,7 @@ using MWF.Mobile.Core.Services;
 namespace MWF.Mobile.Core.Repositories
 {
 
-    public class VerbProfileRepository : RepositoryWithChidren<VerbProfile, VerbProfileItem>, IVerbProfileRepository
+    public class VerbProfileRepository : Repository<VerbProfile>, IVerbProfileRepository
     {
 
         #region Construction
@@ -21,15 +21,7 @@ namespace MWF.Mobile.Core.Repositories
         { }
 
 
-        #endregion
-
-        protected override void PopulateChildren(IEnumerable<VerbProfile> parents)
-        {
-            foreach (var parent in parents)
-            {
-                parent.Children = _connection.Table<VerbProfileItem>().Where(e => e.VerbProfileID == parent.ID).ToList();
-            }
-        }
+        #endregion      
 
     }
 

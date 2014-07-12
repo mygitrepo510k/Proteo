@@ -12,14 +12,4 @@ namespace MWF.Mobile.Core.Models
         Guid ID { get; set; }
         string Title { get; set; }
     }
-
-    public interface IBlueSphereParentEntity<T> : IBlueSphereEntity where T : IBlueSphereChildEntity
-    {
-        List<T> Children { get; set; } 
-    }
-
-    public interface IBlueSphereChildEntity : IBlueSphereEntity
-    {
-
-    }
 }

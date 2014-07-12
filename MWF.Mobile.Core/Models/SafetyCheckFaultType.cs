@@ -1,10 +1,11 @@
 ﻿using System;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Newtonsoft.Json;
+using MWF.Mobile.Core.Models.Attributes;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class SafetyCheckFaultType : IBlueSphereChildEntity
+    public class SafetyCheckFaultType : IBlueSphereEntity
     {
         [Unique]
         [JsonProperty("@id")]
@@ -23,6 +24,7 @@ namespace MWF.Mobile.Core.Models
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IsHighlighted { get; set; }
 
+        [ForeignKey(typeof(SafetyProfile))]
         public Guid SafetyProfileID { get; set; }
 
     }

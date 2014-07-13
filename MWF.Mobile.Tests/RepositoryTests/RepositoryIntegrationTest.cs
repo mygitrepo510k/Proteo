@@ -13,6 +13,7 @@ using Xunit;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Tests.RepositoryTests.TestModels;
 
 namespace MWF.Mobile.Tests.RepositoryTests
 {
@@ -27,9 +28,13 @@ namespace MWF.Mobile.Tests.RepositoryTests
         protected override void AdditionalSetup()
         {
 
-
             ISQLiteConnectionFactory connectionFactory = new MvxWpfSqLiteConnectionFactory();
             _dataService = new DataService(connectionFactory);
+
+            _dataService.Connection.CreateTable<GrandParentEntity>();
+            _dataService.Connection.CreateTable<ParentEntity>();
+            _dataService.Connection.CreateTable<ChildEntity>();
+            _dataService.Connection.CreateTable<ChildEntity2>();
         }
 
         [Fact]
@@ -97,7 +102,9 @@ namespace MWF.Mobile.Tests.RepositoryTests
 
 
         [Fact]
-        public void RepositoryWithChildren_Insert_GetByID()
+        // Tests a repository can deal with an entity type which has a child relationship
+        // with an other entity type
+        public void Repository_SingleChildRelation_Insert_GetByID()
         {
             base.ClearAll();
 
@@ -139,6 +146,113 @@ namespace MWF.Mobile.Tests.RepositoryTests
 
         }
 
+        [Fact]
+        // Tests a repository can deal with an entity type which has a child relationships
+        // with more than one entity type
+        public void Repository_MultipleChildRelation_Insert_GetByID()
+        {
+            base.ClearAll();
+
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var parentEntityIn = fixture.Create<ParentEntity>();
+            var parentEntity2In = fixture.Create<ParentEntity>();
+
+            // set up the foreign key relationships
+            foreach (var childEntity in parentEntityIn.Children)
+            {
+                childEntity.ParentID = parentEntityIn.ID;
+            }
+
+            foreach (var childEntity in parentEntityIn.Children2)
+            {
+                childEntity.ParentID = parentEntityIn.ID;
+            }
+
+            ParentEntityRepository repository = new ParentEntityRepository(_dataService);
+
+
+            // Insert records
+            repository.Insert(parentEntityIn);
+            repository.Insert(parentEntity2In);
+
+            // Get the first entity back by id
+            var parentEntityOut = repository.GetByID(parentEntityIn.ID);
+
+            // Check that the entity we retreived has correct number of children (of both types)
+            Assert.Equal(parentEntityIn.Children.Count, parentEntityOut.Children.Count);
+            Assert.Equal(parentEntityIn.Children2.Count, parentEntityOut.Children2.Count);
+
+            // Check that all the children we have retreived have the correct property values
+            for (int i = 0; i < parentEntityIn.Children.Count; i++)
+            {
+                Assert.Equal(parentEntityIn.Children[i].ID, parentEntityOut.Children[i].ID);
+                Assert.Equal(parentEntityIn.Children[i].Title, parentEntityOut.Children[i].Title);
+            }
+
+            // Check that all the children we have retreived have the correct property values
+            for (int i = 0; i < parentEntityIn.Children2.Count; i++)
+            {
+                Assert.Equal(parentEntityIn.Children2[i].ID, parentEntityOut.Children2[i].ID);
+                Assert.Equal(parentEntityIn.Children2[i].Title, parentEntityOut.Children2[i].Title);
+
+            }
+
+        }
+
+        [Fact]
+        // Tests a repository can deal with an entity type which has nested child relationships
+        // e.g. Grandparent -> Parent -> Child
+        public void Repository_NestedChildRelation_Insert_GetByID()
+        {
+            base.ClearAll();
+
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var grandParentEntityIn = fixture.Create<GrandParentEntity>();
+            var grandParentEntity2In = fixture.Create<GrandParentEntity>();
+
+            // set up the foreign key relationships
+            foreach (var parentEntity in grandParentEntityIn.Children)
+            {
+                parentEntity.ParentID = grandParentEntityIn.ID;
+                foreach (var childEntity in parentEntity.Children)
+                {
+                    childEntity.ParentID = parentEntity.ID;
+                    parentEntity.Children2.Clear();                  
+                }              
+            }
+
+            GrandParentEntityRepository repository = new GrandParentEntityRepository(_dataService);
+
+            // Insert records
+            repository.Insert(grandParentEntityIn);
+            repository.Insert(grandParentEntity2In);
+
+            // Get the first entity back by id
+            var grandParentEntityOut = repository.GetByID(grandParentEntityIn.ID);
+
+            // Check that the entity we retreived has correct number of children 
+            Assert.Equal(grandParentEntityIn.Children.Count, grandParentEntityOut.Children.Count);
+
+            // Check down the hierarchy that property values line up
+            for (int i = 0; i < grandParentEntityIn.Children.Count; i++)
+            {
+                Assert.Equal(grandParentEntityIn.Children[i].ID, grandParentEntityOut.Children[i].ID);
+                Assert.Equal(grandParentEntityIn.Children[i].Title, grandParentEntityOut.Children[i].Title);
+
+                // Check that the chidlren have correct number of children 
+                Assert.Equal(grandParentEntityIn.Children[i].Children.Count, grandParentEntityOut.Children[i].Children.Count);
+
+                for (int j = 0; j < grandParentEntityIn.Children[i].Children.Count; j++)
+                {
+                    Assert.Equal(grandParentEntityIn.Children[i].Children[j].ID, grandParentEntityOut.Children[i].Children[j].ID);
+                    Assert.Equal(grandParentEntityIn.Children[i].Children[j].Title, grandParentEntityOut.Children[i].Children[j].Title);
+                }
+
+            }
+
+
+        }
+
         #region IDisposable (Teardown)
 
         public void Dispose()
@@ -154,4 +268,23 @@ namespace MWF.Mobile.Tests.RepositoryTests
         #endregion
 
     }
+
+    #region Test Repository Classes
+
+    internal class ParentEntityRepository : Repository<ParentEntity>
+    {
+        public ParentEntityRepository(IDataService dataService)
+            : base(dataService)
+        { }
+    }
+
+    internal class GrandParentEntityRepository : Repository<GrandParentEntity>
+    {
+        public GrandParentEntityRepository(IDataService dataService)
+            : base(dataService)
+        { }
+    }
+
+    #endregion
+
 }

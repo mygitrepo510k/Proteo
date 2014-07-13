@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Reflection;
-using System.Threading.Tasks;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Helpers;
 using MWF.Mobile.Core.Models;
@@ -24,6 +21,8 @@ namespace MWF.Mobile.Core.Repositories
 
             public Repository(IDataService dataService)
             {
+                Contract.Requires<ArgumentNullException>(dataService != null, "dataService cannot be null");
+
                 _connection = dataService.Connection;
             }
 
@@ -33,7 +32,7 @@ namespace MWF.Mobile.Core.Repositories
 
             public virtual void Insert(T entity)
             {
-                Contract.Assert(entity != null);
+                Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
 
                 _connection.RunInTransaction(() =>
                  {     
@@ -43,7 +42,7 @@ namespace MWF.Mobile.Core.Repositories
 
             public virtual void Insert(List<T> entities)
             {
-                Contract.Assert(entities != null);
+                Contract.Requires<ArgumentNullException>(entities != null, "entities cannot be null");
 
                 _connection.RunInTransaction(() =>
                 {
@@ -58,7 +57,7 @@ namespace MWF.Mobile.Core.Repositories
 
             public virtual void Delete(T entity)
             {
-                Contract.Assert(entity != null);
+                Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
 
                 _connection.RunInTransaction(() =>
                 {

@@ -51,6 +51,23 @@ namespace MWF.Mobile.Tests.RepositoryTests
     
         }
 
+        [Fact]
+        public void Repository_InsertMany()
+        {
+            base.ClearAll();
+
+            var deviceRepository = _fixture.Create<DeviceRepository>();
+            var devices = _fixture.CreateMany<Device>().ToList();
+
+            deviceRepository.Insert(devices);
+
+            // SQL connection should have been hit with an insert for each device
+            _connectionMock.Verify(c => c.Insert(It.IsAny<Device>()), Times.Exactly(devices.Count)); 
+
+            
+
+        }
+
 
         [Fact]
         public void Repository_Delete()

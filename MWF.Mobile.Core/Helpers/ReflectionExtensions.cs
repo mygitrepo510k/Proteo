@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -59,12 +60,14 @@ namespace MWF.Mobile.Core.Helpers
         public static string GetForeignKeyName(this Type childType, Type parentType)
         {
 
-            var foreignKeyProperty = (from property in childType.GetRuntimeProperties()
-                                      where property.GetCustomAttribute<ForeignKeyAttribute>() != null
-                                      && (property.GetCustomAttribute<ForeignKeyAttribute>() as ForeignKeyAttribute).ForeignType == parentType
-                                      select property).Single();
+            var foreignKeyProperties = (from property in childType.GetRuntimeProperties()
+                                        where property.GetCustomAttribute<ForeignKeyAttribute>() != null
+                                        && (property.GetCustomAttribute<ForeignKeyAttribute>() as ForeignKeyAttribute).ForeignType == parentType
+                                        select property);
 
-            return foreignKeyProperty.GetColumnName();
+            Contract.Assert(foreignKeyProperties.Any(), string.Format("Type {0} does not contain any foreign key references back to parent type {1}", childType.ToString(), parentType.ToString()));
+
+            return foreignKeyProperties.Single().GetColumnName();
 
         }
 

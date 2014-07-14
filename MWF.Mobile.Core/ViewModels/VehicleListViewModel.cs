@@ -23,11 +23,12 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 newList.Add(service.ExtractVehicle());
             }
-            Vehicles = newList;
+            Vehicles = _originalVehicleList = newList;
         }
+        private List<Vehicle> _originalVehicleList;
 
-        private List<Vehicle> _vehicles;
-        public List<Vehicle> Vehicles
+        private IEnumerable<Vehicle> _vehicles;
+        public IEnumerable<Vehicle> Vehicles
         {
             get { return _vehicles; }
             set { _vehicles = value; RaisePropertyChanged(() => Vehicles); }
@@ -47,10 +48,13 @@ namespace MWF.Mobile.Core.ViewModels
         public string SearchText
         {
             get { return _searchText; }
-            set { _searchText = value; RaisePropertyChanged(() => SearchText); }
+            set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); }
         }
 
-
+        private void FilterList()
+        {
+            Vehicles = _originalVehicleList.Where(v => v.ID.ToString().Contains(SearchText));
+        }
         
     }  
 

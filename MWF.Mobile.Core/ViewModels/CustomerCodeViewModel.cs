@@ -7,7 +7,9 @@ using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Helpers;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
 using Chance.MvvmCross.Plugins.UserInteraction;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -25,22 +27,20 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IDriverRepository _driverRepository;
         private readonly ISafetyProfileRepository _safetyProfileRepository;
         private readonly IVehicleRepository _vehicleRepository;
-        private readonly IVehicleViewRepository _vehicleViewRepository;
         private readonly IVerbProfileRepository _verbProfileRepository;
 
-        public CustomerCodeViewModel(Services.IGatewayService gatewayService, IReachability reachability, Services.IDataService dataService)
+        public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories)
         {
             _gatewayService = gatewayService;
             _dataService = dataService;
             _reachability = reachability;
-            _applicationProfileRepository = Mvx.Resolve<IApplicationProfileRepository>();
-            _customerRepository = Mvx.Resolve<ICustomerRepository>();
-            _deviceRepository = Mvx.Resolve<IDeviceRepository>();
-            _driverRepository = Mvx.Resolve<IDriverRepository>();
-            _safetyProfileRepository = Mvx.Resolve<ISafetyProfileRepository>();
-            _vehicleRepository = Mvx.Resolve<IVehicleRepository>();
-            _vehicleViewRepository = Mvx.Resolve<IVehicleViewRepository>();
-            _verbProfileRepository = Mvx.Resolve<IVerbProfileRepository>();
+            _applicationProfileRepository = repositories.ApplicationRepository;
+            _customerRepository = repositories.CustomerRepository;
+            _deviceRepository = repositories.DeviceRepository;
+            _driverRepository = repositories.DriverRepository;
+            _safetyProfileRepository = repositories.SafetyProfileRepository;
+            _vehicleRepository = repositories.VehicleRepository;
+            _verbProfileRepository = repositories.VerbProfileRepository;
         }
 
         private string _customerCode = null;
@@ -130,7 +130,6 @@ namespace MWF.Mobile.Core.ViewModels
                 _verbProfileRepository.Insert(verbProfiles); 
                 _applicationProfileRepository.Insert(applicationProfile);
                 _driverRepository.Insert(drivers);
-                _vehicleViewRepository.Insert(vehicleViews);
                 //TODO: relate Vehicles to VehicleViews?  Are VehicleViews actually used for anything within the app?
                 _vehicleRepository.Insert(vehicles);
                 _safetyProfileRepository.Insert(safetyProfiles);

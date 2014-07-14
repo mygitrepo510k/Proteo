@@ -1,4 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
+
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -7,15 +14,20 @@ namespace MWF.Mobile.Core.ViewModels
 		: BaseActivityViewModel
     {
 
-        public StartupViewModel(Services.IAuthenticationService authenticationService, Services.IGatewayService gatewayService, Portable.IReachability reachableService, Services.IDataService dataService)
+        public StartupViewModel(IAuthenticationService authenticationService, IGatewayService gatewayService, Portable.IReachability reachableService, IDataService dataService, IRepositories repositories)          
         {
-           //this.InitialViewModel = new PasscodeViewModel(authenticationService);
-            //this.InitialViewModel = new PasscodeViewModel(authenticationService);
-           //this.InitialViewModel = new CustomerCodeViewModel();
-           //this.InitialViewModel = new VehicleListViewModel(new Services.VehicleExtractService());
-            // this.InitialViewModel = new PasscodeViewModel(authenticationService);
-            this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService);
-            //this.InitialViewModel = new VehicleListViewModel(new Services.VehicleExtractService());
+
+            var customerRepository = repositories.CustomerRepository;
+
+            if (customerRepository.GetAll().Any())
+            {
+                this.InitialViewModel =  new PasscodeViewModel(authenticationService);
+            }
+            else
+            {
+                this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService, repositories);
+            }
+
         }
     }
 }

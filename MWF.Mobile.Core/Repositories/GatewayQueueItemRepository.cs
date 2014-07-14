@@ -11,17 +11,21 @@ using MWF.Mobile.Core.Services;
 namespace MWF.Mobile.Core.Repositories
 {
 
-    public class VehicleViewRepository : Repository<VehicleView>, IVehicleViewRepository
+    public class GatewayQueueItemRepository : Repository<GatewayQueueItem>, IGatewayQueueItemRepository
     {
 
         #region Construction
 
-        public VehicleViewRepository(IDataService dataService)
+        public GatewayQueueItemRepository(IDataService dataService)
             : base(dataService)
         { }
 
-
         #endregion
+
+        public IEnumerable<GatewayQueueItem> GetAllInQueueOrder()
+        {
+            return this.GetAll().OrderBy(gqi => gqi.QueuedDateTime);
+        }
 
     }
 

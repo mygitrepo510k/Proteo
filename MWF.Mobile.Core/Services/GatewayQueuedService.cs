@@ -14,49 +14,63 @@ namespace MWF.Mobile.Core.Services
 
         private readonly IDeviceInfoService _deviceInfoService = null;
         private readonly IHttpService _httpService = null;
+        private readonly Repositories.IGatewayQueueItemRepository _queueItemRepository = null;
+        private readonly Portable.IReachability _reachability = null;
+
         private readonly string _gatewayDeviceRequestUrl = null;
 
-        public GatewayQueuedService(IDeviceInfoService deviceInfoService, IHttpService httpService)
+        public GatewayQueuedService(IDeviceInfoService deviceInfoService, IHttpService httpService, Repositories.IGatewayQueueItemRepository queueItemRepository, Portable.IReachability reachability)
         {
             _deviceInfoService = deviceInfoService;
             _httpService = httpService;
+            _queueItemRepository = queueItemRepository;
+            _reachability = reachability;
 
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
         }
 
-        public async Task<bool> AddToQueueAndSubmitAsync(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
+        public Task<bool> AddToQueueAndSubmitAsync(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
         {
-            await AddToQueueAsync(command, parameters);
-            return await SubmitQueueAsync();
+            this.AddToQueue(command, parameters);
+            return this.SubmitQueueAsync();
         }
 
-        public async Task AddToQueueAsync(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
+        public void AddToQueue(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
         {
             var requestContent = CreateRequestContent(command, parameters);
             var serializedContent = JsonConvert.SerializeObject(requestContent);
-            var queueItem = new Models.GatewayQueueItem { JsonSerializedRequestContent = serializedContent, QueuedDateTime = DateTime.Now };
+            var queueItem = new Models.GatewayQueueItem { ID = Guid.NewGuid(), JsonSerializedRequestContent = serializedContent, QueuedDateTime = DateTime.Now };
+            _queueItemRepository.Insert(queueItem);
         }
 
         private async Task<bool> SubmitQueueAsync()
         {
-            var allItemsSubmitted = true;
-            var queuedItems = Enumerable.Empty<Models.GatewayQueueItem>(); //TODO: retrieve queued items from database
+            if (!_reachability.IsConnected())
+                return false;
 
-            //TODO: handle timeouts and lack of signal
+            var allItemsSubmitted = true;
+            var queuedItems = _queueItemRepository.GetAllInQueueOrder().ToList();
 
             foreach (var queuedItem in queuedItems)
             {
-                if (await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent))
+                try
                 {
-                    //TODO: delete from queue? mark as sent?
+                    if (await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent))
+                        _queueItemRepository.Delete(queuedItem);
+                    else
+                        //TODO: write failure to error log or report in some other way?
+                        allItemsSubmitted = false;
                 }
-                else
+                catch
                 {
-                    //TODO: should we attempt remaining items if one fails or bail out at this point
                     //TODO: write failure to error log or report in some other way?
                     allItemsSubmitted = false;
                 }
+
+                //TODO: should we attempt remaining items if one fails or bail out at this point?
+                if (!allItemsSubmitted)
+                    break;
             }
 
             return allItemsSubmitted;

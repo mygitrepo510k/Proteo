@@ -8,9 +8,18 @@ namespace MWF.Mobile.Core.Models
 {
     
     public class GatewayQueueItem
+        : IBlueSphereEntity
     {
+
+        public GatewayQueueItem()
+        {
+            this.ID = Guid.NewGuid();
+        }
+
+        public Guid ID { get; set; }
         public string JsonSerializedRequestContent { get; set; }
         public DateTime QueuedDateTime { get; set; }
+
     }
 
 }

@@ -9,34 +9,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using Xunit;
 using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
     public class CustomerCodeViewModelTests : MvxIoCSupportingTest
     {
+        private IFixture _fixture;
+
         protected override void AdditionalSetup()
         {
             var mockUserInteraction = new Mock<IUserInteraction>();
             Ioc.RegisterSingleton<IUserInteraction>(mockUserInteraction.Object);
 
-            var mockGatewayService = new Mock<Core.Services.IGatewayService>();
-            Ioc.RegisterSingleton<Core.Services.IGatewayService>(mockGatewayService.Object);
+            _fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == false));
 
-
-            Ioc.RegisterSingleton<IApplicationProfileRepository>(() => Mock.Of<IApplicationProfileRepository>());
-            Ioc.RegisterSingleton<ICustomerRepository>(() => Mock.Of<ICustomerRepository>());
-            Ioc.RegisterSingleton<IDriverRepository>(() => Mock.Of<IDriverRepository>());
-            Ioc.RegisterSingleton<IDeviceRepository>(() => Mock.Of<IDeviceRepository>());
-            Ioc.RegisterSingleton<ISafetyProfileRepository>(() => Mock.Of<ISafetyProfileRepository>());
-            Ioc.RegisterSingleton<IVehicleRepository>(() => Mock.Of<IVehicleRepository>());
-            Ioc.RegisterSingleton<IVehicleViewRepository>(() => Mock.Of<IVehicleViewRepository>());
-            Ioc.RegisterSingleton<IVerbProfileRepository>(() => Mock.Of<IVerbProfileRepository>());
-            Ioc.RegisterSingleton<Core.Services.IDataService>(() => Mock.Of<Core.Services.IDataService>());
-
-            var mockOfflineReachability = new Mock<IReachability>();
-            mockOfflineReachability.Setup(m => m.IsConnected()).Returns(false);
-            Ioc.RegisterSingleton<IReachability>(mockOfflineReachability.Object);
         }
 
         [Fact]
@@ -44,10 +35,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var ccvm = new CustomerCodeViewModel(Ioc.Resolve<Core.Services.IGatewayService>(), Ioc.Resolve<IReachability>(), Ioc.Resolve<Core.Services.IDataService>())
-            {
-                CustomerCode = "123"
-            };
+            var ccvm =_fixture.Create<CustomerCodeViewModel>();
+            ccvm.CustomerCode = "123";
+            ccvm.IsBusy = false;
 
             ccvm.EnterCodeCommand.Execute(null);
 

@@ -43,14 +43,7 @@ namespace MWF.Mobile.Android
             IDataService dataService = Mvx.Resolve<IDataService>();
 
             Mvx.RegisterSingleton<IReachability>(() => new Reachability());
-            Mvx.RegisterSingleton<IApplicationProfileRepository>(() => new ApplicationProfileRepository(dataService));
-            Mvx.RegisterSingleton<ICustomerRepository>(() => new CustomerRepository(dataService));
-            Mvx.RegisterSingleton<IDriverRepository>(() => new DriverRepository(dataService));
-            Mvx.RegisterSingleton<IDeviceRepository>(() => new DeviceRepository(dataService));
-            Mvx.RegisterSingleton<ISafetyProfileRepository>(() => new SafetyProfileRepository(dataService));
-            Mvx.RegisterSingleton<IVehicleRepository>(() => new VehicleRepository(dataService));
-            Mvx.RegisterSingleton<IVehicleViewRepository>(() => new VehicleViewRepository(dataService));
-            Mvx.RegisterSingleton<IVerbProfileRepository>(() => new VerbProfileRepository(dataService));
+
 
         }
 

@@ -129,7 +129,8 @@ namespace MWF.Mobile.Core.ViewModels
             _applicationProfileRepository.Insert(applicationProfile);
             _driverRepository.Insert(drivers);
             _vehicleViewRepository.Insert(vehicleViews);
-            //_vehicleRepository.Insert(vehicleViewVehicles);
+            //TODO: relate Vehicles to VehicleViews?  Are VehicleViews actually used for anything within the app?
+            _vehicleRepository.Insert(vehicleViewVehicles.SelectMany(vvv => vvv.Value));
             _safetyProfileRepository.Insert(safetyProfiles);
 
 

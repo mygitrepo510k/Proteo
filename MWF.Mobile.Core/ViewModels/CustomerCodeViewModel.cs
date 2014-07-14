@@ -16,6 +16,7 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         private readonly Services.IGatewayService _gatewayService;
+        private readonly Services.IDataService _dataService;
         private readonly IReachability _reachability;
         private readonly IApplicationProfileRepository _applicationProfileRepository;
         private readonly ICustomerRepository _customerRepository; 
@@ -26,9 +27,10 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVehicleViewRepository _vehicleViewRepository;
         private readonly IVerbProfileRepository _verbProfileRepository;
 
-        public CustomerCodeViewModel(Services.IGatewayService gatewayService, IReachability reachability)
+        public CustomerCodeViewModel(Services.IGatewayService gatewayService, IReachability reachability, Services.IDataService dataService)
         {
             _gatewayService = gatewayService;
+            _dataService = dataService;
             _reachability = reachability;
             _applicationProfileRepository = Mvx.Resolve<IApplicationProfileRepository>();
             _customerRepository = Mvx.Resolve<ICustomerRepository>();
@@ -104,7 +106,7 @@ namespace MWF.Mobile.Core.ViewModels
             // TODO: Get verb profile titles from config or somewhere?
             var verbProfileTitles = new[] { "Palletforce", "Cancel", "Complete", "Suspend" };
             var device = await _gatewayService.GetDevice();               
-            var applicationProfile = await _gatewayService.GetApplicationProfile();
+            //var applicationProfile = await _gatewayService.GetApplicationProfile();
             var drivers = (await _gatewayService.GetDrivers()).ToList();
             var vehicleViews = (await _gatewayService.GetVehicleViews()).ToList();            
             var safetyProfiles = (await _gatewayService.GetSafetyProfiles()).ToList();
@@ -112,13 +114,16 @@ namespace MWF.Mobile.Core.ViewModels
             var verbProfiles = verbProfileTitles.Select(async vpt => await _gatewayService.GetVerbProfile(vpt)).ToList();     
 
             // write all this retrieved data to the database
-            _deviceRepository.Insert(device);
-            //_verbProfileRepository.Insert(verbProfiles); 
-            _applicationProfileRepository.Insert(applicationProfile);
-            _driverRepository.Insert(drivers);
-            _vehicleViewRepository.Insert(vehicleViews);
-            //_vehicleRepository.Insert(vehicles);
-            _safetyProfileRepository.Insert(safetyProfiles);
+            _dataService.RunInTransaction(() =>
+            {
+                _deviceRepository.Insert(device);
+                //_verbProfileRepository.Insert(verbProfiles); 
+                //_applicationProfileRepository.Insert(applicationProfile);
+                _driverRepository.Insert(drivers);
+                _vehicleViewRepository.Insert(vehicleViews);
+                //_vehicleRepository.Insert(vehicles);
+                _safetyProfileRepository.Insert(safetyProfiles);
+            });
 
 
             //TODO: call fwRegisterDevice - what does this actually do?

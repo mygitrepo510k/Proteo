@@ -28,6 +28,15 @@ namespace MWF.Mobile.Core.Services
 
         #endregion
 
+        #region Public Methods
+
+        public void RunInTransaction(Action action)
+        {
+            _connection.RunInTransaction(action);
+        }
+
+        #endregion
+
         #region Properties
 
         public ISQLiteConnection Connection

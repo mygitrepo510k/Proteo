@@ -26,7 +26,9 @@ namespace MWF.Mobile.Core.Services
 
         public Task<Models.ApplicationProfile> GetApplicationProfile()
         {
-            return ServiceCallAsync<Core.Models.ApplicationProfile>("fwGetApplicationProfile");
+            //TODO: work out what BlueSphere's doing here with the MobileApplicationProfileIntLink parameter
+            var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "MobileApplicationProfileIntLink", Value = "0" } };
+            return ServiceCallAsync<Core.Models.ApplicationProfile>("fwGetApplicationProfile", parameters);
         }
 
         public Task<Models.Device> GetDevice()

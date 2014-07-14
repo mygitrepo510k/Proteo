@@ -11,12 +11,11 @@
         android:textSize="30.0dp"
         local:MvxBind="Text CustomerCodeLabel" />
     <EditText
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="40dp"
+        style="@style/Theme.EditText"
+        android:background="#cccfd1"
         local:MvxBind="Text CustomerCode" />
     <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        style="@style/Theme.Button"
+        android:background="#ffcf7b"
         local:MvxBind="Text EnterButtonLabel; Click EnterCodeCommand" />
 </LinearLayout>

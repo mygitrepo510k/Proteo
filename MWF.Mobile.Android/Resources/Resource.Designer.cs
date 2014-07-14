@@ -214,14 +214,20 @@ namespace MWF.Mobile.Android
 		public partial class Style
 		{
 			
+			// aapt resource value: 0x7f060004
+			public const int Mono_Android_Theme_Splash = 2131099652;
+			
+			// aapt resource value: 0x7f060001
+			public const int Theme_Button = 2131099649;
+			
 			// aapt resource value: 0x7f060002
-			public const int Mono_Android_Theme_Splash = 2131099650;
+			public const int Theme_EditText = 2131099650;
 			
 			// aapt resource value: 0x7f060000
 			public const int Theme_Proteo = 2131099648;
 			
-			// aapt resource value: 0x7f060001
-			public const int Theme_Splash = 2131099649;
+			// aapt resource value: 0x7f060003
+			public const int Theme_Splash = 2131099651;
 			
 			static Style()
 			{

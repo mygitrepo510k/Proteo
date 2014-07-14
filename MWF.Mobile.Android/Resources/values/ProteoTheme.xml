@@ -2,4 +2,22 @@
 <resources>
   <style name="Theme.Proteo" parent="@android:style/Theme.Holo.Light">
   </style>
+
+  <style name="Theme.Button" parent="@android:style/Theme.Holo.Light">
+     <item name = "android:layout_width">match_parent</item>
+    <item name = "android:layout_height">wrap_content</item>
+    <item name = "android:layout_gravity">center_horizontal</item>
+    <item name = "android:layout_marginTop">10dp</item>
+    <item name = "android:layout_marginLeft">10dp</item>
+    <item name = "android:layout_marginRight">10dp</item>
+  </style>
+  <style name="Theme.EditText" parent="@android:style/Theme.Holo.Light">
+     <item name = "android:layout_width">match_parent</item>
+    <item name = "android:layout_height">wrap_content</item>
+    <item name = "android:layout_gravity">center_horizontal</item>
+    <item name = "android:layout_marginTop">10dp</item>
+    <item name = "android:layout_marginLeft">10dp</item>
+    <item name = "android:layout_marginRight">10dp</item>
+    <item name="android:textSize">40dp</item>
+  </style>
 </resources>

@@ -19,26 +19,15 @@
         android:layout_marginTop="10dp"
         local:MvxBind="Text PasscodeLabel" />
     <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="40dp"
-        android:gravity="center_horizontal"
+        style="@style/Theme.EditText"
         android:inputType="numberPassword"
         android:password="true"
         android:background="#cccfd1"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginLeft="10dp"
         local:MvxBind="Text Passcode" />
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/Theme.Button"
+        android:id="@+id/button1"
         android:background="#ffcf7b"
         android:text="enter passcode"
-        android:id="@+id/button1"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         local:MvxBind="Click LoginCommand" />
 </LinearLayout>

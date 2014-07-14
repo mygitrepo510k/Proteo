@@ -87,19 +87,13 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 this.IsBusy = true;
                 
-                if (await this.AssociateDeviceToCustomer() && await this.SetupDevice())
+                if (await this.SetupDevice())
                 {
                     //TODO: if success then save code to database
                 }
 
                 this.IsBusy = false;
             }
-        }
-
-        private async Task<bool> AssociateDeviceToCustomer()
-        {
-            //TODO: implement this
-            return true;
         }
 
         private async Task<bool> SetupDevice()

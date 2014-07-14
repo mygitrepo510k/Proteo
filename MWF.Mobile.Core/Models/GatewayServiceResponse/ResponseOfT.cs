@@ -9,6 +9,7 @@ namespace MWF.Mobile.Core.Models.GatewayServiceResponse
 {
 
     public class Response<TData>
+        where TData: class
     {
         public IEnumerable<ResponseAction<TData>> Actions { get; set; }
     }

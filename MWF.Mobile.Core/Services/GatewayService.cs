@@ -24,70 +24,79 @@ namespace MWF.Mobile.Core.Services
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
         }
 
-        public Task<Models.ApplicationProfile> GetApplicationProfile()
+        public async Task<Models.ApplicationProfile> GetApplicationProfile()
         {
             //TODO: work out what BlueSphere's doing here with the MobileApplicationProfileIntLink parameter
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "MobileApplicationProfileIntLink", Value = "0" } };
-            return ServiceCallAsync<Core.Models.ApplicationProfile>("fwGetApplicationProfile", parameters);
+            var data = await ServiceCallAsync<Core.Models.ApplicationProfile>("fwGetApplicationProfile", parameters);
+            return data.Result;
         }
 
-        public Task<Models.Device> GetDevice(string customerID)
+        public async Task<Models.Device> GetDevice(string customerID)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "CustomerID", Value = customerID } };
-            return ServiceCallAsync<Core.Models.Device>("fwGetDevice", parameters);
+            var data = await ServiceCallAsync<Core.Models.Device>("fwGetDevice", parameters);
+            return data.Result;
         }
 
         public async Task<IEnumerable<Models.Driver>> GetDrivers()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.Drivers>("fwGetDrivers");
-            return data.List;
+            return data.Result.List;
         }
 
         public async Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfiles()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.SafetyProfiles>("fwGetSafetyProfiles");
-            return data.List;
+            return data.Result.List;
         }
 
         public async Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle} };
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles");
-            return data.List;
+            return data.Result.List;
         }
 
         public async Task<IEnumerable<Models.VehicleView>> GetVehicleViews()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.VehicleViews>("fwGetVehicleViews");
-            return data.List;
+            return data.Result.List;
         }
 
-        public Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle)
+        public async Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VerbProfileTitle", Value = verbProfileTitle } };
-            return ServiceCallAsync<Core.Models.VerbProfile>("fwGetVerbProfile", parameters);
+            var data = await ServiceCallAsync<Core.Models.VerbProfile>("fwGetVerbProfile", parameters);
+            return data.Result;
         }
 
-        private async Task<T> ServiceCallAsync<T>(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
+        private class ServiceCallResult<T>
+        {
+            public T Result { get; set; }
+            public IEnumerable<string> Errors { get; set; }
+        }
+
+        private async Task<ServiceCallResult<T>> ServiceCallAsync<T>(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
+            where T: class
         {
             var requestContent = CreateRequestContent(command, parameters);
             var response = await this.PostAsync<T>(requestContent);
             var responseActions = response.Content.Actions;
 
             if (!response.Succeeded || responseActions.Count() != 1)
-                //TODO: should we throw an exception here or something?
-                return default(T);
+                throw new Exception("No actions returned from Gateway service call.");
 
             var responseAction = responseActions.First();
 
             if (!responseAction.Ack)
-                //TODO: should we throw an exception here or something?
-                return default(T);
+                return new ServiceCallResult<T> { Result = default(T), Errors = responseAction.Errors };
 
-            return responseAction.Data;
+            return new ServiceCallResult<T> { Result = responseAction.Data };
         }
 
         private Task<HttpResult<Models.GatewayServiceResponse.Response<TData>>> PostAsync<TData>(Models.GatewayServiceRequest.Content content)
+            where TData: class
         {
             return _httpService.PostAsJsonAsync<Models.GatewayServiceRequest.Content, Models.GatewayServiceResponse.Response<TData>>(content, _gatewayDeviceRequestUrl);
         }

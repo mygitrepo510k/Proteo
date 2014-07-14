@@ -11,7 +11,7 @@ namespace MWF.Mobile.Core
 {
 
     public class JsonWrappedItemConverter<T> : JsonConverter
-        where T: new()
+        where T: class, new()
     {
 
         public override bool CanConvert(Type objectType)

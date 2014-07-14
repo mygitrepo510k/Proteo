@@ -14,7 +14,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         :  MvxIoCSupportingTest
     {
 
-        private readonly string _mwfCustomerId = "C697166B-2E1B-45B0-8F77-270C4EADC031";
+        private readonly string _mwfCustomerId = "C697166B-2E1B-45B0-8F77-270C4EADC099";
 
         protected override void AdditionalSetup()
         {

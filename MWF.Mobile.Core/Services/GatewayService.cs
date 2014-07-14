@@ -31,9 +31,10 @@ namespace MWF.Mobile.Core.Services
             return ServiceCallAsync<Core.Models.ApplicationProfile>("fwGetApplicationProfile", parameters);
         }
 
-        public Task<Models.Device> GetDevice()
+        public Task<Models.Device> GetDevice(string customerID)
         {
-            return ServiceCallAsync<Core.Models.Device>("fwGetDevice");
+            var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "CustomerID", Value = customerID } };
+            return ServiceCallAsync<Core.Models.Device>("fwGetDevice", parameters);
         }
 
         public async Task<IEnumerable<Models.Driver>> GetDrivers()

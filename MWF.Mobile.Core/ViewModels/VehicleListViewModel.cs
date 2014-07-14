@@ -16,7 +16,7 @@ namespace MWF.Mobile.Core.ViewModels
     public class VehicleListViewModel
         : MvxViewModel
     {
-
+        private List<Vehicle> _originalVehicleList;
         public VehicleListViewModel(IVehicleExtractService service)
         {
             //Just filling the model with 10 random Vehicles
@@ -27,8 +27,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
             Vehicles = _originalVehicleList = newList;
         }
-        private List<Vehicle> _originalVehicleList;
-
+        
         private IEnumerable<Vehicle> _vehicles;
         public IEnumerable<Vehicle> Vehicles
         {

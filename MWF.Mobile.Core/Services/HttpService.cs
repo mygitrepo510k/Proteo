@@ -9,28 +9,41 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Services
 {
-    
+
     public class HttpService
         : IHttpService
     {
 
+        public async Task<HttpResult<TResponse>> PostAsync<TResponse>(string content, string url)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            {
+                request.Content = new StringContent(content);
+                return await SendAsync<TResponse>(request);
+            }
+        }
+
         public async Task<HttpResult<TResponse>> PostAsJsonAsync<TRequest, TResponse>(TRequest content, string url)
         {
-            var client = new HttpClient();
-
             using (var request = new HttpRequestMessage(HttpMethod.Post, url))
             {
                 request.Content = new ObjectContent<TRequest>(content, GetJsonFormatter());
+                return await SendAsync<TResponse>(request);
+            }
+        }
 
-                using (var response = await client.SendAsync(request))
-                {
-                    var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
-                    
-                    if (response.Content != null)
-                        result.Content = await response.Content.ReadAsAsync<TResponse>();
+        private static async Task<HttpResult<TResponse>> SendAsync<TResponse>(HttpRequestMessage request)
+        {
+            var client = new HttpClient();
 
-                    return result;
-                }
+            using (var response = await client.SendAsync(request))
+            {
+                var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
+
+                if (response.Content != null)
+                    result.Content = await response.Content.ReadAsAsync<TResponse>();
+
+                return result;
             }
         }
 

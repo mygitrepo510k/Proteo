@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Helpers;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using Chance.MvvmCross.Plugins.UserInteraction;
@@ -103,25 +104,41 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task<bool> SetupDevice()
         {
+            var device = await _gatewayService.GetDevice();               
+            var applicationProfile = await _gatewayService.GetApplicationProfile();
+            var drivers = await _gatewayService.GetDrivers();
+            var vehicleViews = await _gatewayService.GetVehicleViews();
+            var safetyProfiles = await _gatewayService.GetSafetyProfiles();
+
+            var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.Vehicle>>(vehicleViews.Count());
+
+            foreach (var vehicleView in vehicleViews)
+            {
+                vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+            }
+
+            var vehicles = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+
             // TODO: Get verb profile titles from config or somewhere?
             var verbProfileTitles = new[] { "Palletforce", "Cancel", "Complete", "Suspend" };
-            var device = await _gatewayService.GetDevice();               
-            //var applicationProfile = await _gatewayService.GetApplicationProfile();
-            var drivers = (await _gatewayService.GetDrivers()).ToList();
-            var vehicleViews = (await _gatewayService.GetVehicleViews()).ToList();            
-            var safetyProfiles = (await _gatewayService.GetSafetyProfiles()).ToList();
-            var vehicles = vehicleViews.Select(vv => vv.Title).ToDictionary(vvt => vvt, async vvt => await _gatewayService.GetVehicles(vvt));       
-            var verbProfiles = verbProfileTitles.Select(async vpt => await _gatewayService.GetVerbProfile(vpt)).ToList();     
+            var verbProfiles = new List<Models.VerbProfile>(verbProfileTitles.Count());
+            
+            foreach (var verbProfileTitle in verbProfileTitles)
+            {
+                verbProfiles.Add(await _gatewayService.GetVerbProfile(verbProfileTitle));
+            }          
+
 
             // write all this retrieved data to the database
             _dataService.RunInTransaction(() =>
             {
                 _deviceRepository.Insert(device);
-                //_verbProfileRepository.Insert(verbProfiles); 
-                //_applicationProfileRepository.Insert(applicationProfile);
+                _verbProfileRepository.Insert(verbProfiles); 
+                _applicationProfileRepository.Insert(applicationProfile);
                 _driverRepository.Insert(drivers);
                 _vehicleViewRepository.Insert(vehicleViews);
-                //_vehicleRepository.Insert(vehicles);
+                //TODO: relate Vehicles to VehicleViews?  Are VehicleViews actually used for anything within the app?
+                _vehicleRepository.Insert(vehicles);
                 _safetyProfileRepository.Insert(safetyProfiles);
             });
 

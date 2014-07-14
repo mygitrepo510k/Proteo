@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models.GatewayServiceResponse
 {
 
-    public class Response
+    public class ResponseAction<TData>
+        : ResponseAction
     {
-        public IEnumerable<ResponseAction> Actions { get; set; }
+        public TData Data { get; set; }
     }
-
 
 }

@@ -26,58 +26,67 @@ namespace MWF.Mobile.Core.Services
 
         public Task<Models.ApplicationProfile> GetApplicationProfile()
         {
-            return GetData<Core.Models.ApplicationProfile>("fwGetApplicationProfile");
+            //TODO: work out what BlueSphere's doing here with the MobileApplicationProfileIntLink parameter
+            var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "MobileApplicationProfileIntLink", Value = "0" } };
+            return ServiceCallAsync<Core.Models.ApplicationProfile>("fwGetApplicationProfile", parameters);
         }
 
         public Task<Models.Device> GetDevice()
         {
-            return GetData<Core.Models.Device>("fwGetDevice");
+            return ServiceCallAsync<Core.Models.Device>("fwGetDevice");
         }
 
         public async Task<IEnumerable<Models.Driver>> GetDrivers()
         {
-            var data = await GetData<Models.GatewayServiceResponse.Drivers>("fwGetDrivers");
+            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Drivers>("fwGetDrivers");
             return data.List;
         }
 
         public async Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfiles()
         {
-            var data = await GetData<Models.GatewayServiceResponse.SafetyProfiles>("fwGetSafetyProfiles");
+            var data = await ServiceCallAsync<Models.GatewayServiceResponse.SafetyProfiles>("fwGetSafetyProfiles");
             return data.List;
         }
 
         public async Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle} };
-            var data = await GetData<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles");
+            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles");
             return data.List;
         }
 
         public async Task<IEnumerable<Models.VehicleView>> GetVehicleViews()
         {
-            var data = await GetData<Models.GatewayServiceResponse.VehicleViews>("fwGetVehicleViews");
+            var data = await ServiceCallAsync<Models.GatewayServiceResponse.VehicleViews>("fwGetVehicleViews");
             return data.List;
         }
 
         public Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VerbProfileTitle", Value = verbProfileTitle } };
-            return GetData<Core.Models.VerbProfile>("fwGetVerbProfile", parameters);
+            return ServiceCallAsync<Core.Models.VerbProfile>("fwGetVerbProfile", parameters);
         }
 
-        private async Task<T> GetData<T>(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
+        private async Task<T> ServiceCallAsync<T>(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
         {
             var requestContent = CreateRequestContent(command, parameters);
-            var response = await this.CallGatewayServiceAsync<T>(requestContent);
+            var response = await this.PostAsync<T>(requestContent);
+            var responseActions = response.Content.Actions;
 
-            if (!response.Succeeded)
+            if (!response.Succeeded || responseActions.Count() != 1)
                 //TODO: should we throw an exception here or something?
                 return default(T);
 
-            return response.Content.Actions.First().Data;
+            var responseAction = responseActions.First();
+
+            if (!responseAction.Ack)
+                //TODO: should we throw an exception here or something?
+                return default(T);
+
+            return responseAction.Data;
         }
 
-        private Task<HttpResult<Models.GatewayServiceResponse.Response<TData>>> CallGatewayServiceAsync<TData>(Models.GatewayServiceRequest.Content content)
+        private Task<HttpResult<Models.GatewayServiceResponse.Response<TData>>> PostAsync<TData>(Models.GatewayServiceRequest.Content content)
         {
             return _httpService.PostAsJsonAsync<Models.GatewayServiceRequest.Content, Models.GatewayServiceResponse.Response<TData>>(content, _gatewayDeviceRequestUrl);
         }

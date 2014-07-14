@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace MWF.Mobile.Core.Models.GatewayServiceResponse
 {
 
-    public class ResponseAction<TData>
+    public class ResponseAction
     {
         public Guid ActionID { get; set; }
-        public TData Data { get; set; }
+        public bool Ack { get; set; }
     }
 
 }

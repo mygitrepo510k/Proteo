@@ -85,6 +85,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             {
                 new Core.Models.GatewayServiceResponse.ResponseAction<Core.Models.GatewayServiceResponse.Drivers>
                 {
+                    Ack = true,
                     Data = new Core.Models.GatewayServiceResponse.Drivers
                     {
                         List = new List<Core.Models.Driver> { new Core.Models.Driver { ID = testDriverID } }

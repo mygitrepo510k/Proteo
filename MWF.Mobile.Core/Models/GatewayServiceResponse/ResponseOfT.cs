@@ -8,9 +8,9 @@ using Newtonsoft.Json;
 namespace MWF.Mobile.Core.Models.GatewayServiceResponse
 {
 
-    public class Response
+    public class Response<TData>
     {
-        public IEnumerable<ResponseAction> Actions { get; set; }
+        public IEnumerable<ResponseAction<TData>> Actions { get; set; }
     }
 
 

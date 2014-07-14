@@ -39,7 +39,7 @@ namespace MWF.Mobile.Core.Repositories
                  });
             }
 
-            public virtual void Insert(List<T> entities)
+            public virtual void Insert(IEnumerable<T> entities)
             {
                 //Contract.Requires<ArgumentNullException>(entities != null, "entities cannot be null");
 

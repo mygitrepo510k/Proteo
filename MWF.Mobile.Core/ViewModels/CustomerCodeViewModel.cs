@@ -103,11 +103,11 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var device = await _gatewayService.GetDevice();               
             var applicationProfile = await _gatewayService.GetApplicationProfile();
-            var drivers = (await _gatewayService.GetDrivers()).ToList();
-            var vehicleViews = (await _gatewayService.GetVehicleViews()).ToList();            
-            var safetyProfiles = (await _gatewayService.GetSafetyProfiles()).ToList();
+            var drivers = await _gatewayService.GetDrivers();
+            var vehicleViews = await _gatewayService.GetVehicleViews();
+            var safetyProfiles = await _gatewayService.GetSafetyProfiles();
 
-            var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.Vehicle>>(vehicleViews.Count);
+            var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.Vehicle>>(vehicleViews.Count());
 
             foreach (var vehicleView in vehicleViews)
             {

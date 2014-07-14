@@ -83,6 +83,7 @@
     <Compile Include="Helpers\JsonDigitToBooleanConverter.cs" />
     <Compile Include="Helpers\JsonWrappedListConverter.cs" />
     <Compile Include="Helpers\JsonWrappedItemConverter.cs" />
+    <Compile Include="Helpers\LinqExtensions.cs" />
     <Compile Include="Helpers\ReflectionExtensions.cs" />
     <Compile Include="Models\Attributes\ChildRelationshipAttribute.cs" />
     <Compile Include="Models\Attributes\ForeignKeyAttribute.cs" />

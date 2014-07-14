@@ -101,23 +101,35 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task<bool> SetupDevice()
         {
-            // TODO: Get verb profile titles from config or somewhere?
-            var verbProfileTitles = new[] { "Palletforce", "Cancel", "Complete", "Suspend" };
             var device = await _gatewayService.GetDevice();               
             var applicationProfile = await _gatewayService.GetApplicationProfile();
             var drivers = (await _gatewayService.GetDrivers()).ToList();
             var vehicleViews = (await _gatewayService.GetVehicleViews()).ToList();            
             var safetyProfiles = (await _gatewayService.GetSafetyProfiles()).ToList();
-            var vehicles = vehicleViews.Select(vv => vv.Title).ToDictionary(vvt => vvt, async vvt => await _gatewayService.GetVehicles(vvt));       
-            var verbProfiles = verbProfileTitles.Select(async vpt => await _gatewayService.GetVerbProfile(vpt)).ToList();     
+
+            var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.Vehicle>>(vehicleViews.Count);
+
+            foreach (var vehicleView in vehicleViews)
+            {
+                vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+            }
+
+            // TODO: Get verb profile titles from config or somewhere?
+            var verbProfileTitles = new[] { "Palletforce", "Cancel", "Complete", "Suspend" };
+            var verbProfiles = new List<Models.VerbProfile>(verbProfileTitles.Count());
+            
+            foreach (var verbProfileTitle in verbProfileTitles)
+            {
+                verbProfiles.Add(await _gatewayService.GetVerbProfile(verbProfileTitle));
+            }
 
             // write all this retrieved data to the database
             _deviceRepository.Insert(device);
-            //_verbProfileRepository.Insert(verbProfiles); 
+            _verbProfileRepository.Insert(verbProfiles); 
             _applicationProfileRepository.Insert(applicationProfile);
             _driverRepository.Insert(drivers);
             _vehicleViewRepository.Insert(vehicleViews);
-            //_vehicleRepository.Insert(vehicles);
+            //_vehicleRepository.Insert(vehicleViewVehicles);
             _safetyProfileRepository.Insert(safetyProfiles);
 
 

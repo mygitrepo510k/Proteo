@@ -1,4 +1,6 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Services;
 using System;
@@ -11,8 +13,8 @@ using System.Windows.Input;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class VehicleListViewModel 
-        :MvxViewModel
+    public class VehicleListViewModel
+        : MvxViewModel
     {
 
         public VehicleListViewModel(IVehicleExtractService service)
@@ -34,15 +36,26 @@ namespace MWF.Mobile.Core.ViewModels
             set { _vehicles = value; RaisePropertyChanged(() => Vehicles); }
         }
 
+        private MvxCommand<Vehicle> _showVehicleDetailCommand;
         public ICommand ShowVehicleDetailCommand
         {
             get
             {
-                return new MvxCommand<Vehicle>(v => ShowViewModel<VehicleDetailViewModel>(new VehicleDetailViewModel.Nav { ID = v.ID }));
+                return (_showVehicleDetailCommand = _showVehicleDetailCommand ?? new MvxCommand<Vehicle>(v => VehicleDetail(v)));
             }
-
         }
 
+        private void VehicleDetail(Vehicle vehicle)
+        {
+            Mvx.Resolve<IUserInteraction>().Confirm("Vehicle ID: " + vehicle.ID, isConfirmed =>
+            {
+                if (isConfirmed)
+                {
+                    ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = vehicle.ID });
+                }
+            }, "Is this your vehicle?");
+
+        }
 
         private string _searchText;
         public string SearchText
@@ -51,6 +64,7 @@ namespace MWF.Mobile.Core.ViewModels
             set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); }
         }
 
+
         private void FilterList()
         {
             Vehicles = _originalVehicleList.Where(v => v.ID.ToString().Contains(SearchText));
@@ -58,5 +72,5 @@ namespace MWF.Mobile.Core.ViewModels
         
     }  
 
-    
+
 }

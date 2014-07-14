@@ -1,10 +1,11 @@
 ﻿using System;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Newtonsoft.Json;
+using MWF.Mobile.Core.Models.Attributes;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class VerbProfileItem
+    public class VerbProfileItem : IBlueSphereEntity
     {
         [Unique]
         [JsonProperty("@id")]
@@ -38,7 +39,7 @@ namespace MWF.Mobile.Core.Models
         [JsonProperty("@cat")]
         public string Category { get; set; }
 
-        [Indexed]
+        [ForeignKey(typeof(VerbProfile))]
         public Guid VerbProfileID { get; set; }
 
     }

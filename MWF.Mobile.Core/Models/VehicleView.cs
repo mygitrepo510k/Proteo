@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class VehicleView
+    public class VehicleView : IBlueSphereEntity
     {
         [Unique]
         [JsonProperty("@id")]

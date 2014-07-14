@@ -9,7 +9,7 @@ namespace MWF.Mobile.Core.Models
 {
 
     [JsonConverter(typeof(JsonWrappedItemConverter<ApplicationProfile>))]
-    public class ApplicationProfile
+    public class ApplicationProfile : IBlueSphereEntity
     {
 
         [Unique]

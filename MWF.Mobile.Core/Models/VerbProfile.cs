@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Newtonsoft.Json;
+using MWF.Mobile.Core.Models.Attributes;
 
-namespace MWF.Mobile.Core.Models
+
+namespace MWF.Mobile.Core.Models 
 {
 
     [JsonConverter(typeof(JsonWrappedItemConverter<VerbProfile>))]
-    public class VerbProfile
+    public class VerbProfile : IBlueSphereEntity
     {
 
         [Unique]
@@ -25,10 +27,10 @@ namespace MWF.Mobile.Core.Models
         [JsonProperty("@c")]
         public string Code { get; set; }
 
-        [Ignore]
+        [ChildRelationship(typeof(VerbProfileItem))]
         [JsonProperty("vpis")]
         [JsonConverter(typeof(JsonWrappedListConverter<VerbProfileItem>))]
-        public List<VerbProfileItem> Items { get; set; }
+        public List<VerbProfileItem> Children { get; set; }
 
     }
 

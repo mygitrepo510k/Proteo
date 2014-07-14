@@ -6,6 +6,8 @@ using Cirrious.MvvmCross.Droid.Platform;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Android.Portable;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Android
 {
@@ -37,7 +39,19 @@ namespace MWF.Mobile.Android
         protected override void InitializeLastChance()
         {
             base.InitializeLastChance();
+
+            IDataService dataService = Mvx.Resolve<IDataService>();
+
             Mvx.RegisterSingleton<IReachability>(() => new Reachability());
+            Mvx.RegisterSingleton<IApplicationProfileRepository>(() => new ApplicationProfileRepository(dataService));
+            Mvx.RegisterSingleton<ICustomerRepository>(() => new CustomerRepository(dataService));
+            Mvx.RegisterSingleton<IDriverRepository>(() => new DriverRepository(dataService));
+            Mvx.RegisterSingleton<IDeviceRepository>(() => new DeviceRepository(dataService));
+            Mvx.RegisterSingleton<ISafetyProfileRepository>(() => new SafetyProfileRepository(dataService));
+            Mvx.RegisterSingleton<IVehicleRepository>(() => new VehicleRepository(dataService));
+            Mvx.RegisterSingleton<IVehicleViewRepository>(() => new VehicleViewRepository(dataService));
+            Mvx.RegisterSingleton<IVerbProfileRepository>(() => new VerbProfileRepository(dataService));
+
         }
 
     }

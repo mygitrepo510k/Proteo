@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace MWF.Mobile.Core.Models
 {
 
-    public class Driver
+    public class Driver : IBlueSphereEntity
     {
 
         [Unique]

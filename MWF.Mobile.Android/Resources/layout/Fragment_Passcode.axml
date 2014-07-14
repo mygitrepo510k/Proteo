@@ -25,7 +25,7 @@
         android:gravity="center_horizontal"
         android:inputType="numberPassword"
         android:password="true"
-        android:background="#C0C0C0"
+        android:background="#cccfd1"
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
@@ -33,7 +33,7 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FDDD3A"
+        android:background="#ffcf7b"
         android:text="enter passcode"
         android:id="@+id/button1"
         android:layout_gravity="center_horizontal"

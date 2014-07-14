@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Newtonsoft.Json;
+using MWF.Mobile.Core.Models.Attributes;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class SafetyProfile
+    public class SafetyProfile : IBlueSphereEntity
     {
         [Unique]
         [JsonProperty("@id")]
@@ -43,10 +44,11 @@ namespace MWF.Mobile.Core.Models
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IsTrailerProfile { get; set; }
 
-        [Ignore]
+        [ChildRelationship(typeof(SafetyCheckFaultType))]
         [JsonProperty("faults")]
         [JsonConverter(typeof(JsonWrappedListConverter<SafetyCheckFaultType>))]
-        List<SafetyCheckFaultType> Faults { get; set; }
+        public List<SafetyCheckFaultType> Children { get; set; }
+
 
     }
 }

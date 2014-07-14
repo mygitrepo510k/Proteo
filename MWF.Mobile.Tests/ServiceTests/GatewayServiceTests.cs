@@ -51,8 +51,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var verbProfile = await service.GetVerbProfile("Palletforce");
 
             Assert.Equal(verbProfile.ID, new Guid("d7af04cd-1857-42f1-a8c1-d019bd1d6223"));
-            Assert.Equal(verbProfile.Items.Count(), 2);
-            Assert.Equal(verbProfile.Items.First().ID, new Guid("3cdb1c6b-1997-423f-a9ea-08b62bee9a30"));
+            Assert.Equal(verbProfile.Children.Count(), 2);
+            Assert.Equal(verbProfile.Children.First().ID, new Guid("3cdb1c6b-1997-423f-a9ea-08b62bee9a30"));
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ using System.Text;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class VehicleDetailViewModel
+    public class TrailerSelectionViewModel
         :MvxViewModel
     {
 

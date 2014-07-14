@@ -125,13 +125,12 @@
     <Compile Include="Views\BindableProgress.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
+    <Compile Include="Views\Fragments\TrailerSelectionFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\BaseActivityView.cs" />
     <Compile Include="Views\StartupView.cs" />
-    <Compile Include="Views\VehicleDetailView.cs" />
-    <Compile Include="Views\VehicleListView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
@@ -161,7 +160,7 @@
     <AndroidResource Include="Resources\layout\VehicleListView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\VehicleDetailView.axml">
+    <AndroidResource Include="Resources\layout\TrailerSelectionView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

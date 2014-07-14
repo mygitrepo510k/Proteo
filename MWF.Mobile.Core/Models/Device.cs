@@ -16,7 +16,7 @@ namespace MWF.Mobile.Core.Models
     }
 
     [JsonConverter(typeof(JsonWrappedItemConverter<Device>))]
-    public class Device
+    public class Device : IBlueSphereEntity
     {
     
         [Unique]

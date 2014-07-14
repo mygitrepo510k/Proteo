@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
 using Chance.MvvmCross.Plugins.UserInteraction;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -16,11 +17,27 @@ namespace MWF.Mobile.Core.ViewModels
 
         private readonly Services.IGatewayService _gatewayService;
         private readonly IReachability _reachability;
+        private readonly IApplicationProfileRepository _applicationProfileRepository;
+        private readonly ICustomerRepository _customerRepository; 
+        private readonly IDeviceRepository _deviceRepository;
+        private readonly IDriverRepository _driverRepository;
+        private readonly ISafetyProfileRepository _safetyProfileRepository;
+        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IVehicleViewRepository _vehicleViewRepository;
+        private readonly IVerbProfileRepository _verbProfileRepository;
 
         public CustomerCodeViewModel(Services.IGatewayService gatewayService, IReachability reachability)
         {
             _gatewayService = gatewayService;
             _reachability = reachability;
+            _applicationProfileRepository = Mvx.Resolve<IApplicationProfileRepository>();
+            _customerRepository = Mvx.Resolve<ICustomerRepository>();
+            _deviceRepository = Mvx.Resolve<IDeviceRepository>();
+            _driverRepository = Mvx.Resolve<IDriverRepository>();
+            _safetyProfileRepository = Mvx.Resolve<ISafetyProfileRepository>();
+            _vehicleRepository = Mvx.Resolve<IVehicleRepository>();
+            _vehicleViewRepository = Mvx.Resolve<IVehicleViewRepository>();
+            _verbProfileRepository = Mvx.Resolve<IVerbProfileRepository>();
         }
 
         private string _customerCode = null;
@@ -86,16 +103,23 @@ namespace MWF.Mobile.Core.ViewModels
         {
             // TODO: Get verb profile titles from config or somewhere?
             var verbProfileTitles = new[] { "Palletforce", "Cancel", "Complete", "Suspend" };
-
-            var device = await _gatewayService.GetDevice();
-            var verbProfiles = verbProfileTitles.Select(async vpt => await _gatewayService.GetVerbProfile(vpt)).ToList();
+            var device = await _gatewayService.GetDevice();               
             var applicationProfile = await _gatewayService.GetApplicationProfile();
-            var drivers = await _gatewayService.GetDrivers();
-            var vehicleViews = await _gatewayService.GetVehicleViews();
-            var vehicles = vehicleViews.Select(vv => vv.Title).ToDictionary(vvt => vvt, async vvt => await _gatewayService.GetVehicles(vvt));
-            var safetyProfiles = await _gatewayService.GetSafetyProfiles();
+            var drivers = (await _gatewayService.GetDrivers()).ToList();
+            var vehicleViews = (await _gatewayService.GetVehicleViews()).ToList();            
+            var safetyProfiles = (await _gatewayService.GetSafetyProfiles()).ToList();
+            var vehicles = vehicleViews.Select(vv => vv.Title).ToDictionary(vvt => vvt, async vvt => await _gatewayService.GetVehicles(vvt));       
+            var verbProfiles = verbProfileTitles.Select(async vpt => await _gatewayService.GetVerbProfile(vpt)).ToList();     
 
-            //TODO: write all this retrieved data to the database
+            // write all this retrieved data to the database
+            _deviceRepository.Insert(device);
+            //_verbProfileRepository.Insert(verbProfiles); 
+            _applicationProfileRepository.Insert(applicationProfile);
+            _driverRepository.Insert(drivers);
+            _vehicleViewRepository.Insert(vehicleViews);
+            //_vehicleRepository.Insert(vehicles);
+            _safetyProfileRepository.Insert(safetyProfiles);
+
 
             //TODO: call fwRegisterDevice - what does this actually do?
 

@@ -1,17 +1,19 @@
 ﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Models;
+using System;
 
 
 namespace MWF.Mobile.Core.Services
 {
 
-    public class DataService : MWF.Mobile.Core.Services.IDataService
+    public class DataService : IDataService, IDisposable
     {
 
         #region Private Members
 
         private ISQLiteConnection _connection;
         private const string DBNAME = "db.sql";
+        private bool disposed = false; 
 
         #endregion
 
@@ -55,6 +57,29 @@ namespace MWF.Mobile.Core.Services
             _connection.CreateTable<VehicleView>();
             _connection.CreateTable<VerbProfile>();
             _connection.CreateTable<VerbProfileItem>();
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    _connection.Close();
+                }
+
+                disposed = true;
+            }
         }
 
         #endregion

@@ -101,7 +101,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task<bool> SetupDevice()
         {
-            var device = await _gatewayService.GetDevice();               
+            var device = await _gatewayService.GetDevice(CustomerCode);               
             var applicationProfile = await _gatewayService.GetApplicationProfile();
             var drivers = await _gatewayService.GetDrivers();
             var vehicleViews = await _gatewayService.GetVehicleViews();

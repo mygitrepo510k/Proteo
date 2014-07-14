@@ -14,6 +14,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         :  MvxIoCSupportingTest
     {
 
+        private readonly string _mwfCustomerId = "C697166B-2E1B-45B0-8F77-270C4EADC031";
+
         protected override void AdditionalSetup()
         {
             var mockDeviceInfoService = new Mock<Core.Services.IDeviceInfoService>();
@@ -22,6 +24,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             mockDeviceInfoService.SetupGet(m => m.MobileApplication).Returns("Orchestrator");
             Ioc.RegisterSingleton<Core.Services.IDeviceInfoService>(mockDeviceInfoService.Object);
         }
+
+
 
         /// <summary>
         /// End-to-end test of gateway service.  Note this depends on the "021PROTEO0000001" device existing in the database on BlueSphere.
@@ -33,7 +37,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             Ioc.RegisterSingleton<Core.Services.IHttpService>(new Core.Services.HttpService());
             var service = Ioc.IoCConstruct<Core.Services.GatewayService>();
-            var device = await service.GetDevice();
+            var device = await service.GetDevice(_mwfCustomerId);
 
             Assert.Equal(device.ID, new Guid("32de3ed3-ce3b-4a53-876d-442c351df668"));
         }
@@ -109,6 +113,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(drivers.Count(), 1);
             Assert.Equal(drivers.First().ID, testDriverID);
         }
+
 
     }
 

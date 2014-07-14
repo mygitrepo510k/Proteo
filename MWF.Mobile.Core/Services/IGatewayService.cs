@@ -10,7 +10,7 @@ namespace MWF.Mobile.Core.Services
     public interface IGatewayService
     {
         Task<Models.ApplicationProfile> GetApplicationProfile();
-        Task<Models.Device> GetDevice();
+        Task<Models.Device> GetDevice(string customerID);
         Task<IEnumerable<Models.Driver>> GetDrivers();
         Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfiles();
         Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle);

@@ -118,6 +118,8 @@
     <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepositories.cs" />
     <Compile Include="Repositories\Repositories.cs" />
+    <Compile Include="Repositories\GatewayQueueItemRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IGatewayQueueItemRepository.cs" />
     <Compile Include="Repositories\VehicleRepository.cs" />
     <Compile Include="Repositories\SafetyProfileRepository.cs" />
     <Compile Include="Repositories\DriverRepository.cs" />

@@ -10,6 +10,5 @@ namespace MWF.Mobile.Core.Models
     public interface IBlueSphereEntity
     {
         Guid ID { get; set; }
-        string Title { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Helpers;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using Chance.MvvmCross.Plugins.UserInteraction;
@@ -16,6 +17,7 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         private readonly Services.IGatewayService _gatewayService;
+        private readonly Services.IDataService _dataService;
         private readonly IReachability _reachability;
         private readonly IApplicationProfileRepository _applicationProfileRepository;
         private readonly ICustomerRepository _customerRepository; 
@@ -26,9 +28,10 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVehicleViewRepository _vehicleViewRepository;
         private readonly IVerbProfileRepository _verbProfileRepository;
 
-        public CustomerCodeViewModel(Services.IGatewayService gatewayService, IReachability reachability)
+        public CustomerCodeViewModel(Services.IGatewayService gatewayService, IReachability reachability, Services.IDataService dataService)
         {
             _gatewayService = gatewayService;
+            _dataService = dataService;
             _reachability = reachability;
             _applicationProfileRepository = Mvx.Resolve<IApplicationProfileRepository>();
             _customerRepository = Mvx.Resolve<ICustomerRepository>();
@@ -114,6 +117,8 @@ namespace MWF.Mobile.Core.ViewModels
                 vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
             }
 
+            var vehicles = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+
             // TODO: Get verb profile titles from config or somewhere?
             var verbProfileTitles = new[] { "Palletforce", "Cancel", "Complete", "Suspend" };
             var verbProfiles = new List<Models.VerbProfile>(verbProfileTitles.Count());
@@ -121,17 +126,21 @@ namespace MWF.Mobile.Core.ViewModels
             foreach (var verbProfileTitle in verbProfileTitles)
             {
                 verbProfiles.Add(await _gatewayService.GetVerbProfile(verbProfileTitle));
-            }
+            }          
+
 
             // write all this retrieved data to the database
-            _deviceRepository.Insert(device);
-            _verbProfileRepository.Insert(verbProfiles); 
-            _applicationProfileRepository.Insert(applicationProfile);
-            _driverRepository.Insert(drivers);
-            _vehicleViewRepository.Insert(vehicleViews);
-            //TODO: relate Vehicles to VehicleViews?  Are VehicleViews actually used for anything within the app?
-            _vehicleRepository.Insert(vehicleViewVehicles.SelectMany(vvv => vvv.Value));
-            _safetyProfileRepository.Insert(safetyProfiles);
+            _dataService.RunInTransaction(() =>
+            {
+                _deviceRepository.Insert(device);
+                _verbProfileRepository.Insert(verbProfiles); 
+                _applicationProfileRepository.Insert(applicationProfile);
+                _driverRepository.Insert(drivers);
+                _vehicleViewRepository.Insert(vehicleViews);
+                //TODO: relate Vehicles to VehicleViews?  Are VehicleViews actually used for anything within the app?
+                _vehicleRepository.Insert(vehicles);
+                _safetyProfileRepository.Insert(safetyProfiles);
+            });
 
 
             //TODO: call fwRegisterDevice - what does this actually do?

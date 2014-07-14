@@ -7,14 +7,14 @@ namespace MWF.Mobile.Core.ViewModels
 		: BaseActivityViewModel
     {
 
-        public StartupViewModel(Services.IAuthenticationService authenticationService, Services.IGatewayService gatewayService, Portable.IReachability reachableService)
+        public StartupViewModel(Services.IAuthenticationService authenticationService, Services.IGatewayService gatewayService, Portable.IReachability reachableService, Services.IDataService dataService)
         {
            //this.InitialViewModel = new PasscodeViewModel(authenticationService);
             //this.InitialViewModel = new PasscodeViewModel(authenticationService);
            //this.InitialViewModel = new CustomerCodeViewModel();
            //this.InitialViewModel = new VehicleListViewModel(new Services.VehicleExtractService());
             // this.InitialViewModel = new PasscodeViewModel(authenticationService);
-            this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService);
+            this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService);
             //this.InitialViewModel = new VehicleListViewModel(new Services.VehicleExtractService());
         }
     }

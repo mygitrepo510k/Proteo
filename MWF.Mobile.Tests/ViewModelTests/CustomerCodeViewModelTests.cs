@@ -32,6 +32,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<IVehicleRepository>(() => Mock.Of<IVehicleRepository>());
             Ioc.RegisterSingleton<IVehicleViewRepository>(() => Mock.Of<IVehicleViewRepository>());
             Ioc.RegisterSingleton<IVerbProfileRepository>(() => Mock.Of<IVerbProfileRepository>());
+            Ioc.RegisterSingleton<Core.Services.IDataService>(() => Mock.Of<Core.Services.IDataService>());
 
             var mockOfflineReachability = new Mock<IReachability>();
             mockOfflineReachability.Setup(m => m.IsConnected()).Returns(false);
@@ -43,7 +44,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var ccvm = new CustomerCodeViewModel(Ioc.Resolve<Core.Services.IGatewayService>(), Ioc.Resolve<IReachability>())
+            var ccvm = new CustomerCodeViewModel(Ioc.Resolve<Core.Services.IGatewayService>(), Ioc.Resolve<IReachability>(), Ioc.Resolve<Core.Services.IDataService>())
             {
                 CustomerCode = "123"
             };

@@ -6,5 +6,6 @@ namespace MWF.Mobile.Core.Services
     public interface IDataService : IDisposable
     {
         ISQLiteConnection Connection { get; }
+        void RunInTransaction(Action action);
     }
 }

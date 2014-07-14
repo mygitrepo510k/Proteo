@@ -163,6 +163,9 @@
     <AndroidResource Include="Resources\layout\TrailerSelectionView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_Trailer.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
@@ -177,7 +180,9 @@
     <AndroidResource Include="Resources\values\SplashStyle.xml" />
     <AndroidResource Include="Resources\values\MvxBindingAttributes.xml" />
     <AndroidResource Include="Resources\drawable\splash.png" />
-    <AndroidResource Include="Resources\values\ProteoTheme.xml" />
+    <AndroidResource Include="Resources\values\ProteoTheme.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\drawable-hdpi\ic_action_search.png" />
     <AndroidResource Include="Resources\drawable-mdpi\ic_action_search.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\ic_action_search.png" />

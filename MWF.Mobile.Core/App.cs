@@ -12,6 +12,16 @@ namespace MWF.Mobile.Core
                 .EndingWith("Service")
                 .AsInterfaces()
                 .RegisterAsLazySingleton();
+
+            CreatableTypes()
+                .EndingWith("Repository")
+                .AsInterfaces()
+                .RegisterAsLazySingleton();
+
+            CreatableTypes()
+                .EndingWith("Repositories")
+                .AsInterfaces()
+                .RegisterAsLazySingleton();
 				
             RegisterAppStart<ViewModels.StartupViewModel>();
         }

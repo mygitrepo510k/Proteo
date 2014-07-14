@@ -9,26 +9,26 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Services
 {
-    
+
     public class HttpService
         : IHttpService
     {
 
-        public Task<HttpResult<TResponse>> PostAsync<TResponse>(string content, string url)
+        public async Task<HttpResult<TResponse>> PostAsync<TResponse>(string content, string url)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Post, url))
             {
                 request.Content = new StringContent(content);
-                return SendAsync<TResponse>(request);
+                return await SendAsync<TResponse>(request);
             }
         }
 
-        public Task<HttpResult<TResponse>> PostAsJsonAsync<TRequest, TResponse>(TRequest content, string url)
+        public async Task<HttpResult<TResponse>> PostAsJsonAsync<TRequest, TResponse>(TRequest content, string url)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Post, url))
             {
                 request.Content = new ObjectContent<TRequest>(content, GetJsonFormatter());
-                return SendAsync<TResponse>(request);
+                return await SendAsync<TResponse>(request);
             }
         }
 

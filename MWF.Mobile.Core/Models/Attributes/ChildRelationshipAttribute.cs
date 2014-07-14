@@ -16,8 +16,8 @@ namespace MWF.Mobile.Core.Models.Attributes
         public ChildRelationshipAttribute(Type childType)
         {
             // childType must implement IBlueSphereEntity
-            Contract.Requires<ArgumentException>(typeof(IBlueSphereEntity).GetTypeInfo().IsAssignableFrom(childType.GetTypeInfo()), 
-                                                "ChildRelationshipAttribute should only apply to types that implement IBluesphereEntity");
+            //Contract.Requires<ArgumentException>(typeof(IBlueSphereEntity).GetTypeInfo().IsAssignableFrom(childType.GetTypeInfo()), 
+            //                                    "ChildRelationshipAttribute should only apply to types that implement IBluesphereEntity");
 
             ChildType = childType;
         }

@@ -65,7 +65,7 @@ namespace MWF.Mobile.Core.Helpers
                                         && (property.GetCustomAttribute<ForeignKeyAttribute>() as ForeignKeyAttribute).ForeignType == parentType
                                         select property);
 
-            Contract.Assert(foreignKeyProperties.Any(), string.Format("Type {0} does not contain any foreign key references back to parent type {1}", childType.ToString(), parentType.ToString()));
+            //Contract.Assert(foreignKeyProperties.Any(), string.Format("Type {0} does not contain any foreign key references back to parent type {1}", childType.ToString(), parentType.ToString()));
 
             return foreignKeyProperties.Single().GetColumnName();
 

@@ -11,7 +11,6 @@ using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.Repositories
 {
-    
         public abstract class Repository<T> : IRepository<T> where T : IBlueSphereEntity, new()
         {
 
@@ -21,7 +20,7 @@ namespace MWF.Mobile.Core.Repositories
 
             public Repository(IDataService dataService)
             {
-                Contract.Requires<ArgumentNullException>(dataService != null, "dataService cannot be null");
+                //Contract.Requires<ArgumentNullException>(dataService != null, "dataService cannot be null");
 
                 _connection = dataService.Connection;
             }
@@ -32,7 +31,7 @@ namespace MWF.Mobile.Core.Repositories
 
             public virtual void Insert(T entity)
             {
-                Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
+                //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
 
                 _connection.RunInTransaction(() =>
                  {     
@@ -42,7 +41,7 @@ namespace MWF.Mobile.Core.Repositories
 
             public virtual void Insert(List<T> entities)
             {
-                Contract.Requires<ArgumentNullException>(entities != null, "entities cannot be null");
+                //Contract.Requires<ArgumentNullException>(entities != null, "entities cannot be null");
 
                 _connection.RunInTransaction(() =>
                 {
@@ -57,7 +56,7 @@ namespace MWF.Mobile.Core.Repositories
 
             public virtual void Delete(T entity)
             {
-                Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
+                //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
 
                 _connection.RunInTransaction(() =>
                 {

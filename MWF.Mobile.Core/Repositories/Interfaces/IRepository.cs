@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Collections.Generic;
 using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.Repositories
 {
+
     public interface IRepository<T> where T : IBlueSphereEntity, new()
     {
         void Delete(T entity);

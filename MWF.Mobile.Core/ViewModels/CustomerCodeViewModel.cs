@@ -79,6 +79,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task EnterCodeAsync()
         {
+            if (string.IsNullOrWhiteSpace(this.CustomerCode))
+            {
+                //TODO: probably should additionally implement presentation layer required field validation so we don't even get this far.
+                await Mvx.Resolve<IUserInteraction>().AlertAsync("Please enter a customer code.");
+                return;
+            }
             if (!_reachability.IsConnected())
             {
                 await Mvx.Resolve<IUserInteraction>().AlertAsync("An Internet connection is required");
@@ -99,8 +105,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     //TODO: save to unhandled exceptions log
                     success = false;
-                    errorMessage = "Unable to sync customer settings to device.";
-
+                    errorMessage = "Unfortunately, there was a problem setting up your device.";
                 }
 
                 this.IsBusy = false;

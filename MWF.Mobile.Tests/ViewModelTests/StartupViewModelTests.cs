@@ -33,8 +33,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             // Customer repository will return an empty list
-            ICustomerRepository repo = Mock.Of<ICustomerRepository>(cr => cr.GetAll() == new List<Customer>());
-            _fixture.Freeze<ICustomerRepository>(repo);
+            _fixture.Inject<ICustomerRepository>(Mock.Of<ICustomerRepository>(cr => cr.GetAll() == new List<Customer>()));
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var startUpViewModel = _fixture.Create<StartupViewModel>();
 
@@ -48,9 +48,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            ICustomerRepository repo = Mock.Of<ICustomerRepository>(cr => cr.GetAll() ==  _fixture.CreateMany<Customer>());
-            IRepositories repos = Mock.Of<IRepositories>(r => r.CustomerRepository == repo);
-            _fixture.Register<IRepositories>(() => repos);
+            _fixture.Inject<ICustomerRepository>(Mock.Of<ICustomerRepository>(cr => cr.GetAll() ==  _fixture.CreateMany<Customer>()));
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var startUpViewModel = _fixture.Create<StartupViewModel>();
 

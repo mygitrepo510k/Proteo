@@ -99,7 +99,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     //TODO: save to unhandled exceptions log
                     success = false;
-                    errorMessage = "Unnable to sync customer settings to device.";
+                    errorMessage = "Unable to sync customer settings to device.";
 
                 }
 

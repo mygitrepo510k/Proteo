@@ -85,20 +85,40 @@ namespace MWF.Mobile.Core.ViewModels
             }
             else
             {
+                bool success = false;
+                string errorMessage = null;
+
                 this.IsBusy = true;
-                
-                if (await this.SetupDevice())
+
+                try
                 {
-                    //TODO: if success then save code to database
+                    success = await this.SetupDevice();
+                    if (!success) errorMessage = "Invalid customer code.";
+                }
+                catch (Exception ex)
+                {
+                    //TODO: save to unhandled exceptions log
+                    success = false;
+                    errorMessage = "Unnable to sync customer settings to device.";
+
                 }
 
                 this.IsBusy = false;
+
+                if (success) ShowViewModel<PasscodeViewModel>();
+                else await Mvx.Resolve<IUserInteraction>().AlertAsync(errorMessage);
+
             }
         }
 
+
+        // returns false if the customer code is not known
+        // throws exceptions if the web services or db inserts fail
         private async Task<bool> SetupDevice()
         {
-            var device = await _gatewayService.GetDevice(CustomerCode);               
+            var device = await _gatewayService.GetDevice(CustomerCode);
+            if (device == null) return false;
+
             var applicationProfile = await _gatewayService.GetApplicationProfile();
             var drivers = await _gatewayService.GetDrivers();
             var vehicleViews = await _gatewayService.GetVehicleViews();
@@ -126,6 +146,8 @@ namespace MWF.Mobile.Core.ViewModels
             // write all this retrieved data to the database
             _dataService.RunInTransaction(() =>
             {
+                //TODO: Store the customer title? Need to get the customer title from somewhere.
+                _customerRepository.Insert(new Customer() { ID = new Guid(), CustomerCode = CustomerCode });
                 _deviceRepository.Insert(device);
                 _verbProfileRepository.Insert(verbProfiles); 
                 _applicationProfileRepository.Insert(applicationProfile);

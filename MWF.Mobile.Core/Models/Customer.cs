@@ -12,5 +12,7 @@ namespace MWF.Mobile.Core.Models
 
         [JsonProperty("title")]
         public string Title { get; set; }
+
+        public string CustomerCode { get; set; }
     }
 }

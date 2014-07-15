@@ -34,8 +34,8 @@ namespace MWF.Mobile.Android.Views
                 if(value)
                 {
                     _dialog = new ProgressDialog(_context);
-                    _dialog.SetTitle("Syncing...");
-                    _dialog.SetMessage("Please wait...");
+                    _dialog.SetTitle("Downloading data...");
+                    _dialog.SetMessage("Please wait while we setup your device...");
                     _dialog.Show();
                     _dialog.SetCanceledOnTouchOutside(false);
                 }

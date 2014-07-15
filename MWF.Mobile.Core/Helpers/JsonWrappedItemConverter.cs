@@ -21,6 +21,9 @@ namespace MWF.Mobile.Core
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (reader.Value == null)
+                return null;
+
             var jsonObject = JObject.Load(reader);
             var target = new T();
             var wrappedObject = jsonObject.Children().First().Children().First();

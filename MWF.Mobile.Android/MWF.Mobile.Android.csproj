@@ -193,6 +193,7 @@
     <AndroidResource Include="Resources\menu\vehicle_activity_actions.xml" />
     <AndroidResource Include="Resources\drawable\proteoLogo.jpg" />
     <AndroidResource Include="Resources\drawable\arrowIcon.png" />
+    <AndroidResource Include="Resources\drawable\mwfLogo.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

@@ -52,12 +52,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string EnterButtonLabel
         {
-            get { return "Save Customer Code"; }
+            get { return "Submit"; }
         }
 
         public string CustomerCodeLabel
         {
-            get { return "Please enter your Customer Code"; }
+            get { return "Customer Code"; }
         }
 
         private bool _isBusy = false;

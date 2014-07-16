@@ -107,6 +107,8 @@
     <Compile Include="Models\SafetyCheckFaultType.cs" />
     <Compile Include="Models\SafetyProfile.cs" />
     <Compile Include="Models\Vehicle.cs" />
+    <Compile Include="Models\Trailer.cs" />
+    <Compile Include="Models\BaseVehicle.cs" />
     <Compile Include="Models\VehicleView.cs" />
     <Compile Include="Models\Driver.cs" />
     <Compile Include="Models\VerbProfile.cs" />
@@ -120,6 +122,8 @@
     <Compile Include="Repositories\Repositories.cs" />
     <Compile Include="Repositories\GatewayQueueItemRepository.cs" />
     <Compile Include="Repositories\Interfaces\IGatewayQueueItemRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ITrailerRepository.cs" />
+    <Compile Include="Repositories\TrailerRepository.cs" />
     <Compile Include="Repositories\VehicleRepository.cs" />
     <Compile Include="Repositories\SafetyProfileRepository.cs" />
     <Compile Include="Repositories\DriverRepository.cs" />
@@ -143,8 +147,6 @@
     <Compile Include="Services\IAuthenticationService.cs" />
     <Compile Include="Services\IDataService.cs" />
     <Compile Include="Services\IGatewayQueuedService.cs" />
-    <Compile Include="Services\IVehicleExtractService.cs" />
-    <Compile Include="Services\VehicleExtractService.cs" />
     <Compile Include="Services\IDeviceInfoService.cs" />
     <Compile Include="Services\IGatewayService.cs" />
     <Compile Include="Services\IHttpService.cs" />

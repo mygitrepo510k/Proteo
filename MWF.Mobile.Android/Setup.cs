@@ -44,7 +44,6 @@ namespace MWF.Mobile.Android
 
             Mvx.RegisterSingleton<IReachability>(() => new Reachability());
 
-
         }
 
     }

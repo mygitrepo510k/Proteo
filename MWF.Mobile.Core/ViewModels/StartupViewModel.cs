@@ -1,3 +1,5 @@
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
 using System.Collections.Generic;
 using System.Linq;
 using Cirrious.CrossCore;
@@ -27,7 +29,6 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService, repositories);
             }
-
         }
     }
 }

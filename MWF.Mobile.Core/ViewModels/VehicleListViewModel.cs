@@ -2,6 +2,7 @@
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -16,16 +17,11 @@ namespace MWF.Mobile.Core.ViewModels
     public class VehicleListViewModel
         : MvxViewModel
     {
-        private List<Vehicle> _originalVehicleList;
-        public VehicleListViewModel(IVehicleExtractService service)
+        private IEnumerable<Vehicle> _originalVehicleList;
+
+        public VehicleListViewModel(IVehicleRepository vehicleRepository)
         {
-            //Just filling the model with 10 random Vehicles
-            var newList = new List<Vehicle>();
-            for (var i = 0; i < 10; i++)
-            {
-                newList.Add(service.ExtractVehicle());
-            }
-            Vehicles = _originalVehicleList = newList;
+            Vehicles = _originalVehicleList = vehicleRepository.GetAll();
         }
         
         private IEnumerable<Vehicle> _vehicles;

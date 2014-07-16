@@ -27,6 +27,9 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IDriverRepository _driverRepository;
         private readonly ISafetyProfileRepository _safetyProfileRepository;
         private readonly IVehicleRepository _vehicleRepository;
+        private readonly ITrailerRepository _trailerRepository;
+
+
         private readonly IVerbProfileRepository _verbProfileRepository;
 
         public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories)
@@ -34,13 +37,14 @@ namespace MWF.Mobile.Core.ViewModels
             _gatewayService = gatewayService;
             _dataService = dataService;
             _reachability = reachability;
-            _applicationProfileRepository = repositories.ApplicationRepository;
-            _customerRepository = repositories.CustomerRepository;
-            _deviceRepository = repositories.DeviceRepository;
-            _driverRepository = repositories.DriverRepository;
-            _safetyProfileRepository = repositories.SafetyProfileRepository;
-            _vehicleRepository = repositories.VehicleRepository;
-            _verbProfileRepository = repositories.VerbProfileRepository;
+            _applicationProfileRepository = Mvx.Resolve<IApplicationProfileRepository>();
+            _customerRepository = Mvx.Resolve<ICustomerRepository>();
+            _deviceRepository = Mvx.Resolve<IDeviceRepository>();
+            _driverRepository = Mvx.Resolve<IDriverRepository>();
+            _safetyProfileRepository = Mvx.Resolve<ISafetyProfileRepository>();
+            _trailerRepository = Mvx.Resolve<ITrailerRepository>();
+            _vehicleRepository = Mvx.Resolve<IVehicleRepository>();
+            _verbProfileRepository = Mvx.Resolve<IVerbProfileRepository>();
         }
 
         private string _customerCode = null;
@@ -129,14 +133,16 @@ namespace MWF.Mobile.Core.ViewModels
             var vehicleViews = await _gatewayService.GetVehicleViews();
             var safetyProfiles = await _gatewayService.GetSafetyProfiles();
 
-            var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.Vehicle>>(vehicleViews.Count());
+            var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
 
             foreach (var vehicleView in vehicleViews)
             {
                 vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
             }
 
-            var vehicles = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+            var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+            var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
+            var trailers = vehiclesAndTrailers.Where(bv => bv.IsTrailer).Select(bv => new Models.Trailer(bv));
 
             // TODO: Get verb profile titles from config or somewhere?
             var verbProfileTitles = new[] { "Palletforce", "Cancel", "Complete", "Suspend" };
@@ -159,6 +165,7 @@ namespace MWF.Mobile.Core.ViewModels
                 _driverRepository.Insert(drivers);
                 //TODO: relate Vehicles to VehicleViews?  Are VehicleViews actually used for anything within the app?
                 _vehicleRepository.Insert(vehicles);
+                _trailerRepository.Insert(trailers);
                 _safetyProfileRepository.Insert(safetyProfiles);
             });
 

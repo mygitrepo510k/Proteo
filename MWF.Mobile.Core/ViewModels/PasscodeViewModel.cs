@@ -54,10 +54,7 @@ namespace MWF.Mobile.Core.ViewModels
             var result = await _authenticationService.AuthenticateAsync(this.Passcode);
 
             if (result.Success)
-            {
-                // Go to the next step... for now since we haven't yet implemented this just go to the Main view.
-                ShowViewModel<MainViewModel>();
-            }
+                ShowViewModel<VehicleListViewModel>();
             else
                 await Mvx.Resolve<IUserInteraction>().AlertAsync(result.AuthenticationFailedMessage);
         }

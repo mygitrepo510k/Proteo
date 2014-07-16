@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using MWF.Mobile.Core.Repositories;
@@ -56,38 +57,50 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Register<Core.Services.IHttpService>(() => mockHttpService.Object);
 
             _fixture.Register<Core.Services.IDeviceInfo>(() => Mock.Of<Core.Services.IDeviceInfo>());
+
+            var messenger = new MvxMessengerHub();
+            Ioc.RegisterSingleton<IMvxMessenger>(messenger);
+
+            // We don't have the GatewayQueueTimerService so replicate the trigger -> publish elapsed message functionality
+            var token = messenger.Subscribe<Core.Messages.GatewayQueueTimerCommandMessage>(m =>
+            {
+                if (m.Command == Core.Messages.GatewayQueueTimerCommandMessage.TimerCommand.Trigger)
+                    messenger.Publish(new Core.Messages.GatewayQueueTimerElapsedMessage(this));
+            });
         }
 
         [Fact]
-        public async Task GatewayQueuedService_SubmitRemovesAllItems()
+        public void GatewayQueuedService_SubmitRemovesAllItems()
         {
             base.ClearAll();
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected() == true));
             var service =_fixture.Create<Core.Services.GatewayQueuedService>();
-            
+            service.StartQueueTimer();
+
             service.AddToQueue("01");
             // One item in the queue
             Assert.Equal(1, _queueItems.Count);
 
-            await service.AddToQueueAndSubmitAsync("02");
+            service.AddToQueueAndSubmit("02");
             // No items in the queue, all have been submitted
             Assert.Equal(0, _queueItems.Count);
         }
 
         [Fact]
-        public async Task GatewayQueuedService_NoConnectivity_QueuedItemsRetained()
+        public void GatewayQueuedService_NoConnectivity_QueuedItemsRetained()
         {
             base.ClearAll();
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected() == false));
-
             var service =_fixture.Create<Core.Services.GatewayQueuedService>();
+            service.StartQueueTimer();
+
             service.AddToQueue("01");
             // One item in the queue
             Assert.Equal(1, _queueItems.Count);
 
-            await service.AddToQueueAndSubmitAsync("02");
+            service.AddToQueueAndSubmit("02");
             // Both items remain in the queue because there is no network connectivity
             Assert.Equal(2, _queueItems.Count);
         }

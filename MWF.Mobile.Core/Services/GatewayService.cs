@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -12,14 +13,14 @@ namespace MWF.Mobile.Core.Services
         : IGatewayService
     {
 
-        private readonly IDeviceInfoService _deviceInfoService = null;
+        private readonly IDeviceInfo _deviceInfo = null;
         private readonly IHttpService _httpService = null;
         private readonly string _gatewayDeviceRequestUrl = null;
         private readonly IDeviceRepository _deviceRepository;
 
-        public GatewayService(IDeviceInfoService deviceInfoService, IHttpService httpService, IRepositories repositories)
+        public GatewayService(IDeviceInfo deviceInfoService, IHttpService httpService, IRepositories repositories)
         {
-            _deviceInfoService = deviceInfoService;
+            _deviceInfo = deviceInfoService;
             _httpService = httpService;
 
             //TODO: read this from config or somewhere?
@@ -127,8 +128,8 @@ namespace MWF.Mobile.Core.Services
             return new Core.Models.GatewayServiceRequest.Content
             {
                 DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
-                Password = _deviceInfoService.GatewayPassword,
-                MobileApplication = _deviceInfoService.MobileApplication,
+                Password = _deviceInfo.GatewayPassword,
+                MobileApplication = _deviceInfo.MobileApplication,
                 Actions = actions,
             };
         }

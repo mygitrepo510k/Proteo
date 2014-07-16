@@ -112,7 +112,7 @@
     <Compile Include="Models\VerbProfile.cs" />
     <Compile Include="Models\ApplicationProfile.cs" />
     <Compile Include="Models\VerbProfileItem.cs" />
-    <Compile Include="Portable\Reachability.cs" />
+    <Compile Include="Portable\IReachability.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ApplicationProfileRepository.cs" />
     <Compile Include="Repositories\CustomerRepository.cs" />
@@ -136,7 +136,6 @@
     <Compile Include="Repositories\VerbProfileRepository.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
     <Compile Include="Services\DataService.cs" />
-    <Compile Include="Services\DeviceInfoService.cs" />
     <Compile Include="Services\GatewayQueuedService.cs" />
     <Compile Include="Services\GatewayService.cs" />
     <Compile Include="Services\HttpService.cs" />
@@ -145,10 +144,11 @@
     <Compile Include="Services\IGatewayQueuedService.cs" />
     <Compile Include="Services\IVehicleExtractService.cs" />
     <Compile Include="Services\VehicleExtractService.cs" />
-    <Compile Include="Services\IDeviceInfoService.cs" />
+    <Compile Include="Portable\IDeviceInfo.cs" />
     <Compile Include="Services\IGatewayService.cs" />
     <Compile Include="Services\IHttpService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
+    <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\VehicleListViewModel.cs" />
     <Compile Include="ViewModels\CustomerCodeViewModel.cs" />
     <Compile Include="ViewModels\ManifestViewModel.cs" />

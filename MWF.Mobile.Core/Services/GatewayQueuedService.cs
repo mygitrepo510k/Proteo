@@ -13,7 +13,7 @@ namespace MWF.Mobile.Core.Services
         : IGatewayQueuedService
     {
 
-        private readonly IDeviceInfoService _deviceInfoService = null;
+        private readonly IDeviceInfo _deviceInfo = null;
         private readonly IHttpService _httpService = null;
         private readonly Repositories.IGatewayQueueItemRepository _queueItemRepository = null;
         private readonly Portable.IReachability _reachability = null;
@@ -21,9 +21,9 @@ namespace MWF.Mobile.Core.Services
 
         private readonly string _gatewayDeviceRequestUrl = null;
 
-        public GatewayQueuedService(IDeviceInfoService deviceInfoService, IHttpService httpService,Portable.IReachability reachability, IRepositories repositories)
+        public GatewayQueuedService(IDeviceInfo deviceInfo, IHttpService httpService,Portable.IReachability reachability, IRepositories repositories)
         {
-            _deviceInfoService = deviceInfoService;
+            _deviceInfo= deviceInfo;
             _httpService = httpService;
             _queueItemRepository = repositories.GatewayQueueItemRepository;
             _reachability = reachability;
@@ -114,8 +114,8 @@ namespace MWF.Mobile.Core.Services
             return new Core.Models.GatewayServiceRequest.Content
             {
                 DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
-                Password = _deviceInfoService.GatewayPassword,
-                MobileApplication = _deviceInfoService.MobileApplication,
+                Password = _deviceInfo.GatewayPassword,
+                MobileApplication = _deviceInfo.MobileApplication,
                 Actions = actions,
             };
         }

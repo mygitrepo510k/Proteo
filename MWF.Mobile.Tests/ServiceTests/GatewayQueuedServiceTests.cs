@@ -42,7 +42,6 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                               r.GatewayQueueItemRepository == _mockQueueItemRepository.Object);
             _fixture.Register<IRepositories>(() => repos);
 
-
             // Mock a success response from the BlueSphere MWF Mobile gateway service
             var responseActions = new[] { new Core.Models.GatewayServiceResponse.ResponseAction { Ack = true } };
 
@@ -59,7 +58,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Register<Core.Services.IDeviceInfo>(() => Mock.Of<Core.Services.IDeviceInfo>());
 
             var messenger = new MvxMessengerHub();
-            Ioc.RegisterSingleton<IMvxMessenger>(messenger);
+            _fixture.Register<IMvxMessenger>(() => messenger);
 
             // We don't have the GatewayQueueTimerService so replicate the trigger -> publish elapsed message functionality
             var token = messenger.Subscribe<Core.Messages.GatewayQueueTimerCommandMessage>(m =>

@@ -9,7 +9,6 @@ namespace MWF.Mobile.Core.Services
     
     public interface IDeviceInfoService
     {
-        string DeviceIdentifier { get; }
         string GatewayPassword { get; }
         string MobileApplication { get; }
     }

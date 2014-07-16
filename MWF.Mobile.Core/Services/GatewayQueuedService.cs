@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using MWF.Mobile.Core.Repositories;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -16,18 +17,21 @@ namespace MWF.Mobile.Core.Services
         private readonly IHttpService _httpService = null;
         private readonly Repositories.IGatewayQueueItemRepository _queueItemRepository = null;
         private readonly Portable.IReachability _reachability = null;
+        private readonly IDeviceRepository _deviceRepository;
 
         private readonly string _gatewayDeviceRequestUrl = null;
 
-        public GatewayQueuedService(IDeviceInfoService deviceInfoService, IHttpService httpService, Repositories.IGatewayQueueItemRepository queueItemRepository, Portable.IReachability reachability)
+        public GatewayQueuedService(IDeviceInfoService deviceInfoService, IHttpService httpService,Portable.IReachability reachability, IRepositories repositories)
         {
             _deviceInfoService = deviceInfoService;
             _httpService = httpService;
-            _queueItemRepository = queueItemRepository;
+            _queueItemRepository = repositories.GatewayQueueItemRepository;
             _reachability = reachability;
 
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
+
+            _deviceRepository = repositories.DeviceRepository;
         }
 
         public Task<bool> AddToQueueAndSubmitAsync(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
@@ -109,7 +113,7 @@ namespace MWF.Mobile.Core.Services
         {
             return new Core.Models.GatewayServiceRequest.Content
             {
-                DeviceIdentifier = _deviceInfoService.DeviceIdentifier,
+                DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
                 Password = _deviceInfoService.GatewayPassword,
                 MobileApplication = _deviceInfoService.MobileApplication,
                 Actions = actions,

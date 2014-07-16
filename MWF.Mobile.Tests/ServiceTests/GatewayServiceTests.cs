@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using Xunit;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
@@ -16,13 +20,30 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         private readonly string _mwfCustomerID = "C697166B-2E1B-45B0-8F77-270C4EADC031";
 
+        private IFixture _fixture;
+        private Mock<IGatewayQueueItemRepository> _mockQueueItemRepository;
+
         protected override void AdditionalSetup()
         {
+            _fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _mockQueueItemRepository = new Mock<Core.Repositories.IGatewayQueueItemRepository>();
             var mockDeviceInfoService = new Mock<Core.Services.IDeviceInfoService>();
-            mockDeviceInfoService.SetupGet(m => m.DeviceIdentifier).Returns("021PROTEO0000001");
             mockDeviceInfoService.SetupGet(m => m.GatewayPassword).Returns("fleetwoodmobile");
             mockDeviceInfoService.SetupGet(m => m.MobileApplication).Returns("Orchestrator");
-            Ioc.RegisterSingleton<Core.Services.IDeviceInfoService>(mockDeviceInfoService.Object);
+            _fixture.Inject<Core.Services.IDeviceInfoService>(mockDeviceInfoService.Object);
+            
+            //_fixture.Register<Core.Services.IDeviceInfoService>(mockDeviceInfoService.Object);
+
+
+
+
+            List<Device> devices = new List<Device>() { new Device() { DeviceIdentifier = "021PROTEO0000001" } };
+            IDeviceRepository repo = Mock.Of<IDeviceRepository>(dr => dr.GetAll() == devices);
+            IRepositories repos = Mock.Of<IRepositories>(r => r.DeviceRepository == repo &&
+                                                              r.GatewayQueueItemRepository == _mockQueueItemRepository.Object);
+            _fixture.Register<IRepositories>(() => repos);
+
+
         }
 
         /// <summary>
@@ -33,8 +54,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            Ioc.RegisterSingleton<Core.Services.IHttpService>(new Core.Services.HttpService());
-            var service = Ioc.IoCConstruct<Core.Services.GatewayService>();
+            _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = _fixture.Create<Core.Services.GatewayService>();
             var device = await service.GetDevice(_mwfCustomerID);
 
             Assert.Equal(device.ID, new Guid("32de3ed3-ce3b-4a53-876d-442c351df668"));
@@ -48,8 +69,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            Ioc.RegisterSingleton<Core.Services.IHttpService>(new Core.Services.HttpService());
-            var service = Ioc.IoCConstruct<Core.Services.GatewayService>();
+            _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = _fixture.Create<Core.Services.GatewayService>();
             var verbProfile = await service.GetVerbProfile("Palletforce");
 
             Assert.Equal(verbProfile.ID, new Guid("d7af04cd-1857-42f1-a8c1-d019bd1d6223"));
@@ -65,8 +86,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            Ioc.RegisterSingleton<Core.Services.IHttpService>(new Core.Services.HttpService());
-            var service = Ioc.IoCConstruct<Core.Services.GatewayService>();
+            _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = _fixture.Create<Core.Services.GatewayService>();
             var safetyProfiles = await service.GetSafetyProfiles();
 
             Assert.NotEqual(safetyProfiles.Count(), 0);
@@ -103,9 +124,9 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mockHttpService = new Mock<Core.Services.IHttpService>();
             mockHttpService.Setup(m => m.PostAsJsonAsync<Core.Models.GatewayServiceRequest.Content, Core.Models.GatewayServiceResponse.Response<Core.Models.GatewayServiceResponse.Drivers>>(It.IsAny<Core.Models.GatewayServiceRequest.Content>(), It.IsAny<string>())).ReturnsAsync(response);
-            Ioc.RegisterSingleton<Core.Services.IHttpService>(mockHttpService.Object);
+            _fixture.Inject<Core.Services.IHttpService>(mockHttpService.Object);
 
-            var service = Ioc.IoCConstruct<Core.Services.GatewayService>();
+            var service = _fixture.Create<Core.Services.GatewayService>();
             var drivers = await service.GetDrivers();
 
             Assert.Equal(drivers.Count(), 1);

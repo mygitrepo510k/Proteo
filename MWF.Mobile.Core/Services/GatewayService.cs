@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MWF.Mobile.Core.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,14 +15,16 @@ namespace MWF.Mobile.Core.Services
         private readonly IDeviceInfoService _deviceInfoService = null;
         private readonly IHttpService _httpService = null;
         private readonly string _gatewayDeviceRequestUrl = null;
+        private readonly IDeviceRepository _deviceRepository;
 
-        public GatewayService(IDeviceInfoService deviceInfoService, IHttpService httpService)
+        public GatewayService(IDeviceInfoService deviceInfoService, IHttpService httpService, IRepositories repositories)
         {
             _deviceInfoService = deviceInfoService;
             _httpService = httpService;
 
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
+            _deviceRepository = repositories.DeviceRepository;
         }
 
         public async Task<Models.ApplicationProfile> GetApplicationProfile()
@@ -123,7 +126,7 @@ namespace MWF.Mobile.Core.Services
         {
             return new Core.Models.GatewayServiceRequest.Content
             {
-                DeviceIdentifier = _deviceInfoService.DeviceIdentifier,
+                DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
                 Password = _deviceInfoService.GatewayPassword,
                 MobileApplication = _deviceInfoService.MobileApplication,
                 Actions = actions,

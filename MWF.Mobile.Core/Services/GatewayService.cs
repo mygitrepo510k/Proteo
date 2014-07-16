@@ -126,7 +126,8 @@ namespace MWF.Mobile.Core.Services
         {
             return new Core.Models.GatewayServiceRequest.Content
             {
-                DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
+                //DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
+                DeviceIdentifier = _deviceInfoService.DeviceIdentifier,
                 Password = _deviceInfoService.GatewayPassword,
                 MobileApplication = _deviceInfoService.MobileApplication,
                 Actions = actions,

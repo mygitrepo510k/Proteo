@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Helpers;
 using MWF.Mobile.Core.Models;
@@ -112,6 +113,10 @@ namespace MWF.Mobile.Core.Repositories
 
                     foreach (var child in children)
                     {
+                        //ensure foreign key ids line with parent id
+                        PropertyInfo foreignKeyPropInfo = child.GetType().GetForeignKeyProperty(entity.GetType());
+                        foreignKeyPropInfo.SetValue(child, entity.ID);
+
                         InsertRecursive(child);
                     }
 

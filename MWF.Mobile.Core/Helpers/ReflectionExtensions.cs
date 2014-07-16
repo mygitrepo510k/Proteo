@@ -60,6 +60,13 @@ namespace MWF.Mobile.Core.Helpers
         public static string GetForeignKeyName(this Type childType, Type parentType)
         {
 
+            return childType.GetForeignKeyProperty(parentType).GetColumnName();
+
+        }
+
+        public static PropertyInfo GetForeignKeyProperty(this Type childType, Type parentType)
+        {
+
             var foreignKeyProperties = (from property in childType.GetRuntimeProperties()
                                         where property.GetCustomAttribute<ForeignKeyAttribute>() != null
                                         && (property.GetCustomAttribute<ForeignKeyAttribute>() as ForeignKeyAttribute).ForeignType == parentType
@@ -67,7 +74,7 @@ namespace MWF.Mobile.Core.Helpers
 
             //Contract.Assert(foreignKeyProperties.Any(), string.Format("Type {0} does not contain any foreign key references back to parent type {1}", childType.ToString(), parentType.ToString()));
 
-            return foreignKeyProperties.Single().GetColumnName();
+            return foreignKeyProperties.Single();
 
         }
 

@@ -14,6 +14,11 @@ namespace MWF.Mobile.Core.Services
         : IDeviceInfoService
     {
 
+        public string DeviceIdentifier
+        {
+            get { return "021PROTEO0000001"; }
+        }
+
         public string GatewayPassword
         {
             get { return "fleetwoodmobile"; }

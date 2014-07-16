@@ -14,6 +14,7 @@ namespace MWF.Mobile.Core.Repositories
         IDriverRepository DriverRepository { get; }
         ISafetyProfileRepository SafetyProfileRepository { get; }
         IVehicleRepository VehicleRepository { get; }
+        ITrailerRepository TrailerRepository { get; }
         IVerbProfileRepository VerbProfileRepository { get; }
         IGatewayQueueItemRepository GatewayQueueItemRepository { get; }
     }

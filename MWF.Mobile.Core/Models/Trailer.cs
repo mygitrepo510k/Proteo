@@ -4,14 +4,14 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class Vehicle : BaseVehicle
+    public class Trailer : BaseVehicle
     {
 
-        public Vehicle()
+        public Trailer()
             : base()
-        { }
+        {  }
 
-        public Vehicle(BaseVehicle baseVehicle)
+        public Trailer (BaseVehicle baseVehicle)
             : base()
         {
             this.ID = baseVehicle.ID;

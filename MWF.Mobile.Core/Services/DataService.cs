@@ -64,6 +64,7 @@ namespace MWF.Mobile.Core.Services
             _connection.CreateTable<SafetyCheckFaultType>();
             _connection.CreateTable<SafetyProfile>();
             _connection.CreateTable<Vehicle>();
+            _connection.CreateTable<Trailer>();
             _connection.CreateTable<VehicleView>();
             _connection.CreateTable<VerbProfile>();
             _connection.CreateTable<VerbProfileItem>();

@@ -85,6 +85,9 @@
     <Reference Include="Cirrious.MvvmCross.Localization">
       <HintPath>..\packages\MvvmCross.HotTuna.CrossCore.3.2.1-beta1\lib\MonoAndroid\Cirrious.MvvmCross.Localization.dll</HintPath>
     </Reference>
+    <Reference Include="Cirrious.MvvmCross.Plugins.Messenger">
+      <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Messenger.3.2.1-beta1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Messenger.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
     <Reference Include="System" />
@@ -113,16 +116,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrap\CommunitySqlitePluginBootstrap.cs" />
+    <Compile Include="Bootstrap\MessengerPluginBootstrap.cs" />
     <Compile Include="Bootstrap\UserInteractionPluginBootstrap.cs" />
     <Compile Include="DebugTrace.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
+    <Compile Include="Portable\DeviceInfo.cs" />
     <Compile Include="Portable\Reachability.cs" />
     <Compile Include="Presenters\CustomPresenter.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\GatewayQueueTimerService.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="SplashScreen.cs" />
     <Compile Include="Views\BindableProgress.cs" />
+    <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
     <Compile Include="Views\Fragments\TrailerSelectionFragment.cs" />
@@ -164,6 +171,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Trailer.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_About.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

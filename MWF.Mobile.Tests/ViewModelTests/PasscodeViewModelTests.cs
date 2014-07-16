@@ -36,10 +36,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         /// <summary>
-        /// Tests that on successful authentication the VehicleListViewModel is navigated to
+        /// Sample test with mocking to ensure framework is set up correctly
         /// </summary>
         [Fact]
-        public void PasscodeVM_SuccessfulAuthenticationRedirectsToVehicleView()
+        public void PasscodeVM_SuccessfulAuthenticationRedirectsToVehicleListView()
         {
             base.ClearAll();
 
@@ -54,9 +54,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.Equal(typeof(VehicleListViewModel), request.ViewModelType);
         }
 
-
+        /// <summary>
+        /// Sample test with mocking to ensure framework is set up correctly
+        /// </summary>
         [Fact]
-        public void PasscodeVM_BlankPasscodeDoesntRedirectToVehicleView()
+        public void PasscodeVM_BlankPasscodeDoesntRedirectToMainView()
         {
             base.ClearAll();
 
@@ -67,26 +69,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
             Assert.Equal(0, mockDispatcher.Requests.Count);
-        }
-
-
-        [Fact]
-        public void PasscodeVM_IncorrectPassword()
-        {
-            base.ClearAll();
-
-            // Set incorrect password
-            var mockAuthenticationService = Ioc.Resolve<IAuthenticationService>();
-            var vm = new PasscodeViewModel(mockAuthenticationService) { Passcode = "1212" };
-
-            vm.LoginCommand.Execute(null);
-
-            // Check we didn't redirect anywhere
-            var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
-            Assert.Equal(0, mockDispatcher.Requests.Count);
-
-            //Check that the passcode got blanked out
-            Assert.Equal(string.Empty, vm.Passcode);
         }
 
     }

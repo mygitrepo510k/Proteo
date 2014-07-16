@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using Newtonsoft.Json;
 using MWF.Mobile.Core.Repositories;
 
@@ -13,20 +15,27 @@ namespace MWF.Mobile.Core.Services
         : IGatewayQueuedService
     {
 
-        private readonly IDeviceInfoService _deviceInfoService = null;
+        private readonly IDeviceInfo _deviceInfo = null;
         private readonly IHttpService _httpService = null;
         private readonly Repositories.IGatewayQueueItemRepository _queueItemRepository = null;
         private readonly Portable.IReachability _reachability = null;
         private readonly IDeviceRepository _deviceRepository;
 
+        private readonly IMvxMessenger _messenger = null;
+
         private readonly string _gatewayDeviceRequestUrl = null;
 
-        public GatewayQueuedService(IDeviceInfoService deviceInfoService, IHttpService httpService,Portable.IReachability reachability, IRepositories repositories)
+        private MvxSubscriptionToken _queueTimerMessageToken = null;
+        private bool _isSubmitting = false;
+        private bool _submitAgainOnCompletion = false;
+        
+        public GatewayQueuedService(IDeviceInfo deviceInfo, IHttpService httpService, Portable.IReachability reachability, IRepositories repositories, IMvxMessenger messenger)
         {
-            _deviceInfoService = deviceInfoService;
+            _deviceInfo= deviceInfo;
             _httpService = httpService;
             _queueItemRepository = repositories.GatewayQueueItemRepository;
             _reachability = reachability;
+            _messenger = messenger;
 
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
@@ -34,10 +43,32 @@ namespace MWF.Mobile.Core.Services
             _deviceRepository = repositories.DeviceRepository;
         }
 
-        public Task<bool> AddToQueueAndSubmitAsync(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
+        public void StartQueueTimer()
+        {
+            if (_queueTimerMessageToken == null)
+                _queueTimerMessageToken = _messenger.Subscribe<Messages.GatewayQueueTimerElapsedMessage>(async m => await SubmitQueueAsync());
+
+            PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Start);
+        }
+
+        public void StopQueueTimer()
+        {
+            _queueTimerMessageToken.Dispose();
+            _queueTimerMessageToken = null;
+
+            PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Stop);
+        }
+
+        /// <summary>
+        /// Add a command to the queue and trigger submission to the MWF Mobile gateway web service
+        /// </summary>
+        /// <remarks>
+        /// Note that submission will only occur if the GatewayQueueTimerService has been started (i.e. by first calling StartQueueTimer())
+        /// </remarks>
+        public void AddToQueueAndSubmit(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
         {
             this.AddToQueue(command, parameters);
-            return this.SubmitQueueAsync();
+            PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Trigger);
         }
 
         public void AddToQueue(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
@@ -48,36 +79,58 @@ namespace MWF.Mobile.Core.Services
             _queueItemRepository.Insert(queueItem);
         }
 
-        private async Task<bool> SubmitQueueAsync()
+        private async Task SubmitQueueAsync()
         {
-            if (!_reachability.IsConnected())
-                return false;
+            Mvx.Trace("Submit Queue");
 
-            var allItemsSubmitted = true;
-            var queuedItems = _queueItemRepository.GetAllInQueueOrder().ToList();
-
-            foreach (var queuedItem in queuedItems)
+            if (_isSubmitting)
             {
-                try
-                {
-                    if (await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent))
-                        _queueItemRepository.Delete(queuedItem);
-                    else
-                        //TODO: write failure to error log or report in some other way?
-                        allItemsSubmitted = false;
-                }
-                catch
-                {
-                    //TODO: write failure to error log or report in some other way?
-                    allItemsSubmitted = false;
-                }
-
-                //TODO: should we attempt remaining items if one fails or bail out at this point?
-                if (!allItemsSubmitted)
-                    break;
+                _submitAgainOnCompletion = true;
+                return;
             }
 
-            return allItemsSubmitted;
+            _isSubmitting = true;
+
+            try
+            {
+                if (!_reachability.IsConnected())
+                    return;
+
+                var queuedItems = _queueItemRepository.GetAllInQueueOrder().ToList();
+
+                foreach (var queuedItem in queuedItems)
+                {
+                    var submitted = true;
+
+                    try
+                    {
+                        if (await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent))
+                            _queueItemRepository.Delete(queuedItem);
+                        else
+                            //TODO: write failure to error log or report in some other way?
+                            submitted = false;
+                    }
+                    catch
+                    {
+                        //TODO: write failure to error log or report in some other way?
+                        submitted = false;
+                    }
+
+                    //TODO: should we attempt remaining items if one fails or bail out at this point?
+                    if (!submitted)
+                        break;
+                }
+            }
+            finally
+            {
+                _isSubmitting = false;
+            }
+
+            if (_submitAgainOnCompletion)
+            {
+                _submitAgainOnCompletion = false;
+                await SubmitQueueAsync();
+            }
         }
 
         private async Task<bool> ServiceCallAsync(string jsonSerializedRequestContent)
@@ -114,10 +167,15 @@ namespace MWF.Mobile.Core.Services
             return new Core.Models.GatewayServiceRequest.Content
             {
                 DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
-                Password = _deviceInfoService.GatewayPassword,
-                MobileApplication = _deviceInfoService.MobileApplication,
+                Password = _deviceInfo.GatewayPassword,
+                MobileApplication = _deviceInfo.MobileApplication,
                 Actions = actions,
             };
+        }
+
+        private void PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand timerCommand)
+        {
+            _messenger.Publish(new Messages.GatewayQueueTimerCommandMessage(this, timerCommand));
         }
 
     }

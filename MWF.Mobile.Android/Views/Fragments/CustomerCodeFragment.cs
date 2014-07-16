@@ -46,6 +46,8 @@ namespace MWF.Mobile.Android.Views.Fragments
             set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsBusy);
             set.Apply();
 
+
+
         }
 
     }

@@ -27,10 +27,10 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _mockQueueItemRepository = new Mock<Core.Repositories.IGatewayQueueItemRepository>();
-            var mockDeviceInfoService = new Mock<Core.Services.IDeviceInfoService>();
-            mockDeviceInfoService.SetupGet(m => m.GatewayPassword).Returns("fleetwoodmobile");
-            mockDeviceInfoService.SetupGet(m => m.MobileApplication).Returns("Orchestrator");
-            _fixture.Inject<Core.Services.IDeviceInfoService>(mockDeviceInfoService.Object);
+            var mockDeviceInfo = new Mock<Core.Services.IDeviceInfo>();
+            mockDeviceInfo.SetupGet(m => m.GatewayPassword).Returns("fleetwoodmobile");
+            mockDeviceInfo.SetupGet(m => m.MobileApplication).Returns("Orchestrator");
+            _fixture.Inject<Core.Services.IDeviceInfo>(mockDeviceInfo.Object);
             
             //_fixture.Register<Core.Services.IDeviceInfoService>(mockDeviceInfoService.Object);
 
@@ -103,7 +103,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var testDriverID = Guid.NewGuid();
 
-            // Mimic the response that comes back from the BlueSphere MWF Mobile gateway service
+            // Mimic the response that comes back from the MWF Mobile gateway service
             var responseActions = new[]
             {
                 new Core.Models.GatewayServiceResponse.ResponseAction<Core.Models.GatewayServiceResponse.Drivers>

@@ -29,7 +29,6 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVehicleRepository _vehicleRepository;
         private readonly ITrailerRepository _trailerRepository;
 
-
         private readonly IVerbProfileRepository _verbProfileRepository;
 
         public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories)
@@ -174,6 +173,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             return true;
         }
+
 
     }
 }

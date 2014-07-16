@@ -39,7 +39,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Sample test with mocking to ensure framework is set up correctly
         /// </summary>
         [Fact]
-        public void PasscodeVM_SuccessfulAuthenticationRedirectsToMainView()
+        public void PasscodeVM_SuccessfulAuthenticationRedirectsToVehicleListView()
         {
             base.ClearAll();
 
@@ -51,7 +51,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
             Assert.Equal(1, mockDispatcher.Requests.Count);
             var request = mockDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(VehicleListViewModel), request.ViewModelType);
         }
 
         /// <summary>

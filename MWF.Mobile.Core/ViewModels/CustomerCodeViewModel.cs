@@ -29,7 +29,6 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVehicleRepository _vehicleRepository;
         private readonly ITrailerRepository _trailerRepository;
 
-
         private readonly IVerbProfileRepository _verbProfileRepository;
 
         public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories)
@@ -37,14 +36,14 @@ namespace MWF.Mobile.Core.ViewModels
             _gatewayService = gatewayService;
             _dataService = dataService;
             _reachability = reachability;
-            _applicationProfileRepository = Mvx.Resolve<IApplicationProfileRepository>();
-            _customerRepository = Mvx.Resolve<ICustomerRepository>();
-            _deviceRepository = Mvx.Resolve<IDeviceRepository>();
-            _driverRepository = Mvx.Resolve<IDriverRepository>();
-            _safetyProfileRepository = Mvx.Resolve<ISafetyProfileRepository>();
-            _trailerRepository = Mvx.Resolve<ITrailerRepository>();
-            _vehicleRepository = Mvx.Resolve<IVehicleRepository>();
-            _verbProfileRepository = Mvx.Resolve<IVerbProfileRepository>();
+            _applicationProfileRepository = repositories.ApplicationRepository;
+            _customerRepository = repositories.CustomerRepository;
+            _deviceRepository = repositories.DeviceRepository;
+            _driverRepository = repositories.DriverRepository;
+            _safetyProfileRepository = repositories.SafetyProfileRepository;
+            _trailerRepository = repositories.TrailerRepository;
+            _vehicleRepository = repositories.VehicleRepository;
+            _verbProfileRepository = repositories.VerbProfileRepository;
         }
 
         private string _customerCode = null;

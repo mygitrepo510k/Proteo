@@ -1,5 +1,3 @@
-using MWF.Mobile.Core.Repositories;
-using MWF.Mobile.Core.Services;
 using System.Collections.Generic;
 using System.Linq;
 using Cirrious.CrossCore;

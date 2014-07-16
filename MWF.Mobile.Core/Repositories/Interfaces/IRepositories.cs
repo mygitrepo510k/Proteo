@@ -16,7 +16,6 @@ namespace MWF.Mobile.Core.Repositories
         ISafetyProfileRepository SafetyProfileRepository { get; }
         ITrailerRepository TrailerRepository { get; }
         IVehicleRepository VehicleRepository { get; }
-        ITrailerRepository TrailerRepository { get; }
         IVerbProfileRepository VerbProfileRepository { get; }
     }
 }

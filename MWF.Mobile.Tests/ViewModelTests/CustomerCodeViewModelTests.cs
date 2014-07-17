@@ -29,15 +29,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         protected override void AdditionalSetup()
         {
-            _mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
-
             var mockDispatcher = new MockDispatcher();
             Ioc.RegisterSingleton<IMvxViewDispatcher>(mockDispatcher);
             Ioc.RegisterSingleton<IMvxMainThreadDispatcher>(mockDispatcher);
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
+
+            _mockUserInteraction = new Mock<IUserInteraction>();
+            _fixture.Register<IUserInteraction>(() => _mockUserInteraction.Object);
 
             _dataService = new Mock<IDataService>();
             _dataService.Setup(ds => ds.RunInTransaction(It.IsAny<Action>())).Callback<Action>(a => a.Invoke());

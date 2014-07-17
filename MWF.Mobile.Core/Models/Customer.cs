@@ -7,6 +7,7 @@ namespace MWF.Mobile.Core.Models
     public class Customer : IBlueSphereEntity
     {
         [Unique]
+        [PrimaryKey]
         [JsonProperty("id")]
         public Guid ID { get; set; }
 

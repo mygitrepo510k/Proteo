@@ -46,26 +46,26 @@ namespace MWF.Mobile.Core.Services
         public async Task<IEnumerable<Models.Driver>> GetDrivers()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.Drivers>("fwGetDrivers");
-            return data.Result.List;
+            return data.Result == null ? Enumerable.Empty<Models.Driver>() : data.Result.List;
         }
 
         public async Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfiles()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.SafetyProfiles>("fwGetSafetyProfiles");
-            return data.Result.List;
+            return data.Result == null ? Enumerable.Empty<Models.SafetyProfile>() : data.Result.List;
         }
 
         public async Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle} };
-            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles");
-            return data.Result.List;
+            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles", parameters);
+            return data.Result == null ? Enumerable.Empty<Models.Vehicle>() : data.Result.List;
         }
 
         public async Task<IEnumerable<Models.VehicleView>> GetVehicleViews()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.VehicleViews>("fwGetVehicleViews");
-            return data.Result.List;
+            return data.Result == null ? Enumerable.Empty<Models.VehicleView>() : data.Result.List;
         }
 
         public async Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle)
@@ -125,9 +125,13 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         private Models.GatewayServiceRequest.Content CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
         {
+            var device = _deviceRepository.GetAll().FirstOrDefault();
+            //TODO: this is temp code until we have implemented retrieval of a unique identifier for each device
+            var deviceIdentifier = device == null ? "021PROTEO0000001" : device.DeviceIdentifier;
+
             return new Core.Models.GatewayServiceRequest.Content
             {
-                DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
+                DeviceIdentifier = deviceIdentifier,
                 Password = _deviceInfo.GatewayPassword,
                 MobileApplication = _deviceInfo.MobileApplication,
                 Actions = actions,

@@ -11,6 +11,7 @@ namespace MWF.Mobile.Core.Models
     public class SafetyProfile : IBlueSphereEntity
     {
         [Unique]
+        [PrimaryKey]
         [JsonProperty("@id")]
         public Guid ID { get; set; }
 

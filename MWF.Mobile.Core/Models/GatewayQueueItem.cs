@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,8 +17,12 @@ namespace MWF.Mobile.Core.Models
             this.ID = Guid.NewGuid();
         }
 
+        [Unique]
+        [PrimaryKey]
         public Guid ID { get; set; }
+
         public string JsonSerializedRequestContent { get; set; }
+
         public DateTime QueuedDateTime { get; set; }
 
     }

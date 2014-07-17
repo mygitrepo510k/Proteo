@@ -20,6 +20,7 @@ namespace MWF.Mobile.Core.Models
     {
     
         [Unique]
+        [PrimaryKey]
         [JsonProperty("@id")]
         public Guid ID { get; set; }
 

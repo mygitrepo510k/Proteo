@@ -9,9 +9,9 @@ namespace MWF.Mobile.Core.Repositories
     public interface IRepository<T> where T : IBlueSphereEntity, new()
     {
         void Delete(T entity);
+        void DeleteAll();
         IEnumerable<T> GetAll();
         T GetByID(Guid ID);
-        IEnumerable<T> GetWhere(System.Linq.Expressions.Expression<Func<T, bool>> predicate);
         void Insert(T entity);
         void Insert(IEnumerable<T> entities);
     }

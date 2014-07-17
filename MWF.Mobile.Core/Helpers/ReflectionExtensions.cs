@@ -18,6 +18,13 @@ namespace MWF.Mobile.Core.Helpers
                     select property).ToList();
         }
 
+        public static List<Type> GetChildRelationTypes(this Type type)
+        {
+            return (from property in type.GetRuntimeProperties()
+                    where property.GetCustomAttribute<ChildRelationshipAttribute>() != null
+                    select property.GetCustomAttribute<ChildRelationshipAttribute>().ChildType).ToList();
+        }
+
         public static bool HasChildRelationProperties(this Type type)
         {
             return type.GetChildRelationProperties().Any();

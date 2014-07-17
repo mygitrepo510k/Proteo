@@ -146,10 +146,7 @@
     <Compile Include="Services\IAuthenticationService.cs" />
     <Compile Include="Services\IDataService.cs" />
     <Compile Include="Services\IGatewayQueuedService.cs" />
-    <Compile Include="Services\IVehicleExtractService.cs" />
-    <Compile Include="Services\VehicleExtractService.cs" />
     <Compile Include="Portable\IDeviceInfo.cs" />
-    <Compile Include="Services\IDeviceInfoService.cs" />
     <Compile Include="Services\IGatewayService.cs" />
     <Compile Include="Services\IHttpService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />

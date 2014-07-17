@@ -47,7 +47,7 @@ namespace MWF.Mobile.Core.ViewModels
             _verbProfileRepository = Mvx.Resolve<IVerbProfileRepository>();
         }
 
-        private string _customerCode = null;
+        private string _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031";
         public string CustomerCode
         {
             get { return _customerCode; }
@@ -125,6 +125,8 @@ namespace MWF.Mobile.Core.ViewModels
         // throws exceptions if the web services or db inserts fail
         private async Task<bool> SetupDevice()
         {
+
+
             var device = await _gatewayService.GetDevice(CustomerCode);
             if (device == null) return false;
 

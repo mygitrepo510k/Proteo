@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -18,9 +19,9 @@ namespace MWF.Mobile.Core.Services
         private readonly string _gatewayDeviceRequestUrl = null;
         private readonly IDeviceRepository _deviceRepository;
 
-        public GatewayService(IDeviceInfo deviceInfoService, IHttpService httpService, IRepositories repositories)
+        public GatewayService(IDeviceInfo deviceInfo, IHttpService httpService, IRepositories repositories)
         {
-            _deviceInfo = deviceInfoService;
+            _deviceInfo = deviceInfo;
             _httpService = httpService;
 
             //TODO: read this from config or somewhere?
@@ -125,9 +126,16 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         private Models.GatewayServiceRequest.Content CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
         {
+            Device device = _deviceRepository.GetAll().FirstOrDefault();
+            string deviceIdentifier;
+            if (device != null)
+                deviceIdentifier = device.DeviceIdentifier;
+            else
+                deviceIdentifier = _deviceInfo.GetDeviceIndentifier();
+
             return new Core.Models.GatewayServiceRequest.Content
             {
-                DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
+                DeviceIdentifier = deviceIdentifier,
                 Password = _deviceInfo.GatewayPassword,
                 MobileApplication = _deviceInfo.MobileApplication,
                 Actions = actions,

@@ -22,7 +22,7 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            return this.BindingInflate(Resource.Layout.TrailerSelectionView, null);
+            return this.BindingInflate(Resource.Layout.Fragment_TrailerSelectionView, null);
         }
 
     }

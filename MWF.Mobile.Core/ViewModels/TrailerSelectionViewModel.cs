@@ -32,6 +32,16 @@ namespace MWF.Mobile.Core.ViewModels
             };
         }
 
+        public string TrailerButtonLabel
+        {
+            get { return "No trailer"; }
+        }
+
+        public string TrailerSelectText
+        {
+            get { return "Please select a trailer."; }
+        }
+
         public Trailer Trailer
         {
             get { return _trailer; }
@@ -69,17 +79,29 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public void TrailerDetail(Trailer v)
+        public void TrailerDetail(Trailer trailer)
         {
-            if (v == null)
+            if (trailer == null)
             {
                 //This will take to the next view model with a trailer value of null.
-                Mvx.Resolve<IUserInteraction>().Alert("No Trailer is Selected!");
+                Mvx.Resolve<IUserInteraction>().Confirm("Are you sure you don't want to select a trailer.", isConfirmed =>
+                {
+                    if (isConfirmed)
+                    {
+                        //TODO: Forward you to the safety selection screen!
+                    }
+                }, "Please confirm your trailer");
             }
             else
             {
                 //This will take to the next view model with a trailer value of null.
-                Mvx.Resolve<IUserInteraction>().Alert("Trailer Selected is " + v.Title);
+                Mvx.Resolve<IUserInteraction>().Confirm("Registration: " + trailer.Registration, isConfirmed =>
+                {
+                    if (isConfirmed)
+                    {
+                        //TODO: Forward you to safety selection screen!
+                    }
+                }, "Please confirm your trailer");
             }
         }
     }

@@ -21,21 +21,24 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly Services.IGatewayService _gatewayService;
         private readonly Services.IDataService _dataService;
         private readonly IReachability _reachability;
+        private readonly IUserInteraction _userInteraction;
+
         private readonly IApplicationProfileRepository _applicationProfileRepository;
         private readonly ICustomerRepository _customerRepository; 
         private readonly IDeviceRepository _deviceRepository;
         private readonly IDriverRepository _driverRepository;
         private readonly ISafetyProfileRepository _safetyProfileRepository;
-        private readonly IVehicleRepository _vehicleRepository;
         private readonly ITrailerRepository _trailerRepository;
-
+        private readonly IVehicleRepository _vehicleRepository;
         private readonly IVerbProfileRepository _verbProfileRepository;
 
-        public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories)
+        public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, IUserInteraction userInteraction)
         {
             _gatewayService = gatewayService;
             _dataService = dataService;
             _reachability = reachability;
+            _userInteraction = userInteraction;
+
             _applicationProfileRepository = repositories.ApplicationRepository;
             _customerRepository = repositories.CustomerRepository;
             _deviceRepository = repositories.DeviceRepository;
@@ -44,9 +47,13 @@ namespace MWF.Mobile.Core.ViewModels
             _trailerRepository = repositories.TrailerRepository;
             _vehicleRepository = repositories.VehicleRepository;
             _verbProfileRepository = repositories.VerbProfileRepository;
+
+#if DEBUG
+            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", () => _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031");
+#endif
         }
 
-        private string _customerCode = null;
+        private string _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031";
         public string CustomerCode
         {
             get { return _customerCode; }
@@ -95,12 +102,13 @@ namespace MWF.Mobile.Core.ViewModels
             if (string.IsNullOrWhiteSpace(this.CustomerCode))
             {
                 //TODO: probably should additionally implement presentation layer required field validation so we don't even get this far.
-                await Mvx.Resolve<IUserInteraction>().AlertAsync("Please enter a customer code.");
+                await _userInteraction.AlertAsync("Please enter a customer code.");
                 return;
             }
+
             if (!_reachability.IsConnected())
             {
-                await Mvx.Resolve<IUserInteraction>().AlertAsync("An Internet connection is required");
+                await _userInteraction.AlertAsync("An Internet connection is required");
             }
             else
             {
@@ -124,7 +132,7 @@ namespace MWF.Mobile.Core.ViewModels
                 this.IsBusy = false;
 
                 if (success) ShowViewModel<PasscodeViewModel>();
-                else await Mvx.Resolve<IUserInteraction>().AlertAsync(errorMessage);
+                else await _userInteraction.AlertAsync(errorMessage);
 
             }
         }
@@ -134,6 +142,8 @@ namespace MWF.Mobile.Core.ViewModels
         // throws exceptions if the web services or db inserts fail
         private async Task<bool> SetupDevice()
         {
+
+
             var device = await _gatewayService.GetDevice(CustomerCode);
             if (device == null) return false;
 

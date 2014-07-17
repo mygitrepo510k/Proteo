@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -18,9 +19,9 @@ namespace MWF.Mobile.Core.Services
         private readonly string _gatewayDeviceRequestUrl = null;
         private readonly IDeviceRepository _deviceRepository;
 
-        public GatewayService(IDeviceInfo deviceInfoService, IHttpService httpService, IRepositories repositories)
+        public GatewayService(IDeviceInfo deviceInfo, IHttpService httpService, IRepositories repositories)
         {
-            _deviceInfo = deviceInfoService;
+            _deviceInfo = deviceInfo;
             _httpService = httpService;
 
             //TODO: read this from config or somewhere?
@@ -46,26 +47,26 @@ namespace MWF.Mobile.Core.Services
         public async Task<IEnumerable<Models.Driver>> GetDrivers()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.Drivers>("fwGetDrivers");
-            return data.Result.List;
+            return data.Result == null ? Enumerable.Empty<Models.Driver>() : data.Result.List;
         }
 
         public async Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfiles()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.SafetyProfiles>("fwGetSafetyProfiles");
-            return data.Result.List;
+            return data.Result == null ? Enumerable.Empty<Models.SafetyProfile>() : data.Result.List;
         }
 
         public async Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle} };
-            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles");
-            return data.Result.List;
+            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles", parameters);
+            return data.Result == null ? Enumerable.Empty<Models.Vehicle>() : data.Result.List;
         }
 
         public async Task<IEnumerable<Models.VehicleView>> GetVehicleViews()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.VehicleViews>("fwGetVehicleViews");
-            return data.Result.List;
+            return data.Result == null ? Enumerable.Empty<Models.VehicleView>() : data.Result.List;
         }
 
         public async Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle)
@@ -125,9 +126,17 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         private Models.GatewayServiceRequest.Content CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
         {
+
+            Device device = _deviceRepository.GetAll().FirstOrDefault();
+            string deviceIdentifier;
+            if (device != null)
+                deviceIdentifier = device.DeviceIdentifier;
+            else
+                deviceIdentifier = _deviceInfo.GetDeviceIndentifier();
+
             return new Core.Models.GatewayServiceRequest.Content
             {
-                DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
+                DeviceIdentifier = deviceIdentifier,
                 Password = _deviceInfo.GatewayPassword,
                 MobileApplication = _deviceInfo.MobileApplication,
                 Actions = actions,

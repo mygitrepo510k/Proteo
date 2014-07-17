@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -20,7 +21,10 @@ namespace MWF.Mobile.Core.ViewModels
     {
         private Services.IGatewayService _gatewayService;
         private IEnumerable<Vehicle> _originalVehicleList;
-        private IVehicleRepository _vehicleRepository;
+
+        private readonly IVehicleRepository _vehicleRepository;
+        private readonly IToast _toast;
+        private readonly IReachability _reachability;
 
 
         public string VehicleSelectText
@@ -28,8 +32,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Please select a trailer."; }
         }
 
-        public VehicleListViewModel(IVehicleRepository vehicleRepository)
+        public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty, IToast toast)
         {
+            _toast = toast;
+            _reachability = reachabibilty;
+            
             _vehicleRepository = vehicleRepository;
             Vehicles = _originalVehicleList = _vehicleRepository.GetAll();  
         }
@@ -85,32 +92,43 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public async void updateVehicleList()
+        public async Task updateVehicleList()
         {
-            
-            _gatewayService = Mvx.Resolve<IGatewayService>();
-            var vehicleViews = await _gatewayService.GetVehicleViews();
 
-            var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
-
-            foreach (var vehicleView in vehicleViews)
+            if (!_reachability.IsConnected())
             {
-                vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+                _toast.Show("No internet connection!");
             }
-
-            var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
-            var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
-            
-            var rows = _vehicleRepository.GetAll().ToList();
-
-            foreach (var row in rows)
+            else
             {
-                _vehicleRepository.Delete(row);
+                _gatewayService = Mvx.Resolve<IGatewayService>();
+                var vehicleViews = await _gatewayService.GetVehicleViews();
+
+                var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
+
+                foreach (var vehicleView in vehicleViews)
+                {
+                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+                }
+
+                var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+                var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
+
+                if (vehicles == null)
+                {
+                    var rows = _vehicleRepository.GetAll().ToList();
+
+                    foreach (var row in rows)
+                    {
+                        _vehicleRepository.Delete(row);
+                    }
+
+                    _vehicleRepository.Insert(vehicles);
+
+                    Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
+                }
             }
-
-            _vehicleRepository.Insert(vehicles);
-
-            Vehicles = _originalVehicleList = _vehicleRepository.GetAll();  
+            
         }
     }  
 }

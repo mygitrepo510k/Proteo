@@ -9,6 +9,7 @@ namespace MWF.Mobile.Core.Models
     {
 
         [Unique]
+        [PrimaryKey]
         [JsonProperty("@id")]
         public Guid ID { get; set; }
 
@@ -23,6 +24,9 @@ namespace MWF.Mobile.Core.Models
 
         [JsonProperty("@lastname")]
         public string LastName { get; set; }
+
+        [JsonProperty("@passcode")]
+        public string Passcode { get; set; }
 
         [Ignore]
         public string DisplayName { get { return string.Format("{0} {1}", FirstName, LastName); } }

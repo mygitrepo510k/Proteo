@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Repositories;
+
 
 namespace MWF.Mobile.Core.Services
 {
@@ -11,16 +14,32 @@ namespace MWF.Mobile.Core.Services
         : IAuthenticationService
     {
 
-        public AuthenticationService()
-        { }
+        #region Private Members
+
+        private IDriverRepository _driverRepository;
+
+        #endregion
+
+        #region Construction
+
+        public AuthenticationService(IDriverRepository driverRepository)
+        {
+            _driverRepository = driverRepository;
+        }
+
+        #endregion
 
         public async Task<AuthenticationResult> AuthenticateAsync(string passcode)
         {
-            //TODO: implement authentication against driver list in local database
-            if (passcode == "9999")
-                return new AuthenticationResult { Success = true, AuthenticationFailedMessage = null };
+
+            var test = _driverRepository.GetAll().ToList();
+
+            Driver driver = _driverRepository.GetAll().SingleOrDefault(x => x.Passcode == passcode);
+
+            if (driver != null)
+                return new AuthenticationResult { Success = true, AuthenticationFailedMessage = null,  Driver = driver };
             else
-                return new AuthenticationResult { Success = false, AuthenticationFailedMessage = "Login failed: the passcode is 9999" };
+                return new AuthenticationResult { Success = false, AuthenticationFailedMessage = "The login has failed because the passcode you have entered does not exist." };
         }
 
     }

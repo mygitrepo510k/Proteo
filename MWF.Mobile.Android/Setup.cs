@@ -40,12 +40,8 @@ namespace MWF.Mobile.Android
         {
             base.InitializeLastChance();
 
-            IDataService dataService = Mvx.Resolve<IDataService>();
-
             Mvx.RegisterSingleton<IReachability>(() => new Reachability());
-
             Mvx.RegisterSingleton<IDeviceInfo>(() => new DeviceInfo());
-
         }
 
     }

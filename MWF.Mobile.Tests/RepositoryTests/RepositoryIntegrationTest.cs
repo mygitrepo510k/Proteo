@@ -112,10 +112,6 @@ namespace MWF.Mobile.Tests.RepositoryTests
             var verbProfile1In = fixture.Create<VerbProfile>();
             var verbProfile2In = fixture.Create<VerbProfile>();
 
-            foreach (var verbProfileItem in verbProfile1In.Children)
-            {
-                verbProfileItem.VerbProfileID = verbProfile1In.ID;
-            }
 
             VerbProfileRepository verbProfileRepository = new VerbProfileRepository(_dataService);
 
@@ -157,19 +153,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
             var parentEntityIn = fixture.Create<ParentEntity>();
             var parentEntity2In = fixture.Create<ParentEntity>();
 
-            // set up the foreign key relationships
-            foreach (var childEntity in parentEntityIn.Children)
-            {
-                childEntity.ParentID = parentEntityIn.ID;
-            }
-
-            foreach (var childEntity in parentEntityIn.Children2)
-            {
-                childEntity.ParentID = parentEntityIn.ID;
-            }
-
             ParentEntityRepository repository = new ParentEntityRepository(_dataService);
-
 
             // Insert records
             repository.Insert(parentEntityIn);
@@ -209,17 +193,6 @@ namespace MWF.Mobile.Tests.RepositoryTests
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
             var grandParentEntityIn = fixture.Create<GrandParentEntity>();
             var grandParentEntity2In = fixture.Create<GrandParentEntity>();
-
-            // set up the foreign key relationships
-            foreach (var parentEntity in grandParentEntityIn.Children)
-            {
-                parentEntity.ParentID = grandParentEntityIn.ID;
-                foreach (var childEntity in parentEntity.Children)
-                {
-                    childEntity.ParentID = parentEntity.ID;
-                    parentEntity.Children2.Clear();                  
-                }              
-            }
 
             GrandParentEntityRepository repository = new GrandParentEntityRepository(_dataService);
 

@@ -36,10 +36,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         /// <summary>
-        /// Sample test with mocking to ensure framework is set up correctly
+        /// Tests that on successful authentication the VehicleListViewModel is navigated to
         /// </summary>
         [Fact]
-        public void PasscodeVM_SuccessfulAuthenticationRedirectsToMainView()
+        public void PasscodeVM_SuccessfulAuthenticationRedirectsToVehicleListView()
         {
             base.ClearAll();
 
@@ -51,14 +51,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
             Assert.Equal(1, mockDispatcher.Requests.Count);
             var request = mockDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(VehicleListViewModel), request.ViewModelType);
         }
 
-        /// <summary>
-        /// Sample test with mocking to ensure framework is set up correctly
-        /// </summary>
+
         [Fact]
-        public void PasscodeVM_BlankPasscodeDoesntRedirectToMainView()
+        public void PasscodeVM_BlankPasscodeDoesntRedirectToVehicleView()
         {
             base.ClearAll();
 
@@ -69,6 +67,26 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
             Assert.Equal(0, mockDispatcher.Requests.Count);
+        }
+
+
+        [Fact]
+        public void PasscodeVM_IncorrectPassword()
+        {
+            base.ClearAll();
+
+            // Set incorrect password
+            var mockAuthenticationService = Ioc.Resolve<IAuthenticationService>();
+            var vm = new PasscodeViewModel(mockAuthenticationService) { Passcode = "1212" };
+
+            vm.LoginCommand.Execute(null);
+
+            // Check we didn't redirect anywhere
+            var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
+            Assert.Equal(0, mockDispatcher.Requests.Count);
+
+            //Check that the passcode got blanked out
+            Assert.Equal(string.Empty, vm.Passcode);
         }
 
     }

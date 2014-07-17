@@ -19,6 +19,7 @@
         local:MvxBind="Text CustomerCodeLabel" />
     <EditText
         style="@style/Theme.EditText"
+        android:gravity="center_vertical"
         android:background="#cccfd1"
         local:MvxBind="Text CustomerCode" />
     <Button

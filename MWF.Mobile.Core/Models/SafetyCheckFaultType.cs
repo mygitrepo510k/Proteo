@@ -8,6 +8,7 @@ namespace MWF.Mobile.Core.Models
     public class SafetyCheckFaultType : IBlueSphereEntity
     {
         [Unique]
+        [PrimaryKey]
         [JsonProperty("@id")]
         public Guid ID { get; set; }
 

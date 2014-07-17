@@ -19,7 +19,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string PasscodeLabel
         {
-            get { return "driver passcode"; }
+            get { return "Driver Passcode"; }
+        }
+
+        public string PasscodeButtonLabel
+        {
+            get { return "Submit"; }
         }
 
         private string _passcode = null;
@@ -56,7 +61,12 @@ namespace MWF.Mobile.Core.ViewModels
             if (result.Success)
                 ShowViewModel<VehicleListViewModel>();
             else
+            { 
                 await Mvx.Resolve<IUserInteraction>().AlertAsync(result.AuthenticationFailedMessage);
+                // clear the passcode
+                this.Passcode = string.Empty;
+
+            }
         }
 
     }

@@ -2,6 +2,7 @@
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace MWF.Mobile.Core.ViewModels
         :MvxViewModel
     {
 
-        private Vehicle _vehicle;
+        private Trailer _trailer;
 
         public class Nav
         {
@@ -24,59 +25,51 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void Init(Nav nav)
         {
-            Vehicle = new Vehicle
+            Trailer = new Trailer
             {
                 ID = nav.ID
                 
             };
         }
 
-        public Vehicle Vehicle
+        public Trailer Trailer
         {
-            get { return _vehicle; }
-            set { _vehicle = value; RaisePropertyChanged(() => Vehicle); }
+            get { return _trailer; }
+            set { _trailer = value; RaisePropertyChanged(() => Trailer); }
         }
 
-        //This is trailer selection, using object vehicle as a temp holder for now. Until the database/ models get updated.
-        private List<Vehicle> _trailerList;
-        public TrailerSelectionViewModel()
+        private IEnumerable<Trailer> _trailerList;
+        public TrailerSelectionViewModel(ITrailerRepository trailerRepository)
         {
-            var newTrailerList = new List<Vehicle>();
-            for (var i = 0; i < 10; i++)
-            {
-                Vehicle tempVehicle = new Vehicle();
-                tempVehicle.Title = "Trailer " + i;
-                newTrailerList.Add(tempVehicle);
-            }
-            Trailers = _trailerList = newTrailerList;
+            Trailers = _trailerList = trailerRepository.GetAll();
         }
 
-        private IEnumerable<Vehicle> _trailers;
-        public IEnumerable<Vehicle> Trailers
+        private IEnumerable<Trailer> _trailers;
+        public IEnumerable<Trailer> Trailers
         {
             get { return _trailers; }
             set { _trailers = value; RaisePropertyChanged(() => Trailers); }
         }
 
-        private MvxCommand<Vehicle> _trailerSelectorCommand;
+        private MvxCommand<Trailer> _trailerSelectorCommand;
         public ICommand TrailerSelectorCommand
         {
             get
             {
-                return (_trailerSelectorCommand = _trailerSelectorCommand ?? new MvxCommand<Vehicle>(v => TrailerDetail(v)));
+                return (_trailerSelectorCommand = _trailerSelectorCommand ?? new MvxCommand<Trailer>(v => TrailerDetail(v)));
             }
         }
 
-        private MvxCommand<Vehicle> _notrailerSelectorCommand;
+        private MvxCommand<Trailer> _notrailerSelectorCommand;
         public ICommand NoTrailerSelectorCommand
         {
             get
             {
-                return (_notrailerSelectorCommand = _notrailerSelectorCommand ?? new MvxCommand<Vehicle>(v => TrailerDetail(null)));
+                return (_notrailerSelectorCommand = _notrailerSelectorCommand ?? new MvxCommand<Trailer>(v => TrailerDetail(null)));
             }
         }
 
-        public void TrailerDetail(Vehicle v)
+        public void TrailerDetail(Trailer v)
         {
             if (v == null)
             {

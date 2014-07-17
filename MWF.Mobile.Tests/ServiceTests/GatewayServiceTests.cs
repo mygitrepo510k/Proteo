@@ -103,7 +103,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var testDriverID = Guid.NewGuid();
 
-            // Mimic the response that comes back from the BlueSphere MWF Mobile gateway service
+            // Mimic the response that comes back from the MWF Mobile gateway service
             var responseActions = new[]
             {
                 new Core.Models.GatewayServiceResponse.ResponseAction<Core.Models.GatewayServiceResponse.Drivers>

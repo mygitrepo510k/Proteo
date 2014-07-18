@@ -133,6 +133,8 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task<bool> SetupDevice()
         {
 
+            if (!await _gatewayService.CreateDevice())
+                return false;
 
             var device = await _gatewayService.GetDevice(CustomerCode);
             if (device == null) return false;

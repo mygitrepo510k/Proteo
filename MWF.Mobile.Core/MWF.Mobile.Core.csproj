@@ -92,6 +92,7 @@
     <Compile Include="Models\GatewayQueueItem.cs" />
     <Compile Include="Models\GatewayServiceRequest\Action.cs" />
     <Compile Include="Models\GatewayServiceRequest\Content.cs" />
+    <Compile Include="Models\GatewayServiceRequest\DeviceInfo.cs" />
     <Compile Include="Models\GatewayServiceRequest\Parameter.cs" />
     <Compile Include="Models\GatewayServiceResponse\ResponseAction.cs" />
     <Compile Include="Models\GatewayServiceResponse\Response.cs" />

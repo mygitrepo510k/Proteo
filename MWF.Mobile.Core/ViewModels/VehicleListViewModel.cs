@@ -25,6 +25,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
+        private readonly IStartupInfoService _startupInfoService;
 
 
         public string VehicleSelectText
@@ -32,10 +33,12 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Please select a trailer."; }
         }
 
-        public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty, IToast toast)
+        public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty, 
+            IToast toast, IStartupInfoService startupInfoService)
         {
             _toast = toast;
             _reachability = reachabibilty;
+            _startupInfoService = startupInfoService;
             
             _vehicleRepository = vehicleRepository;
             Vehicles = _originalVehicleList = _vehicleRepository.GetAll();  
@@ -63,12 +66,14 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (isConfirmed)
                 {
+                    _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
                     ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = vehicle.ID });
                 }
             }, "Please confirm your vehicle");
 
         }
 
+        //This is method associated with the search button in the action bar.
         private string _searchText;
         public string SearchText
         {
@@ -79,9 +84,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void FilterList()
         {
-            Vehicles = _originalVehicleList.Where(v => v.ID.ToString().Contains(SearchText));
+            Vehicles = _originalVehicleList.Where(v => v.Registration.ToUpper().Contains(SearchText.ToUpper()));
         }
 
+        //This is method associated with the refresh button in the action bar. 
         private MvxCommand _refreshListCommand;
         public ICommand RefreshListCommand
         {
@@ -114,21 +120,21 @@ namespace MWF.Mobile.Core.ViewModels
                 var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
                 var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
 
-                if (vehicles == null)
+                if (vehicles != null)
                 {
-                    var rows = _vehicleRepository.GetAll().ToList();
-
-                    foreach (var row in rows)
-                    {
-                        _vehicleRepository.Delete(row);
-                    }
+                    _vehicleRepository.DeleteAll();
 
                     _vehicleRepository.Insert(vehicles);
 
                     Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
+
+                    //Recalls the filter text if there is text in the search field.
+                    if (SearchText != null)
+                    {
+                        FilterList();
+                    }
                 }
-            }
-            
+            } 
         }
     }  
 }

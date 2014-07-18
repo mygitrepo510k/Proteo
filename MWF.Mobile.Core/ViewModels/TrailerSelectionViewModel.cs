@@ -2,11 +2,15 @@
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -16,7 +20,25 @@ namespace MWF.Mobile.Core.ViewModels
         :MvxViewModel
     {
 
+
+        private Services.IGatewayService _gatewayService;
+        private IEnumerable<Trailer> _originalTrailerList;
+
+        private readonly ITrailerRepository _trailerRepository;
+        private readonly IToast _toast;
+        private readonly IReachability _reachability;
+
         private Trailer _trailer;
+
+        private IEnumerable<Trailer> _trailerList;
+        public TrailerSelectionViewModel(ITrailerRepository trailerRepository, IReachability reachabibilty, IToast toast)
+        {
+            _toast = toast;
+            _reachability = reachabibilty;
+
+            _trailerRepository = trailerRepository;
+            Trailers = _originalTrailerList = _trailerRepository.GetAll();
+        }
 
         public class Nav
         {
@@ -46,13 +68,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get { return _trailer; }
             set { _trailer = value; RaisePropertyChanged(() => Trailer); }
-        }
-
-        private IEnumerable<Trailer> _trailerList;
-        public TrailerSelectionViewModel(ITrailerRepository trailerRepository)
-        {
-            Trailers = _trailerList = trailerRepository.GetAll();
-        }
+        } 
 
         private IEnumerable<Trailer> _trailers;
         public IEnumerable<Trailer> Trailers
@@ -104,5 +120,72 @@ namespace MWF.Mobile.Core.ViewModels
                 }, "Please confirm your trailer");
             }
         }
+
+        //This is method associated with the search button in the action bar.
+        private string _searchText;
+        public string SearchText
+        {
+            get { return _searchText; }
+            set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); }
+        }
+
+
+        private void FilterList()
+        {
+            Trailers = _originalTrailerList.Where(t => t.Registration.Contains(SearchText));
+        }
+
+        //This is method associated with the refresh button in the action bar. 
+        private MvxCommand _refreshListCommand;
+        public ICommand RefreshListCommand
+        {
+            get
+            {
+
+                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(() => updateTrailerList()));
+            }
+        }
+
+        public async Task updateTrailerList()
+        {
+
+            if (!_reachability.IsConnected())
+            {
+                _toast.Show("No internet connection!");
+            }
+            else
+            {
+                _gatewayService = Mvx.Resolve<IGatewayService>();
+                var vehicleViews = await _gatewayService.GetVehicleViews();
+
+                var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
+
+                foreach (var vehicleView in vehicleViews)
+                {
+                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+                }
+
+                var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+                var trailers = vehiclesAndTrailers.Where(bv => bv.IsTrailer).Select(bv => new Models.Trailer(bv));
+
+                if (trailers != null)
+                {
+
+                    _trailerRepository.DeleteAll();
+
+                    _trailerRepository.Insert(trailers);
+
+                    Trailers = _originalTrailerList = _trailerRepository.GetAll();
+
+                    //Recalls the filter text if there is text in the search field.
+                    if (SearchText != null)
+                    {
+                        FilterList();
+                    }
+                }
+            }
+        }
+
+
     }
 }

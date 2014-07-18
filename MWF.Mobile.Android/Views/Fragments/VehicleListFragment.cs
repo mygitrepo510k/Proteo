@@ -59,6 +59,8 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
+            this.Activity.ActionBar.Show();
+
             base.OnViewCreated(view, savedInstanceState);
         }
     }

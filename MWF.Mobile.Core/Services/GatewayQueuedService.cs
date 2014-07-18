@@ -73,7 +73,17 @@ namespace MWF.Mobile.Core.Services
 
         public void AddToQueue(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
         {
-            var requestContent = CreateRequestContent(command, parameters);
+            AddToQueue(CreateRequestContent(command, parameters));
+        }
+
+        public void AddToQueue<TData>(string command, TData data, Models.GatewayServiceRequest.Parameter[] parameters = null)
+            where TData: class
+        {
+            AddToQueue(CreateRequestContent(command, data, parameters));
+        }
+
+        private void AddToQueue(Models.GatewayServiceRequest.Content requestContent)
+        {
             var serializedContent = JsonConvert.SerializeObject(requestContent);
             var queueItem = new Models.GatewayQueueItem { ID = Guid.NewGuid(), JsonSerializedRequestContent = serializedContent, QueuedDateTime = DateTime.Now };
             _queueItemRepository.Insert(queueItem);
@@ -145,7 +155,7 @@ namespace MWF.Mobile.Core.Services
         }
 
         /// <summary>
-        /// Create a single-action request's content
+        /// Create a single-action request's content without data
         /// </summary>
         private Models.GatewayServiceRequest.Content CreateRequestContent(string command, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
         {
@@ -154,6 +164,23 @@ namespace MWF.Mobile.Core.Services
                 new Core.Models.GatewayServiceRequest.Action
                 {
                     Command = command,
+                    Parameters = parameters,
+                }
+            });
+        }
+
+        /// <summary>
+        /// Create a single-action request's content with data
+        /// </summary>
+        private Models.GatewayServiceRequest.Content CreateRequestContent<TData>(string command, TData data, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
+            where TData: class
+        {
+            return this.CreateRequestContent(new[]
+            {
+                new Core.Models.GatewayServiceRequest.Action<TData>
+                {
+                    Command = command,
+                    Data = data,
                     Parameters = parameters,
                 }
             });

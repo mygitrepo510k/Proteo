@@ -90,7 +90,9 @@
     <Compile Include="Models\Attributes\ChildRelationshipAttribute.cs" />
     <Compile Include="Models\Attributes\ForeignKeyAttribute.cs" />
     <Compile Include="Models\GatewayQueueItem.cs" />
+    <Compile Include="Models\GatewayServiceRequest\ActionOfT.cs" />
     <Compile Include="Models\GatewayServiceRequest\Action.cs" />
+    <Compile Include="Models\GatewayServiceRequest\BaseContent.cs" />
     <Compile Include="Models\GatewayServiceRequest\Content.cs" />
     <Compile Include="Models\GatewayServiceRequest\Parameter.cs" />
     <Compile Include="Models\GatewayServiceResponse\ResponseAction.cs" />
@@ -112,6 +114,7 @@
     <Compile Include="Models\SafetyCheckFaultType.cs" />
     <Compile Include="Models\SafetyCheckData.cs" />
     <Compile Include="Models\SafetyProfile.cs" />
+    <Compile Include="Models\SignatureImage.cs" />
     <Compile Include="Models\Vehicle.cs" />
     <Compile Include="Models\Trailer.cs" />
     <Compile Include="Models\BaseVehicle.cs" />
@@ -159,6 +162,7 @@
     <Compile Include="Services\IStartupInfoService.cs" />
     <Compile Include="Services\StartupInfoService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
+    <Compile Include="ViewModels\SafetyCheckSignatureViewModel.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\VehicleListViewModel.cs" />
     <Compile Include="ViewModels\CustomerCodeViewModel.cs" />
@@ -190,6 +194,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat">
+      <HintPath>..\packages\Splat.1.3.3\lib\Portable-net45+win+wpa81+wp80\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.dll</HintPath>

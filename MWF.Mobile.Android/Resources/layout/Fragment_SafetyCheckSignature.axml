@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:local="http://schemas.android.com/apk/res-auto"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+  <TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="20.0dp"
+    android:layout_marginTop="15dp"
+    local:MvxBind="Text DriverName"
+  />
+  <TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="20.0dp"
+    android:layout_marginTop="15dp"
+    local:MvxBind="Text VehicleRegistration"
+  />
+  <TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="20.0dp"
+    android:layout_marginTop="15dp"
+    local:MvxBind="Text TrailerRef"
+  />
+  <TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="20.0dp"
+    android:layout_marginTop="15dp"
+    local:MvxBind="Text Preamble"
+  />
+  <signaturepad.SignaturePadView
+    android:id="@+id/signature_view"
+    android:layout_width="fill_parent"
+    android:layout_height="100dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginBottom="10dp"
+  />
+  <TextView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:textSize="20.0dp"
+    android:layout_marginTop="15dp"
+    local:MvxBind="Text Postamble"
+  />
+  <Button
+    android:id="@+id/button_done"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    local:MvxBind="Text DoneLabel"
+  />
+</LinearLayout>

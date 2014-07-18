@@ -152,6 +152,8 @@
     <Compile Include="Portable\IDeviceInfo.cs" />
     <Compile Include="Services\IGatewayService.cs" />
     <Compile Include="Services\IHttpService.cs" />
+    <Compile Include="Services\IStartupInfoService.cs" />
+    <Compile Include="Services\StartupInfoService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\VehicleListViewModel.cs" />

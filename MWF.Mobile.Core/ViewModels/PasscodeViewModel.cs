@@ -12,12 +12,14 @@ namespace MWF.Mobile.Core.ViewModels
 		: MvxViewModel
     {
 
-        private readonly Services.IAuthenticationService _authenticationService = null;
+        private readonly IAuthenticationService _authenticationService = null;
+        private readonly IStartupInfoService _startupInfoService = null;
         private bool _isBusy = false;
 
-        public PasscodeViewModel(Services.IAuthenticationService authenticationService)
+        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupInfoService startupInfoService)
         {
             _authenticationService = authenticationService;
+            _startupInfoService = startupInfoService;
         }
    
         public bool IsBusy
@@ -75,21 +77,31 @@ namespace MWF.Mobile.Core.ViewModels
                 return;
             }
 
+            await Authenticate();
+        }
+
+        #region Private Methods
+
+        private async Task Authenticate()
+        {
             IsBusy = true;
             AuthenticationResult result;
 
             try
             {
                 result = await _authenticationService.AuthenticateAsync(this.Passcode);
-                
+
                 if (result.Success)
-                    ShowViewModel<VehicleListViewModel>();               
-                
+                {
+                    _startupInfoService.LoggedInDriver = result.Driver;
+                    ShowViewModel<VehicleListViewModel>();
+                }
+
             }
             catch (Exception ex)
             {
                 // TODO: log the exception to be picked up by bluesphere
-                result = new AuthenticationResult() { AuthenticationFailedMessage = "Unable to check your passcode", Success = false };
+                result = new AuthenticationResult() { AuthenticationFailedMessage = "Unable to check your passcode.", Success = false };
             }
             finally
             {
@@ -98,8 +110,11 @@ namespace MWF.Mobile.Core.ViewModels
                 IsBusy = false;
             }
 
-             if (!result.Success) await Mvx.Resolve<IUserInteraction>().AlertAsync(result.AuthenticationFailedMessage);
+            // Let the user know
+            if (!result.Success) await Mvx.Resolve<IUserInteraction>().AlertAsync(result.AuthenticationFailedMessage);
         }
+
+        #endregion
 
     }
 

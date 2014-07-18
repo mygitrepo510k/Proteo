@@ -12,6 +12,8 @@ using Moq;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels;
 using Xunit;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -19,6 +21,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
     public class PasscodeViewModelTests
         : MvxIoCSupportingTest
     {
+
+        private IFixture _fixture;
 
         protected override void AdditionalSetup()
         {
@@ -29,10 +33,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var mockUserInteraction = new Mock<IUserInteraction>();
             Ioc.RegisterSingleton<IUserInteraction>(mockUserInteraction.Object);
 
+            _fixture = new Fixture().Customize(new AutoMoqCustomization());
+
             var mockAuthenticationService = new Mock<IAuthenticationService>();
             mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.IsAny<string>())).ReturnsAsync(new AuthenticationResult { Success = false });
-            mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.Is<string>(s => s == "9999"))).ReturnsAsync(new AuthenticationResult { Success = true });
-            Ioc.RegisterSingleton<IAuthenticationService>(mockAuthenticationService.Object);
+            mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.Is<string>(s => s == "9999"))).ReturnsAsync(new AuthenticationResult { Success = true, Driver = new Core.Models.Driver() { LastName = "TestName" } });
+            _fixture.Inject<IAuthenticationService>(mockAuthenticationService.Object);
         }
 
         /// <summary>
@@ -43,8 +49,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var mockAuthenticationService = Ioc.Resolve<IAuthenticationService>();
-            var vm = new PasscodeViewModel(mockAuthenticationService) { Passcode = "9999" };
+            var vm = _fixture.Create<PasscodeViewModel>();
+            vm.Passcode = "9999";
 
             vm.LoginCommand.Execute(null);
 
@@ -52,6 +58,27 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.Equal(1, mockDispatcher.Requests.Count);
             var request = mockDispatcher.Requests.First();
             Assert.Equal(typeof(VehicleListViewModel), request.ViewModelType);
+
+        }
+
+        /// <summary>
+        /// Tests that on successful authentication a driver 
+        /// </summary>
+        [Fact]
+        public void PasscodeVM_SuccessfulAuthenticationStoresDriver()
+        {
+            base.ClearAll();
+
+            var startUpInfoService = new StartupInfoService();
+            _fixture.Inject<IStartupInfoService>(startUpInfoService);
+            var vm = _fixture.Create<PasscodeViewModel>();
+            vm.Passcode = "9999";
+
+            vm.LoginCommand.Execute(null);
+
+            Assert.NotNull(startUpInfoService.LoggedInDriver);
+            Assert.Equal("TestName", startUpInfoService.LoggedInDriver.LastName);
+
         }
 
 
@@ -60,8 +87,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var mockAuthenticationService = Ioc.Resolve<IAuthenticationService>();
-            var vm = new PasscodeViewModel(mockAuthenticationService) { Passcode = "" };
+            var vm = _fixture.Create<PasscodeViewModel>();
+            vm.Passcode = "";
 
             vm.LoginCommand.Execute(null);
 
@@ -76,8 +103,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             // Set incorrect password
-            var mockAuthenticationService = Ioc.Resolve<IAuthenticationService>();
-            var vm = new PasscodeViewModel(mockAuthenticationService) { Passcode = "1212" };
+            var vm = _fixture.Create<PasscodeViewModel>();
+            vm.Passcode = "1212";
+        
 
             vm.LoginCommand.Execute(null);
 

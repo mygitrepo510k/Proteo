@@ -80,7 +80,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void FilterList()
         {
-            Vehicles = _originalVehicleList.Where(v => v.Registration.Contains(SearchText));
+            Vehicles = _originalVehicleList.Where(v => v.Registration.ToUpper().Contains(SearchText.ToUpper()));
         }
 
         //This is method associated with the refresh button in the action bar. 

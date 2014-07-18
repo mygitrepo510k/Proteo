@@ -132,7 +132,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void FilterList()
         {
-            Trailers = _originalTrailerList.Where(t => t.Registration.Contains(SearchText));
+            Trailers = _originalTrailerList.Where(t => t.Registration.ToUpper().Contains(SearchText.ToUpper()));
         }
 
         //This is method associated with the refresh button in the action bar. 

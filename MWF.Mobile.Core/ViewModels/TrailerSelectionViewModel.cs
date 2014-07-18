@@ -27,14 +27,17 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly ITrailerRepository _trailerRepository;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
+        private readonly IStartupInfoService _startupInfoService;
 
         private Trailer _trailer;
 
         private IEnumerable<Trailer> _trailerList;
-        public TrailerSelectionViewModel(ITrailerRepository trailerRepository, IReachability reachabibilty, IToast toast)
+        public TrailerSelectionViewModel(ITrailerRepository trailerRepository, IReachability reachabibilty,
+            IToast toast, IStartupInfoService startupInfoService)
         {
             _toast = toast;
             _reachability = reachabibilty;
+            _startupInfoService = startupInfoService;
 
             _trailerRepository = trailerRepository;
             Trailers = _originalTrailerList = _trailerRepository.GetAll();
@@ -61,7 +64,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string TrailerSelectText
         {
-            get { return "Please select a trailer."; }
+            get { return "Please select a trailer. " + VehicleRegistration; }
+        }
+
+        public String VehicleRegistration
+        {
+            get { return "Vehicle Registration: " + Trailer.Registration;  }
         }
 
         public Trailer Trailer
@@ -104,6 +112,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (isConfirmed)
                     {
+                        _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = Guid.Empty;
                         //TODO: Forward you to the safety selection screen!
                     }
                 }, "Please confirm your trailer");
@@ -115,6 +124,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (isConfirmed)
                     {
+                        _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
                         //TODO: Forward you to safety selection screen!
                     }
                 }, "Please confirm your trailer");

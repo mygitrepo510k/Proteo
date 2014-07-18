@@ -25,6 +25,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
+        private readonly IStartupInfoService _startupInfoService;
 
 
         public string VehicleSelectText
@@ -32,10 +33,12 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Please select a trailer."; }
         }
 
-        public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty, IToast toast)
+        public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty, 
+            IToast toast, IStartupInfoService startupInfoService)
         {
             _toast = toast;
             _reachability = reachabibilty;
+            _startupInfoService = startupInfoService;
             
             _vehicleRepository = vehicleRepository;
             Vehicles = _originalVehicleList = _vehicleRepository.GetAll();  
@@ -63,6 +66,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (isConfirmed)
                 {
+                    _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
                     ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = vehicle.ID });
                 }
             }, "Please confirm your vehicle");

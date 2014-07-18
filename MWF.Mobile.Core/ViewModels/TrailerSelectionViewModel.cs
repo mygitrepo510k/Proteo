@@ -24,6 +24,7 @@ namespace MWF.Mobile.Core.ViewModels
         private Services.IGatewayService _gatewayService;
         private IEnumerable<Trailer> _originalTrailerList;
 
+        private readonly IVehicleRepository _vehicleRepository;
         private readonly ITrailerRepository _trailerRepository;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
@@ -32,15 +33,17 @@ namespace MWF.Mobile.Core.ViewModels
         private Trailer _trailer;
 
         private IEnumerable<Trailer> _trailerList;
-        public TrailerSelectionViewModel(ITrailerRepository trailerRepository, IReachability reachabibilty,
+        public TrailerSelectionViewModel(IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IReachability reachabibilty,
             IToast toast, IStartupInfoService startupInfoService)
         {
             _toast = toast;
             _reachability = reachabibilty;
             _startupInfoService = startupInfoService;
 
+            
             _trailerRepository = trailerRepository;
             Trailers = _originalTrailerList = _trailerRepository.GetAll();
+            _vehicleRepository = vehicleRepository;
         }
 
         public class Nav
@@ -69,7 +72,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         public String VehicleRegistration
         {
-            get { return "Vehicle Registration: " + Trailer.Registration;  }
+            get { return "Vehicle Registration: " 
+                + _vehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID).Registration;  }
         }
 
         public Trailer Trailer

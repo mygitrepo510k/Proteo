@@ -77,6 +77,16 @@ namespace MWF.Mobile.Core.ViewModels
             set { _isBusy = value; RaisePropertyChanged(() => IsBusy); }
         }
 
+        public string ProgressTitle
+        {
+            get { return "Downloading data...";  }
+        }
+
+        public string ProgressMessage
+        {
+            get { return "Please wait while we setup your device...";  }
+        }
+
         private MvxCommand _enterCodeCommand;
         public System.Windows.Input.ICommand EnterCodeCommand
         {

@@ -15,13 +15,16 @@ namespace MWF.Mobile.Android.Views
     public class BindableProgress
     {
         private readonly Context _context;
-
         public BindableProgress(Context context)
         {
             _context = context;
+
         }
 
         private ProgressDialog _dialog;
+
+        public string Title { get; set; }
+        public string Message { get; set; }
 
         public bool Visible
         {
@@ -34,8 +37,8 @@ namespace MWF.Mobile.Android.Views
                 if(value)
                 {
                     _dialog = new ProgressDialog(_context);
-                    _dialog.SetTitle("Downloading data...");
-                    _dialog.SetMessage("Please wait while we setup your device...");
+                    _dialog.SetTitle(Title);
+                    _dialog.SetMessage(Message);
                     _dialog.Show();
                     _dialog.SetCanceledOnTouchOutside(false);
                 }

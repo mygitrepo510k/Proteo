@@ -55,6 +55,16 @@ namespace MWF.Mobile.Core.Repositories
 
             }
 
+            public virtual void DeleteAll()
+            {
+                //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
+
+                _connection.RunInTransaction(() =>
+                {
+                    DeleteAllRecursive(typeof(T));
+                });
+            }
+
             public virtual void Delete(T entity)
             {
                 //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
@@ -66,18 +76,9 @@ namespace MWF.Mobile.Core.Repositories
             }
 
 
-            public virtual IEnumerable<T> GetWhere(Expression<Func<T, bool>> predicate)
-            {
-                var entities = _connection.Table<T>().Where(predicate);
-
-                if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities);
-
-                return entities;
-            }
-
             public virtual IEnumerable<T> GetAll()
             {
-                var entities = _connection.Table<T>();
+                var entities = _connection.Table<T>().ToList();
 
                 if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities);
 
@@ -143,6 +144,19 @@ namespace MWF.Mobile.Core.Repositories
                 }
             }
 
+            private void DeleteAllRecursive(Type type)
+            {
+                DeleteAllFromTable(type);
+
+                foreach (var childType in type.GetChildRelationTypes())
+                {
+
+                    DeleteAllRecursive(childType);
+
+                }
+            }
+
+
             private void PopulateChildrenRecursive(IEnumerable parents)
             {
                 foreach (var parent in parents)
@@ -186,10 +200,16 @@ namespace MWF.Mobile.Core.Repositories
 
             }
 
+            // Deletes all items from the table associated with the specified type
+            private void DeleteAllFromTable(Type type)
+            {
+                string command = string.Format("delete from {0}", type.GetTableName());
+                _connection.CreateCommand(command).ExecuteNonQuery();
+            }
+
 
 
             #endregion
-
 
         }
 

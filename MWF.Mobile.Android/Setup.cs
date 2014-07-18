@@ -42,6 +42,7 @@ namespace MWF.Mobile.Android
 
             Mvx.RegisterSingleton<IReachability>(() => new Reachability());
             Mvx.RegisterSingleton<IDeviceInfo>(() => new DeviceInfo());
+            Mvx.RegisterSingleton<IToast>(() => new Portable.Toast());
         }
 
     }

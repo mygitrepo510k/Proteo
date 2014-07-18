@@ -122,6 +122,7 @@
     <Compile Include="LinkerPleaseInclude.cs" />
     <Compile Include="Portable\DeviceInfo.cs" />
     <Compile Include="Portable\Reachability.cs" />
+    <Compile Include="Portable\Toast.cs" />
     <Compile Include="Presenters\CustomPresenter.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -164,10 +165,10 @@
     <AndroidResource Include="Resources\layout\Item_Vehicle.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\VehicleListView.axml">
+    <AndroidResource Include="Resources\layout\Fragment_VehicleListView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\TrailerSelectionView.axml">
+    <AndroidResource Include="Resources\layout\Fragment_TrailerSelectionView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Trailer.axml">
@@ -204,6 +205,10 @@
     <AndroidResource Include="Resources\drawable\proteoLogo.jpg" />
     <AndroidResource Include="Resources\drawable\mwfLogo.png" />
     <AndroidResource Include="Resources\drawable\arrowIcon.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_action_refresh.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\ic_action_refresh.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_action_refresh.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_refresh.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

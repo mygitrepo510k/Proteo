@@ -17,7 +17,7 @@ namespace MWF.Mobile.Core.ViewModels
 		: BaseActivityViewModel
     {
 
-        public StartupViewModel(IAuthenticationService authenticationService, IGatewayService gatewayService, Portable.IReachability reachableService, IDataService dataService, IRepositories repositories, IDeviceInfo deviceInfo, IUserInteraction userInteraction)
+        public StartupViewModel(IAuthenticationService authenticationService, IGatewayService gatewayService, Portable.IReachability reachableService, IDataService dataService, IRepositories repositories, IDeviceInfo deviceInfo, IStartupInfoService startupInfoService, IUserInteraction userInteraction)
         {
 //#if DEBUG
 //            Mvx.Resolve<IUserInteraction>().Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
@@ -27,7 +27,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (customerRepository.GetAll().Any())
             {
-                this.InitialViewModel = new PasscodeViewModel(authenticationService);
+                this.InitialViewModel = new PasscodeViewModel(authenticationService, startupInfoService);
             }
             else
             {
@@ -37,24 +37,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void DEBUGGING_ClearAllData(IRepositories repositories)
         {
-            ClearAllDataFromTable(repositories.ApplicationRepository);
-            ClearAllDataFromTable(repositories.CustomerRepository);
-            ClearAllDataFromTable(repositories.DeviceRepository);
-            ClearAllDataFromTable(repositories.DriverRepository);
-            ClearAllDataFromTable(repositories.SafetyProfileRepository);
-            ClearAllDataFromTable(repositories.TrailerRepository);
-            ClearAllDataFromTable(repositories.VehicleRepository);
-            ClearAllDataFromTable(repositories.VerbProfileRepository);
-        }
-
-        private void ClearAllDataFromTable<T>(Repositories.IRepository<T> repository) where T : IBlueSphereEntity, new()
-        {
-            var rows = repository.GetAll().ToList();
-            
-            foreach (var row in rows)
-            {
-                repository.Delete(row);
-            }
+            repositories.ApplicationRepository.DeleteAll();
+            repositories.CustomerRepository.DeleteAll();
+            repositories.DeviceRepository.DeleteAll();
+            repositories.DriverRepository.DeleteAll();
+            repositories.SafetyProfileRepository.DeleteAll();
+            repositories.TrailerRepository.DeleteAll();
+            repositories.VehicleRepository.DeleteAll();
+            repositories.VerbProfileRepository.DeleteAll();
         }
 
 

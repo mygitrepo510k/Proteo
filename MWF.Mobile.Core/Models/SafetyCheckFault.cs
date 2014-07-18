@@ -31,7 +31,7 @@ namespace MWF.Mobile.Core.Models
         [ChildRelationship(typeof(Image))]
         [JsonProperty("image")]
         [JsonConverter(typeof(JsonWrappedListConverter<Image>))]
-        public List<Image> images { get; set; }
+        public List<Image> Images { get; set; }
 
         [ForeignKey(typeof(SafetyCheckData))]
         public Guid SafetyCheckDataID { get; set; }

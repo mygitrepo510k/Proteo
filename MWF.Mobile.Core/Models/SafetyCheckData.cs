@@ -40,7 +40,7 @@ namespace MWF.Mobile.Core.Models
         [JsonProperty("@signature")]
         // Does this need a json wrapper?
         [ChildRelationship(typeof(Signature))]
-        public Signature signature { get; set; }
+        public Signature Signature { get; set; }
 
         [ChildRelationship(typeof(SafetyCheckFault))]
         [JsonProperty("faults")]

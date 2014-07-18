@@ -16,6 +16,8 @@ namespace MWF.Mobile.Tests.RepositoryTests
 {
 
     // Tests the BaseRepository class (albeit by using a concrete subclass)
+    // Note these are fairly basic tests. End to End integration tests using an
+    // actual sqlite database are in RepositoryIntegrationTests.cs.
 
     public class RepositoryTests
         : MvxIoCSupportingTest

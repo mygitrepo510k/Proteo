@@ -269,8 +269,8 @@ namespace MWF.Mobile.Tests.RepositoryTests
             Assert.Empty(_dataService.Connection.Table<GrandParentEntity>());
             Assert.Empty(_dataService.Connection.Table<ParentEntity>());
             Assert.Empty(_dataService.Connection.Table<ChildEntity>());
-
-
+            Assert.Empty(_dataService.Connection.Table<ChildEntity2>());
+            Assert.Empty(_dataService.Connection.Table<SingleChildEntity>());
         }
 
         #region IDisposable (Teardown)

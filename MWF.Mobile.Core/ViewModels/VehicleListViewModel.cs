@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -22,6 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
         private Services.IGatewayService _gatewayService;
         private IEnumerable<Vehicle> _originalVehicleList;
 
+        private readonly ICurrentDriverRepository _currentDriverRepository;
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
@@ -33,15 +35,16 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Please select a trailer."; }
         }
 
-        public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty, 
-            IToast toast, IStartupInfoService startupInfoService)
+        public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty,
+            IToast toast, IStartupInfoService startupInfoService, ICurrentDriverRepository currentDriverRepository)
         {
             _toast = toast;
             _reachability = reachabibilty;
             _startupInfoService = startupInfoService;
-            
+
+            _currentDriverRepository = currentDriverRepository;
             _vehicleRepository = vehicleRepository;
-            Vehicles = _originalVehicleList = _vehicleRepository.GetAll();  
+            Vehicles = _originalVehicleList = _vehicleRepository.GetAll(); 
         }
         
         private IEnumerable<Vehicle> _vehicles;
@@ -73,7 +76,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        //This is method associated with the search button in the action bar.
         private string _searchText;
         public string SearchText
         {
@@ -87,13 +89,11 @@ namespace MWF.Mobile.Core.ViewModels
             Vehicles = _originalVehicleList.Where(v => v.Registration.ToUpper().Contains(SearchText.ToUpper()));
         }
 
-        //This is method associated with the refresh button in the action bar. 
         private MvxCommand _refreshListCommand;
         public ICommand RefreshListCommand
         {
             get
             {
-
                 return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(() => updateVehicleList()));
             }
         }

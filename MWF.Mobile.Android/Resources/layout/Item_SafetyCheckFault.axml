@@ -11,6 +11,7 @@
         <ImageView
             android:layout_width="100dp"
             android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
@@ -20,6 +21,7 @@
         <ImageView
             android:layout_width="100dp"
             android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
@@ -29,6 +31,7 @@
         <ImageView
             android:layout_width="100dp"
             android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
@@ -38,6 +41,7 @@
         <ImageView
             android:layout_width="100dp"
             android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
@@ -54,22 +58,13 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             local:MvxBind="Text Title" />
-    <!--<Button
-            style="@style/Theme.Button"
-            android:id="@+id/OpenMenuButton"
-            android:layout_weight="2"
-            android:layout_marginLeft="15dp"
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:src="@drawable/ic_action_overflow"
-            android:onClick="openContextMenu" />-->
-    <!--<ImageButton
-          android:id="@+id/OpenMenuButton"
-          android:layout_width="50dp"
-          android:layout_height="50dp"
-          android:layout_marginTop="15dp"
-          android:layout_marginLeft="15dp"
-          android:layout_marginRight="10dp"
-          android:layout_weight="3"
-          android:src="@drawable/ic_action_overflow" />-->
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:src="@drawable/ic_action_overflow" />
     </LinearLayout>
 </LinearLayout>

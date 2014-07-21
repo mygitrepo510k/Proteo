@@ -29,10 +29,6 @@ namespace MWF.Mobile.Android.Views.Fragments
         private ListView itemList;
         private long selectedItemId;
 
-        private const int PASS_ITEM = 0;
-        private const int DISCRETIONARY_PASS_ITEM = 1;
-        private const int FAIL_ITEM = 2;
-
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code
@@ -46,8 +42,15 @@ namespace MWF.Mobile.Android.Views.Fragments
 
 
             itemList = (ListView)view.FindViewById(Resource.Id.SafetyListView);
+            itemList.ItemClick += itemList_ItemClick;
             RegisterForContextMenu(itemList);
         }
+
+        void itemList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            ((ListView)sender).ShowContextMenuForChild(e.View);
+        }
+
 
         public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo info)
         {

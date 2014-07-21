@@ -56,7 +56,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (!allChecksPassed) 
                         return allChecksPassed;
 
-                    allChecksPassed = (safetyCheckItem.CheckStatus == SafetyCheckEnum.Passed);
+                    allChecksPassed = (safetyCheckItem.CheckStatus == SafetyCheckEnum.Passed || safetyCheckItem.CheckStatus == SafetyCheckEnum.DiscretionaryPass);
                 }
 
                 return allChecksPassed;

@@ -38,8 +38,7 @@ namespace MWF.Mobile.Core.ViewModels
             set 
             { 
                 _checkStatus = value;
-                if (_checkStatus == SafetyCheckEnum.Passed)
-                    _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
                 RaisePropertyChanged(() => CheckStatus);
             }
         }

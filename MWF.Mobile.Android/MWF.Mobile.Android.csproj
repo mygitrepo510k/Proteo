@@ -90,6 +90,9 @@
     </Reference>
     <Reference Include="Cirrious.MvvmCross.Plugins.Visibility.Droid">
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Visibility.3.1.1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Visibility.Droid.dll</HintPath>
+	</Reference>
+    <Reference Include="Cirrious.MvvmCross.Plugins.Messenger">
+      <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Messenger.3.2.1-beta1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Messenger.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
@@ -119,17 +122,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrap\CommunitySqlitePluginBootstrap.cs" />
+    <Compile Include="Bootstrap\MessengerPluginBootstrap.cs" />
     <Compile Include="Bootstrap\UserInteractionPluginBootstrap.cs" />
     <Compile Include="Bootstrap\VisibilityPluginBootstrap.cs" />
     <Compile Include="DebugTrace.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
+    <Compile Include="Portable\DeviceInfo.cs" />
     <Compile Include="Portable\Reachability.cs" />
+    <Compile Include="Portable\Toast.cs" />
     <Compile Include="Presenters\CustomPresenter.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\GatewayQueueTimerService.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="SplashScreen.cs" />
     <Compile Include="Views\BindableProgress.cs" />
+    <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragement.cs" />
@@ -165,10 +173,10 @@
     <AndroidResource Include="Resources\layout\Item_Vehicle.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\VehicleListView.axml">
+    <AndroidResource Include="Resources\layout\Fragment_VehicleListView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\TrailerSelectionView.axml">
+    <AndroidResource Include="Resources\layout\Fragment_TrailerSelectionView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Trailer.axml">
@@ -178,6 +186,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_SafetyCheckFault.axml">
+		<SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_About.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -206,7 +217,6 @@
     </AndroidResource>
     <AndroidResource Include="Resources\menu\vehicle_activity_actions.xml" />
     <AndroidResource Include="Resources\drawable\proteoLogo.jpg" />
-    <AndroidResource Include="Resources\drawable\arrowIcon.png" />
     <AndroidResource Include="Resources\drawable\mwfLogo.png" />
     <AndroidResource Include="Resources\drawable\cross.png" />
     <AndroidResource Include="Resources\drawable\tick.png" />
@@ -231,6 +241,11 @@
     <AndroidResource Include="Resources\drawable-mdpi\empty_square.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\empty_square.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\empty_square.png" />
+    <AndroidResource Include="Resources\drawable\arrowIcon.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_action_refresh.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\ic_action_refresh.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_action_refresh.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_refresh.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

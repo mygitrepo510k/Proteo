@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,13 @@ namespace MWF.Mobile.Core.Helpers
                     select property).ToList();
         }
 
+        public static List<Type> GetChildRelationTypes(this Type type)
+        {
+            return (from property in type.GetRuntimeProperties()
+                    where property.GetCustomAttribute<ChildRelationshipAttribute>() != null
+                    select property.GetCustomAttribute<ChildRelationshipAttribute>().ChildType).ToList();
+        }
+
         public static bool HasChildRelationProperties(this Type type)
         {
             return type.GetChildRelationProperties().Any();
@@ -35,6 +43,15 @@ namespace MWF.Mobile.Core.Helpers
             ChildRelationshipAttribute attr = propertyInfo.GetCustomAttribute<ChildRelationshipAttribute>();
 
             return (attr == null) ? null : attr.ChildType;
+        }
+
+        public static RelationshipCardinality GetCardinalityOfChildRelation(this PropertyInfo propertyInfo)
+        {
+           ChildRelationshipAttribute attr = propertyInfo.GetCustomAttribute<ChildRelationshipAttribute>();
+
+           Debug.Assert(attr != null);
+
+           return attr.Cardinality;
         }
 
         public static string GetTableName(this Type type)
@@ -60,6 +77,13 @@ namespace MWF.Mobile.Core.Helpers
         public static string GetForeignKeyName(this Type childType, Type parentType)
         {
 
+            return childType.GetForeignKeyProperty(parentType).GetColumnName();
+
+        }
+
+        public static PropertyInfo GetForeignKeyProperty(this Type childType, Type parentType)
+        {
+
             var foreignKeyProperties = (from property in childType.GetRuntimeProperties()
                                         where property.GetCustomAttribute<ForeignKeyAttribute>() != null
                                         && (property.GetCustomAttribute<ForeignKeyAttribute>() as ForeignKeyAttribute).ForeignType == parentType
@@ -67,7 +91,7 @@ namespace MWF.Mobile.Core.Helpers
 
             //Contract.Assert(foreignKeyProperties.Any(), string.Format("Type {0} does not contain any foreign key references back to parent type {1}", childType.ToString(), parentType.ToString()));
 
-            return foreignKeyProperties.Single().GetColumnName();
+            return foreignKeyProperties.Single();
 
         }
 

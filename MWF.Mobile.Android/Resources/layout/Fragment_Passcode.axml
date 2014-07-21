@@ -8,7 +8,7 @@
         android:layout_marginTop="10dp"
         android:layout_width="227.5dp"
         android:layout_height="117.0dp"
-        android:src="@drawable/proteoLogo"
+        android:src="@drawable/mwfLogo"
         android:layout_marginRight="0.0dp"
         android:layout_gravity="center_horizontal" />
     <TextView
@@ -16,18 +16,17 @@
         android:layout_height="wrap_content"
         android:textSize="30dp"
         android:gravity="center_horizontal"
-        android:layout_marginTop="10dp"
         local:MvxBind="Text PasscodeLabel" />
     <EditText
         style="@style/Theme.EditText"
         android:inputType="numberPassword"
         android:password="true"
+        android:gravity="center"
         android:background="#cccfd1"
         local:MvxBind="Text Passcode" />
     <Button
         style="@style/Theme.Button"
         android:id="@+id/button1"
         android:background="#ffcf7b"
-        android:text="enter passcode"
-        local:MvxBind="Click LoginCommand" />
+        local:MvxBind="Text PasscodeButtonLabel; Click LoginCommand" />
 </LinearLayout>

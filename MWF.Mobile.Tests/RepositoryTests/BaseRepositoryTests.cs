@@ -16,6 +16,8 @@ namespace MWF.Mobile.Tests.RepositoryTests
 {
 
     // Tests the BaseRepository class (albeit by using a concrete subclass)
+    // Note these are fairly basic tests. End to End integration tests using an
+    // actual sqlite database are in RepositoryIntegrationTests.cs.
 
     public class RepositoryTests
         : MvxIoCSupportingTest
@@ -101,8 +103,6 @@ namespace MWF.Mobile.Tests.RepositoryTests
             // SQL connection should have been hit with a pull from the table
             _connectionMock.Verify(c => c.Table<Device>(), Times.Once);
 
-            // Check that the Iqueryable returned by sqlite was returned by GetAll call
-            Assert.Same(devices, devicesOut);
 
         }
 

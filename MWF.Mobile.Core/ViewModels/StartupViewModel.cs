@@ -1,5 +1,3 @@
-using MWF.Mobile.Core.Repositories;
-using MWF.Mobile.Core.Services;
 using System.Collections.Generic;
 using System.Linq;
 using Cirrious.CrossCore;
@@ -7,6 +5,9 @@ using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.Portable;
+using Chance.MvvmCross.Plugins.UserInteraction;
+
 
 
 namespace MWF.Mobile.Core.ViewModels
@@ -16,19 +17,36 @@ namespace MWF.Mobile.Core.ViewModels
 		: BaseActivityViewModel
     {
 
-        public StartupViewModel(IAuthenticationService authenticationService, IGatewayService gatewayService, Portable.IReachability reachableService, IDataService dataService, IRepositories repositories)          
+        public StartupViewModel(IAuthenticationService authenticationService, IGatewayService gatewayService, Portable.IReachability reachableService, IDataService dataService, IRepositories repositories, IDeviceInfo deviceInfo, IStartupInfoService startupInfoService, IUserInteraction userInteraction)
         {
+//#if DEBUG
+//            Mvx.Resolve<IUserInteraction>().Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
+//#endif
 
             var customerRepository = repositories.CustomerRepository;
 
             if (customerRepository.GetAll().Any())
             {
-                this.InitialViewModel =  new PasscodeViewModel(authenticationService);
+                this.InitialViewModel = new PasscodeViewModel(authenticationService, startupInfoService);
             }
             else
             {
-                this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService, repositories);
+                this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService, repositories, userInteraction);
             }
         }
+
+        private void DEBUGGING_ClearAllData(IRepositories repositories)
+        {
+            repositories.ApplicationRepository.DeleteAll();
+            repositories.CustomerRepository.DeleteAll();
+            repositories.DeviceRepository.DeleteAll();
+            repositories.DriverRepository.DeleteAll();
+            repositories.SafetyProfileRepository.DeleteAll();
+            repositories.TrailerRepository.DeleteAll();
+            repositories.VehicleRepository.DeleteAll();
+            repositories.VerbProfileRepository.DeleteAll();
+        }
+
+
     }
 }

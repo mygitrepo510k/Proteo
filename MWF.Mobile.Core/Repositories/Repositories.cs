@@ -10,17 +10,21 @@ namespace MWF.Mobile.Core.Repositories
     {
 
         public Repositories(IApplicationProfileRepository applicationRepository, ICustomerRepository customerRepository, IDeviceRepository deviceRepository,
-                            IDriverRepository driverRepository, ISafetyProfileRepository safetyProfileRepository, IVehicleRepository vehicleRepository, IVerbProfileRepository verbProfileRepository, IGatewayQueueItemRepository gatewayQueueItemRepository)
+                            IDriverRepository driverRepository, IGatewayQueueItemRepository gatewayQueueItemRepository, ISafetyProfileRepository safetyProfileRepository, IVehicleRepository vehicleRepository, 
+                            ITrailerRepository trailerRepository, IVerbProfileRepository verbProfileRepository)
+
         {
 
             ApplicationRepository = applicationRepository;
             CustomerRepository = customerRepository;
             DeviceRepository = deviceRepository;
             DriverRepository = driverRepository;
+            GatewayQueueItemRepository = gatewayQueueItemRepository;
             SafetyProfileRepository = safetyProfileRepository;
+            TrailerRepository = trailerRepository;
             VehicleRepository = vehicleRepository;
             VerbProfileRepository = verbProfileRepository;
-            GatewayQueueItemRepository = gatewayQueueItemRepository;
+            TrailerRepository = trailerRepository;
         }
 
         public IApplicationProfileRepository ApplicationRepository
@@ -47,7 +51,19 @@ namespace MWF.Mobile.Core.Repositories
             private set;
         }
 
+        public IGatewayQueueItemRepository GatewayQueueItemRepository
+        {
+            get;
+            private set;
+        }
+
         public ISafetyProfileRepository SafetyProfileRepository
+        {
+            get;
+            private set;
+        }
+
+        public ITrailerRepository TrailerRepository
         {
             get;
             private set;
@@ -65,10 +81,5 @@ namespace MWF.Mobile.Core.Repositories
             private set;
         }
 
-        public IGatewayQueueItemRepository GatewayQueueItemRepository
-        {
-            get;
-            private set;
-        }
     }
 }

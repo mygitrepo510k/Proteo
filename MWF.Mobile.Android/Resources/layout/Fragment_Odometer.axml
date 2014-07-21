@@ -4,9 +4,10 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <Mvx.MvxListView
+    <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        local:MvxBind="ItemsSource Vehicles; ItemClick ShowVehicleDetailCommand"
-        local:MvxItemTemplate="@layout/item_vehicle" />
+        android:gravity="center_horizontal"
+        android:textSize="30.0dp"
+        local:MvxBind="Text OdometerLabel" />
 </LinearLayout>

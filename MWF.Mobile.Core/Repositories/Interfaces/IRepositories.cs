@@ -12,9 +12,10 @@ namespace MWF.Mobile.Core.Repositories
         ICustomerRepository CustomerRepository { get; }
         IDeviceRepository DeviceRepository { get; }
         IDriverRepository DriverRepository { get; }
+        IGatewayQueueItemRepository GatewayQueueItemRepository { get; }
         ISafetyProfileRepository SafetyProfileRepository { get; }
+        ITrailerRepository TrailerRepository { get; }
         IVehicleRepository VehicleRepository { get; }
         IVerbProfileRepository VerbProfileRepository { get; }
-        IGatewayQueueItemRepository GatewayQueueItemRepository { get; }
     }
 }

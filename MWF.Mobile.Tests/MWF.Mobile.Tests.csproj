@@ -57,6 +57,9 @@
     <Reference Include="Cirrious.MvvmCross.Localization">
       <HintPath>..\packages\MvvmCross.HotTuna.CrossCore.3.2.1-beta1\lib\net45\Cirrious.MvvmCross.Localization.dll</HintPath>
     </Reference>
+    <Reference Include="Cirrious.MvvmCross.Plugins.Messenger">
+      <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Messenger.3.2.1-beta1\lib\net45\Cirrious.MvvmCross.Plugins.Messenger.dll</HintPath>
+    </Reference>
     <Reference Include="Cirrious.MvvmCross.Test.Core">
       <HintPath>..\packages\MvvmCross.HotTuna.Tests.3.2.1-beta1\lib\net45\Cirrious.MvvmCross.Test.Core.dll</HintPath>
     </Reference>
@@ -106,10 +109,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrap\CommunitySqlitePluginBootstrap.cs" />
+    <Compile Include="Bootstrap\MessengerPluginBootstrap.cs" />
+    <Compile Include="Helpers\MoqExtensions.cs" />
     <Compile Include="MockDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryTests\BaseRepositoryTests.cs" />
     <Compile Include="RepositoryTests\RepositoryIntegrationTest.cs" />
+    <Compile Include="RepositoryTests\TestModels\SingleChildEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\ChildEntity2.cs" />
     <Compile Include="RepositoryTests\TestModels\GrandParentEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\ChildEntity.cs" />
@@ -127,13 +133,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">
       <Project>{e15dcdf2-836f-4203-b322-9e2fdcdea3be}</Project>
       <Name>MWF.Mobile.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

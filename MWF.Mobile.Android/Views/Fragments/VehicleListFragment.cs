@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -25,7 +24,7 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            return this.BindingInflate(Resource.Layout.VehicleListView, null);
+            return this.BindingInflate(Resource.Layout.Fragment_VehicleListView, null);
         }
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
@@ -34,10 +33,22 @@ namespace MWF.Mobile.Android.Views.Fragments
             base.OnCreateOptionsMenu(menu, inflater);
             
 
-            var item = menu.FindItem(Resource.Id.action_search).ActionView;
-            _searchView = item.JavaCast<SearchView>();
+            var searchItem = menu.FindItem(Resource.Id.action_search).ActionView;
+            _searchView = searchItem.JavaCast<SearchView>();
             
             _searchView.QueryTextChange += (s, e) => ((VehicleListViewModel)this.ViewModel).SearchText = e.NewText;
+
+        }
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            switch (item.ItemId)
+            {
+                case Android.Resource.Id.action_refresh:
+                    ((VehicleListViewModel)ViewModel).RefreshListCommand.Execute(null);
+                    return true;
+            }
+            
+            return base.OnOptionsItemSelected(item);
         }
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -48,11 +59,9 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
+            this.Activity.ActionBar.Show();
+
             base.OnViewCreated(view, savedInstanceState);
-            
-
-            
-
         }
     }
 

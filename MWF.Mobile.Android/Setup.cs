@@ -40,10 +40,9 @@ namespace MWF.Mobile.Android
         {
             base.InitializeLastChance();
 
-            IDataService dataService = Mvx.Resolve<IDataService>();
-
             Mvx.RegisterSingleton<IReachability>(() => new Reachability());
-
+            Mvx.RegisterSingleton<IDeviceInfo>(() => new DeviceInfo());
+            Mvx.RegisterSingleton<IToast>(() => new Portable.Toast());
         }
 
         protected override System.Collections.Generic.List<System.Reflection.Assembly> ValueConverterAssemblies

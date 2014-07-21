@@ -28,6 +28,11 @@ namespace MWF.Mobile.Tests.RepositoryTests
         protected override void AdditionalSetup()
         {
 
+            if (File.Exists("db.sql"))
+            {
+                File.Delete("db.sql");
+            }
+
             ISQLiteConnectionFactory connectionFactory = new MvxWpfSqLiteConnectionFactory();
             _dataService = new DataService(connectionFactory);
 
@@ -35,6 +40,8 @@ namespace MWF.Mobile.Tests.RepositoryTests
             _dataService.Connection.CreateTable<ParentEntity>();
             _dataService.Connection.CreateTable<ChildEntity>();
             _dataService.Connection.CreateTable<ChildEntity2>();
+            _dataService.Connection.CreateTable<SingleChildEntity>();
+
         }
 
         [Fact]
@@ -112,10 +119,6 @@ namespace MWF.Mobile.Tests.RepositoryTests
             var verbProfile1In = fixture.Create<VerbProfile>();
             var verbProfile2In = fixture.Create<VerbProfile>();
 
-            foreach (var verbProfileItem in verbProfile1In.Children)
-            {
-                verbProfileItem.VerbProfileID = verbProfile1In.ID;
-            }
 
             VerbProfileRepository verbProfileRepository = new VerbProfileRepository(_dataService);
 
@@ -157,19 +160,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
             var parentEntityIn = fixture.Create<ParentEntity>();
             var parentEntity2In = fixture.Create<ParentEntity>();
 
-            // set up the foreign key relationships
-            foreach (var childEntity in parentEntityIn.Children)
-            {
-                childEntity.ParentID = parentEntityIn.ID;
-            }
-
-            foreach (var childEntity in parentEntityIn.Children2)
-            {
-                childEntity.ParentID = parentEntityIn.ID;
-            }
-
             ParentEntityRepository repository = new ParentEntityRepository(_dataService);
-
 
             // Insert records
             repository.Insert(parentEntityIn);
@@ -197,6 +188,10 @@ namespace MWF.Mobile.Tests.RepositoryTests
 
             }
 
+            // Check single child relationship
+            Assert.Equal(parentEntityIn.Child.ID, parentEntityOut.Child.ID);
+            Assert.Equal(parentEntityIn.Child.Title, parentEntityOut.Child.Title);
+
         }
 
         [Fact]
@@ -210,17 +205,6 @@ namespace MWF.Mobile.Tests.RepositoryTests
             var grandParentEntityIn = fixture.Create<GrandParentEntity>();
             var grandParentEntity2In = fixture.Create<GrandParentEntity>();
 
-            // set up the foreign key relationships
-            foreach (var parentEntity in grandParentEntityIn.Children)
-            {
-                parentEntity.ParentID = grandParentEntityIn.ID;
-                foreach (var childEntity in parentEntity.Children)
-                {
-                    childEntity.ParentID = parentEntity.ID;
-                    parentEntity.Children2.Clear();                  
-                }              
-            }
-
             GrandParentEntityRepository repository = new GrandParentEntityRepository(_dataService);
 
             // Insert records
@@ -230,9 +214,83 @@ namespace MWF.Mobile.Tests.RepositoryTests
             // Get the first entity back by id
             var grandParentEntityOut = repository.GetByID(grandParentEntityIn.ID);
 
-            // Check that the entity we retreived has correct number of children 
-            Assert.Equal(grandParentEntityIn.Children.Count, grandParentEntityOut.Children.Count);
+            CheckEntityTreesAreSame(grandParentEntityIn, grandParentEntityOut);
 
+
+        }
+
+        [Fact]
+        public void Repository_NestedChildRelation_InsertMany_GetAll()
+        {
+            base.ClearAll();
+
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+
+            GrandParentEntityRepository repository = new GrandParentEntityRepository(_dataService);
+
+            // Insert records
+            List<GrandParentEntity> grandParentEntitiesIn = fixture.CreateMany<GrandParentEntity>().ToList();
+            repository.Insert(grandParentEntitiesIn);
+
+            // Get all the entities out
+            var grandParentEntitiesOut = repository.GetAll().ToList();
+
+            // Check that we got the same number of entities back out
+            Assert.Equal(grandParentEntitiesIn.ToList().Count, grandParentEntitiesOut.ToList().Count);
+
+            // Check down the hierarchy that property values line up
+            for (int i = 0; i < grandParentEntitiesIn.Count; i++)
+            {
+                CheckEntityTreesAreSame(grandParentEntitiesIn[i], grandParentEntitiesOut[i]);
+            }
+            
+        }
+
+        [Fact]
+        // Tests a repository can deal with an entity type which has nested child relationships
+        // e.g. Grandparent -> Parent -> Child
+        public void Repository_NestedChildRelation_DeleteAll()
+        {
+            base.ClearAll();
+
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            var grandParentEntityIn = fixture.Create<GrandParentEntity>();
+
+
+            GrandParentEntityRepository repository = new GrandParentEntityRepository(_dataService);
+
+            // Insert records
+            repository.Insert(grandParentEntityIn);
+
+            // DeleteAll
+            repository.DeleteAll();
+
+            // Check the table and all its child tables are now empty
+            Assert.Empty(_dataService.Connection.Table<GrandParentEntity>());
+            Assert.Empty(_dataService.Connection.Table<ParentEntity>());
+            Assert.Empty(_dataService.Connection.Table<ChildEntity>());
+
+
+        }
+
+        #region IDisposable (Teardown)
+
+        public void Dispose()
+        {
+            if (_dataService != null) _dataService.Dispose();
+
+            if (File.Exists("db.sql"))
+            {
+                File.Delete("db.sql");
+            }
+        }
+
+        #endregion
+
+        #region helper functions
+
+        private void CheckEntityTreesAreSame(GrandParentEntity grandParentEntityIn, GrandParentEntity grandParentEntityOut)
+        {
             // Check down the hierarchy that property values line up
             for (int i = 0; i < grandParentEntityIn.Children.Count; i++)
             {
@@ -248,20 +306,10 @@ namespace MWF.Mobile.Tests.RepositoryTests
                     Assert.Equal(grandParentEntityIn.Children[i].Children[j].Title, grandParentEntityOut.Children[i].Children[j].Title);
                 }
 
-            }
+                // Check single child relationship
+                Assert.Equal(grandParentEntityIn.Children[i].Child.ID, grandParentEntityOut.Children[i].Child.ID);
+                Assert.Equal(grandParentEntityIn.Children[i].Child.Title, grandParentEntityOut.Children[i].Child.Title);
 
-
-        }
-
-        #region IDisposable (Teardown)
-
-        public void Dispose()
-        {
-            if (_dataService != null) _dataService.Dispose();
-
-            if (File.Exists("db.sql"))
-            {
-                File.Delete("db.sql");
             }
         }
 

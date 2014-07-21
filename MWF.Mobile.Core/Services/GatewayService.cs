@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.GatewayServiceRequest;
+using System.Net;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -12,18 +16,20 @@ namespace MWF.Mobile.Core.Services
         : IGatewayService
     {
 
-        private readonly IDeviceInfoService _deviceInfoService = null;
+        private readonly IDeviceInfo _deviceInfo = null;
         private readonly IHttpService _httpService = null;
         private readonly string _gatewayDeviceRequestUrl = null;
+        private readonly string _gatewayDeviceCreateUrl = null;
         private readonly IDeviceRepository _deviceRepository;
 
-        public GatewayService(IDeviceInfoService deviceInfoService, IHttpService httpService, IRepositories repositories)
+        public GatewayService(IDeviceInfo deviceInfo, IHttpService httpService, IRepositories repositories)
         {
-            _deviceInfoService = deviceInfoService;
+            _deviceInfo = deviceInfo;
             _httpService = httpService;
 
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
+            _gatewayDeviceCreateUrl = "http://87.117.243.226:7090/api/gateway/createdevice";
             _deviceRepository = repositories.DeviceRepository;
         }
 
@@ -33,6 +39,22 @@ namespace MWF.Mobile.Core.Services
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "MobileApplicationProfileIntLink", Value = "0" } };
             var data = await ServiceCallAsync<Core.Models.ApplicationProfile>("fwGetApplicationProfile", parameters);
             return data.Result;
+        }
+
+        public async Task<bool> CreateDevice()
+        {
+            var deviceInfo = new DeviceInfo()
+            {
+                IMEI = _deviceInfo.IMEI,
+                DeviceIdentifier = _deviceInfo.GetDeviceIndentifier(),
+                OsVersion = _deviceInfo.OsVersion,
+                Manufacturer = _deviceInfo.Manufacturer,
+                Model = _deviceInfo.Model,
+                Platform = _deviceInfo.Platform,
+                Password = _deviceInfo.GatewayPassword
+            };
+            var response = await _httpService.PostAsJsonAsync<DeviceInfo, HttpStatusCode>(deviceInfo, _gatewayDeviceCreateUrl);
+            return (response.StatusCode != HttpStatusCode.InternalServerError);
         }
 
         public async Task<Models.Device> GetDevice(string customerID)
@@ -45,26 +67,26 @@ namespace MWF.Mobile.Core.Services
         public async Task<IEnumerable<Models.Driver>> GetDrivers()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.Drivers>("fwGetDrivers");
-            return data.Result.List;
+            return data.Result == null ? Enumerable.Empty<Models.Driver>() : data.Result.List;
         }
 
         public async Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfiles()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.SafetyProfiles>("fwGetSafetyProfiles");
-            return data.Result.List;
+            return data.Result == null ? Enumerable.Empty<Models.SafetyProfile>() : data.Result.List;
         }
 
         public async Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle} };
-            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles");
-            return data.Result.List;
+            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles", parameters);
+            return data.Result == null ? Enumerable.Empty<Models.Vehicle>() : data.Result.List;
         }
 
         public async Task<IEnumerable<Models.VehicleView>> GetVehicleViews()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.VehicleViews>("fwGetVehicleViews");
-            return data.Result.List;
+            return data.Result == null ? Enumerable.Empty<Models.VehicleView>() : data.Result.List;
         }
 
         public async Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle)
@@ -124,11 +146,19 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         private Models.GatewayServiceRequest.Content CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
         {
+
+            Device device = _deviceRepository.GetAll().FirstOrDefault();
+            string deviceIdentifier;
+            if (device != null)
+                deviceIdentifier = device.DeviceIdentifier;
+            else
+                deviceIdentifier = _deviceInfo.GetDeviceIndentifier();
+
             return new Core.Models.GatewayServiceRequest.Content
             {
-                DeviceIdentifier = _deviceRepository.GetAll().First().DeviceIdentifier,
-                Password = _deviceInfoService.GatewayPassword,
-                MobileApplication = _deviceInfoService.MobileApplication,
+                DeviceIdentifier = deviceIdentifier,
+                Password = _deviceInfo.GatewayPassword,
+                MobileApplication = _deviceInfo.MobileApplication,
                 Actions = actions,
             };
         }

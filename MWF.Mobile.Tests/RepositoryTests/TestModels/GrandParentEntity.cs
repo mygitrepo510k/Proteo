@@ -17,7 +17,7 @@ namespace MWF.Mobile.Tests.RepositoryTests.TestModels
 
         public string Title { get; set; }
 
-        [ChildRelationship(typeof(ParentEntity))]
+        [ChildRelationship(typeof(ParentEntity), RelationshipCardinality.OneToMany)]
         public List<ParentEntity> Children { get; set; }
 
     }

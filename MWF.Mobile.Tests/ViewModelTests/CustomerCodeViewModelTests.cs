@@ -1,5 +1,8 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore.Core;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Test.Core;
+using Cirrious.MvvmCross.Views;
 using Moq;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Portable;
@@ -26,11 +29,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         protected override void AdditionalSetup()
         {
-            _mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
+            var mockDispatcher = new MockDispatcher();
+            Ioc.RegisterSingleton<IMvxViewDispatcher>(mockDispatcher);
+            Ioc.RegisterSingleton<IMvxMainThreadDispatcher>(mockDispatcher);
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
+
+            _mockUserInteraction = new Mock<IUserInteraction>();
+            _fixture.Register<IUserInteraction>(() => _mockUserInteraction.Object);
 
             _dataService = new Mock<IDataService>();
             _dataService.Setup(ds => ds.RunInTransaction(It.IsAny<Action>())).Callback<Action>(a => a.Invoke());
@@ -120,6 +127,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             //check that the customer repository was written to
             customerRepository.Verify(cr => cr.Insert(It.IsAny<Customer>()), Times.Once);
+
+            // check that the passcode screen was navigated to
+            var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
+            Assert.Equal(1, mockDispatcher.Requests.Count);
+            var request = mockDispatcher.Requests.First();
+            Assert.Equal(typeof(PasscodeViewModel), request.ViewModelType);
 
 
         }

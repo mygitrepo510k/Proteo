@@ -36,6 +36,8 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             //Add the progress dialog to the view
+
+
             _bindableProgress = new MWF.Mobile.Android.Views.BindableProgress(view.Context);
 
             //Hide the action bar
@@ -44,6 +46,8 @@ namespace MWF.Mobile.Android.Views.Fragments
             base.OnViewCreated(view, savedInstanceState);
             var set = this.CreateBindingSet<CustomerCodeFragment, CustomerCodeViewModel>();
             set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsBusy);
+            set.Bind(_bindableProgress).For(p => p.Message).To(vm => vm.ProgressMessage);
+            set.Bind(_bindableProgress).For(p => p.Title).To(vm => vm.ProgressTitle);
             set.Apply();
 
         }

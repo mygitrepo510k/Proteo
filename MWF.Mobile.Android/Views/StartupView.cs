@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Android.App;
+using Android.Content;
+using Android.Content.PM;
 using Android.OS;
-using Android.Widget;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.Droid.FullFragging;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
-using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.ViewModels;
-using MWF.Mobile.Core.ViewModels;
-using Android.Content.PM;
+using MWF.Mobile;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -23,6 +22,11 @@ namespace MWF.Mobile.Android.Views
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.Page_Startup);
+
+            // Create the gateway queue timer service which will be available as a background service from here, regardless of activity.
+            // Note: this does not actually start the timer, this is currently done in the MainViewModel once the user is fully logged in.
+            var queueTimerServiceIntent = new Intent(this, typeof(Services.GatewayQueueTimerService));
+            StartService(queueTimerServiceIntent);
         }
 
         protected override Type GetFragmentTypeForViewModel(Type viewModelType)
@@ -39,7 +43,9 @@ namespace MWF.Mobile.Android.Views
             { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
             { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
             { typeof(Core.ViewModels.TrailerSelectionViewModel), typeof(Fragments.TrailerSelectionFragment)},
-            { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)}
+            { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
+            { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)}
+
         };
 
         public bool Show(MvxViewModelRequest request)

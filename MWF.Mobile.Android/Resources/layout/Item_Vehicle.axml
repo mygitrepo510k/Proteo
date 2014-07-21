@@ -1,19 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textSize="20.0dp"
-        android:layout_marginTop="15dp"
+        android:layout_weight="0.9"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:paddingLeft="10dp"
         local:MvxBind="Text Registration" />
+<!--
+  The arrow icon just in case we want it back.
+  
     <ImageView
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:layout_marginRight="10dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:src="@drawable/arrowIcon"
-        android:layout_gravity="right" />
+        android:layout_gravity="right|center_vertical"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="0.1" />
+        -->
 </LinearLayout>

@@ -12,6 +12,7 @@ namespace MWF.Mobile.Core.Models
     {
         [Unique]
         [JsonProperty("@id")]
+        [PrimaryKey]
         public Guid ID { get; set; }
 
         [JsonProperty("@title")]
@@ -24,7 +25,6 @@ namespace MWF.Mobile.Core.Models
         public int SafetyCheckProfileIntLink { get; set; }
 
         [JsonProperty("@istrailer")]
-        [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IsTrailer { get; set; }
 
     }

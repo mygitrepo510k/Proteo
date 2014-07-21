@@ -31,6 +31,13 @@ namespace MWF.Mobile.Core.ViewModels
             set { _title = value; }
         }
 
+        private bool _isDiscretionaryQuestion;
+        public bool IsDiscreationaryQuestion
+        {
+            get { return _isDiscretionaryQuestion; }
+            set { _isDiscretionaryQuestion = value; }
+        }
+
         private SafetyCheckEnum _checkStatus;
         public SafetyCheckEnum CheckStatus
         {

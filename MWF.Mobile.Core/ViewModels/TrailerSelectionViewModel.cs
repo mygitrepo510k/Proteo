@@ -117,7 +117,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (isConfirmed)
                     {
                         _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = Guid.Empty;
-                        //TODO: Forward you to the safety selection screen!
+                        ShowViewModel<SafetyCheckViewModel>();
                     }
                 }, "Please confirm your trailer");
             }
@@ -129,7 +129,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (isConfirmed)
                     {
                         _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
-                        //TODO: Forward you to safety selection screen!
+                        ShowViewModel<SafetyCheckViewModel>();
                     }
                 }, "Please confirm your trailer");
             }

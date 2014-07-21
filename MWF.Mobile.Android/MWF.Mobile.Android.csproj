@@ -90,7 +90,7 @@
     </Reference>
     <Reference Include="Cirrious.MvvmCross.Plugins.Visibility.Droid">
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Visibility.3.1.1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Visibility.Droid.dll</HintPath>
-	</Reference>
+    </Reference>
     <Reference Include="Cirrious.MvvmCross.Plugins.Messenger">
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Messenger.3.2.1-beta1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Messenger.dll</HintPath>
     </Reference>
@@ -140,7 +140,7 @@
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
-    <Compile Include="Views\Fragments\SafetyCheckFragement.cs" />
+    <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\TrailerSelectionFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
@@ -185,8 +185,8 @@
     <AndroidResource Include="Resources\layout\SafetyCheckView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\Item_SafetyCheckFault.axml">
-		<SubType>AndroidResource</SubType>
+    <AndroidResource Include="Resources\layout\Item_SafetyCheckItem.axml">
+      <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_About.axml">
       <SubType>AndroidResource</SubType>

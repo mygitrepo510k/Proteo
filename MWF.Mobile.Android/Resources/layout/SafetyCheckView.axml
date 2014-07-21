@@ -19,5 +19,5 @@
         android:layout_height="fill_parent"
         android:layout_above="@id/donebutton"
         local:MvxBind="ItemsSource SafetyCheckItemViewModels"
-        local:MvxItemTemplate="@layout/item_safetycheckfault" />
+        local:MvxItemTemplate="@layout/item_safetycheckitem" />
 </RelativeLayout>

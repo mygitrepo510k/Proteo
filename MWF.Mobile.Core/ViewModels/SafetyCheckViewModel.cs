@@ -3,6 +3,7 @@ using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,9 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class SafetyCheckViewModel : MvxViewModel
     {
+        private IStartupInfoService _startupInfoService;
+        private IRepositories _repositories;
+
         private SafetyProfile _safetyProfileVehicle;
         public SafetyProfile SafetyProfileVehicle
         {
@@ -73,14 +77,23 @@ namespace MWF.Mobile.Core.ViewModels
             RaisePropertyChanged(() => AllSafetyChecksComplete);
         }
 
-        public SafetyCheckViewModel(ISafetyProfileRepository safetyProfileRepository)
+        public SafetyCheckViewModel(IStartupInfoService startupInfoService, IRepositories repositories)
         {
-            // TODO: Get real vehicle and trailer values from previous selctions
-            //SafetyProfileVehicle = safetyProfileRepository.GetWhere(spv => spv.IntLink == IntLinkFromVehicle);
-            //SafetyProfileTrailer = safetyProfileRepository.GetWhere(spt => spt.IntLink == IntLinkFronTrailer);
+            _startupInfoService = startupInfoService;
+            _repositories = repositories;
 
-            SafetyProfileVehicle = safetyProfileRepository.GetAll().Where(spv => spv.IntLink > 0 && spv.Children != null).FirstOrDefault();
-            SafetyProfileTrailer = safetyProfileRepository.GetAll().Where(spt => spt.IntLink > 0 && spt.Children != null && spt.IsTrailerProfile).FirstOrDefault();
+            Vehicle vehicle = null;
+            Trailer trailer = null;
+            
+            vehicle = _repositories.VehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID);
+            
+            if (_startupInfoService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
+                trailer = _repositories.TrailerRepository.GetByID(_startupInfoService.LoggedInDriver.LastSecondaryVehicleID);
+
+            SafetyProfileVehicle = _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink).SingleOrDefault();
+
+            if (trailer != null)
+                SafetyProfileTrailer = _repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
 
             var allSafetyChecks = new List<SafetyCheckItemViewModel>();
 
@@ -90,8 +103,9 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     var vehicleSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this) { 
                         ID = child.ID,
-                        Title = "Vehicle: " + child.Title,
-                        CheckStatus = SafetyCheckEnum.NotSet
+                        Title = "VEH: " + child.Title,
+                        CheckStatus = SafetyCheckEnum.NotSet,
+                        IsDiscreationaryQuestion = child.IsDiscretionaryQuestion
                     };
 
                     allSafetyChecks.Add(vehicleSafetyCheckFaultTypeView);
@@ -105,8 +119,9 @@ namespace MWF.Mobile.Core.ViewModels
                     var trailerSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this)
                     {
                         ID = child.ID,
-                        Title = "Trailer: " + child.Title,
-                        CheckStatus = SafetyCheckEnum.NotSet
+                        Title = "TRL: " + child.Title,
+                        CheckStatus = SafetyCheckEnum.NotSet,
+                        IsDiscreationaryQuestion = child.IsDiscretionaryQuestion
                     };
 
                     allSafetyChecks.Add(trailerSafetyCheckFaultTypeView);

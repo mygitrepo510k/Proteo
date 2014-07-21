@@ -8,6 +8,7 @@ using Cirrious.CrossCore;
 using Cirrious.MvvmCross.Droid.FullFragging;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -43,7 +44,8 @@ namespace MWF.Mobile.Android.Views
             { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
             { typeof(Core.ViewModels.TrailerSelectionViewModel), typeof(Fragments.TrailerSelectionFragment)},
             { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
-            {typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)}
+            {typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
+            { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
 
         };
 

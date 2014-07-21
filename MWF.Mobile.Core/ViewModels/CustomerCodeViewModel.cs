@@ -48,9 +48,9 @@ namespace MWF.Mobile.Core.ViewModels
             _vehicleRepository = repositories.VehicleRepository;
             _verbProfileRepository = repositories.VerbProfileRepository;
 
-#if DEBUG
-            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", () => _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031");
-#endif
+//#if DEBUG
+//            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", () => _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031");
+//#endif
         }
 
         private string _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031";

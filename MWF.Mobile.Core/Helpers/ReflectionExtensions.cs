@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,15 @@ namespace MWF.Mobile.Core.Helpers
             ChildRelationshipAttribute attr = propertyInfo.GetCustomAttribute<ChildRelationshipAttribute>();
 
             return (attr == null) ? null : attr.ChildType;
+        }
+
+        public static RelationshipCardinality GetCardinalityOfChildRelation(this PropertyInfo propertyInfo)
+        {
+           ChildRelationshipAttribute attr = propertyInfo.GetCustomAttribute<ChildRelationshipAttribute>();
+
+           Debug.Assert(attr != null);
+
+           return attr.Cardinality;
         }
 
         public static string GetTableName(this Type type)

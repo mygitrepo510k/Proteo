@@ -67,7 +67,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             // Get device returns null (i.e. customer code is invalid)
-            _fixture.Register<IGatewayService>(() => Mock.Of<IGatewayService>(gs => gs.GetDevice(It.IsAny<string>()) == Task.FromResult<Device>((Device) null)  ));
+            _fixture.Register<IGatewayService>(() => Mock.Of<IGatewayService>(gs => gs.GetDevice(It.IsAny<string>()) == Task.FromResult<Device>((Device) null) &&
+                                                                                    gs.CreateDevice() == Task.FromResult<bool>(true)));
 
             var ccvm = _fixture.Create<CustomerCodeViewModel>();
 
@@ -87,6 +88,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             // Get device throws an exception
             var gatewayService = new Mock<IGatewayService>();
+            gatewayService.Setup(gs => gs.CreateDevice()).Returns(Task.FromResult<bool>(true));
             gatewayService.Setup(gs => gs.GetDevice(It.IsAny<string>())).Callback(() => { throw new Exception(); });
             _fixture.Register<IGatewayService>(() => gatewayService.Object);
 
@@ -110,7 +112,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Device dev = new Device();
 
             var gateWayService = Mock.Of<IGatewayService>(gs =>
-                gs.GetDevice("123") == Task.FromResult<Device>(dev));
+                                                             gs.GetDevice("123") == Task.FromResult<Device>(dev) &&
+                                                             gs.CreateDevice() == Task.FromResult<bool>(true));
 
             _fixture.Register<IGatewayService>(() => gateWayService);
 

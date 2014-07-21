@@ -142,7 +142,6 @@
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\OdometerFragment.cs" />
-    <Compile Include="Views\Fragments\SafetyCheckFragement.cs" />
     <Compile Include="Views\Fragments\TrailerSelectionFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />

@@ -29,10 +29,9 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IReachability _reachability;
         private readonly IStartupInfoService _startupInfoService;
 
-
         public string VehicleSelectText
         {
-            get { return "Please select a trailer."; }
+            get { return "Please select a vehicle."; }
         }
 
         public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty,
@@ -44,14 +43,35 @@ namespace MWF.Mobile.Core.ViewModels
 
             _currentDriverRepository = currentDriverRepository;
             _vehicleRepository = vehicleRepository;
-            Vehicles = _originalVehicleList = _vehicleRepository.GetAll(); 
+            Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
+
+            LastVehicleSelect();
         }
-        
+
         private IEnumerable<Vehicle> _vehicles;
         public IEnumerable<Vehicle> Vehicles
         {
             get { return _vehicles; }
             set { _vehicles = value; RaisePropertyChanged(() => Vehicles); }
+        }
+
+        public void LastVehicleSelect()
+        {
+            var lastVehicleID = _currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID).LastVehicleID;
+
+            if (lastVehicleID != null)
+            {
+                var vehicle = _vehicleRepository.GetByID(lastVehicleID);
+
+                Mvx.Resolve<IUserInteraction>().Confirm(("Do you wish to reuse vehicle " + vehicle.Registration + "?"),isConfirmed =>
+                {
+                    if (isConfirmed)
+                    {
+                        _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
+                        ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = lastVehicleID });
+                    }
+                }, "Last used vehicle");
+            }
         }
 
         private MvxCommand<Vehicle> _showVehicleDetailCommand;
@@ -65,15 +85,19 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void VehicleDetail(Vehicle vehicle)
         {
-            Mvx.Resolve<IUserInteraction>().Confirm("Registration: " + vehicle.Registration, isConfirmed =>
+            Mvx.Resolve<IUserInteraction>().Confirm(vehicle.Registration, isConfirmed =>
             {
                 if (isConfirmed)
                 {
+                    CurrentDriver newDriver = _currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID);
+                    _currentDriverRepository.Delete(newDriver);
+                    newDriver.LastVehicleID = vehicle.ID;
+                    _currentDriverRepository.Insert(newDriver);
+
                     _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
                     ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = vehicle.ID });
                 }
             }, "Please confirm your vehicle");
-
         }
 
         private string _searchText;
@@ -134,7 +158,7 @@ namespace MWF.Mobile.Core.ViewModels
                         FilterList();
                     }
                 }
-            } 
+            }
         }
-    }  
+    }
 }

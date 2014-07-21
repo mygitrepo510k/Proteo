@@ -77,10 +77,12 @@ namespace MWF.Mobile.Android.Views.Fragments
             else if (item.ItemId.Equals((int)MenuOption.DiscretionaryPass))
             {
                 safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.DiscretionaryPass;
+                // TODO: Forward to comments screen
             }
             else if (item.ItemId.Equals((int)MenuOption.Failed))
             {
                 safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.Failed;
+                // TODO: Forward to comments screen
             }
 
             return base.OnOptionsItemSelected(item);

@@ -1,4 +1,6 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,9 +46,25 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _checkStatus; }
             set 
             { 
-                _checkStatus = value;
-                _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
-                RaisePropertyChanged(() => CheckStatus);
+                if (_checkStatus == SafetyCheckEnum.DiscretionaryPass ||
+                    _checkStatus == SafetyCheckEnum.Failed)
+                {
+                    Mvx.Resolve<IUserInteraction>().Confirm(("Are you sure you wish to change this safety check to passed?"), isConfirmed =>
+                    {
+                        if (isConfirmed)
+                        {
+                            _checkStatus = value;
+                            _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                            RaisePropertyChanged(() => CheckStatus);
+                        }
+                    }, "Change Check Status");
+                }
+                else
+                {
+                    _checkStatus = value;
+                    _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                    RaisePropertyChanged(() => CheckStatus);
+                }
             }
         }
         

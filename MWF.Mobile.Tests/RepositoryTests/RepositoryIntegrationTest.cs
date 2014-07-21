@@ -40,7 +40,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
             _dataService.Connection.CreateTable<ParentEntity>();
             _dataService.Connection.CreateTable<ChildEntity>();
             _dataService.Connection.CreateTable<ChildEntity2>();
-
+            _dataService.Connection.CreateTable<SingleChildEntity>();
 
         }
 
@@ -188,6 +188,10 @@ namespace MWF.Mobile.Tests.RepositoryTests
 
             }
 
+            // Check single child relationship
+            Assert.Equal(parentEntityIn.Child.ID, parentEntityOut.Child.ID);
+            Assert.Equal(parentEntityIn.Child.Title, parentEntityOut.Child.Title);
+
         }
 
         [Fact]
@@ -231,7 +235,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
             // Get all the entities out
             var grandParentEntitiesOut = repository.GetAll().ToList();
 
-            // Check that the entity we got two entities back out
+            // Check that we got the same number of entities back out
             Assert.Equal(grandParentEntitiesIn.ToList().Count, grandParentEntitiesOut.ToList().Count);
 
             // Check down the hierarchy that property values line up
@@ -301,6 +305,10 @@ namespace MWF.Mobile.Tests.RepositoryTests
                     Assert.Equal(grandParentEntityIn.Children[i].Children[j].ID, grandParentEntityOut.Children[i].Children[j].ID);
                     Assert.Equal(grandParentEntityIn.Children[i].Children[j].Title, grandParentEntityOut.Children[i].Children[j].Title);
                 }
+
+                // Check single child relationship
+                Assert.Equal(grandParentEntityIn.Children[i].Child.ID, grandParentEntityOut.Children[i].Child.ID);
+                Assert.Equal(grandParentEntityIn.Children[i].Child.Title, grandParentEntityOut.Children[i].Child.Title);
 
             }
         }

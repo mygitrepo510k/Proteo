@@ -115,6 +115,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryTests\BaseRepositoryTests.cs" />
     <Compile Include="RepositoryTests\RepositoryIntegrationTest.cs" />
+    <Compile Include="RepositoryTests\TestModels\SingleChildEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\ChildEntity2.cs" />
     <Compile Include="RepositoryTests\TestModels\GrandParentEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\ChildEntity.cs" />

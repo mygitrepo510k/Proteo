@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Helpers;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Attributes;
 using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.Repositories
@@ -99,51 +101,50 @@ namespace MWF.Mobile.Core.Repositories
 
             #region Private Methods
 
-
+            /// <summary>
+            ///  Inserts a potentially nested object graph into the appropriate tables using the
+            ///  ChildRelationship and ForeignKey attributes to guide the process
+            /// </summary>
+            /// <param name="entity"></param>
             private void InsertRecursive(IBlueSphereEntity entity)
             {
                 _connection.Insert(entity);
 
                 foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())
                 {
-                    IEnumerable<IBlueSphereEntity> children = relationshipProperty.GetValue(entity, null) as IEnumerable<IBlueSphereEntity>;
-                    if (children == null)
+                    DoRecursiveTreeAction(entity, relationshipProperty, (parent, child) =>
                     {
-                        throw new ArgumentException(string.Format("{0} type property {1} does not contain BlueSphere entities", entity.GetType().ToString(), relationshipProperty.Name));
-                    }
-
-                    foreach (var child in children)
-                    {
-                        //ensure foreign key ids line with parent id
-                        PropertyInfo foreignKeyPropInfo = child.GetType().GetForeignKeyProperty(entity.GetType());
-                        foreignKeyPropInfo.SetValue(child, entity.ID);
-
+                        SetForeignKeyOnChild(parent, child);
                         InsertRecursive(child);
-                    }
-
+                    });
                 }
             }
 
+
+            /// <summary>
+            ///  Deletes a potentially nested object graph from the appropriate tables using the
+            ///  ChildRelationship and ForeignKey attributes to guide the process
+            /// </summary>
+            /// <param name="entity"></param>
             private void DeleteRecursive(IBlueSphereEntity entity)
             {
                 _connection.Delete(entity);
 
                 foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())
                 {
-                    IEnumerable<IBlueSphereEntity> children = relationshipProperty.GetValue(entity, null) as IEnumerable<IBlueSphereEntity>;
-                    if (children == null)
-                    {
-                        throw new ArgumentException(string.Format("{0} type property {1} does not contain BlueSphere entities", entity.GetType().ToString(), relationshipProperty.Name));
-                    }
-
-                    foreach (var child in children)
+                    DoRecursiveTreeAction(entity, relationshipProperty, (parent, child) =>
                     {
                         DeleteRecursive(child);
-                    }
+                    });
 
                 }
             }
 
+            /// <summary>
+            /// Deletes all items of the specified type from their respective tables
+            /// plus any child types as specified by the ChildRelationship attribute
+            /// </summary>
+            /// <param name="type"></param>
             private void DeleteAllRecursive(Type type)
             {
                 DeleteAllFromTable(type);
@@ -155,16 +156,13 @@ namespace MWF.Mobile.Core.Repositories
 
                 }
             }
+          
 
-
-            private void PopulateChildrenRecursive(IEnumerable parents)
-            {
-                foreach (var parent in parents)
-                {
-                    PopulateChildrenRecursive(parent as IBlueSphereEntity);              
-                }
-            }
-
+            /// <summary>
+            /// For the parent entity pulled from a table, populates any children
+            /// as labelled with the ChildRelationship. 
+            /// </summary>
+            /// <param name="parent"></param>
             private void PopulateChildrenRecursive(IBlueSphereEntity parent)
             {
 
@@ -172,9 +170,32 @@ namespace MWF.Mobile.Core.Repositories
                 {
                     Type childType = relationshipProperty.GetTypeOfChildRelation();
                     IList children = GetChildren(parent, childType);
-                    relationshipProperty.SetValue(parent, children);
+
+                    if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
+                    {
+                        Debug.Assert(children.Count == 1);
+                        relationshipProperty.SetValue(parent, children[0]);
+                    }
+                    else
+                    {                     
+                        relationshipProperty.SetValue(parent, children);
+                    }
+
                     PopulateChildrenRecursive(children);
 
+                }
+            }
+
+            /// <summary>
+            /// Overload of PopulateChildrenRecursive that deals with
+            /// a collection of parents
+            /// </summary>
+            /// <param name="parents"></param>
+            private void PopulateChildrenRecursive(IEnumerable parents)
+            {
+                foreach (var parent in parents)
+                {
+                    PopulateChildrenRecursive(parent as IBlueSphereEntity);
                 }
             }
 
@@ -208,6 +229,54 @@ namespace MWF.Mobile.Core.Repositories
             }
 
 
+            // Ensures the property on the child labelled with the foreign key attribute lines up with
+            // the id of the parent
+            private static void SetForeignKeyOnChild(IBlueSphereEntity parent, IBlueSphereEntity child)
+            {
+                PropertyInfo foreignKeyPropInfo = child.GetType().GetForeignKeyProperty(parent.GetType());
+                foreignKeyPropInfo.SetValue(child, parent.ID);
+            }
+
+            /// <summary>
+            /// Performs some action (e.g. insert or delete) recursively on the hierarchical object graph using using the
+            ///  ChildRelationship and ForeignKey attributes to guide the process. Deals with the cases where child properties
+            ///  are lists or single items.
+            /// </summary>
+            /// <param name="entity"></param>
+            /// <param name="relationshipProperty"></param>
+            /// <param name="action"></param>
+            private void DoRecursiveTreeAction(IBlueSphereEntity entity, PropertyInfo relationshipProperty, Action<IBlueSphereEntity, IBlueSphereEntity> action)
+            {
+
+                if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
+                {
+                    //Child Property is a single Bluesphere entity
+                    IBlueSphereEntity singleChild = relationshipProperty.GetValue(entity, null) as IBlueSphereEntity;
+
+                    if (singleChild == null)
+                    {
+                        throw new ArgumentException(string.Format("{0} type property {1} is not a  BlueSphere entity", entity.GetType().ToString(), relationshipProperty.Name));
+                    }
+
+                    action.Invoke(entity, singleChild);
+                }
+                else
+                {
+                    // Child property is a collection of Bluesphere entities
+                    IEnumerable<IBlueSphereEntity> children = relationshipProperty.GetValue(entity, null) as IEnumerable<IBlueSphereEntity>;
+                    if (children == null)
+                    {
+                        throw new ArgumentException(string.Format("{0} type property {1} does not contain BlueSphere entities", entity.GetType().ToString(), relationshipProperty.Name));
+                    }
+
+                    foreach (var child in children)
+                    {
+                        action.Invoke(entity, child);
+                    }
+
+
+                }
+            }
 
             #endregion
 

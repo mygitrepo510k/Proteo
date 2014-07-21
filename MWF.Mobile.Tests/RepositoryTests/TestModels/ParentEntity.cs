@@ -25,6 +25,9 @@ namespace MWF.Mobile.Tests.RepositoryTests.TestModels
 
         [ChildRelationship(typeof(ChildEntity2))]
         public List<ChildEntity2> Children2 { get; set; }
+
+        [ChildRelationship(typeof(SingleChildEntity), RelationshipCardinality.OneToOne)]
+        public SingleChildEntity Child { get; set; }
     
     }
 }

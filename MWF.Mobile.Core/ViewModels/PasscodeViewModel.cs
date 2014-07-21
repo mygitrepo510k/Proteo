@@ -25,7 +25,6 @@ namespace MWF.Mobile.Core.ViewModels
             _startupInfoService = startupInfoService;
 
             _currentDriverRepository = currentDriverRepository;
-
         }
 
         public bool IsBusy

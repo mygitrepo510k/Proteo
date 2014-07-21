@@ -57,21 +57,29 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void LastVehicleSelect()
         {
-            var lastVehicleID = _currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID).LastVehicleID;
+            var currentDriver = _currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID);
 
-            if (lastVehicleID != null)
+            if (currentDriver == null)
+                return;
+
+            var lastVehicleID = currentDriver.LastVehicleID;
+
+            if (lastVehicleID == null)
+                return;
+
+            var vehicle = _vehicleRepository.GetByID(lastVehicleID);
+
+            if (vehicle == null)
+                return;
+
+            Mvx.Resolve<IUserInteraction>().Confirm(("Do you wish to reuse vehicle " + vehicle.Registration + "?"),isConfirmed =>
             {
-                var vehicle = _vehicleRepository.GetByID(lastVehicleID);
-
-                Mvx.Resolve<IUserInteraction>().Confirm(("Do you wish to reuse vehicle " + vehicle.Registration + "?"),isConfirmed =>
+                if (isConfirmed)
                 {
-                    if (isConfirmed)
-                    {
-                        _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
-                        ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = lastVehicleID });
-                    }
-                }, "Last used vehicle");
-            }
+                    _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
+                    ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = lastVehicleID });
+                }
+            }, "Last used vehicle");
         }
 
         private MvxCommand<Vehicle> _showVehicleDetailCommand;
@@ -89,7 +97,11 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (isConfirmed)
                 {
-                    CurrentDriver newDriver = _currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID);
+                    var newDriver = _currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID);
+
+                    if (newDriver == null)
+                        return;
+
                     _currentDriverRepository.Delete(newDriver);
                     newDriver.LastVehicleID = vehicle.ID;
                     _currentDriverRepository.Insert(newDriver);

@@ -50,6 +50,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             // Check that the various tables has been created
             connectionMock.Verify(c => c.CreateTable<ApplicationProfile>(CreateFlags.None), Times.Once);
+            connectionMock.Verify(c => c.CreateTable<CurrentDriver>(CreateFlags.None), Times.Once);
             connectionMock.Verify(c => c.CreateTable<Customer>(CreateFlags.None), Times.Once);
             connectionMock.Verify(c => c.CreateTable<Driver>(CreateFlags.None), Times.Once);
             connectionMock.Verify(c => c.CreateTable<Device>(CreateFlags.None), Times.Once);

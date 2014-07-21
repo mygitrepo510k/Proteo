@@ -10,4 +10,24 @@
         android:gravity="center_horizontal"
         android:textSize="30.0dp"
         local:MvxBind="Text OdometerLabel" />
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="24.0dp"
+        local:MvxBind="Text Registration" />
+    <EditText
+        style="@style/Theme.EditText"
+        android:id="@+id/odometerText"
+        android:inputType="number"
+        android:numeric="integer"
+        android:gravity="center"
+        android:background="#cccfd1"
+        android:maxLength="6"
+        local:MvxBind="Text OdometerValue" />
+    <Button
+        style="@style/Theme.Button"
+        android:id="@+id/submit"
+        android:background="#ffcf7b"
+        local:MvxBind="Text OdometerButtonLabel; Click StoreCommand;" />
 </LinearLayout>

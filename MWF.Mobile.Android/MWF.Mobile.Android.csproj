@@ -141,6 +141,8 @@
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
+    <Compile Include="Views\Fragments\OdometerFragment.cs" />
+    <Compile Include="Views\Fragments\SafetyCheckFragement.cs" />
     <Compile Include="Views\Fragments\TrailerSelectionFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
@@ -189,6 +191,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_About.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_Odometer.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

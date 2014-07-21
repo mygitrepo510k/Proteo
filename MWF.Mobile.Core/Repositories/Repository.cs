@@ -89,7 +89,7 @@ namespace MWF.Mobile.Core.Repositories
 
             public virtual T GetByID(Guid ID)
             {
-                T entity = _connection.Table<T>().Single(e => e.ID == ID);
+                T entity = _connection.Table<T>().SingleOrDefault(e => e.ID == ID);
 
                 if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity);
 

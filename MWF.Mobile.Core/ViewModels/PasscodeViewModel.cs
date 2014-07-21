@@ -4,24 +4,30 @@ using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class PasscodeViewModel 
-		: MvxViewModel
+    public class PasscodeViewModel
+        : MvxViewModel
     {
-
+        private readonly ICurrentDriverRepository _currentDriverRepository = null;
         private readonly IAuthenticationService _authenticationService = null;
         private readonly IStartupInfoService _startupInfoService = null;
         private bool _isBusy = false;
 
-        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupInfoService startupInfoService)
+        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupInfoService startupInfoService
+            , ICurrentDriverRepository currentDriverRepository)
         {
             _authenticationService = authenticationService;
             _startupInfoService = startupInfoService;
+
+            _currentDriverRepository = currentDriverRepository;
+
         }
-   
+
         public bool IsBusy
         {
             get { return _isBusy; }
@@ -50,10 +56,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         private string _passcode = null;
         public string Passcode
-		{ 
-			get { return _passcode; }
-			set { _passcode = value; RaisePropertyChanged(() => Passcode); }
-		}
+        {
+            get { return _passcode; }
+            set { _passcode = value; RaisePropertyChanged(() => Passcode); }
+        }
 
         private bool _isAuthenticating = false;
         public bool IsAuthenticating
@@ -94,6 +100,14 @@ namespace MWF.Mobile.Core.ViewModels
                 if (result.Success)
                 {
                     _startupInfoService.LoggedInDriver = result.Driver;
+
+                    if (_currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID) == null)
+                    {
+                        CurrentDriver newDriver = new CurrentDriver();
+                        newDriver.ID = _startupInfoService.LoggedInDriver.ID;
+                        _currentDriverRepository.Insert(newDriver);
+                    }
+
                     ShowViewModel<VehicleListViewModel>();
                 }
 

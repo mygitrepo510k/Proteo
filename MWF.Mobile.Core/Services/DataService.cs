@@ -57,6 +57,7 @@ namespace MWF.Mobile.Core.Services
         private void CreateTablesIfRequired()
         {
             _connection.CreateTable<ApplicationProfile>();
+            _connection.CreateTable<CurrentDriver>();
             _connection.CreateTable<Customer>();
             _connection.CreateTable<Device>();
             _connection.CreateTable<Driver>();

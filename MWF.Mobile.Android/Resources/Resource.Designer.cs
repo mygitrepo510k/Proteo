@@ -105,20 +105,26 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f050000
 			public const int MvxBindingTagUnique = 2131034112;
 			
-			// aapt resource value: 0x7f050005
-			public const int action_refresh = 2131034117;
+			// aapt resource value: 0x7f050007
+			public const int action_refresh = 2131034119;
 			
-			// aapt resource value: 0x7f050004
-			public const int action_search = 2131034116;
-			
-			// aapt resource value: 0x7f050001
-			public const int button1 = 2131034113;
+			// aapt resource value: 0x7f050006
+			public const int action_search = 2131034118;
 			
 			// aapt resource value: 0x7f050003
-			public const int fragment_host = 2131034115;
+			public const int button1 = 2131034115;
+			
+			// aapt resource value: 0x7f050005
+			public const int fragment_host = 2131034117;
+			
+			// aapt resource value: 0x7f050001
+			public const int odometerText = 2131034113;
 			
 			// aapt resource value: 0x7f050002
-			public const int trailerText = 2131034114;
+			public const int submit = 2131034114;
+			
+			// aapt resource value: 0x7f050004
+			public const int trailerText = 2131034116;
 			
 			static Id()
 			{
@@ -143,28 +149,31 @@ namespace MWF.Mobile.Android
 			public const int Fragment_Manifest = 2130903042;
 			
 			// aapt resource value: 0x7f030003
-			public const int Fragment_Passcode = 2130903043;
+			public const int Fragment_Odometer = 2130903043;
 			
 			// aapt resource value: 0x7f030004
-			public const int Fragment_TrailerSelectionView = 2130903044;
+			public const int Fragment_Passcode = 2130903044;
 			
 			// aapt resource value: 0x7f030005
-			public const int Fragment_VehicleListView = 2130903045;
+			public const int Fragment_TrailerSelectionView = 2130903045;
 			
 			// aapt resource value: 0x7f030006
-			public const int Item_Trailer = 2130903046;
+			public const int Fragment_VehicleListView = 2130903046;
 			
 			// aapt resource value: 0x7f030007
-			public const int Item_Vehicle = 2130903047;
+			public const int Item_Trailer = 2130903047;
 			
 			// aapt resource value: 0x7f030008
-			public const int Page_Main = 2130903048;
+			public const int Item_Vehicle = 2130903048;
 			
 			// aapt resource value: 0x7f030009
-			public const int Page_Startup = 2130903049;
+			public const int Page_Main = 2130903049;
 			
 			// aapt resource value: 0x7f03000a
-			public const int SplashScreen = 2130903050;
+			public const int Page_Startup = 2130903050;
+			
+			// aapt resource value: 0x7f03000b
+			public const int SplashScreen = 2130903051;
 			
 			static Layout()
 			{

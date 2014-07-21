@@ -42,7 +42,8 @@ namespace MWF.Mobile.Android.Views
             { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
             { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
             { typeof(Core.ViewModels.TrailerSelectionViewModel), typeof(Fragments.TrailerSelectionFragment)},
-            { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)}
+            { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
+            {typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)}
 
         };
 

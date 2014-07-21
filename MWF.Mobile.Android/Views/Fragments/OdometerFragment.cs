@@ -12,6 +12,10 @@ using Android.Views;
 using Android.Widget;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using Cirrious.MvvmCross.Binding.BindingContext;
+using Android.Views.InputMethods;
+using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.ValueConverters;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
@@ -24,9 +28,34 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            _view = this.BindingInflate(Resource.Layout.Fragment_CustomerCode, null);
+            _view = this.BindingInflate(Resource.Layout.Fragment_Odometer, null);
             return _view;
         }
 
+        public override void OnResume()
+        {
+            base.OnResume();
+            EditText odometerText = (EditText)this.View.FindViewById(Resource.Id.odometerText);
+            InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
+            mgr.ShowSoftInput(odometerText, ShowFlags.Forced);
+            mgr.ToggleSoftInput(ShowFlags.Forced, HideSoftInputFlags.ImplicitOnly);
+
+        }
+
+        public override void OnViewCreated(View view, Bundle savedInstanceState)
+        {
+            base.OnViewCreated(view, savedInstanceState);
+            var submitButton = (Button)view.FindViewById(Resource.Id.submit);
+            var set = this.CreateBindingSet<OdometerFragment, OdometerViewModel>();
+            set.Bind(submitButton).For(b => b.Enabled).To(vm => vm.OdometerValue).WithConversion(new StringHasLengthConverter(), null);
+            set.Apply();
+        }
+
+        public override void OnPause()
+        {
+            base.OnPause();
+            InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
+            mgr.HideSoftInputFromWindow(this.View.WindowToken, HideSoftInputFlags.None);
+        }
     }
 }

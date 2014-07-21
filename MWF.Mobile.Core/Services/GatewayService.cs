@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.GatewayServiceRequest;
+using System.Net;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -17,6 +19,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IDeviceInfo _deviceInfo = null;
         private readonly IHttpService _httpService = null;
         private readonly string _gatewayDeviceRequestUrl = null;
+        private readonly string _gatewayDeviceCreateUrl = null;
         private readonly IDeviceRepository _deviceRepository;
 
         public GatewayService(IDeviceInfo deviceInfo, IHttpService httpService, IRepositories repositories)
@@ -26,6 +29,7 @@ namespace MWF.Mobile.Core.Services
 
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
+            _gatewayDeviceCreateUrl = "http://87.117.243.226:7090/api/gateway/createdevice";
             _deviceRepository = repositories.DeviceRepository;
         }
 
@@ -35,6 +39,22 @@ namespace MWF.Mobile.Core.Services
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "MobileApplicationProfileIntLink", Value = "0" } };
             var data = await ServiceCallAsync<Core.Models.ApplicationProfile>("fwGetApplicationProfile", parameters);
             return data.Result;
+        }
+
+        public async Task<bool> CreateDevice()
+        {
+            var deviceInfo = new DeviceInfo()
+            {
+                IMEI = _deviceInfo.IMEI,
+                DeviceIdentifier = _deviceInfo.GetDeviceIndentifier(),
+                OsVersion = _deviceInfo.OsVersion,
+                Manufacturer = _deviceInfo.Manufacturer,
+                Model = _deviceInfo.Model,
+                Platform = _deviceInfo.Platform,
+                Password = _deviceInfo.GatewayPassword
+            };
+            var response = await _httpService.PostAsJsonAsync<DeviceInfo, HttpStatusCode>(deviceInfo, _gatewayDeviceCreateUrl);
+            return (response.StatusCode != HttpStatusCode.InternalServerError);
         }
 
         public async Task<Models.Device> GetDevice(string customerID)

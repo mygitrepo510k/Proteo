@@ -46,6 +46,23 @@ namespace MWF.Mobile.Android
 
         }
 
+        protected override System.Collections.Generic.List<System.Reflection.Assembly> ValueConverterAssemblies
+        {
+            get
+            {
+                var toReturn = base.ValueConverterAssemblies;
+                toReturn.Add(typeof(Cirrious.MvvmCross.Plugins.Visibility.MvxVisibilityValueConverter).Assembly);
+                return toReturn;
+            }
+        }
+
+        public override void LoadPlugins(Cirrious.CrossCore.Plugins.IMvxPluginManager pluginManager)
+        {
+            pluginManager.EnsurePluginLoaded<PluginLoader>();
+            pluginManager.EnsurePluginLoaded<Cirrious.MvvmCross.Plugins.Visibility.PluginLoader>();
+            base.LoadPlugins(pluginManager);
+        }
+
     }
 
 }

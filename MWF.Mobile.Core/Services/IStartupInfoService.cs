@@ -6,5 +6,6 @@ namespace MWF.Mobile.Core.Services
     public interface IStartupInfoService
     {
         Driver LoggedInDriver { get; set; }
+        SafetyCheckData CurrentSafetyCheckData { get; set; }
     }
 }

@@ -5,7 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <Button
-        style="@style/Theme.Button"
+        style="@style/Proteo.Button"
         android:id="@+id/donebutton"
         android:background="#ffcf7b"
         android:layout_marginBottom="10dp"

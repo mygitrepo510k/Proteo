@@ -43,6 +43,7 @@ namespace MWF.Mobile.Android.Views
             { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
             { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
             { typeof(Core.ViewModels.TrailerSelectionViewModel), typeof(Fragments.TrailerSelectionFragment)},
+            { typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
             { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
             { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)}
 

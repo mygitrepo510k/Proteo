@@ -165,6 +165,7 @@
     <Compile Include="Services\StartupInfoService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
+    <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\VehicleListViewModel.cs" />

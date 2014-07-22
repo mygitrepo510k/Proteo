@@ -16,11 +16,13 @@ namespace MWF.Mobile.Core.ViewModels
     {
         private IStartupInfoService _startupInfoService;
         private IRepositories _repositories;
+        private IGpsService _gpsService;
 
-        public SafetyCheckViewModel(IStartupInfoService startupInfoService, IRepositories repositories)
+        public SafetyCheckViewModel(IStartupInfoService startupInfoService, IRepositories repositories, IGpsService gpsService)
         {
             _startupInfoService = startupInfoService;
             _repositories = repositories;
+            _gpsService = gpsService;
 
             Vehicle vehicle = null;
             Trailer trailer = null;
@@ -68,6 +70,8 @@ namespace MWF.Mobile.Core.ViewModels
                     allSafetyChecks.Add(trailerSafetyCheckFaultTypeView);
                 }
             }
+
+            var location = _gpsService.GetSmpData(ReportReason.SMPREASON_SAFETYCHECKREPORT);
 
             SafetyCheckItemViewModels = allSafetyChecks;
         }

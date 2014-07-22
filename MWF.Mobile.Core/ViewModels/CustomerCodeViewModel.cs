@@ -11,6 +11,7 @@ using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using Chance.MvvmCross.Plugins.UserInteraction;
+using MWF.Mobile.Core.Repositories.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -31,6 +32,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly ITrailerRepository _trailerRepository;
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IVerbProfileRepository _verbProfileRepository;
+        private readonly IConfigRepository _configRepository;
 
         public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, IUserInteraction userInteraction)
         {
@@ -47,6 +49,7 @@ namespace MWF.Mobile.Core.ViewModels
             _trailerRepository = repositories.TrailerRepository;
             _vehicleRepository = repositories.VehicleRepository;
             _verbProfileRepository = repositories.VerbProfileRepository;
+            _configRepository = repositories.ConfigRepository;
 
 //#if DEBUG
 //            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", () => _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031");
@@ -156,8 +159,8 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 _errorMessage = "Invalid customer code.";
                 return false;
-            } 
-
+            }
+            var config = await _gatewayService.GetConfig();
             var applicationProfile = await _gatewayService.GetApplicationProfile();
             var drivers = await _gatewayService.GetDrivers();
             var vehicleViews = await _gatewayService.GetVehicleViews();
@@ -197,6 +200,7 @@ namespace MWF.Mobile.Core.ViewModels
                 _vehicleRepository.Insert(vehicles);
                 _trailerRepository.Insert(trailers);
                 _safetyProfileRepository.Insert(safetyProfiles);
+                _configRepository.Insert(config);
             });
 
 

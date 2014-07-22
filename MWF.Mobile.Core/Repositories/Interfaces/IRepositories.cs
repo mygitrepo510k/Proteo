@@ -20,5 +20,6 @@ namespace MWF.Mobile.Core.Repositories
         ITrailerRepository TrailerRepository { get; }
         IVehicleRepository VehicleRepository { get; }
         IVerbProfileRepository VerbProfileRepository { get; }
+        IConfigRepository ConfigRepository { get; }
     }
 }

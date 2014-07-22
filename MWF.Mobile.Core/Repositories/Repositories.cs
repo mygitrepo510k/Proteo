@@ -12,7 +12,7 @@ namespace MWF.Mobile.Core.Repositories
 
         public Repositories(IApplicationProfileRepository applicationRepository, ICurrentDriverRepository currentDriverRepository, ICustomerRepository customerRepository, IDeviceRepository deviceRepository,
                             IDriverRepository driverRepository, IGatewayQueueItemRepository gatewayQueueItemRepository, ISafetyCheckDataRepository safetyCheckDataRepository,
-                            ISafetyProfileRepository safetyProfileRepository, IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IVerbProfileRepository verbProfileRepository)
+                            ISafetyProfileRepository safetyProfileRepository, IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IVerbProfileRepository verbProfileRepository, IConfigRepository configRepository)
         {
 
             ApplicationRepository = applicationRepository;
@@ -26,6 +26,7 @@ namespace MWF.Mobile.Core.Repositories
             VehicleRepository = vehicleRepository;
             VerbProfileRepository = verbProfileRepository;
             TrailerRepository = trailerRepository;
+            ConfigRepository = configRepository;
         }
 
         public IApplicationProfileRepository ApplicationRepository
@@ -89,6 +90,12 @@ namespace MWF.Mobile.Core.Repositories
         }
 
         public IVerbProfileRepository VerbProfileRepository
+        {
+            get;
+            private set;
+        }
+
+        public IConfigRepository ConfigRepository
         {
             get;
             private set;

@@ -130,11 +130,11 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(() => updateVehicleList()));
+                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(async () => await UpdateVehicleListAsync()));
             }
         }
 
-        public async Task updateVehicleList()
+        public async Task UpdateVehicleListAsync()
         {
 
             if (!_reachability.IsConnected())

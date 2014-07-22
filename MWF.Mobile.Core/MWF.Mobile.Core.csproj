@@ -125,6 +125,7 @@
     <Compile Include="Models\ApplicationProfile.cs" />
     <Compile Include="Models\VerbProfileItem.cs" />
     <Compile Include="Portable\IReachability.cs" />
+    <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ApplicationProfileRepository.cs" />

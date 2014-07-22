@@ -45,7 +45,7 @@ namespace MWF.Mobile.Core.Models
         [ChildRelationship(typeof(SafetyCheckFault))]
         [JsonProperty("faults")]
         [JsonConverter(typeof(JsonWrappedListConverter<SafetyCheckFault>))]
-        public List<SafetyCheckFaultType> Faults { get; set; }
+        public List<SafetyCheckFault> Faults { get; set; }
 
         [JsonProperty("@intlink")]
         public int ProfileIntLink { get; set; }

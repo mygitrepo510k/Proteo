@@ -1,25 +1,71 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <resources>
-  <style name="Theme.Proteo" parent="@android:style/Theme.Holo.Light">
+
+ <!-- ===================== Main Theme ========================= -->
+  
+  <!-- ProteoNoMargins gets applied at global level and therefore to dialogs (which exessive margins spoil)  -->
+  
+  <style name="ProteoNoMargins" parent="@android:style/Theme.Holo.Light">
+    <item name = "android:layout_width">match_parent</item>
+    <item name = "android:layout_height">wrap_content</item>
+    <item name = "android:gravity">center_horizontal</item>
   </style>
 
-  <style name="Theme.Button" parent="@android:style/Theme.Holo.Light">
-     <item name = "android:layout_width">match_parent</item>
-    <item name = "android:layout_height">wrap_content</item>
-    <item name = "android:layout_gravity">center_horizontal</item>
+  <style name="Proteo" parent="style/ProteoNoMargins">
     <item name = "android:layout_marginTop">10dp</item>
     <item name = "android:layout_marginLeft">10dp</item>
     <item name = "android:layout_marginRight">10dp</item>
+  </style>  
+
+  <!-- ===================== TextViews ========================= -->
+
+  
+  <style name="Proteo.TextView.MainHeading" parent="style/Proteo">
+    <item name = "android:textSize">30dp</item>
   </style>
-  <style name="Theme.EditText" parent="@android:style/Theme.Holo.Light">
-     <item name = "android:layout_width">match_parent</item>
-    <item name = "android:layout_height">48dp</item>
-    <item name = "android:layout_gravity">center_horizontal</item>
-    <item name = "android:layout_marginTop">10dp</item>
-    <item name = "android:layout_marginLeft">10dp</item>
-    <item name = "android:layout_marginRight">10dp</item>
+
+  <style name = "Proteo.TextView.SubHeading" parent="style/Proteo">
+    <item name = "android:textSize">25dp</item>
+  </style>
+
+  <!-- ===================== Buttons ========================= -->
+
+  <style name="Proteo.Button" parent="style/Proteo">
+    <item name = "android:background">#ffcf7b</item>
+    <item name = "android:gravity">center</item>
+  </style>
+
+  <style name="Proteo.Button.Bottom" parent="style/Proteo.Button">
+    <item name = "android:layout_alignParentBottom">true</item>
+    <item name = "android:layout_marginBottom">10dp</item>
+  </style>
+
+
+  <!-- ===================== EditTexts ========================= -->
+
+  <style name="Proteo.EditText" parent="style/Proteo">
     <item name = "android:paddingLeft">10dp</item>
     <item name = "android:paddingRight">10dp</item>
-    <item name="android:textSize">16dp</item>
+    <item name = "android:layout_height">48dp</item>
+    <item name = "android:textSize">16dp</item>
+    <item name = "android:background">#cccfd1</item>
+    <item name = "android:gravity">center</item>
   </style>
+
+  <style name="Proteo.EditText.NumberPasscode" parent="style/Proteo.EditText">
+    <item name = "android:textSize">30dp</item>
+    <item name = "android:inputType">numberPassword</item>
+    <item name = "android:password">true</item>
+  </style>
+
+  <!-- ===================== ImageViews ========================= -->
+
+  <style name="Proteo.ImageView.MWFLogo" parent="@android:style/Theme.Holo.Light">
+    <item name = "android:layout_width">227.5dp</item>
+    <item name = "android:layout_height">117.0dp</item>
+    <item name = "android:src">@drawable/mwf_logo</item>
+    <item name = "android:gravity">center_horizontal</item>
+  </style>
+
+
 </resources>

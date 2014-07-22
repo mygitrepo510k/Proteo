@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -140,6 +141,7 @@
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
+    <Compile Include="Views\Fragments\SafetyCheckFaultFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\OdometerFragment.cs" />
     <Compile Include="Views\Fragments\TrailerSelectionFragment.cs" />
@@ -192,6 +194,9 @@
     <AndroidResource Include="Resources\layout\Fragment_About.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_SafetyCheckFaultView.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_Odometer.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
@@ -221,7 +226,7 @@
     </AndroidResource>
     <AndroidResource Include="Resources\menu\vehicle_activity_actions.xml" />
     <AndroidResource Include="Resources\drawable\proteoLogo.jpg" />
-    <AndroidResource Include="Resources\drawable\mwfLogo.png" />
+    <AndroidResource Include="Resources\drawable\mwf_logo.png" />
     <AndroidResource Include="Resources\drawable\cross.png" />
     <AndroidResource Include="Resources\drawable\tick.png" />
     <AndroidResource Include="Resources\drawable\warning.png" />

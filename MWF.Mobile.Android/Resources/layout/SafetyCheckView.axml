@@ -5,13 +5,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <Button
-        style="@style/Theme.Button"
+        style="@style/Proteo.Button.Bottom"
         android:id="@+id/checksdonebutton"
-        android:background="#ffcf7b"
-        android:layout_marginBottom="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
         local:MvxBind="Text ChecksDoneButtonLabel; Click ChecksDoneCommand" />
     <Mvx.MvxListView
         android:id="@+id/SafetyListView"

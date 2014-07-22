@@ -46,6 +46,7 @@ namespace MWF.Mobile.Android.Views
             { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
             {typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
             { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
+			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)}
 
         };
 

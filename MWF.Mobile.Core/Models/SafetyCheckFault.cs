@@ -20,13 +20,16 @@ namespace MWF.Mobile.Core.Models
         public string Title { get; set; }
 
         [JsonProperty("@faultid")]
-        public Guid FaultID { get; set; }
+        public Guid FaultTypeID { get; set; }
 
         [JsonProperty("@reference")]
         public string FaultTypeReference { get; set; }
 
         [JsonProperty("@comment")]
         public string Comment { get; set; }
+
+        [JsonProperty("@discrete")]
+        public bool IsDiscretionaryPass { get; set; }
 
         [ChildRelationship(typeof(Image))]
         [JsonProperty("image")]

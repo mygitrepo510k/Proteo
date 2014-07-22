@@ -80,12 +80,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Converters\JsonDigitToBooleanConverter.cs" />
+    <Compile Include="Converters\JsonWrappedItemConverter.cs" />
+    <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
-    <Compile Include="Helpers\JsonDigitToBooleanConverter.cs" />
-    <Compile Include="Helpers\JsonWrappedListConverter.cs" />
-    <Compile Include="Helpers\JsonWrappedItemConverter.cs" />
-    <Compile Include="Helpers\LinqExtensions.cs" />
-    <Compile Include="Helpers\ReflectionExtensions.cs" />
+    <Compile Include="Converters\StringHasLengthConverter.cs" />
+    <Compile Include="Enums\ReportReason.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
+    <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Helpers\SMP.cs" />
     <Compile Include="Messages\GatewayQueueTimerCommandMessage.cs" />
     <Compile Include="Messages\GatewayQueueTimerElapsedMessage.cs" />
     <Compile Include="Models\Attributes\ChildRelationshipAttribute.cs" />
@@ -169,7 +172,6 @@
     <Compile Include="Services\IStartupInfoService.cs" />
     <Compile Include="Services\StartupInfoService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
-    <Compile Include="ValueConverters\StringHasLengthConverter.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckViewModel.cs" />

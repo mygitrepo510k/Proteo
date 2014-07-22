@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Helpers;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Models;

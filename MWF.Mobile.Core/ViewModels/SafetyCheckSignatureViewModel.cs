@@ -23,8 +23,8 @@ namespace MWF.Mobile.Core.ViewModels
             _userInteraction = userInteraction;
 
             DriverName = startupInfoService.LoggedInDriver.DisplayName;
-            VehicleRegistration = startupInfoService.Vehicle.Registration;
-            TrailerRef = startupInfoService.Trailer.Registration;
+            VehicleRegistration = startupInfoService.CurrentVehicle.Registration;
+            TrailerRef = startupInfoService.CurrentTrailer == null ? "- no trailer -" : startupInfoService.CurrentTrailer.Registration;
 
             //TODO: retrieve this data MWF Mobile Config repository - Luke is currently implementing this
             Preamble = "- preamble text goes here -";
@@ -90,16 +90,24 @@ namespace MWF.Mobile.Core.ViewModels
                 _userInteraction.Alert("Signature is required");
 
             // Retrieve the vehicle and trailer safety check data from the startup info service
-            var vehicleSafetyCheckData = _startupInfoService.VehicleSafetyCheckData;
-            var trailerSafetyCheckData = _startupInfoService.TrailerSafetyCheckData;
+            var safetyCheckDataList = new List<Models.SafetyCheckData>(2);
+
+            if (_startupInfoService.VehicleSafetyCheckData != null)
+                safetyCheckDataList.Add(_startupInfoService.VehicleSafetyCheckData);
+
+            if (_startupInfoService.TrailerSafetyCheckData != null)
+                safetyCheckDataList.Add(_startupInfoService.TrailerSafetyCheckData);
 
             // Set the signature on both
             var signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
-            vehicleSafetyCheckData.Signature = trailerSafetyCheckData.Signature = signature;
+
+            foreach (var safetyCheckData in safetyCheckDataList)
+            {
+                safetyCheckData.Signature = signature;
+            }
 
             // Add the safety checks to the gateway queue
-            var safetyCheckData = new[] { vehicleSafetyCheckData, trailerSafetyCheckData };
-            var actions = safetyCheckData.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
+            var actions = safetyCheckDataList.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
             _gatewayQueuedService.AddToQueue(actions);
 
             // The startup process is now complete - redirect to the main view

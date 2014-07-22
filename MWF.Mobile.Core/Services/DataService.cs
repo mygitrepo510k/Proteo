@@ -57,12 +57,17 @@ namespace MWF.Mobile.Core.Services
         private void CreateTablesIfRequired()
         {
             _connection.CreateTable<ApplicationProfile>();
+            _connection.CreateTable<CurrentDriver>();
             _connection.CreateTable<Customer>();
             _connection.CreateTable<Device>();
             _connection.CreateTable<Driver>();
             _connection.CreateTable<GatewayQueueItem>();
+            _connection.CreateTable<Image>();
+            _connection.CreateTable<SafetyCheckData>();
+            _connection.CreateTable<SafetyCheckFault>();
             _connection.CreateTable<SafetyCheckFaultType>();
             _connection.CreateTable<SafetyProfile>();
+            _connection.CreateTable<Signature>();
             _connection.CreateTable<Vehicle>();
             _connection.CreateTable<Trailer>();
             _connection.CreateTable<VehicleView>();

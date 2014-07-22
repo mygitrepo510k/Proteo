@@ -5,28 +5,15 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <ImageView
-        android:layout_marginTop="10dp"
-        android:layout_width="227.5dp"
-        android:layout_height="117.0dp"
-        android:src="@drawable/mwfLogo"
-        android:layout_marginRight="0.0dp"
-        android:layout_gravity="center_horizontal" />
+        style="@style/Proteo.ImageView.MWFLogo" />
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
-        android:gravity="center_horizontal"
+        style="@style/Proteo.TextView.MainHeading"
         local:MvxBind="Text PasscodeLabel" />
     <EditText
-        style="@style/Theme.EditText"
-        android:inputType="numberPassword"
-        android:password="true"
-        android:gravity="center"
-        android:background="#cccfd1"
+        style="@style/Proteo.EditText.NumberPasscode"
         local:MvxBind="Text Passcode" />
     <Button
-        style="@style/Theme.Button"
-        android:id="@+id/button1"
-        android:background="#ffcf7b"
+        style="@style/Proteo.Button"
+        android:id="@+id/buttonPasscode"
         local:MvxBind="Text PasscodeButtonLabel; Click LoginCommand" />
 </LinearLayout>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+  <LinearLayout
+     android:orientation="vertical"
+     android:layout_width="fill_parent"
+     android:layout_height="fill_parent">
+    <TextView
+      style="@style/Proteo.TextView.MainHeading"
+      local:MvxBind="Text CheckTypeText" />
+    <TextView
+      style="@style/Proteo.TextView.SubHeading"
+      local:MvxBind="Text DiscretionaryOrFailureText" />
+  </LinearLayout>
+  <Button
+        style="@style/Proteo.Button.Bottom"
+        android:id="@+id/donebutton"
+        local:MvxBind="Text DoneButtonLabel;" />
+   
+</RelativeLayout>

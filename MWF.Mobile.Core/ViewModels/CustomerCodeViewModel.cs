@@ -97,6 +97,9 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private string _errorMessage;
+
+        private string _unexpectedErrorMessage = "Unfortunately, there was a problem setting up your device.";
         private async Task EnterCodeAsync()
         {
             if (string.IsNullOrWhiteSpace(this.CustomerCode))
@@ -113,26 +116,24 @@ namespace MWF.Mobile.Core.ViewModels
             else
             {
                 bool success = false;
-                string errorMessage = null;
 
                 this.IsBusy = true;
 
                 try
                 {
                     success = await this.SetupDevice();
-                    if (!success) errorMessage = "Invalid customer code.";
                 }
                 catch (Exception ex)
                 {
                     //TODO: save to unhandled exceptions log
                     success = false;
-                    errorMessage = "Unfortunately, there was a problem setting up your device.";
+                    _errorMessage = _unexpectedErrorMessage;
                 }
 
                 this.IsBusy = false;
 
                 if (success) ShowViewModel<PasscodeViewModel>();
-                else await _userInteraction.AlertAsync(errorMessage);
+                else await _userInteraction.AlertAsync(_errorMessage);
 
             }
         }
@@ -143,9 +144,19 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task<bool> SetupDevice()
         {
 
+            if (!await _gatewayService.CreateDevice())
+            {
+                _errorMessage = _unexpectedErrorMessage;
+                return false;
+            }
+                
 
             var device = await _gatewayService.GetDevice(CustomerCode);
-            if (device == null) return false;
+            if (device == null)
+            {
+                _errorMessage = "Invalid customer code.";
+                return false;
+            } 
 
             var applicationProfile = await _gatewayService.GetApplicationProfile();
             var drivers = await _gatewayService.GetDrivers();

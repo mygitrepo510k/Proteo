@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MWF.Mobile.Core.Models.GatewayServiceRequest;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ namespace MWF.Mobile.Core.Services
         Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle);
         Task<IEnumerable<Models.VehicleView>> GetVehicleViews();
         Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle);
+        Task<bool> CreateDevice();
     }
 
 }

@@ -40,7 +40,6 @@ namespace MWF.Mobile.Core.ViewModels
             _reachability = reachabibilty;
             _startupInfoService = startupInfoService;
 
-            
             _trailerRepository = trailerRepository;
             Trailers = _originalTrailerList = _trailerRepository.GetAll();
             _vehicleRepository = vehicleRepository;
@@ -56,7 +55,6 @@ namespace MWF.Mobile.Core.ViewModels
             Trailer = new Trailer
             {
                 ID = nav.ID
-                
             };
         }
 
@@ -117,19 +115,19 @@ namespace MWF.Mobile.Core.ViewModels
                     if (isConfirmed)
                     {
                         _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = Guid.Empty;
-                        //TODO: Forward you to the safety selection screen!
+                        ShowViewModel<SafetyCheckViewModel>();
                     }
                 }, "Please confirm your trailer");
             }
             else
             {
                 //This will take to the next view model with a trailer value of null.
-                Mvx.Resolve<IUserInteraction>().Confirm("Registration: " + trailer.Registration, isConfirmed =>
+                Mvx.Resolve<IUserInteraction>().Confirm(trailer.Registration, isConfirmed =>
                 {
                     if (isConfirmed)
                     {
                         _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
-                        //TODO: Forward you to safety selection screen!
+                        ShowViewModel<SafetyCheckViewModel>();
                     }
                 }, "Please confirm your trailer");
             }
@@ -155,7 +153,6 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-
                 return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(() => updateTrailerList()));
             }
         }
@@ -199,7 +196,5 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
         }
-
-
     }
 }

@@ -35,7 +35,7 @@ namespace MWF.Mobile.Android.Portable
             {
                 var globals = Mvx.Resolve<IMvxAndroidGlobals>();
                 TelephonyManager tm = (TelephonyManager)globals.ApplicationContext.GetSystemService(Context.TelephonyService);
-                return tm.DeviceId;
+                return tm.DeviceId ?? string.Empty;
             }
         }
 

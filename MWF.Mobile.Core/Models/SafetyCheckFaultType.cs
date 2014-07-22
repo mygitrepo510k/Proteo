@@ -28,5 +28,8 @@ namespace MWF.Mobile.Core.Models
         [ForeignKey(typeof(SafetyProfile))]
         public Guid SafetyProfileID { get; set; }
 
+        [JsonProperty("@isDiscretionaryQuestion")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
+        public bool IsDiscretionaryQuestion { get; set; }
     }
 }

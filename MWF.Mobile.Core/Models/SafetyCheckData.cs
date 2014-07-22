@@ -45,13 +45,13 @@ namespace MWF.Mobile.Core.Models
         [XmlAttribute("smp")]
         public string SMP { get; set; }
 
-        [ChildRelationship(typeof(Signature))]
+        [ChildRelationship(typeof(Signature), RelationshipCardinality.OneToOne)]
         [XmlElement("signature")]
         public Signature Signature { get; set; }
 
         [ChildRelationship(typeof(SafetyCheckFault))]
         [XmlArray("faults")]
-        public List<SafetyCheckFaultType> Faults { get; set; }
+        public List<SafetyCheckFault> Faults { get; set; }
 
         [XmlAttribute("intlink")]
         public int ProfileIntLink { get; set; }

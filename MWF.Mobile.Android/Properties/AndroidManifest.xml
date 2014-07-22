@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="MWF.Mobile.Android" android:versionCode="1" android:versionName="1.0" android:installLocation="auto">
 	<uses-sdk />
-	<application android:label="" android:icon="@drawable/Icon" android:theme="@style/Theme.Proteo" />
+	<application android:label="Mobile Worker Flow" android:icon="@drawable/Icon" android:theme="@style/ProteoNoMargins" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
 </manifest>

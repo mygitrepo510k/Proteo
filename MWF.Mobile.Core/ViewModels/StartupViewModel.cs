@@ -7,6 +7,7 @@ using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Portable;
 using Chance.MvvmCross.Plugins.UserInteraction;
+using MWF.Mobile.Core.Repositories.Interfaces;
 
 
 
@@ -17,17 +18,17 @@ namespace MWF.Mobile.Core.ViewModels
 		: BaseActivityViewModel
     {
 
-        public StartupViewModel(IAuthenticationService authenticationService, IGatewayService gatewayService, IGatewayQueuedService gatewayQueuedService, Portable.IReachability reachableService, IDataService dataService, IRepositories repositories, IDeviceInfo deviceInfo, IStartupInfoService startupInfoService, IUserInteraction userInteraction)
+        public StartupViewModel(IAuthenticationService authenticationService, IGatewayService gatewayService, IGatewayQueuedService gatewayQueuedService, Portable.IReachability reachableService, IDataService dataService, IRepositories repositories, IDeviceInfo deviceInfo, IStartupInfoService startupInfoService, IUserInteraction userInteraction, ICurrentDriverRepository currentDriver)
         {
-#if DEBUG
-            userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
-#endif
+//#if DEBUG
+//            userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
+//#endif
 
             var customerRepository = repositories.CustomerRepository;
 
             if (customerRepository.GetAll().Any())
             {
-                this.InitialViewModel = new PasscodeViewModel(authenticationService, startupInfoService);
+                this.InitialViewModel = new PasscodeViewModel(authenticationService, startupInfoService,currentDriver);
             }
             else
             {

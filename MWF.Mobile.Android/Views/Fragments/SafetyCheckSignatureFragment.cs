@@ -33,24 +33,32 @@ namespace MWF.Mobile.Android.Views.Fragments
             var view = this.BindingInflate(Resource.Layout.Fragment_SafetyCheckSignature, null);
 
             signaturePad = view.FindViewById<SignaturePadView>(Resource.Id.signature_view);
+            signaturePad.StrokeColor = AndroidGraphics.Color.Black;
+            signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209); // Match the color of an EditText
             signaturePad.SignaturePrompt.Text = string.Empty;
             
             var doneButton = view.FindViewById<Button>(Resource.Id.button_done);
-            doneButton.Click += doneButton_Click;
+            doneButton.Click += this.DoneButton_Click;
 
             return view;
         }
 
-        void doneButton_Click(object sender, EventArgs e)
+        void DoneButton_Click(object sender, EventArgs e)
         {
             //TODO: can we achieve this using data binding?
             var viewModel = (SafetyCheckSignatureViewModel)ViewModel;
-            var image = signaturePad.GetImage(AndroidGraphics.Color.Black, AndroidGraphics.Color.White, false);
 
-            using (var ms = new MemoryStream())
+            if (signaturePad.IsBlank)
+                viewModel.SignatureEncodedImage = null;
+            else
             {
-                image.Compress(AndroidGraphics.Bitmap.CompressFormat.Png, 0, ms);
-                viewModel.SignatureEncodedImage = Convert.ToBase64String(ms.ToArray());
+                var image = signaturePad.GetImage(AndroidGraphics.Color.Black, AndroidGraphics.Color.White, false);
+
+                using (var ms = new MemoryStream())
+                {
+                    image.Compress(AndroidGraphics.Bitmap.CompressFormat.Png, 0, ms);
+                    viewModel.SignatureEncodedImage = Convert.ToBase64String(ms.ToArray());
+                }
             }
 
             viewModel.DoneCommand.Execute(null);

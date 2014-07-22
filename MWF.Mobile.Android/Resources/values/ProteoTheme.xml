@@ -28,6 +28,14 @@
     <item name = "android:textSize">25dp</item>
   </style>
 
+  <style name = "Proteo.TextView.Information" parent="style/Proteo">
+    <item name = "android:textSize">20dp</item>
+  </style>
+
+  <style name = "Proteo.TextView.SubInformation" parent="style/Proteo">
+    <item name = "android:textSize">15dp</item>
+  </style>
+
   <!-- ===================== Buttons ========================= -->
 
   <style name="Proteo.Button" parent="style/Proteo">
@@ -67,5 +75,10 @@
     <item name = "android:gravity">center_horizontal</item>
   </style>
 
-
+  <!-- ===================== SignaturePads ========================= -->
+  
+  <style name="Proteo.SignaturePad" parent="style/Proteo">
+    <item name="android:layout_height">200dp</item>
+  </style>
+  
 </resources>

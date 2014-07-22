@@ -26,9 +26,8 @@ namespace MWF.Mobile.Core.ViewModels
             VehicleRegistration = startupInfoService.CurrentVehicle.Registration;
             TrailerRef = startupInfoService.CurrentTrailer == null ? "- no trailer -" : startupInfoService.CurrentTrailer.Registration;
 
-            //TODO: retrieve this data MWF Mobile Config repository - Luke is currently implementing this
-            Preamble = "- preamble text goes here -";
-            Postamble = "- postamble text goes here -";
+            //TODO: retrieve the relevant message from the MWF Mobile Config repository - Luke is currently implementing this
+            ConfirmationText = "I confirm that this vehicle is NOT safe or roadworthy - Please call the traffic office on 0845 644 3750 to inform them of these fault(s).";
         }
 
         private string _driverName;
@@ -52,18 +51,11 @@ namespace MWF.Mobile.Core.ViewModels
             set { _trailerRef = value; RaisePropertyChanged(() => TrailerRef); }
         }
 
-        private string _preamble;
-        public string Preamble
+        private string _confirmationText;
+        public string ConfirmationText
         {
-            get { return _preamble; }
-            set { _preamble = value; RaisePropertyChanged(() => Preamble); }
-        }
-
-        private string _postamble;
-        public string Postamble
-        {
-            get { return _postamble; }
-            set { _postamble = value; RaisePropertyChanged(() => Postamble); }
+            get { return _confirmationText; }
+            set { _confirmationText = value; RaisePropertyChanged(() => ConfirmationText); }
         }
 
         public string DoneLabel
@@ -87,7 +79,10 @@ namespace MWF.Mobile.Core.ViewModels
         private void Done()
         {
             if (string.IsNullOrWhiteSpace(SignatureEncodedImage))
+            {
                 _userInteraction.Alert("Signature is required");
+                return;
+            }
 
             // Retrieve the vehicle and trailer safety check data from the startup info service
             var safetyCheckDataList = new List<Models.SafetyCheckData>(2);

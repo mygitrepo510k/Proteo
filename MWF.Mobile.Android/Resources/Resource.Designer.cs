@@ -302,20 +302,26 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f060001
 			public const int Proteo = 2131099649;
 			
-			// aapt resource value: 0x7f060004
-			public const int Proteo_Button = 2131099652;
-			
-			// aapt resource value: 0x7f060005
-			public const int Proteo_Button_Bottom = 2131099653;
-			
 			// aapt resource value: 0x7f060006
-			public const int Proteo_EditText = 2131099654;
+			public const int Proteo_Button = 2131099654;
 			
 			// aapt resource value: 0x7f060007
-			public const int Proteo_EditText_NumberPasscode = 2131099655;
+			public const int Proteo_Button_Bottom = 2131099655;
 			
 			// aapt resource value: 0x7f060008
-			public const int Proteo_ImageView_MWFLogo = 2131099656;
+			public const int Proteo_EditText = 2131099656;
+			
+			// aapt resource value: 0x7f060009
+			public const int Proteo_EditText_NumberPasscode = 2131099657;
+			
+			// aapt resource value: 0x7f06000a
+			public const int Proteo_ImageView_MWFLogo = 2131099658;
+			
+			// aapt resource value: 0x7f06000b
+			public const int Proteo_SignaturePad = 2131099659;
+			
+			// aapt resource value: 0x7f060004
+			public const int Proteo_TextView_Information = 2131099652;
 			
 			// aapt resource value: 0x7f060002
 			public const int Proteo_TextView_MainHeading = 2131099650;
@@ -323,11 +329,14 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f060003
 			public const int Proteo_TextView_SubHeading = 2131099651;
 			
+			// aapt resource value: 0x7f060005
+			public const int Proteo_TextView_SubInformation = 2131099653;
+			
 			// aapt resource value: 0x7f060000
 			public const int ProteoNoMargins = 2131099648;
 			
-			// aapt resource value: 0x7f060009
-			public const int Theme_Splash = 2131099657;
+			// aapt resource value: 0x7f06000c
+			public const int Theme_Splash = 2131099660;
 			
 			static Style()
 			{

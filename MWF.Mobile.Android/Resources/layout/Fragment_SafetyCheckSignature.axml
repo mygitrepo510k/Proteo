@@ -1,58 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:local="http://schemas.android.com/apk/res-auto"
   android:orientation="vertical"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent">
-  <TextView
+  <LinearLayout
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="20.0dp"
-    android:layout_marginTop="15dp"
-    local:MvxBind="Text DriverName"
-  />
-  <TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="20.0dp"
-    android:layout_marginTop="15dp"
-    local:MvxBind="Text VehicleRegistration"
-  />
-  <TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="20.0dp"
-    android:layout_marginTop="15dp"
-    local:MvxBind="Text TrailerRef"
-  />
-  <TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="20.0dp"
-    android:layout_marginTop="15dp"
-    local:MvxBind="Text Preamble"
-  />
-  <signaturepad.SignaturePadView
-    android:id="@+id/signature_view"
-    android:layout_width="fill_parent"
-    android:layout_height="200dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginBottom="10dp"
-  />
-  <TextView
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textSize="20.0dp"
-    android:layout_marginTop="15dp"
-    local:MvxBind="Text Postamble"
-  />
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+    <TextView
+      style="@style/Proteo.TextView.SubInformation"
+      local:MvxBind="Text DriverName" />
+    <TextView
+      style="@style/Proteo.TextView.SubInformation"
+      local:MvxBind="Text VehicleRegistration" />
+    <TextView
+      style="@style/Proteo.TextView.SubInformation"
+      local:MvxBind="Text TrailerRef" />
+    <TextView
+      style="@style/Proteo.TextView.Information"
+      local:MvxBind="Text ConfirmationText" />
+    <signaturepad.SignaturePadView
+      android:id="@+id/signature_view"
+      style="@style/Proteo.SignaturePad" />
+  </LinearLayout>
   <Button
     android:id="@+id/button_done"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    local:MvxBind="Text DoneLabel"
-  />
-</LinearLayout>
+    style="@style/Proteo.Button.Bottom"
+    local:MvxBind="Text DoneLabel" />
+</RelativeLayout>

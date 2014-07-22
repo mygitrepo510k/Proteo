@@ -14,6 +14,9 @@ using MWF.Mobile.Core.ViewModels;
 using Xunit;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
+using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Repositories;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -23,6 +26,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
     {
 
         private IFixture _fixture;
+        private Driver _driver;
 
         protected override void AdditionalSetup()
         {
@@ -35,9 +39,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
+            _driver = new Core.Models.Driver() { LastName = "TestName", ID = new Guid()};
+
             var mockAuthenticationService = new Mock<IAuthenticationService>();
             mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.IsAny<string>())).ReturnsAsync(new AuthenticationResult { Success = false });
-            mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.Is<string>(s => s == "9999"))).ReturnsAsync(new AuthenticationResult { Success = true, Driver = new Core.Models.Driver() { LastName = "TestName" } });
+            mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.Is<string>(s => s == "9999"))).ReturnsAsync(new AuthenticationResult { Success = true, Driver = _driver });
             _fixture.Inject<IAuthenticationService>(mockAuthenticationService.Object);
         }
 
@@ -78,6 +84,30 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.NotNull(startUpInfoService.LoggedInDriver);
             Assert.Equal("TestName", startUpInfoService.LoggedInDriver.LastName);
+
+        }
+
+        /// <summary>
+        /// Tests that on successful authentication a current driver 
+        /// </summary>
+        [Fact]
+        public void PasscodeVM_SuccessfulAuthenticationStoresCurrentDriver()
+        {
+            base.ClearAll();
+
+            var currentDriverRepository = new Mock<ICurrentDriverRepository>();
+            _fixture.Inject<ICurrentDriverRepository>(currentDriverRepository.Object);
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+
+            var startUpInfoService = new StartupInfoService();
+            _fixture.Inject<IStartupInfoService>(startUpInfoService);
+            var vm = _fixture.Create<PasscodeViewModel>();
+      
+            vm.Passcode = "9999";
+
+            vm.LoginCommand.Execute(null);
+
+            currentDriverRepository.Verify(cdr => cdr.Insert(It.Is<CurrentDriver>( cd => cd.ID == _driver.ID )), Times.Once);
 
         }
 

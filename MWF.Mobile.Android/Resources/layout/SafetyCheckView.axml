@@ -5,19 +5,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <Button
-        style="@style/Proteo.Button"
-        android:id="@+id/donebutton"
-        android:background="#ffcf7b"
-        android:layout_marginBottom="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        local:MvxBind="Text DoneButtonLabel; Clickable AllSafetyChecksComplete; Click DoneCheckCommand" />
+        style="@style/Proteo.Button.Bottom"
+        android:id="@+id/checksdonebutton"
+        local:MvxBind="Text ChecksDoneButtonLabel; Click ChecksDoneCommand" />
     <Mvx.MvxListView
         android:id="@+id/SafetyListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@id/donebutton"
+        android:layout_above="@id/checksdonebutton"
         local:MvxBind="ItemsSource SafetyCheckItemViewModels"
-        local:MvxItemTemplate="@layout/item_safetycheckfault" />
+        local:MvxItemTemplate="@layout/item_safetycheckitem" />
 </RelativeLayout>

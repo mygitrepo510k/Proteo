@@ -11,9 +11,12 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using Cirrious.MvvmCross.Binding.BindingContext;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.Binding.Droid.Views;
+
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
@@ -29,10 +32,6 @@ namespace MWF.Mobile.Android.Views.Fragments
         private ListView itemList;
         private long selectedItemId;
 
-        private const int PASS_ITEM = 0;
-        private const int DISCRETIONARY_PASS_ITEM = 1;
-        private const int FAIL_ITEM = 2;
-
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code
@@ -46,24 +45,37 @@ namespace MWF.Mobile.Android.Views.Fragments
 
 
             itemList = (ListView)view.FindViewById(Resource.Id.SafetyListView);
+            itemList.ItemClick += itemList_ItemClick;
             RegisterForContextMenu(itemList);
+
+            var checksDoneButton = (Button)view.FindViewById(Resource.Id.checksdonebutton);
+            var set = this.CreateBindingSet<SafetyCheckFragment, SafetyCheckViewModel>();
+            set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.AllSafetyChecksCompleted);
+            set.Apply();
         }
+
+        void itemList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        {
+            ((ListView)sender).ShowContextMenuForChild(e.View);
+        }
+
 
         public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo info)
         {
-            AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)info;
+            var menuInfo = (AdapterView.AdapterContextMenuInfo)info;
+            var safetyCheckItem = ((SafetyCheckItemViewModel)((MvxListItemView)menuInfo.TargetView).DataContext);
 
             selectedItemId = menuInfo.Id;
-
-            menu.SetHeaderTitle("My Menu Header");
+            menu.SetHeaderTitle(safetyCheckItem.Title);
             menu.Add(0, (int)MenuOption.Passed, 0, "Pass");
-            menu.Add(0, (int)MenuOption.DiscretionaryPass, 0, "Discretionary Pass");
+            if (safetyCheckItem.IsDiscreationaryQuestion)
+                menu.Add(0, (int)MenuOption.DiscretionaryPass, 0, "Discretionary Pass");
             menu.Add(0, (int)MenuOption.Failed, 0, "Fail");
         }
 
         public override bool OnContextItemSelected(IMenuItem item)
         {
-            var safetyCheckViewModel = (MWF.Mobile.Core.ViewModels.SafetyCheckItemViewModel)((MvxListItemView)((AdapterView.AdapterContextMenuInfo)item.MenuInfo).TargetView).DataContext;
+            var safetyCheckViewModel = (SafetyCheckItemViewModel)((MvxListItemView)((AdapterView.AdapterContextMenuInfo)item.MenuInfo).TargetView).DataContext;
 
             if (item.ItemId.Equals((int)MenuOption.Passed))
             {
@@ -72,10 +84,12 @@ namespace MWF.Mobile.Android.Views.Fragments
             else if (item.ItemId.Equals((int)MenuOption.DiscretionaryPass))
             {
                 safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.DiscretionaryPass;
+                // TODO: Forward to comments screen
             }
             else if (item.ItemId.Equals((int)MenuOption.Failed))
             {
                 safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.Failed;
+                // TODO: Forward to comments screen
             }
 
             return base.OnOptionsItemSelected(item);

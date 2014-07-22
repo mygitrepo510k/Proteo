@@ -1,4 +1,6 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,14 @@ namespace MWF.Mobile.Core.ViewModels
 
     public class SafetyCheckItemViewModel : MvxViewModel
     {
+        public SafetyCheckItemViewModel(SafetyCheckViewModel safetyCheckViewModel)
+        {
+            _safetyCheckViewModel = safetyCheckViewModel;
+            _checkStatus = SafetyCheckEnum.NotSet;
+        }
+
+        private SafetyCheckViewModel _safetyCheckViewModel;
+
         private Guid _id;
         public Guid ID
         {
@@ -31,25 +41,39 @@ namespace MWF.Mobile.Core.ViewModels
             set { _title = value; }
         }
 
+        private bool _isDiscretionaryQuestion;
+        public bool IsDiscreationaryQuestion
+        {
+            get { return _isDiscretionaryQuestion; }
+            set { _isDiscretionaryQuestion = value; }
+        }
+
         private SafetyCheckEnum _checkStatus;
         public SafetyCheckEnum CheckStatus
         {
             get { return _checkStatus; }
             set 
             { 
-                _checkStatus = value;
-                if (_checkStatus == SafetyCheckEnum.Passed)
+                if (_checkStatus == SafetyCheckEnum.DiscretionaryPass ||
+                    _checkStatus == SafetyCheckEnum.Failed)
+                {
+                    Mvx.Resolve<IUserInteraction>().Confirm(("Change this item to passed?"), isConfirmed =>
+                    {
+                        if (isConfirmed)
+                        {
+                            _checkStatus = value;
+                            _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                            RaisePropertyChanged(() => CheckStatus);
+                        }
+                    }, "Change Status");
+                }
+                else
+                {
+                    _checkStatus = value;
                     _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
-                RaisePropertyChanged(() => CheckStatus);
+                    RaisePropertyChanged(() => CheckStatus);
+                }
             }
-        }
-        
-        private SafetyCheckViewModel _safetyCheckViewModel;
-
-        public SafetyCheckItemViewModel(SafetyCheckViewModel safetyCheckViewModel)
-        {
-            _safetyCheckViewModel = safetyCheckViewModel;
-            _checkStatus = SafetyCheckEnum.NotSet;
         }
     }
 }

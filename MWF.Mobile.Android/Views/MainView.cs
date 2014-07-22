@@ -61,6 +61,7 @@ namespace MWF.Mobile.Android.Views
 
             var transaction = FragmentManager.BeginTransaction();
             transaction.Replace(Resource.Id.fragment_host, fragment);
+            transaction.AddToBackStack(null);
             transaction.Commit();
 
             return true;

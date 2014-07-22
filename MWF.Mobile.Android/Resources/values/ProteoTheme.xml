@@ -3,17 +3,23 @@
 
  <!-- ===================== Main Theme ========================= -->
   
-  <style name="Proteo" parent="@android:style/Theme.Holo.Light">
+  <!-- ProteoNoMargins gets applied at global level and therefore to dialogs (which exessive margins spoil)  -->
+  
+  <style name="ProteoNoMargins" parent="@android:style/Theme.Holo.Light">
     <item name = "android:layout_width">match_parent</item>
     <item name = "android:layout_height">wrap_content</item>
     <item name = "android:gravity">center_horizontal</item>
+  </style>
+
+  <style name="Proteo" parent="style/ProteoNoMargins">
     <item name = "android:layout_marginTop">10dp</item>
     <item name = "android:layout_marginLeft">10dp</item>
     <item name = "android:layout_marginRight">10dp</item>
-  </style>
+  </style>  
 
   <!-- ===================== TextViews ========================= -->
 
+  
   <style name="Proteo.TextView.MainHeading" parent="style/Proteo">
     <item name = "android:textSize">30dp</item>
   </style>
@@ -40,15 +46,16 @@
   <style name="Proteo.EditText" parent="style/Proteo">
     <item name = "android:paddingLeft">10dp</item>
     <item name = "android:paddingRight">10dp</item>
-    <item name = "android:textSize">30dp</item>
+    <item name = "android:layout_height">48dp</item>
+    <item name = "android:textSize">16dp</item>
     <item name = "android:background">#cccfd1</item>
-    <item name = "android:gravity">left</item>
+    <item name = "android:gravity">center</item>
   </style>
 
   <style name="Proteo.EditText.NumberPasscode" parent="style/Proteo.EditText">
+    <item name = "android:textSize">30dp</item>
     <item name = "android:inputType">numberPassword</item>
     <item name = "android:password">true</item>
-    <item name = "android:gravity">center</item>
   </style>
 
   <!-- ===================== ImageViews ========================= -->

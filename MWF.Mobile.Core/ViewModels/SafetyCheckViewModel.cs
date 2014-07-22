@@ -3,6 +3,7 @@ using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,64 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class SafetyCheckViewModel : MvxViewModel
     {
+        private IStartupInfoService _startupInfoService;
+        private IRepositories _repositories;
+
+        public SafetyCheckViewModel(IStartupInfoService startupInfoService, IRepositories repositories)
+        {
+            _startupInfoService = startupInfoService;
+            _repositories = repositories;
+
+            Vehicle vehicle = null;
+            Trailer trailer = null;
+
+            vehicle = _repositories.VehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID);
+
+            if (_startupInfoService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
+                trailer = _repositories.TrailerRepository.GetByID(_startupInfoService.LoggedInDriver.LastSecondaryVehicleID);
+
+            SafetyProfileVehicle = _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink).SingleOrDefault();
+
+            if (trailer != null)
+                SafetyProfileTrailer = _repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
+
+            var allSafetyChecks = new List<SafetyCheckItemViewModel>();
+
+            if (SafetyProfileVehicle != null)
+            {
+                foreach (var child in SafetyProfileVehicle.Children.OrderBy(spv => spv.Order))
+                {
+                    var vehicleSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this)
+                    {
+                        ID = child.ID,
+                        Title = "VEH: " + child.Title,
+                        CheckStatus = SafetyCheckEnum.NotSet,
+                        IsDiscreationaryQuestion = child.IsDiscretionaryQuestion
+                    };
+
+                    allSafetyChecks.Add(vehicleSafetyCheckFaultTypeView);
+                }
+            }
+
+            if (SafetyProfileTrailer != null)
+            {
+                foreach (var child in SafetyProfileTrailer.Children.OrderBy(spt => spt.Order))
+                {
+                    var trailerSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this)
+                    {
+                        ID = child.ID,
+                        Title = "TRL: " + child.Title,
+                        CheckStatus = SafetyCheckEnum.NotSet,
+                        IsDiscreationaryQuestion = child.IsDiscretionaryQuestion
+                    };
+
+                    allSafetyChecks.Add(trailerSafetyCheckFaultTypeView);
+                }
+            }
+
+            SafetyCheckItemViewModels = allSafetyChecks;
+        }
+
         private SafetyProfile _safetyProfileVehicle;
         public SafetyProfile SafetyProfileVehicle
         {
@@ -34,86 +93,55 @@ namespace MWF.Mobile.Core.ViewModels
             set { _safetyCheckItemViewModels = value; RaisePropertyChanged(() => SafetyCheckItemViewModels); }
         }
 
-        public string DoneButtonLabel
+        public string ChecksDoneButtonLabel
         {
             get { return "Done"; }
         }
 
-        private MvxCommand _doneCheckCommand;
-        public System.Windows.Input.ICommand DoneCheckCommand
+        private MvxCommand _checksDoneCommand;
+        public System.Windows.Input.ICommand ChecksDoneCommand
         {
-            get { return (_doneCheckCommand = _doneCheckCommand ?? new MvxCommand(async () => await Mvx.Resolve<IUserInteraction>().AlertAsync("Safety Check Complete"))); }
+            get 
+            { 
+                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(DoChecksDoneCommand); 
+                return _checksDoneCommand;
+            }
         }
 
-        private bool _allSafetyChecksComplete;
-        public bool AllSafetyChecksComplete
+        public bool AllSafetyChecksCompleted
         {
             get 
             {
-                bool allChecksPassed = true;
+                bool allChecksCompleted = true;
                 foreach (var safetyCheckItem in SafetyCheckItemViewModels)
                 {
-                    if (!allChecksPassed) 
-                        return allChecksPassed;
+                    if (!allChecksCompleted)
+                        return allChecksCompleted;
 
-                    allChecksPassed = (safetyCheckItem.CheckStatus == SafetyCheckEnum.Passed);
+                    allChecksCompleted = (safetyCheckItem.CheckStatus != SafetyCheckEnum.NotSet);
                 }
 
-                return allChecksPassed;
+                return allChecksCompleted;
             }
             set 
             {
-                _allSafetyChecksComplete = value; 
-                RaisePropertyChanged(() => AllSafetyChecksComplete);
+                RaisePropertyChanged(() => AllSafetyChecksCompleted);
             }
         }
 
         public void CheckSafetyCheckItemsStatus()
         {
-            RaisePropertyChanged(() => AllSafetyChecksComplete);
+            RaisePropertyChanged(() => AllSafetyChecksCompleted);
         }
 
-        public SafetyCheckViewModel(ISafetyProfileRepository safetyProfileRepository)
+        private void DoChecksDoneCommand()
         {
-            // TODO: Get real vehicle and trailer values from previous selctions
-            //SafetyProfileVehicle = safetyProfileRepository.GetWhere(spv => spv.IntLink == IntLinkFromVehicle);
-            //SafetyProfileTrailer = safetyProfileRepository.GetWhere(spt => spt.IntLink == IntLinkFronTrailer);
-
-            SafetyProfileVehicle = safetyProfileRepository.GetAll().Where(spv => spv.IntLink > 0 && spv.Children != null).FirstOrDefault();
-            SafetyProfileTrailer = safetyProfileRepository.GetAll().Where(spt => spt.IntLink > 0 && spt.Children != null && spt.IsTrailerProfile).FirstOrDefault();
-
-            var allSafetyChecks = new List<SafetyCheckItemViewModel>();
-
-            if (SafetyProfileVehicle != null)
-            {
-                foreach (var child in SafetyProfileVehicle.Children.OrderBy(spv => spv.Order))
-                {
-                    var vehicleSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this) { 
-                        ID = child.ID,
-                        Title = "Vehicle: " + child.Title,
-                        CheckStatus = SafetyCheckEnum.NotSet
-                    };
-
-                    allSafetyChecks.Add(vehicleSafetyCheckFaultTypeView);
-                }
-            }
-
-            if (SafetyProfileTrailer != null)
-            {
-                foreach (var child in SafetyProfileTrailer.Children.OrderBy(spt => spt.Order))
-                {
-                    var trailerSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this)
-                    {
-                        ID = child.ID,
-                        Title = "Trailer: " + child.Title,
-                        CheckStatus = SafetyCheckEnum.NotSet
-                    };
-
-                    allSafetyChecks.Add(trailerSafetyCheckFaultTypeView);
-                }
-            }            
-
-            SafetyCheckItemViewModels = allSafetyChecks;
+            if (SafetyProfileVehicle.OdometerRequired)
+                // Redirect to odometer screen
+                ShowViewModel<OdometerViewModel>();
+            else
+                // Redirect to safety check acceptance screen 
+                Mvx.Resolve<IUserInteraction>().Alert("Safety checks completed");
         }
     }
 }

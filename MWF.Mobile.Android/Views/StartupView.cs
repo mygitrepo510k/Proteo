@@ -43,9 +43,10 @@ namespace MWF.Mobile.Android.Views
             { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
             { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
             { typeof(Core.ViewModels.TrailerSelectionViewModel), typeof(Fragments.TrailerSelectionFragment)},
-            { typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
+            { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
+            {typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
             { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
-            { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)}
+			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)}
 
         };
 
@@ -69,6 +70,7 @@ namespace MWF.Mobile.Android.Views
 
             var transaction = FragmentManager.BeginTransaction();
             transaction.Replace(Resource.Id.fragment_host, fragment);
+            transaction.AddToBackStack(null);
             transaction.Commit();
 
             return true;

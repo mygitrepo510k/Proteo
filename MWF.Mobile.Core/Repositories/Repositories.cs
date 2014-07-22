@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MWF.Mobile.Core.Repositories.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +10,13 @@ namespace MWF.Mobile.Core.Repositories
     public class Repositories : IRepositories
     {
 
-        public Repositories(IApplicationProfileRepository applicationRepository, ICustomerRepository customerRepository, IDeviceRepository deviceRepository,
+        public Repositories(IApplicationProfileRepository applicationRepository, ICurrentDriverRepository currentDriverRepository, ICustomerRepository customerRepository, IDeviceRepository deviceRepository,
                             IDriverRepository driverRepository, IGatewayQueueItemRepository gatewayQueueItemRepository, ISafetyCheckDataRepository safetyCheckDataRepository,
-                            ISafetyProfileRepository safetyProfileRepository, IVehicleRepository vehicleRepository, 
-                            ITrailerRepository trailerRepository, IVerbProfileRepository verbProfileRepository)
-
+                            ISafetyProfileRepository safetyProfileRepository, IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IVerbProfileRepository verbProfileRepository)
         {
 
             ApplicationRepository = applicationRepository;
+            CurrentDriverRepository = currentDriverRepository;
             CustomerRepository = customerRepository;
             DeviceRepository = deviceRepository;
             DriverRepository = driverRepository;
@@ -29,6 +29,12 @@ namespace MWF.Mobile.Core.Repositories
         }
 
         public IApplicationProfileRepository ApplicationRepository
+        {
+            get;
+            private set;
+        }
+
+        public ICurrentDriverRepository CurrentDriverRepository
         {
             get;
             private set;

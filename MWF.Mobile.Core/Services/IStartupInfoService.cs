@@ -7,5 +7,7 @@ namespace MWF.Mobile.Core.Services
     {
         Driver LoggedInDriver { get; set; }
         SafetyCheckData CurrentSafetyCheckData { get; set; }
+        Vehicle CurrentVehicle { get; set; }
+        int Mileage { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace MWF.Mobile.Android.Portable
         /// Gets an unique identifier for the device
         /// </summary>
         /// <returns>Either IMEI, SerialNumber or AndroidId depending on what is available</returns>
-        public string GetDeviceIndentifier()
+        public string GetDeviceIdentifier()
         {
             return AndroidId;
         }

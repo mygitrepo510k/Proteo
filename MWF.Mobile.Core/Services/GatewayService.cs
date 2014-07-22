@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Portable;
-using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -127,12 +126,8 @@ namespace MWF.Mobile.Core.Services
         private Models.GatewayServiceRequest.Content CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
         {
 
-            Device device = _deviceRepository.GetAll().FirstOrDefault();
-            string deviceIdentifier;
-            if (device != null)
-                deviceIdentifier = device.DeviceIdentifier;
-            else
-                deviceIdentifier = _deviceInfo.GetDeviceIndentifier();
+            Models.Device device = _deviceRepository.GetAll().FirstOrDefault();
+            var deviceIdentifier = device == null ? _deviceInfo.GetDeviceIdentifier() : device.DeviceIdentifier;
 
             return new Core.Models.GatewayServiceRequest.Content
             {

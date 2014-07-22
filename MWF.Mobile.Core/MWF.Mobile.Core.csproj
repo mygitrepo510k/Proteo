@@ -114,7 +114,6 @@
     <Compile Include="Models\SafetyCheckFaultType.cs" />
     <Compile Include="Models\SafetyCheckData.cs" />
     <Compile Include="Models\SafetyProfile.cs" />
-    <Compile Include="Models\SignatureImage.cs" />
     <Compile Include="Models\Vehicle.cs" />
     <Compile Include="Models\Trailer.cs" />
     <Compile Include="Models\BaseVehicle.cs" />

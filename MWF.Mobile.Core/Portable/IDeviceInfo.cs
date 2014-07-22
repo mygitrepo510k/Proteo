@@ -12,7 +12,7 @@ namespace MWF.Mobile.Core.Services
         string GatewayPassword { get; }
         string MobileApplication { get; }
 
-        string GetDeviceIndentifier();
+        string GetDeviceIdentifier();
 
         string IMEI { get; }
 

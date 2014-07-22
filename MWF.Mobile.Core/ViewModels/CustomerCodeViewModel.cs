@@ -49,11 +49,11 @@ namespace MWF.Mobile.Core.ViewModels
             _verbProfileRepository = repositories.VerbProfileRepository;
 
 #if DEBUG
-            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", () => _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031");
+            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", () => this.CustomerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031");
 #endif
         }
 
-        private string _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031";
+        private string _customerCode = string.Empty;
         public string CustomerCode
         {
             get { return _customerCode; }

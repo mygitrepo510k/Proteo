@@ -12,14 +12,21 @@ namespace MWF.Mobile.Core.ViewModels
     public class SafetyCheckSignatureViewModel : MvxViewModel
     {
 
+        private readonly Services.IStartupInfoService _startupInfoService = null;
+        private readonly Services.IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IUserInteraction _userInteraction = null;
 
-        public SafetyCheckSignatureViewModel(IUserInteraction userInteraction)
+        public SafetyCheckSignatureViewModel(Services.IStartupInfoService startupInfoService, Services.IGatewayQueuedService gatewayQueuedService, IUserInteraction userInteraction)
         {
+            _startupInfoService = startupInfoService;
+            _gatewayQueuedService = gatewayQueuedService;
             _userInteraction = userInteraction;
-            DriverName = "Tim Page";
-            VehicleRegistration = "Y854 HVW";
-            TrailerRef = "none";
+
+            DriverName = startupInfoService.LoggedInDriver.DisplayName;
+            VehicleRegistration = startupInfoService.Vehicle.Registration;
+            TrailerRef = startupInfoService.Trailer.Registration;
+
+            //TODO: retrieve this data MWF Mobile Config repository - Luke is currently implementing this
             Preamble = "- preamble text goes here -";
             Postamble = "- postamble text goes here -";
         }
@@ -61,14 +68,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string DoneLabel
         {
-            get { return "Done"; }
+            get { return "Accept"; }
         }
 
-        private Models.SignatureImage _signature;
-        public Models.SignatureImage Signature
+        private string _signatureEncodedImage;
+        public string SignatureEncodedImage
         {
-            get { return _signature; }
-            set { _signature = value; RaisePropertyChanged(() => Signature); }
+            get { return _signatureEncodedImage; }
+            set { _signatureEncodedImage = value; RaisePropertyChanged(() => SignatureEncodedImage); }
         }
 
         private MvxCommand _doneCommand;
@@ -79,12 +86,24 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void Done()
         {
-            if (!Signature.Points.Any())
+            if (string.IsNullOrWhiteSpace(SignatureEncodedImage))
                 _userInteraction.Alert("Signature is required");
 
-            var encodedSignature = this.Signature.ToBlueSphereFormat();
+            // Retrieve the vehicle and trailer safety check data from the startup info service
+            var vehicleSafetyCheckData = _startupInfoService.VehicleSafetyCheckData;
+            var trailerSafetyCheckData = _startupInfoService.TrailerSafetyCheckData;
 
-            //TODO: add signature to safety check, queue to send to bluesphere and redirect to the main activity
+            // Set the signature on both
+            var signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
+            vehicleSafetyCheckData.Signature = trailerSafetyCheckData.Signature = signature;
+
+            // Add the safety checks to the gateway queue
+            var safetyCheckData = new[] { vehicleSafetyCheckData, trailerSafetyCheckData };
+            var actions = safetyCheckData.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
+            _gatewayQueuedService.AddToQueue(actions);
+
+            // The startup process is now complete - redirect to the main view
+            ShowViewModel<MainViewModel>();
         }
 
     }

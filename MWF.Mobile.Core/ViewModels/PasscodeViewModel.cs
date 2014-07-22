@@ -78,6 +78,8 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             await Authenticate();
+
+            ShowViewModel<SafetyCheckSignatureViewModel>();
         }
 
         #region Private Methods

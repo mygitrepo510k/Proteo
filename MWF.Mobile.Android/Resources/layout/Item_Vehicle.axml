@@ -5,13 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20.0dp"
-        android:layout_weight="0.9"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:paddingLeft="10dp"
+        style="@style/Proteo.TextView.ItemText"
         local:MvxBind="Text Registration" />
 <!--
   The arrow icon just in case we want it back.

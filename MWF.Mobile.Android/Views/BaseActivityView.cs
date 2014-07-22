@@ -46,7 +46,5 @@ namespace MWF.Mobile.Android.Views
             transaction.Commit();
 
         }
-
     }
-
 }

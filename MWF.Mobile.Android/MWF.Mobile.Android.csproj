@@ -138,6 +138,7 @@
     <Compile Include="LinkerPleaseInclude.cs" />
     <Compile Include="Portable\DeviceInfo.cs" />
     <Compile Include="Portable\Reachability.cs" />
+    <Compile Include="Portable\Sound.cs" />
     <Compile Include="Portable\Toast.cs" />
     <Compile Include="Presenters\CustomPresenter.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
@@ -152,7 +153,7 @@
     <Compile Include="Views\Fragments\SafetyCheckFaultFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\OdometerFragment.cs" />
-    <Compile Include="Views\Fragments\TrailerSelectionFragment.cs" />
+    <Compile Include="Views\Fragments\TrailerListFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
     <Compile Include="Views\MainView.cs" />
@@ -187,7 +188,7 @@
     <AndroidResource Include="Resources\layout\Fragment_VehicleListView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\Fragment_TrailerSelectionView.axml">
+    <AndroidResource Include="Resources\layout\Fragment_TrailerListView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Trailer.axml">
@@ -269,6 +270,10 @@
       <Project>{e15dcdf2-836f-4203-b322-9e2fdcdea3be}</Project>
       <Name>MWF.Mobile.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\raw\Kalimba.mp3" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

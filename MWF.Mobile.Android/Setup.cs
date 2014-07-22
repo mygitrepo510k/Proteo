@@ -43,6 +43,7 @@ namespace MWF.Mobile.Android
             Mvx.RegisterSingleton<IReachability>(() => new Reachability());
             Mvx.RegisterSingleton<IDeviceInfo>(() => new DeviceInfo());
             Mvx.RegisterSingleton<IToast>(() => new Portable.Toast());
+            Mvx.RegisterSingleton<ISound>(() => new Portable.Sound());
         }
 
         protected override System.Collections.Generic.List<System.Reflection.Assembly> ValueConverterAssemblies

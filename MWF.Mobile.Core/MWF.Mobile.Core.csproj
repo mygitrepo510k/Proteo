@@ -113,6 +113,7 @@
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\IBlueSphereEntity.cs" />
     <Compile Include="Models\Image.cs" />
+    <Compile Include="Models\MWFMobileConfig.cs" />
     <Compile Include="Models\Signature.cs" />
     <Compile Include="Models\SafetyCheckFault.cs" />
     <Compile Include="Models\SafetyCheckFaultType.cs" />
@@ -128,11 +129,14 @@
     <Compile Include="Models\ApplicationProfile.cs" />
     <Compile Include="Models\VerbProfileItem.cs" />
     <Compile Include="Portable\IReachability.cs" />
+    <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ApplicationProfileRepository.cs" />
+    <Compile Include="Repositories\ConfigRepository.cs" />
     <Compile Include="Repositories\CurrentDriverRepository.cs" />
     <Compile Include="Repositories\CustomerRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IConfigRepository.cs" />
     <Compile Include="Repositories\Interfaces\ICurrentDriverRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepositories.cs" />
     <Compile Include="Repositories\Interfaces\ISafetyCheckDataRepository.cs" />
@@ -184,7 +188,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\BaseActivityViewModel.cs" />
     <Compile Include="ViewModels\StartupViewModel.cs" />
-    <Compile Include="ViewModels\TrailerSelectionViewModel.cs" />
+    <Compile Include="ViewModels\TrailerListViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Chance.MvvmCross.Plugins.UserInteraction">

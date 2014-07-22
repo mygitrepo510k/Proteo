@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -90,7 +91,7 @@
     </Reference>
     <Reference Include="Cirrious.MvvmCross.Plugins.Visibility.Droid">
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Visibility.3.1.1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Visibility.Droid.dll</HintPath>
-	</Reference>
+    </Reference>
     <Reference Include="Cirrious.MvvmCross.Plugins.Messenger">
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Messenger.3.2.1-beta1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Messenger.dll</HintPath>
     </Reference>
@@ -140,6 +141,7 @@
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
+    <Compile Include="Views\Fragments\SafetyCheckFaultFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragement.cs" />
     <Compile Include="Views\Fragments\TrailerSelectionFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
@@ -186,9 +188,12 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_SafetyCheckFault.axml">
-		<SubType>AndroidResource</SubType>
+      <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_About.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_SafetyCheckFaultView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -217,7 +222,7 @@
     </AndroidResource>
     <AndroidResource Include="Resources\menu\vehicle_activity_actions.xml" />
     <AndroidResource Include="Resources\drawable\proteoLogo.jpg" />
-    <AndroidResource Include="Resources\drawable\mwfLogo.png" />
+    <AndroidResource Include="Resources\drawable\mwf_logo.png" />
     <AndroidResource Include="Resources\drawable\cross.png" />
     <AndroidResource Include="Resources\drawable\tick.png" />
     <AndroidResource Include="Resources\drawable\warning.png" />

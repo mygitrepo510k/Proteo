@@ -16,8 +16,8 @@ using System.Windows.Input;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class TrailerSelectionViewModel
-        :MvxViewModel
+    public class TrailerListViewModel
+        : MvxViewModel
     {
 
 
@@ -33,7 +33,7 @@ namespace MWF.Mobile.Core.ViewModels
         private Trailer _trailer;
 
         private IEnumerable<Trailer> _trailerList;
-        public TrailerSelectionViewModel(IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IReachability reachabibilty,
+        public TrailerListViewModel(IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IReachability reachabibilty,
             IToast toast, IStartupInfoService startupInfoService)
         {
             _toast = toast;
@@ -70,15 +70,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         public String VehicleRegistration
         {
-            get { return "Vehicle Registration: " 
-                + _vehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID).Registration;  }
+            get
+            {
+                return "Vehicle Registration: "
+                    + _vehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID).Registration;
+            }
         }
 
         public Trailer Trailer
         {
             get { return _trailer; }
             set { _trailer = value; RaisePropertyChanged(() => Trailer); }
-        } 
+        }
 
         private IEnumerable<Trailer> _trailers;
         public IEnumerable<Trailer> Trailers
@@ -92,7 +95,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_trailerSelectorCommand = _trailerSelectorCommand ?? new MvxCommand<Trailer>(v => TrailerDetail(v)));
+                return (_trailerSelectorCommand = _trailerSelectorCommand ?? new MvxCommand<Trailer>(t => TrailerDetail(t, t.Registration)));
             }
         }
 
@@ -101,36 +104,29 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_notrailerSelectorCommand = _notrailerSelectorCommand ?? new MvxCommand<Trailer>(v => TrailerDetail(null)));
+                var message = "Are you sure you don't want to select a trailer.";
+                return (_notrailerSelectorCommand = _notrailerSelectorCommand ?? new MvxCommand<Trailer>(t => TrailerDetail(null, message)));
             }
         }
 
-        public void TrailerDetail(Trailer trailer)
+        public void TrailerDetail(Trailer trailer, string message)
         {
-            if (trailer == null)
+            Guid trailerID = Guid.Empty;
+
+            if (trailer != null)
             {
-                //This will take to the next view model with a trailer value of null.
-                Mvx.Resolve<IUserInteraction>().Confirm("Are you sure you don't want to select a trailer.", isConfirmed =>
-                {
-                    if (isConfirmed)
-                    {
-                        _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = Guid.Empty;
-                        ShowViewModel<SafetyCheckViewModel>();
-                    }
-                }, "Please confirm your trailer");
+                trailerID = trailer.ID;
             }
-            else
+
+            //This will take to the next view model with a trailer value of null.
+            Mvx.Resolve<IUserInteraction>().Confirm(message, isConfirmed =>
             {
-                //This will take to the next view model with a trailer value of null.
-                Mvx.Resolve<IUserInteraction>().Confirm(trailer.Registration, isConfirmed =>
+                if (isConfirmed)
                 {
-                    if (isConfirmed)
-                    {
-                        _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
-                        ShowViewModel<SafetyCheckViewModel>();
-                    }
-                }, "Please confirm your trailer");
-            }
+                    _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
+                    ShowViewModel<SafetyCheckViewModel>();
+                }
+            }, "Please confirm your trailer");
         }
 
         //This is method associated with the search button in the action bar.

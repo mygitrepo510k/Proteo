@@ -16,7 +16,7 @@ using MWF.Mobile.Core.ViewModels;
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class TrailerSelectionFragment : MvxFragment
+    public class TrailerListFragment : MvxFragment
     {
         private SearchView _searchView;
 
@@ -24,7 +24,7 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            return this.BindingInflate(Resource.Layout.Fragment_TrailerSelectionView, null);
+            return this.BindingInflate(Resource.Layout.Fragment_TrailerListView, null);
         }
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
@@ -36,14 +36,14 @@ namespace MWF.Mobile.Android.Views.Fragments
             var searchItem = menu.FindItem(Resource.Id.action_search).ActionView;
             _searchView = searchItem.JavaCast<SearchView>();
 
-            _searchView.QueryTextChange += (s, e) => ((TrailerSelectionViewModel)this.ViewModel).SearchText = e.NewText;
+            _searchView.QueryTextChange += (s, e) => ((TrailerListViewModel)this.ViewModel).SearchText = e.NewText;
         }
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             switch (item.ItemId)
             {
                 case Android.Resource.Id.action_refresh:
-                  ((TrailerSelectionViewModel)ViewModel).RefreshListCommand.Execute(null);
+                  ((TrailerListViewModel)ViewModel).RefreshListCommand.Execute(null);
                     return true;
             }
 

@@ -19,10 +19,14 @@ namespace MWF.Mobile.Android.Portable
     {
         private MediaPlayer _player;
 
-        public void Play(Enum sound)
+        private enum _soundTracks { testSound = Resource.Raw.Kalimba, refreshSound, clickSound };
+
+        public void Play(_soundTracks sound)
         {
-            //TODO: Implement the Enums which hold the path for the sound file.
-           _player = MediaPlayer.Create(Application.Context, Resource.Raw.Kalimba);
+            //TODO: Implement some form of error checking to make sure its a valid enum.
+            int soundPath = (int)sound;
+            
+            _player = MediaPlayer.Create(Application.Context, soundPath);
            _player.Start();
         }
     }

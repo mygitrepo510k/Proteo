@@ -145,7 +145,7 @@
     <Compile Include="Views\Fragments\SafetyCheckFaultFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\OdometerFragment.cs" />
-    <Compile Include="Views\Fragments\TrailerSelectionFragment.cs" />
+    <Compile Include="Views\Fragments\TrailerListFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
     <Compile Include="Views\MainView.cs" />
@@ -180,7 +180,7 @@
     <AndroidResource Include="Resources\layout\Fragment_VehicleListView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\Fragment_TrailerSelectionView.axml">
+    <AndroidResource Include="Resources\layout\Fragment_TrailerListView.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Trailer.axml">

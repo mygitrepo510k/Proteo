@@ -229,6 +229,8 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f030006
 
 			public const int Fragment_TrailerSelectionView = 2130903046;
+
+			public const int Fragment_TrailerListView = 2130903046;
 			
 			// aapt resource value: 0x7f030007
 			public const int Fragment_VehicleListView = 2130903047;

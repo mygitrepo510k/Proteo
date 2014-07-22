@@ -19,6 +19,14 @@ namespace MWF.Mobile.Core.ViewModels
 
     public class SafetyCheckItemViewModel : MvxViewModel
     {
+        public SafetyCheckItemViewModel(SafetyCheckViewModel safetyCheckViewModel)
+        {
+            _safetyCheckViewModel = safetyCheckViewModel;
+            _checkStatus = SafetyCheckEnum.NotSet;
+        }
+
+        private SafetyCheckViewModel _safetyCheckViewModel;
+
         private Guid _id;
         public Guid ID
         {
@@ -49,7 +57,7 @@ namespace MWF.Mobile.Core.ViewModels
                 if (_checkStatus == SafetyCheckEnum.DiscretionaryPass ||
                     _checkStatus == SafetyCheckEnum.Failed)
                 {
-                    Mvx.Resolve<IUserInteraction>().Confirm(("Are you sure you wish to change this safety check to passed?"), isConfirmed =>
+                    Mvx.Resolve<IUserInteraction>().Confirm(("Change this item to passed?"), isConfirmed =>
                     {
                         if (isConfirmed)
                         {
@@ -57,7 +65,7 @@ namespace MWF.Mobile.Core.ViewModels
                             _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
                             RaisePropertyChanged(() => CheckStatus);
                         }
-                    }, "Change Check Status");
+                    }, "Change Status");
                 }
                 else
                 {
@@ -66,14 +74,6 @@ namespace MWF.Mobile.Core.ViewModels
                     RaisePropertyChanged(() => CheckStatus);
                 }
             }
-        }
-        
-        private SafetyCheckViewModel _safetyCheckViewModel;
-
-        public SafetyCheckItemViewModel(SafetyCheckViewModel safetyCheckViewModel)
-        {
-            _safetyCheckViewModel = safetyCheckViewModel;
-            _checkStatus = SafetyCheckEnum.NotSet;
         }
     }
 }

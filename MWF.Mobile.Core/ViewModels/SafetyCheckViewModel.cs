@@ -17,66 +17,6 @@ namespace MWF.Mobile.Core.ViewModels
         private IStartupInfoService _startupInfoService;
         private IRepositories _repositories;
 
-        private SafetyProfile _safetyProfileVehicle;
-        public SafetyProfile SafetyProfileVehicle
-        {
-            get { return _safetyProfileVehicle; }
-            set { _safetyProfileVehicle = value; }
-        }
-
-        private SafetyProfile _safetyProfileTrailer;
-        public SafetyProfile SafetyProfileTrailer
-        {
-            get { return _safetyProfileTrailer; }
-            set { _safetyProfileTrailer = value; }
-        }
-
-        private IList<SafetyCheckItemViewModel> _safetyCheckItemViewModels;
-        public IList<SafetyCheckItemViewModel> SafetyCheckItemViewModels
-        {
-            get { return _safetyCheckItemViewModels; }
-            set { _safetyCheckItemViewModels = value; RaisePropertyChanged(() => SafetyCheckItemViewModels); }
-        }
-
-        public string DoneButtonLabel
-        {
-            get { return "Done"; }
-        }
-
-        private MvxCommand _doneCheckCommand;
-        public System.Windows.Input.ICommand DoneCheckCommand
-        {
-            get { return (_doneCheckCommand = _doneCheckCommand ?? new MvxCommand(async () => await Mvx.Resolve<IUserInteraction>().AlertAsync("Safety Check Complete"))); }
-        }
-
-        private bool _allSafetyChecksComplete;
-        public bool AllSafetyChecksComplete
-        {
-            get 
-            {
-                bool allChecksPassed = true;
-                foreach (var safetyCheckItem in SafetyCheckItemViewModels)
-                {
-                    if (!allChecksPassed) 
-                        return allChecksPassed;
-
-                    allChecksPassed = (safetyCheckItem.CheckStatus == SafetyCheckEnum.Passed || safetyCheckItem.CheckStatus == SafetyCheckEnum.DiscretionaryPass);
-                }
-
-                return allChecksPassed;
-            }
-            set 
-            {
-                _allSafetyChecksComplete = value; 
-                RaisePropertyChanged(() => AllSafetyChecksComplete);
-            }
-        }
-
-        public void CheckSafetyCheckItemsStatus()
-        {
-            RaisePropertyChanged(() => AllSafetyChecksComplete);
-        }
-
         public SafetyCheckViewModel(IStartupInfoService startupInfoService, IRepositories repositories)
         {
             _startupInfoService = startupInfoService;
@@ -84,9 +24,9 @@ namespace MWF.Mobile.Core.ViewModels
 
             Vehicle vehicle = null;
             Trailer trailer = null;
-            
+
             vehicle = _repositories.VehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID);
-            
+
             if (_startupInfoService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
                 trailer = _repositories.TrailerRepository.GetByID(_startupInfoService.LoggedInDriver.LastSecondaryVehicleID);
 
@@ -101,7 +41,8 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 foreach (var child in SafetyProfileVehicle.Children.OrderBy(spv => spv.Order))
                 {
-                    var vehicleSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this) { 
+                    var vehicleSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this)
+                    {
                         ID = child.ID,
                         Title = "VEH: " + child.Title,
                         CheckStatus = SafetyCheckEnum.NotSet,
@@ -126,9 +67,81 @@ namespace MWF.Mobile.Core.ViewModels
 
                     allSafetyChecks.Add(trailerSafetyCheckFaultTypeView);
                 }
-            }            
+            }
 
             SafetyCheckItemViewModels = allSafetyChecks;
+        }
+
+        private SafetyProfile _safetyProfileVehicle;
+        public SafetyProfile SafetyProfileVehicle
+        {
+            get { return _safetyProfileVehicle; }
+            set { _safetyProfileVehicle = value; }
+        }
+
+        private SafetyProfile _safetyProfileTrailer;
+        public SafetyProfile SafetyProfileTrailer
+        {
+            get { return _safetyProfileTrailer; }
+            set { _safetyProfileTrailer = value; }
+        }
+
+        private IList<SafetyCheckItemViewModel> _safetyCheckItemViewModels;
+        public IList<SafetyCheckItemViewModel> SafetyCheckItemViewModels
+        {
+            get { return _safetyCheckItemViewModels; }
+            set { _safetyCheckItemViewModels = value; RaisePropertyChanged(() => SafetyCheckItemViewModels); }
+        }
+
+        public string ChecksDoneButtonLabel
+        {
+            get { return "Done"; }
+        }
+
+        private MvxCommand _checksDoneCommand;
+        public System.Windows.Input.ICommand ChecksDoneCommand
+        {
+            get 
+            { 
+                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(DoChecksDoneCommand); 
+                return _checksDoneCommand;
+            }
+        }
+
+        public bool AllSafetyChecksCompleted
+        {
+            get 
+            {
+                bool allChecksCompleted = true;
+                foreach (var safetyCheckItem in SafetyCheckItemViewModels)
+                {
+                    if (!allChecksCompleted)
+                        return allChecksCompleted;
+
+                    allChecksCompleted = (safetyCheckItem.CheckStatus != SafetyCheckEnum.NotSet);
+                }
+
+                return allChecksCompleted;
+            }
+            set 
+            {
+                RaisePropertyChanged(() => AllSafetyChecksCompleted);
+            }
+        }
+
+        public void CheckSafetyCheckItemsStatus()
+        {
+            RaisePropertyChanged(() => AllSafetyChecksCompleted);
+        }
+
+        private void DoChecksDoneCommand()
+        {
+            if (SafetyProfileVehicle.OdometerRequired)
+                // Redirect to odometer screen
+                ShowViewModel<OdometerViewModel>();
+            else
+                // Redirect to safety check acceptance screen 
+                Mvx.Resolve<IUserInteraction>().Alert("Safety checks completed");
         }
     }
 }

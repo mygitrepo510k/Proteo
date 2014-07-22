@@ -11,9 +11,11 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using Cirrious.MvvmCross.Binding.BindingContext;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.Binding.Droid.Views;
+
 using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
@@ -45,6 +47,11 @@ namespace MWF.Mobile.Android.Views.Fragments
             itemList = (ListView)view.FindViewById(Resource.Id.SafetyListView);
             itemList.ItemClick += itemList_ItemClick;
             RegisterForContextMenu(itemList);
+
+            var checksDoneButton = (Button)view.FindViewById(Resource.Id.checksdonebutton);
+            var set = this.CreateBindingSet<SafetyCheckFragment, SafetyCheckViewModel>();
+            set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.AllSafetyChecksCompleted);
+            set.Apply();
         }
 
         void itemList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)

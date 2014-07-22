@@ -1,6 +1,7 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
@@ -55,6 +56,13 @@ namespace MWF.Mobile.Core.ViewModels
             set { _vehicles = value; RaisePropertyChanged(() => Vehicles); }
         }
 
+        public void ShowTrailerScreen(Vehicle vehicle)
+        {
+            _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
+            _startupInfoService.CurrentVehicle = vehicle;
+            ShowViewModel<TrailerListViewModel>(new TrailerListViewModel.Nav { ID = vehicle.ID });
+        }
+
         public void LastVehicleSelect()
         {
             var currentDriver = _currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID);
@@ -76,9 +84,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (isConfirmed)
                 {
-                    _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
-                    _startupInfoService.CurrentVehicle = vehicle;
-                    ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = lastVehicleID });
+                    ShowTrailerScreen(vehicle);
                 }
             }, "Last used vehicle");
         }
@@ -107,9 +113,7 @@ namespace MWF.Mobile.Core.ViewModels
                     newDriver.LastVehicleID = vehicle.ID;
                     _currentDriverRepository.Insert(newDriver);
 
-                    _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
-                    _startupInfoService.CurrentVehicle = vehicle;
-                    ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = vehicle.ID });
+                    ShowTrailerScreen(vehicle);
                 }
             }, "Please confirm your vehicle");
         }
@@ -132,11 +136,11 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(() => updateVehicleList()));
+                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(async () => await UpdateVehicleListAsync()));
             }
         }
 
-        public async Task updateVehicleList()
+        public async Task UpdateVehicleListAsync()
         {
 
             if (!_reachability.IsConnected())

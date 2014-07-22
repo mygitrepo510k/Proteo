@@ -80,12 +80,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Converters\JsonDigitToBooleanConverter.cs" />
+    <Compile Include="Converters\JsonWrappedItemConverter.cs" />
+    <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
-    <Compile Include="Helpers\JsonDigitToBooleanConverter.cs" />
-    <Compile Include="Helpers\JsonWrappedListConverter.cs" />
-    <Compile Include="Helpers\JsonWrappedItemConverter.cs" />
-    <Compile Include="Helpers\LinqExtensions.cs" />
-    <Compile Include="Helpers\ReflectionExtensions.cs" />
+    <Compile Include="Converters\StringHasLengthConverter.cs" />
+    <Compile Include="Enums\ReportReason.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
+    <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Helpers\SMP.cs" />
     <Compile Include="Messages\GatewayQueueTimerCommandMessage.cs" />
     <Compile Include="Messages\GatewayQueueTimerElapsedMessage.cs" />
     <Compile Include="Models\Attributes\ChildRelationshipAttribute.cs" />
@@ -112,6 +115,7 @@
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\IBlueSphereEntity.cs" />
     <Compile Include="Models\Image.cs" />
+    <Compile Include="Models\MWFMobileConfig.cs" />
     <Compile Include="Models\Signature.cs" />
     <Compile Include="Models\SafetyCheckFault.cs" />
     <Compile Include="Models\SafetyCheckFaultType.cs" />
@@ -127,11 +131,14 @@
     <Compile Include="Models\ApplicationProfile.cs" />
     <Compile Include="Models\VerbProfileItem.cs" />
     <Compile Include="Portable\IReachability.cs" />
+    <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ApplicationProfileRepository.cs" />
+    <Compile Include="Repositories\ConfigRepository.cs" />
     <Compile Include="Repositories\CurrentDriverRepository.cs" />
     <Compile Include="Repositories\CustomerRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IConfigRepository.cs" />
     <Compile Include="Repositories\Interfaces\ICurrentDriverRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepositories.cs" />
     <Compile Include="Repositories\Interfaces\ISafetyCheckDataRepository.cs" />
@@ -172,7 +179,6 @@
     <Compile Include="Services\StartupInfoService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ViewModels\SafetyCheckSignatureViewModel.cs" />
-    <Compile Include="ValueConverters\StringHasLengthConverter.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckViewModel.cs" />
@@ -185,7 +191,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\BaseActivityViewModel.cs" />
     <Compile Include="ViewModels\StartupViewModel.cs" />
-    <Compile Include="ViewModels\TrailerSelectionViewModel.cs" />
+    <Compile Include="ViewModels\TrailerListViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Chance.MvvmCross.Plugins.UserInteraction">

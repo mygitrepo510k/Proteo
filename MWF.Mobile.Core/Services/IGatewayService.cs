@@ -17,6 +17,7 @@ namespace MWF.Mobile.Core.Services
         Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle);
         Task<IEnumerable<Models.VehicleView>> GetVehicleViews();
         Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle);
+        Task<Models.MWFMobileConfig> GetConfig();
         Task<bool> CreateDevice();
     }
 

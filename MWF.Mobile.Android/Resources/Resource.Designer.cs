@@ -124,53 +124,53 @@ namespace MWF.Mobile.Android
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f050000
-			public const int MvxBindingTagUnique = 2131034112;
+			// aapt resource value: 0x7f060000
+			public const int MvxBindingTagUnique = 2131099648;
 			
-			// aapt resource value: 0x7f050009
-			public const int SafetyCheckItem = 2131034121;
+			// aapt resource value: 0x7f060009
+			public const int SafetyCheckItem = 2131099657;
 			
-			// aapt resource value: 0x7f05000a
-			public const int SafetyCheckTitle = 2131034122;
+			// aapt resource value: 0x7f06000a
+			public const int SafetyCheckTitle = 2131099658;
 			
-			// aapt resource value: 0x7f05000d
-			public const int SafetyListView = 2131034125;
+			// aapt resource value: 0x7f06000d
+			public const int SafetyListView = 2131099661;
 			
-			// aapt resource value: 0x7f05000f
-			public const int action_refresh = 2131034127;
+			// aapt resource value: 0x7f06000f
+			public const int action_refresh = 2131099663;
 			
-			// aapt resource value: 0x7f05000e
-			public const int action_search = 2131034126;
+			// aapt resource value: 0x7f06000e
+			public const int action_search = 2131099662;
 			
-			// aapt resource value: 0x7f050008
-			public const int button1 = 2131034120;
+			// aapt resource value: 0x7f060008
+			public const int button1 = 2131099656;
 			
-			// aapt resource value: 0x7f050003
-			public const int buttonPasscode = 2131034115;
+			// aapt resource value: 0x7f060003
+			public const int buttonPasscode = 2131099651;
 			
-			// aapt resource value: 0x7f050006
-			public const int button_done = 2131034118;
+			// aapt resource value: 0x7f060006
+			public const int button_done = 2131099654;
 			
-			// aapt resource value: 0x7f05000c
-			public const int checksdonebutton = 2131034124;
+			// aapt resource value: 0x7f06000c
+			public const int checksdonebutton = 2131099660;
 			
-			// aapt resource value: 0x7f050004
-			public const int donebutton = 2131034116;
+			// aapt resource value: 0x7f060004
+			public const int donebutton = 2131099652;
 			
-			// aapt resource value: 0x7f05000b
-			public const int fragment_host = 2131034123;
+			// aapt resource value: 0x7f06000b
+			public const int fragment_host = 2131099659;
 			
-			// aapt resource value: 0x7f050001
-			public const int odometerText = 2131034113;
+			// aapt resource value: 0x7f060001
+			public const int odometerText = 2131099649;
 			
-			// aapt resource value: 0x7f050005
-			public const int signature_view = 2131034117;
+			// aapt resource value: 0x7f060005
+			public const int signature_view = 2131099653;
 			
-			// aapt resource value: 0x7f050002
-			public const int submit = 2131034114;
+			// aapt resource value: 0x7f060002
+			public const int submit = 2131099650;
 			
-			// aapt resource value: 0x7f050007
-			public const int trailerText = 2131034119;
+			// aapt resource value: 0x7f060007
+			public const int trailerText = 2131099655;
 			
 			static Id()
 			{
@@ -207,7 +207,7 @@ namespace MWF.Mobile.Android
 			public const int Fragment_SafetyCheckSignature = 2130903046;
 			
 			// aapt resource value: 0x7f030007
-			public const int Fragment_TrailerSelectionView = 2130903047;
+			public const int Fragment_TrailerListView = 2130903047;
 			
 			// aapt resource value: 0x7f030008
 			public const int Fragment_VehicleListView = 2130903048;
@@ -246,11 +246,11 @@ namespace MWF.Mobile.Android
 		public partial class Menu
 		{
 			
-			// aapt resource value: 0x7f070000
-			public const int main_activity_actions = 2131165184;
+			// aapt resource value: 0x7f080000
+			public const int main_activity_actions = 2131230720;
 			
-			// aapt resource value: 0x7f070001
-			public const int vehicle_activity_actions = 2131165185;
+			// aapt resource value: 0x7f080001
+			public const int vehicle_activity_actions = 2131230721;
 			
 			static Menu()
 			{
@@ -262,29 +262,45 @@ namespace MWF.Mobile.Android
 			}
 		}
 		
+		public partial class Raw
+		{
+			
+			// aapt resource value: 0x7f040000
+			public const int Kalimba = 2130968576;
+			
+			static Raw()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Raw()
+			{
+			}
+		}
+		
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f040002
-			public const int ApplicationName = 2130968578;
+			// aapt resource value: 0x7f050002
+			public const int ApplicationName = 2131034114;
 			
-			// aapt resource value: 0x7f040001
-			public const int Hello = 2130968577;
+			// aapt resource value: 0x7f050001
+			public const int Hello = 2131034113;
 			
-			// aapt resource value: 0x7f040006
-			public const int action_refresh = 2130968582;
+			// aapt resource value: 0x7f050006
+			public const int action_refresh = 2131034118;
 			
-			// aapt resource value: 0x7f040003
-			public const int action_search = 2130968579;
+			// aapt resource value: 0x7f050003
+			public const int action_search = 2131034115;
 			
-			// aapt resource value: 0x7f040004
-			public const int action_settings = 2130968580;
+			// aapt resource value: 0x7f050004
+			public const int action_settings = 2131034116;
 			
-			// aapt resource value: 0x7f040005
-			public const int application_name = 2130968581;
+			// aapt resource value: 0x7f050005
+			public const int application_name = 2131034117;
 			
-			// aapt resource value: 0x7f040000
-			public const int library_name = 2130968576;
+			// aapt resource value: 0x7f050000
+			public const int library_name = 2131034112;
 			
 			static String()
 			{
@@ -299,44 +315,50 @@ namespace MWF.Mobile.Android
 		public partial class Style
 		{
 			
-			// aapt resource value: 0x7f060001
-			public const int Proteo = 2131099649;
+			// aapt resource value: 0x7f070001
+			public const int Proteo = 2131165185;
 			
-			// aapt resource value: 0x7f060006
-			public const int Proteo_Button = 2131099654;
+			// aapt resource value: 0x7f070008
+			public const int Proteo_Button = 2131165192;
 			
-			// aapt resource value: 0x7f060007
-			public const int Proteo_Button_Bottom = 2131099655;
+			// aapt resource value: 0x7f070009
+			public const int Proteo_Button_Bottom = 2131165193;
 			
-			// aapt resource value: 0x7f060008
-			public const int Proteo_EditText = 2131099656;
+			// aapt resource value: 0x7f07000a
+			public const int Proteo_EditText = 2131165194;
 			
-			// aapt resource value: 0x7f060009
-			public const int Proteo_EditText_NumberPasscode = 2131099657;
+			// aapt resource value: 0x7f07000b
+			public const int Proteo_EditText_NumberPasscode = 2131165195;
 			
-			// aapt resource value: 0x7f06000a
-			public const int Proteo_ImageView_MWFLogo = 2131099658;
+			// aapt resource value: 0x7f07000c
+			public const int Proteo_ImageView_MWFLogo = 2131165196;
 			
-			// aapt resource value: 0x7f06000b
-			public const int Proteo_SignaturePad = 2131099659;
+			// aapt resource value: 0x7f07000d
+			public const int Proteo_SignaturePad = 2131165197;
 			
-			// aapt resource value: 0x7f060004
-			public const int Proteo_TextView_Information = 2131099652;
+			// aapt resource value: 0x7f070004
+			public const int Proteo_TextView_Information = 2131165188;
 			
-			// aapt resource value: 0x7f060002
-			public const int Proteo_TextView_MainHeading = 2131099650;
+			// aapt resource value: 0x7f070006
+			public const int Proteo_TextView_ItemText = 2131165190;
 			
-			// aapt resource value: 0x7f060003
-			public const int Proteo_TextView_SubHeading = 2131099651;
+			// aapt resource value: 0x7f070007
+			public const int Proteo_TextView_ListHeading = 2131165191;
 			
-			// aapt resource value: 0x7f060005
-			public const int Proteo_TextView_SubInformation = 2131099653;
+			// aapt resource value: 0x7f070002
+			public const int Proteo_TextView_MainHeading = 2131165186;
 			
-			// aapt resource value: 0x7f060000
-			public const int ProteoNoMargins = 2131099648;
+			// aapt resource value: 0x7f070003
+			public const int Proteo_TextView_SubHeading = 2131165187;
 			
-			// aapt resource value: 0x7f06000c
-			public const int Theme_Splash = 2131099660;
+			// aapt resource value: 0x7f070005
+			public const int Proteo_TextView_SubInformation = 2131165189;
+			
+			// aapt resource value: 0x7f070000
+			public const int ProteoNoMargins = 2131165184;
+			
+			// aapt resource value: 0x7f07000e
+			public const int Theme_Splash = 2131165198;
 			
 			static Style()
 			{

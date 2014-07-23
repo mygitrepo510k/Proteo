@@ -9,10 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class SafetyCheckViewModel : BaseFragmentViewModel
+    public class SafetyCheckViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
         private IStartupInfoService _startupInfoService;
         private IRepositories _repositories;
@@ -147,6 +148,11 @@ namespace MWF.Mobile.Core.ViewModels
         public override string FragmentTitle
         {
             get { return "Safety Check"; }
+        }
+
+        public async Task<bool> OnBackButtonPressed()
+        {
+            return await Mvx.Resolve<IUserInteraction>().ConfirmAsync("All changes will be lost, do you wish to continue?", "Changes will be lost!");
         }
     }
 }

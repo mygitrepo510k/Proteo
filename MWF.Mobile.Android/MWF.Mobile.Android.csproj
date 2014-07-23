@@ -151,6 +151,7 @@
     <Compile Include="SplashScreen.cs" />
     <Compile Include="Views\BindableProgress.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
+    <Compile Include="Views\Fragments\BaseFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFaultFragment.cs" />

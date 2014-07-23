@@ -19,7 +19,7 @@ using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
-    public class OdometerFragment : MvxFragment
+    public class OdometerFragment : BaseFragment
     {
         private View _view;
 

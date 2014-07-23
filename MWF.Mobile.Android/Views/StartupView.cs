@@ -9,7 +9,9 @@ using Cirrious.CrossCore;
 using Cirrious.MvvmCross.Droid.FullFragging;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Android.Views.Fragments;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -79,8 +81,6 @@ namespace MWF.Mobile.Android.Views
             transaction.AddToBackStack(null);
             transaction.Commit();
 
-            this.CurrentFragment = fragment;
-
             return true;
         }
      
@@ -92,12 +92,19 @@ namespace MWF.Mobile.Android.Views
             return base.OnCreateOptionsMenu(menu);
         }
 
-        public override void OnBackPressed()
+        public async override void OnBackPressed()
         {
-            var currentFragment = CurrentFragment;
+            if (CurrentFragment.DataContext is IBackButtonHandler)
+            {
+                var continueBack = await (CurrentFragment.DataContext as IBackButtonHandler).OnBackButtonPressed();
 
-            base.OnBackPressed();
-            Mvx.Resolve<IUserInteraction>().Alert("Back button pressed!");
+                if (continueBack)
+                    base.OnBackPressed();
+            }
+            else
+            {
+                base.OnBackPressed();
+            }
         }
     }
 

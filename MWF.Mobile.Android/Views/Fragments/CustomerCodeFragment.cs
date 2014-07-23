@@ -18,7 +18,7 @@ using Cirrious.MvvmCross.Droid.Views;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
-    public class CustomerCodeFragment : MvxFragment
+    public class CustomerCodeFragment : BaseFragment
     {
         private BindableProgress _bindableProgress;
         private View _view;

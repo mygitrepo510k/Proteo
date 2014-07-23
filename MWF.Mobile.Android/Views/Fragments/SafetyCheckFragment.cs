@@ -27,7 +27,7 @@ namespace MWF.Mobile.Android.Views.Fragments
         Failed = 2
     }
 
-    public class SafetyCheckFragment : MvxFragment
+    public class SafetyCheckFragment : BaseFragment
     {
         private ListView _itemList;
 
@@ -40,9 +40,6 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
-            base.OnViewCreated(view, savedInstanceState);
-
-
             _itemList = (ListView)view.FindViewById(Resource.Id.SafetyListView);
             _itemList.ItemClick += itemList_ItemClick;
             RegisterForContextMenu(_itemList);
@@ -51,6 +48,8 @@ namespace MWF.Mobile.Android.Views.Fragments
             var set = this.CreateBindingSet<SafetyCheckFragment, SafetyCheckViewModel>();
             set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.AllSafetyChecksCompleted);
             set.Apply();
+
+            base.OnViewCreated(view, savedInstanceState);
         }
 
         void itemList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)

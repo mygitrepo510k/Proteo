@@ -19,7 +19,7 @@ using Cirrious.MvvmCross.Droid.Views;
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class PasscodeFragment : MvxFragment
+    public class PasscodeFragment : BaseFragment
     {
 
         private BindableProgress _bindableProgress;

@@ -29,7 +29,6 @@ namespace MWF.Mobile.Android
 			global::Chance.MvvmCross.Plugins.UserInteraction.Droid.Resource.String.library_name = global::MWF.Mobile.Android.Resource.String.library_name;
 			global::Cirrious.MvvmCross.Droid.FullFragging.Resource.String.ApplicationName = global::MWF.Mobile.Android.Resource.String.ApplicationName;
 			global::Cirrious.MvvmCross.Droid.FullFragging.Resource.String.Hello = global::MWF.Mobile.Android.Resource.String.Hello;
-			global::Splat.Resource.String.library_name = global::MWF.Mobile.Android.Resource.String.library_name;
 		}
 		
 		public partial class Attribute
@@ -97,19 +96,22 @@ namespace MWF.Mobile.Android
 			public const int Icon = 2130837513;
 			
 			// aapt resource value: 0x7f02000a
-			public const int mwf_logo = 2130837514;
+			public const int monoandroidsplash = 2130837514;
 			
 			// aapt resource value: 0x7f02000b
-			public const int proteoLogo = 2130837515;
+			public const int mwf_logo = 2130837515;
 			
 			// aapt resource value: 0x7f02000c
-			public const int splash = 2130837516;
+			public const int proteoLogo = 2130837516;
 			
 			// aapt resource value: 0x7f02000d
-			public const int tick = 2130837517;
+			public const int splash = 2130837517;
 			
 			// aapt resource value: 0x7f02000e
-			public const int warning = 2130837518;
+			public const int tick = 2130837518;
+			
+			// aapt resource value: 0x7f02000f
+			public const int warning = 2130837519;
 			
 			static Drawable()
 			{
@@ -127,50 +129,44 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f060000
 			public const int MvxBindingTagUnique = 2131099648;
 			
-			// aapt resource value: 0x7f060009
-			public const int SafetyCheckItem = 2131099657;
-			
-			// aapt resource value: 0x7f06000a
-			public const int SafetyCheckTitle = 2131099658;
-			
-			// aapt resource value: 0x7f06000d
-			public const int SafetyListView = 2131099661;
-			
-			// aapt resource value: 0x7f06000f
-			public const int action_refresh = 2131099663;
-			
-			// aapt resource value: 0x7f06000e
-			public const int action_search = 2131099662;
+			// aapt resource value: 0x7f060007
+			public const int SafetyCheckItem = 2131099655;
 			
 			// aapt resource value: 0x7f060008
-			public const int button1 = 2131099656;
+			public const int SafetyCheckTitle = 2131099656;
+			
+			// aapt resource value: 0x7f06000b
+			public const int SafetyListView = 2131099659;
+			
+			// aapt resource value: 0x7f06000d
+			public const int action_refresh = 2131099661;
+			
+			// aapt resource value: 0x7f06000c
+			public const int action_search = 2131099660;
+			
+			// aapt resource value: 0x7f060006
+			public const int button1 = 2131099654;
 			
 			// aapt resource value: 0x7f060003
 			public const int buttonPasscode = 2131099651;
 			
-			// aapt resource value: 0x7f060006
-			public const int button_done = 2131099654;
-			
-			// aapt resource value: 0x7f06000c
-			public const int checksdonebutton = 2131099660;
+			// aapt resource value: 0x7f06000a
+			public const int checksdonebutton = 2131099658;
 			
 			// aapt resource value: 0x7f060004
 			public const int donebutton = 2131099652;
 			
-			// aapt resource value: 0x7f06000b
-			public const int fragment_host = 2131099659;
+			// aapt resource value: 0x7f060009
+			public const int fragment_host = 2131099657;
 			
 			// aapt resource value: 0x7f060001
 			public const int odometerText = 2131099649;
 			
-			// aapt resource value: 0x7f060005
-			public const int signature_view = 2131099653;
-			
 			// aapt resource value: 0x7f060002
 			public const int submit = 2131099650;
 			
-			// aapt resource value: 0x7f060007
-			public const int trailerText = 2131099655;
+			// aapt resource value: 0x7f060005
+			public const int trailerText = 2131099653;
 			
 			static Id()
 			{
@@ -204,34 +200,31 @@ namespace MWF.Mobile.Android
 			public const int Fragment_SafetyCheckFaultView = 2130903045;
 			
 			// aapt resource value: 0x7f030006
-			public const int Fragment_SafetyCheckSignature = 2130903046;
+			public const int Fragment_TrailerListView = 2130903046;
 			
 			// aapt resource value: 0x7f030007
-			public const int Fragment_TrailerListView = 2130903047;
+			public const int Fragment_VehicleListView = 2130903047;
 			
 			// aapt resource value: 0x7f030008
-			public const int Fragment_VehicleListView = 2130903048;
+			public const int Item_SafetyCheckItem = 2130903048;
 			
 			// aapt resource value: 0x7f030009
-			public const int Item_SafetyCheckItem = 2130903049;
+			public const int Item_Trailer = 2130903049;
 			
 			// aapt resource value: 0x7f03000a
-			public const int Item_Trailer = 2130903050;
+			public const int Item_Vehicle = 2130903050;
 			
 			// aapt resource value: 0x7f03000b
-			public const int Item_Vehicle = 2130903051;
+			public const int Page_Main = 2130903051;
 			
 			// aapt resource value: 0x7f03000c
-			public const int Page_Main = 2130903052;
+			public const int Page_Startup = 2130903052;
 			
 			// aapt resource value: 0x7f03000d
-			public const int Page_Startup = 2130903053;
+			public const int SafetyCheckView = 2130903053;
 			
 			// aapt resource value: 0x7f03000e
-			public const int SafetyCheckView = 2130903054;
-			
-			// aapt resource value: 0x7f03000f
-			public const int SplashScreen = 2130903055;
+			public const int SplashScreen = 2130903054;
 			
 			static Layout()
 			{
@@ -281,11 +274,11 @@ namespace MWF.Mobile.Android
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f050002
-			public const int ApplicationName = 2131034114;
-			
 			// aapt resource value: 0x7f050001
-			public const int Hello = 2131034113;
+			public const int ApplicationName = 2131034113;
+			
+			// aapt resource value: 0x7f050000
+			public const int Hello = 2131034112;
 			
 			// aapt resource value: 0x7f050006
 			public const int action_refresh = 2131034118;
@@ -299,8 +292,8 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f050005
 			public const int application_name = 2131034117;
 			
-			// aapt resource value: 0x7f050000
-			public const int library_name = 2131034112;
+			// aapt resource value: 0x7f050002
+			public const int library_name = 2131034114;
 			
 			static String()
 			{
@@ -314,6 +307,9 @@ namespace MWF.Mobile.Android
 		
 		public partial class Style
 		{
+			
+			// aapt resource value: 0x7f07000f
+			public const int Mono_Android_Theme_Splash = 2131165199;
 			
 			// aapt resource value: 0x7f070001
 			public const int Proteo = 2131165185;

@@ -9,6 +9,7 @@ using Cirrious.MvvmCross.Droid.FullFragging;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile;
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -34,6 +35,7 @@ namespace MWF.Mobile.Android.Views
             return _supportedFragmentViewModels[viewModelType];
         }
 
+    
 		#region Fragment host
 
         private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
@@ -43,12 +45,13 @@ namespace MWF.Mobile.Android.Views
             { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
             { typeof(Core.ViewModels.TrailerListViewModel), typeof(Fragments.TrailerListFragment)},
             { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
-            {typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
+            { typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
             { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
-			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
-            { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment)},
+			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)}
+
         };
 
+        
         public bool Show(MvxViewModelRequest request)
         {
             // At this point simply display any supported fragment in the FrameLayout.
@@ -67,6 +70,10 @@ namespace MWF.Mobile.Android.Views
             if (fragment == null)
                 return false;
 
+            var viewModel = (BaseFragmentViewModel)fragment.ViewModel;
+            var title = viewModel.FragmentTitle;
+            this.ActionBar.Title = title;
+
             var transaction = FragmentManager.BeginTransaction();
             transaction.Replace(Resource.Id.fragment_host, fragment);
             transaction.AddToBackStack(null);
@@ -74,8 +81,10 @@ namespace MWF.Mobile.Android.Views
 
             return true;
         }
-
+     
  		#endregion Fragment host
+
+
 
         public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
         {

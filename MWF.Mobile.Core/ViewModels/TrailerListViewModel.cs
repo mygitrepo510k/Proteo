@@ -18,7 +18,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
 
     public class TrailerListViewModel
-        : MvxViewModel
+        : BaseFragmentViewModel
     {
 
 
@@ -192,6 +192,11 @@ namespace MWF.Mobile.Core.ViewModels
                     }
                 }
             }
+        }
+
+        public override string FragmentTitle
+        {
+            get { return "Trailer"; }
         }
     }
 }

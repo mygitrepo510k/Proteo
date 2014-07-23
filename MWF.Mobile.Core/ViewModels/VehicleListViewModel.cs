@@ -19,7 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
 
     public class VehicleListViewModel
-        : MvxViewModel
+        : BaseFragmentViewModel
     {
         private Services.IGatewayService _gatewayService;
         private IEnumerable<Vehicle> _originalVehicleList;
@@ -177,6 +177,11 @@ namespace MWF.Mobile.Core.ViewModels
                     }
                 }
             }
+        }
+
+        public override string FragmentTitle
+        {
+            get { return "Vehicle"; } 
         }
     }
 }

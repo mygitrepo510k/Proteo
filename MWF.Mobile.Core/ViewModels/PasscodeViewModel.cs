@@ -11,7 +11,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
 
     public class PasscodeViewModel
-        : MvxViewModel
+        : BaseFragmentViewModel
     {
         private readonly ICurrentDriverRepository _currentDriverRepository = null;
         private readonly IAuthenticationService _authenticationService = null;
@@ -129,6 +129,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
+
+        public override string FragmentTitle
+        {
+            get { return "Passcode"; }
+        }
     }
 
 }

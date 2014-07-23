@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class SafetyCheckViewModel : MvxViewModel
+    public class SafetyCheckViewModel : BaseFragmentViewModel
     {
         private IStartupInfoService _startupInfoService;
         private IRepositories _repositories;
@@ -142,6 +142,11 @@ namespace MWF.Mobile.Core.ViewModels
             else
                 // Redirect to safety check acceptance screen 
                 Mvx.Resolve<IUserInteraction>().Alert("Safety checks completed");
+        }
+
+        public override string FragmentTitle
+        {
+            get { return "Safety Check"; }
         }
     }
 }

@@ -33,6 +33,8 @@ namespace MWF.Mobile.Core.ViewModels
 //#if DEBUG
 //            userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
 //#endif
+            //this.InitialViewModel = new ManifestViewModel();
+            
 
             var customerRepository = repositories.CustomerRepository;
 
@@ -44,6 +46,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService, repositories, userInteraction);
             }
+             
         }
 
         private void DEBUGGING_ClearAllData(IRepositories repositories)

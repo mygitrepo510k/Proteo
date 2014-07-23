@@ -126,6 +126,9 @@ namespace MWF.Mobile.Android
 		public partial class Id
 		{
 			
+			// aapt resource value: 0x7f060006
+			public const int ButtonNoTrailer = 2131099654;
+			
 			// aapt resource value: 0x7f060000
 			public const int MvxBindingTagUnique = 2131099648;
 			
@@ -143,9 +146,6 @@ namespace MWF.Mobile.Android
 			
 			// aapt resource value: 0x7f06000c
 			public const int action_search = 2131099660;
-			
-			// aapt resource value: 0x7f060006
-			public const int button1 = 2131099654;
 			
 			// aapt resource value: 0x7f060003
 			public const int buttonPasscode = 2131099651;

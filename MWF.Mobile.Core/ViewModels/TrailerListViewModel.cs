@@ -45,7 +45,7 @@ namespace MWF.Mobile.Core.ViewModels
             Trailers = _originalTrailerList = _trailerRepository.GetAll();
             _vehicleRepository = vehicleRepository;
         }
-
+/*
         public class Nav
         {
             public Guid ID { get; set; }
@@ -58,6 +58,12 @@ namespace MWF.Mobile.Core.ViewModels
                 ID = nav.ID
             };
         }
+ * */
+
+        public override string FragmentTitle
+        {
+            get { return "Trailer"; }
+        }
 
         public string TrailerButtonLabel
         {
@@ -66,23 +72,23 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string TrailerSelectText
         {
-            get { return "Please select a trailer. " + VehicleRegistration; }
+            get { return "Select trailer for " + VehicleRegistration; }
         }
 
         public String VehicleRegistration
         {
             get
             {
-                return "Vehicle Registration: "
-                    + _vehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID).Registration;
+                return _vehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID).Registration;
             }
         }
-
+        /*
         public Trailer Trailer
         {
             get { return _trailer; }
             set { _trailer = value; RaisePropertyChanged(() => Trailer); }
         }
+         */
 
         private IEnumerable<Trailer> _trailers;
         public IEnumerable<Trailer> Trailers
@@ -127,7 +133,7 @@ namespace MWF.Mobile.Core.ViewModels
                     _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
                     ShowViewModel<SafetyCheckViewModel>();
                 }
-            }, "Please confirm your trailer");
+            }, "Confirm trailer", "Select");
         }
 
         //This is method associated with the search button in the action bar.
@@ -192,11 +198,6 @@ namespace MWF.Mobile.Core.ViewModels
                     }
                 }
             }
-        }
-
-        public override string FragmentTitle
-        {
-            get { return "Trailer"; }
         }
     }
 }

@@ -42,15 +42,15 @@ namespace MWF.Mobile.Android.Views
 
         private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
         {
-            { typeof(PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
-            { typeof(CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
-            { typeof(VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
-            { typeof(TrailerListViewModel), typeof(Fragments.TrailerListFragment)},
-            { typeof(AboutViewModel), typeof(Fragments.AboutFragment)},
-            { typeof(OdometerViewModel), typeof(Fragments.OdometerFragment)},
-            { typeof(SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
-			{ typeof(SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)}
-
+            { typeof(Core.ViewModels.PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
+            { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
+            { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
+            { typeof(Core.ViewModels.TrailerListViewModel), typeof(Fragments.TrailerListFragment)},
+            { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
+            { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment)},
+            { typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
+            { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
+			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)}
         };
 
         

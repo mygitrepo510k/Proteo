@@ -12,7 +12,7 @@ using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class SafetyCheckFaultViewModel : MvxViewModel
+    public class SafetyCheckFaultViewModel : BaseFragmentViewModel
     {
 
         #region Private Members
@@ -46,6 +46,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
+        public override string FragmentTitle
+        {
+            get { return "Falut Screen"; }
+        }
+
         public string DoneButtonLabel
         {
             get { return "Done"; }
@@ -73,6 +78,8 @@ namespace MWF.Mobile.Core.ViewModels
         {
             public Guid ID { get; set; }
         }
+
+
 
 
     }

@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class OdometerViewModel : MvxViewModel
+    public class OdometerViewModel : BaseFragmentViewModel
     {
         private IStartupInfoService _startupInfoService;
         public OdometerViewModel(IStartupInfoService startupInfoService)
         {
             _startupInfoService = startupInfoService;
+        }
+
+        public override string FragmentTitle
+        {
+            get { return "Odometer"; }
         }
 
         public string OdometerLabel
@@ -59,7 +64,7 @@ namespace MWF.Mobile.Core.ViewModels
             
         }
 
-        
-        
+
+
     }
 }

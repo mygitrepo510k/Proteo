@@ -32,7 +32,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string VehicleSelectText
         {
-            get { return "Please select a vehicle."; }
+            get { return "Select vehicle."; }
+        }
+
+        public override string FragmentTitle
+        {
+            get { return "Vehicle"; }
         }
 
         public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty,
@@ -60,7 +65,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
             _startupInfoService.CurrentVehicle = vehicle;
-            ShowViewModel<TrailerListViewModel>(new TrailerListViewModel.Nav { ID = vehicle.ID });
+            ShowViewModel<TrailerListViewModel>();
         }
 
         public void LastVehicleSelect()
@@ -80,13 +85,13 @@ namespace MWF.Mobile.Core.ViewModels
             if (vehicle == null)
                 return;
 
-            Mvx.Resolve<IUserInteraction>().Confirm(("Do you wish to reuse vehicle " + vehicle.Registration + "?"),isConfirmed =>
+            Mvx.Resolve<IUserInteraction>().Confirm((vehicle.Registration),isConfirmed =>
             {
                 if (isConfirmed)
                 {
                     ShowTrailerScreen(vehicle);
                 }
-            }, "Last used vehicle");
+            }, "Last used vehicle", "Select");
         }
 
         private MvxCommand<Vehicle> _showVehicleDetailCommand;
@@ -100,6 +105,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void VehicleDetail(Vehicle vehicle)
         {
+
             Mvx.Resolve<IUserInteraction>().Confirm(vehicle.Registration, isConfirmed =>
             {
                 if (isConfirmed)
@@ -115,7 +121,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                     ShowTrailerScreen(vehicle);
                 }
-            }, "Please confirm your vehicle");
+            }, "Please confirm your vehicle", "Select");
         }
 
         private string _searchText;
@@ -177,11 +183,6 @@ namespace MWF.Mobile.Core.ViewModels
                     }
                 }
             }
-        }
-
-        public override string FragmentTitle
-        {
-            get { return "Vehicle"; } 
         }
     }
 }

@@ -46,12 +46,14 @@
 
   <style name="Proteo.TextView.ListHeading" parent ="style/Proteo">
     <item name = "android:background">#cccfd1</item>
+    <item name = "android:gravity">left</item>
     <item name = "android:layout_marginBottom">5dp</item>
     <item name = "android:layout_marginTop">0dp</item>
     <item name = "android:layout_marginLeft">0dp</item>
     <item name = "android:layout_marginRight">0dp</item>
     <item name = "android:layout_width">fill_parent</item>
-    <item name = "android:textSize">10dp</item>
+    <item name = "android:paddingLeft">10dp</item>
+    <item name = "android:textSize">12dp</item>
   </style>
 
   <!-- ===================== Buttons ========================= -->

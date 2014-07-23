@@ -4,11 +4,11 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.Droid.FullFragging;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.ViewModels;
-using MWF.Mobile;
 using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views
@@ -40,14 +40,14 @@ namespace MWF.Mobile.Android.Views
 
         private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
         {
-            { typeof(Core.ViewModels.PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
-            { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
-            { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
-            { typeof(Core.ViewModels.TrailerListViewModel), typeof(Fragments.TrailerListFragment)},
-            { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
-            { typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
-            { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
-			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)}
+            { typeof(PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
+            { typeof(CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
+            { typeof(VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
+            { typeof(TrailerListViewModel), typeof(Fragments.TrailerListFragment)},
+            { typeof(AboutViewModel), typeof(Fragments.AboutFragment)},
+            { typeof(OdometerViewModel), typeof(Fragments.OdometerFragment)},
+            { typeof(SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
+			{ typeof(SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)}
 
         };
 
@@ -72,24 +72,32 @@ namespace MWF.Mobile.Android.Views
 
             var viewModel = (BaseFragmentViewModel)fragment.ViewModel;
             var title = viewModel.FragmentTitle;
-            this.ActionBar.Title = title;
+            ActionBar.Title = title;
 
             var transaction = FragmentManager.BeginTransaction();
             transaction.Replace(Resource.Id.fragment_host, fragment);
             transaction.AddToBackStack(null);
             transaction.Commit();
 
+            this.CurrentFragment = fragment;
+
             return true;
         }
      
  		#endregion Fragment host
 
-
-
         public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
         {
             this.MenuInflater.Inflate(Resource.Menu.main_activity_actions, menu);
             return base.OnCreateOptionsMenu(menu);
+        }
+
+        public override void OnBackPressed()
+        {
+            var currentFragment = CurrentFragment;
+
+            base.OnBackPressed();
+            Mvx.Resolve<IUserInteraction>().Alert("Back button pressed!");
         }
     }
 

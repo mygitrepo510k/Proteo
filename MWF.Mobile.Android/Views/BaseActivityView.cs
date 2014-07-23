@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Android.App;
 using Android.OS;
+using Android.Renderscripts;
 using Android.Widget;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.Droid.FullFragging;
@@ -11,6 +12,7 @@ using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.ViewModels;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Android.Views.Fragments;
+using Type = System.Type;
 
 
 namespace MWF.Mobile.Android.Views
@@ -21,9 +23,7 @@ namespace MWF.Mobile.Android.Views
         : MvxActivity
     {
 
-        protected abstract Type GetFragmentTypeForViewModel(Type viewModelType);
-
-        
+        protected abstract Type GetFragmentTypeForViewModel(Type viewModelType);     
 
         protected BaseActivityViewModel BaseActivityViewModel
         {
@@ -46,5 +46,7 @@ namespace MWF.Mobile.Android.Views
             transaction.Commit();
 
         }
+
+        public MvxFragment CurrentFragment { get; set; }
     }
 }

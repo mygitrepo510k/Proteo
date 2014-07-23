@@ -16,7 +16,7 @@ using Cirrious.MvvmCross.Binding.BindingContext;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
-    public class AboutFragment : MvxFragment
+    public class AboutFragment : BaseFragment
     {
         private View _view;
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

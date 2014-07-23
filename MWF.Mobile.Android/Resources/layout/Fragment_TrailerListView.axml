@@ -5,25 +5,15 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <textView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="10.0dp"
-        android:background="#cccfd1"
-        android:layout_marginBottom="5dp"
-        android:paddingLeft="10dp"
-        android:layout_alignParentTop="true"
+        style="@style/Proteo.TextView.ListHeading"
         android:id="@+id/trailerText"
         local:MvxBind="Text TrailerSelectText" />
     <Button
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/button1"
+        style="@style/Proteo.Button.Bottom"
+        android:id="@+id/ButtonNoTrailer"
         local:MvxBind="Text TrailerButtonLabel; Click NoTrailerSelectorCommand" />
     <Mvx.MvxListView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/button1"
+        android:layout_above="@id/ButtonNoTrailer"
         android:layout_below="@id/trailerText"
         local:MvxBind="ItemsSource Trailers; ItemClick TrailerSelectorCommand"
         local:MvxItemTemplate="@layout/item_trailer" />

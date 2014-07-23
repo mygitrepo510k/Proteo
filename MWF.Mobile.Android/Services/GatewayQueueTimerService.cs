@@ -45,6 +45,9 @@ namespace MWF.Mobile.Android.Services
 
         public void Trigger()
         {
+            if (!_timer.Enabled)
+                return;
+
             // Run timer elapsed event immediately and restart timer
             this.Stop();
             this.PublishTimerMessage();

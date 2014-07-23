@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace MWF.Mobile.Core
+namespace MWF.Mobile.Core.Converters
 {
 
     public class JsonBooleanConverter : JsonConverter

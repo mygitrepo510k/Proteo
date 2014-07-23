@@ -3,53 +3,60 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using MWF.Mobile.Core.Converters;
 using Newtonsoft.Json;
 using MWF.Mobile.Core.Models.Attributes;
+using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models
 {
+
     // Model class which holds represents the results of a safety check performed by a driver on a vehicle
     public class SafetyCheckData: IBlueSphereEntity
     {
+
+        public SafetyCheckData()
+        {
+            this.ID = Guid.NewGuid();
+        }
+
         [Unique]
         [PrimaryKey]
-        [JsonProperty("@id")]
+        [XmlAttribute("id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("@driverid")]
+        [XmlAttribute("driverid")]
         public Guid DriverID { get; set; }
 
-        [JsonProperty("@vehicleid")]
+        [XmlAttribute("vehicleid")]
         public Guid VehicleID { get; set; }
 
-        [JsonProperty("@vehicleregistration")]
+        [XmlAttribute("vehicleregistration")]
         public string VehicleRegistration { get; set; }
 
-        [JsonProperty("@driver")]
+        [XmlAttribute("driver")]
         public string DriverTitle { get; set; }
 
-        [JsonProperty("@effectivedate")]
+        [XmlAttribute("effectivedate")]
         public DateTime EffectiveDate { get; set; }
 
-        [JsonProperty("@mileage")]
+        [XmlAttribute("mileage")]
         public int Mileage { get; set; }
 
-        [JsonProperty("@smp")]
+        [XmlAttribute("smp")]
         public string SMP { get; set; }
 
-        [JsonProperty("@signature")]
-        // Does this need a json wrapper?
         [ChildRelationship(typeof(Signature), RelationshipCardinality.OneToOne)]
+        [XmlElement("signature")]
         public Signature Signature { get; set; }
 
         [ChildRelationship(typeof(SafetyCheckFault))]
-        [JsonProperty("faults")]
-        [JsonConverter(typeof(JsonWrappedListConverter<SafetyCheckFault>))]
+        [XmlArray("faults")]
         public List<SafetyCheckFault> Faults { get; set; }
 
-        [JsonProperty("@intlink")]
+        [XmlAttribute("intlink")]
         public int ProfileIntLink { get; set; }
 
-
     }
+
 }

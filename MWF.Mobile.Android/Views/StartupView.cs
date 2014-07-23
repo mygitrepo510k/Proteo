@@ -43,7 +43,6 @@ namespace MWF.Mobile.Android.Views
             this.ActionBar.SetHomeButtonEnabled(true);
 
 
-            //TODO replace these with actual icons
             _drawerToggle = new CustomActionBarDrawerToggle(this, this._drawer, Resource.Drawable.ic_drawer_light, Resource.String.drawer_open,
                                                       Resource.String.drawer_close);
 

@@ -9,20 +9,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class SafetyCheckViewModel : MvxViewModel
+    public class SafetyCheckViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
         private IStartupInfoService _startupInfoService;
         private IRepositories _repositories;
-        //private IGpsService _gpsService;
-        //IGpsService gpsService
-        public SafetyCheckViewModel(IStartupInfoService startupInfoService, IRepositories repositories )
+
+        public SafetyCheckViewModel(IStartupInfoService startupInfoService, IRepositories repositories)
         {
             _startupInfoService = startupInfoService;
             _repositories = repositories;
-            //_gpsService = gpsService;
 
             Vehicle vehicle = null;
             Trailer trailer = null;
@@ -70,8 +69,6 @@ namespace MWF.Mobile.Core.ViewModels
                     allSafetyChecks.Add(trailerSafetyCheckFaultTypeView);
                 }
             }
-
-            //var location = _gpsService.GetSmpData(ReportReason.SMPREASON_SAFETYCHECKREPORT);
 
             SafetyCheckItemViewModels = allSafetyChecks;
         }
@@ -146,6 +143,16 @@ namespace MWF.Mobile.Core.ViewModels
             else
                 // Redirect to safety check acceptance screen 
                 Mvx.Resolve<IUserInteraction>().Alert("Safety checks completed");
+        }
+
+        public override string FragmentTitle
+        {
+            get { return "Safety Check"; }
+        }
+
+        public async Task<bool> OnBackButtonPressed()
+        {
+            return await Mvx.Resolve<IUserInteraction>().ConfirmAsync("All changes will be lost, do you wish to continue?", "Changes will be lost!");
         }
     }
 }

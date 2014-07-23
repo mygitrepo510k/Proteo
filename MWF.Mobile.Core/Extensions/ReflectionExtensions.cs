@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Models.Attributes;
 
-namespace MWF.Mobile.Core.Helpers
+namespace MWF.Mobile.Core.Extensions
 {
     public static class ReflectionExtensions
     {

@@ -1,13 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-
-using Cirrious.CrossCore.Converters;
 using System.Globalization;
+using Cirrious.CrossCore.Converters;
 
-namespace MWF.Mobile.Core.ValueConverters
+namespace MWF.Mobile.Core.Converters
 {
     public class StringHasLengthConverter : MvxValueConverter<string, bool>
     {

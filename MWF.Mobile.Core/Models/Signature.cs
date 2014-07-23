@@ -5,28 +5,38 @@ using System.Text;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Newtonsoft.Json;
 using MWF.Mobile.Core.Models.Attributes;
+using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models
 {
+
     // Model class which holds the driver signature for a safety check
-    public class Image: IBlueSphereEntity
+    public class Signature: IBlueSphereEntity
     {
+
+        public Signature()
+        {
+            this.ID = Guid.NewGuid();
+        }
+
         [Unique]
         [PrimaryKey]
-        [JsonProperty("@id")]
+        [XmlAttribute("id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("@title")]
+        [XmlAttribute("title")]
         public string Title { get; set; }
 
-        [JsonProperty("@encoded")]
+        [XmlAttribute("encoded")]
         public string EncodedSignature { get; set; }
 
-        [JsonProperty("@encodedimage")]
+        [XmlAttribute("encodedimage")]
         public string EncodedImage { get; set; }
 
         [ForeignKey(typeof(SafetyCheckData))]
+        [XmlIgnore]
         public Guid SafetyCheckDataID { get; set; }
 
     }
+
 }

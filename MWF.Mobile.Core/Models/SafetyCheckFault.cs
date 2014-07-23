@@ -6,6 +6,7 @@ using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Converters;
 using Newtonsoft.Json;
 using MWF.Mobile.Core.Models.Attributes;
+using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models
 {
@@ -14,30 +15,30 @@ namespace MWF.Mobile.Core.Models
     {
         [Unique]
         [PrimaryKey]
-        [JsonProperty("@id")]
+        [XmlAttribute("id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("@title")]
+        [XmlAttribute("title")]
         public string Title { get; set; }
 
-        [JsonProperty("@faultid")]
+        [XmlAttribute("faultid")]
         public Guid FaultTypeID { get; set; }
 
-        [JsonProperty("@reference")]
+        [XmlAttribute("reference")]
         public string FaultTypeReference { get; set; }
 
-        [JsonProperty("@comment")]
+        [XmlAttribute("comment")]
         public string Comment { get; set; }
 
         [JsonProperty("@discrete")]
         public bool IsDiscretionaryPass { get; set; }
 
         [ChildRelationship(typeof(Image))]
-        [JsonProperty("image")]
-        [JsonConverter(typeof(JsonWrappedListConverter<Image>))]
+        [XmlArray("images")]
         public List<Image> Images { get; set; }
 
         [ForeignKey(typeof(SafetyCheckData))]
+        [XmlIgnore]
         public Guid SafetyCheckDataID { get; set; }
 
     }

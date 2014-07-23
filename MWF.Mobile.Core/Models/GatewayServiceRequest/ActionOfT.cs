@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 namespace MWF.Mobile.Core.Models.GatewayServiceRequest
 {
 
-    public class Content
-        : BaseContent
+    public class Action<TData>
+        : Action
+        where TData : class
     {
-        public IEnumerable<Action> Actions { get; set; }
+        public TData Data { get; set; }
     }
 
 }

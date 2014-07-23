@@ -12,7 +12,8 @@ namespace MWF.Mobile.Core.ViewModels
             this.InitialViewModel = new ManifestViewModel();
 
             // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
-            gatewayQueuedService.StartQueueTimer();
+            // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:
+            //gatewayQueuedService.StartQueueTimer();
         }
 
     }

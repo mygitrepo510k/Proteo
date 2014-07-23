@@ -47,7 +47,7 @@ namespace MWF.Mobile.Core.Services
         {
             var deviceInfo = new DeviceInfo()
             {
-                DeviceIdentifier = _deviceInfo.GetDeviceIndentifier(),
+                DeviceIdentifier = _deviceInfo.GetDeviceIdentifier(),
                 Password = _deviceInfo.GatewayPassword
             };
             var response = await _httpService.PostAsJsonAsync<DeviceInfo, MWFMobileConfig>(deviceInfo, _gatewayConfigRequestUrl);
@@ -59,7 +59,7 @@ namespace MWF.Mobile.Core.Services
             var deviceInfo = new DeviceInfo()
             {
                 IMEI = _deviceInfo.IMEI,
-                DeviceIdentifier = _deviceInfo.GetDeviceIndentifier(),
+                DeviceIdentifier = _deviceInfo.GetDeviceIdentifier(),
                 OsVersion = _deviceInfo.OsVersion,
                 Manufacturer = _deviceInfo.Manufacturer,
                 Model = _deviceInfo.Model,
@@ -161,12 +161,8 @@ namespace MWF.Mobile.Core.Services
         private Models.GatewayServiceRequest.Content CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
         {
 
-            Device device = _deviceRepository.GetAll().FirstOrDefault();
-            string deviceIdentifier;
-            if (device != null)
-                deviceIdentifier = device.DeviceIdentifier;
-            else
-                deviceIdentifier = _deviceInfo.GetDeviceIndentifier();
+            Models.Device device = _deviceRepository.GetAll().FirstOrDefault();
+            var deviceIdentifier = device == null ? _deviceInfo.GetDeviceIdentifier() : device.DeviceIdentifier;
 
             return new Core.Models.GatewayServiceRequest.Content
             {

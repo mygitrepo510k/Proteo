@@ -24,7 +24,7 @@ namespace MWF.Mobile.Android.Portable
         /// Gets an unique identifier for the device
         /// </summary>
         /// <returns>Either IMEI, SerialNumber or AndroidId depending on what is available</returns>
-        public string GetDeviceIndentifier()
+        public string GetDeviceIdentifier()
         {
             return AndroidId;
         }
@@ -35,7 +35,7 @@ namespace MWF.Mobile.Android.Portable
             {
                 var globals = Mvx.Resolve<IMvxAndroidGlobals>();
                 TelephonyManager tm = (TelephonyManager)globals.ApplicationContext.GetSystemService(Context.TelephonyService);
-                return tm.DeviceId;
+                return tm.DeviceId ?? string.Empty;
             }
         }
 

@@ -59,6 +59,7 @@ namespace MWF.Mobile.Core.ViewModels
         public void ShowTrailerScreen(Vehicle vehicle)
         {
             _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
+            _startupInfoService.CurrentVehicle = vehicle;
             ShowViewModel<TrailerListViewModel>(new TrailerListViewModel.Nav { ID = vehicle.ID });
         }
 

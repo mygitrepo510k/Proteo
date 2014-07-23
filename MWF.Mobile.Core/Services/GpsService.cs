@@ -13,6 +13,7 @@ namespace MWF.Mobile.Core.Services
 
         private readonly IMvxLocationWatcher _locationWatcher;
         private bool _disposed = false;
+        private MvxGeoLocation _location;
 
         #endregion
 
@@ -34,14 +35,14 @@ namespace MWF.Mobile.Core.Services
             var smp = new SMP
             {
                 Reason = reportReason,
-                Latitude =  Convert.ToDecimal(_locationWatcher.CurrentLocation.Coordinates.Latitude),
-                Longitude = Convert.ToDecimal(_locationWatcher.CurrentLocation.Coordinates.Longitude),
-                Speed = Convert.ToInt16(_locationWatcher.CurrentLocation.Coordinates.Speed) > (short)2 
-                                        ? Convert.ToInt16(_locationWatcher.CurrentLocation.Coordinates.Speed) 
+                Latitude =  Convert.ToDecimal(_location.Coordinates.Latitude),
+                Longitude = Convert.ToDecimal(_location.Coordinates.Longitude),
+                Speed = Convert.ToInt16(_location.Coordinates.Speed) > (short)2 
+                                        ? Convert.ToInt16(_location.Coordinates.Speed) 
                                         : (short)0,
-                Quality = Convert.ToInt32(_locationWatcher.CurrentLocation.Coordinates.Accuracy),
-                LastFixDateTime = _locationWatcher.CurrentLocation.Timestamp.DateTime,
-                Heading = Convert.ToInt16(_locationWatcher.CurrentLocation.Coordinates.Heading),
+                Quality = Convert.ToInt32(_location.Coordinates.Accuracy),
+                LastFixDateTime = _location.Timestamp.DateTime,
+                Heading = Convert.ToInt16(_location.Coordinates.Heading),
                 ReportDateTime = DateTime.UtcNow
             };
 
@@ -52,7 +53,10 @@ namespace MWF.Mobile.Core.Services
 
         #region Private Methods
 
-        private void OnSuccess(MvxGeoLocation location) { }
+        private void OnSuccess(MvxGeoLocation location)
+        {
+            _location = location;
+        }
         
         private void OnError(MvxLocationError error)
         {

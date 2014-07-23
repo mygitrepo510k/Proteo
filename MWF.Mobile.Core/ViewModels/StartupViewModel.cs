@@ -18,7 +18,17 @@ namespace MWF.Mobile.Core.ViewModels
 		: BaseActivityViewModel
     {
 
-        public StartupViewModel(IAuthenticationService authenticationService, IGatewayService gatewayService, IGatewayQueuedService gatewayQueuedService, Portable.IReachability reachableService, IDataService dataService, IRepositories repositories, IDeviceInfo deviceInfo, IStartupInfoService startupInfoService, IUserInteraction userInteraction, ICurrentDriverRepository currentDriver)
+        public StartupViewModel(IAuthenticationService authenticationService, 
+                                IGatewayService gatewayService, 
+                                IGatewayQueuedService gatewayQueuedService, 
+                                Portable.IReachability reachableService, 
+                                IDataService dataService, 
+                                IRepositories repositories, 
+                                IDeviceInfo deviceInfo, 
+                                IStartupInfoService startupInfoService, 
+                                IUserInteraction userInteraction, 
+                                ICurrentDriverRepository currentDriver,
+                                IGpsService gpsService)
         {
 //#if DEBUG
 //            userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));

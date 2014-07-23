@@ -18,11 +18,37 @@ namespace MWF.Mobile.Core.ViewModels
 		: BaseActivityViewModel
     {
 
+        public enum Option
+        {
+            Camera,
+            SafetyCheck,
+            History
+        }
+
         public StartupViewModel(IAuthenticationService authenticationService, IGatewayService gatewayService, Portable.IReachability reachableService, IDataService dataService, IRepositories repositories, IDeviceInfo deviceInfo, IStartupInfoService startupInfoService, IUserInteraction userInteraction, ICurrentDriverRepository currentDriver)
         {
 //#if DEBUG
 //            Mvx.Resolve<IUserInteraction>().Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
 //#endif
+
+            _menuItems = new List<MenuViewModel>
+            {
+                new MenuViewModel
+                {
+                    Option = Option.Camera,
+                    Text = "Camera"
+                },
+                new MenuViewModel
+                {
+                    Option = Option.History,
+                    Text = "History"
+                },
+                new MenuViewModel
+                {
+                    Option = Option.SafetyCheck,
+                    Text = "SafetyCheck"
+                },
+            };
 
             var customerRepository = repositories.CustomerRepository;
 
@@ -46,6 +72,27 @@ namespace MWF.Mobile.Core.ViewModels
             repositories.TrailerRepository.DeleteAll();
             repositories.VehicleRepository.DeleteAll();
             repositories.VerbProfileRepository.DeleteAll();
+        }
+
+        private List<MenuViewModel> _menuItems;
+        public List<MenuViewModel> MenuItems
+        {
+            get { return this._menuItems; }
+            set { this._menuItems = value; this.RaisePropertyChanged(() => this.MenuItems); }
+        }
+
+        private MvxCommand<MenuViewModel> _selectMenuItemCommand;
+        public System.Windows.Input.ICommand SelectMenuItemCommand
+        {
+            get
+            {
+                return this._selectMenuItemCommand ?? (this._selectMenuItemCommand = new MvxCommand<MenuViewModel>(this.DoSelectMenuItemCommand));
+            }
+        }
+
+        private void DoSelectMenuItemCommand(MenuViewModel item)
+        {
+            
         }
 
 

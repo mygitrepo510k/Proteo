@@ -21,10 +21,10 @@ namespace MWF.Mobile.Android.Portable
 
         private enum _soundTracks { testSound = Resource.Raw.Kalimba, refreshSound, clickSound };
 
-        public void Play(_soundTracks sound)
+        public void Play(Enum sound)
         {
             //TODO: Implement some form of error checking to make sure its a valid enum.
-            int soundPath = (int)sound;
+            int soundPath = Int32.Parse(sound.ToString());
             
             _player = MediaPlayer.Create(Application.Context, soundPath);
            _player.Start();

@@ -60,8 +60,7 @@ namespace MWF.Mobile.Core.ViewModels
             int odometerValue = int.Parse(OdometerValue);
             _startupInfoService.Mileage = odometerValue;
 
-            //TODO navigate to safety check acceptance screen
-            
+            ShowViewModel<SafetyCheckSignatureViewModel>();
         }
 
 

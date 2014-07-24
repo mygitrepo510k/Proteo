@@ -9,7 +9,7 @@ using Chance.MvvmCross.Plugins.UserInteraction;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class SafetyCheckSignatureViewModel : MvxViewModel
+    public class SafetyCheckSignatureViewModel : BaseFragmentViewModel
     {
 
         private readonly Services.IStartupInfoService _startupInfoService = null;
@@ -109,6 +109,10 @@ namespace MWF.Mobile.Core.ViewModels
             ShowViewModel<MainViewModel>();
         }
 
+        public override string FragmentTitle
+        {
+            get { return "Signature"; }
+        }
     }
 
 }

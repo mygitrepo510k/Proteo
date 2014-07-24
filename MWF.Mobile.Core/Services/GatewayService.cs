@@ -31,7 +31,7 @@ namespace MWF.Mobile.Core.Services
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
             _gatewayDeviceCreateUrl = "http://87.117.243.226:7090/api/gateway/createdevice";
-            _gatewayConfigRequestUrl = "http://87.117.243.226.7090/api/gateway/configrequest";
+            _gatewayConfigRequestUrl = "http://87.117.243.226:7090/api/gateway/configrequest";
 
             _deviceRepository = repositories.DeviceRepository;
         }

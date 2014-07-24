@@ -16,8 +16,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ManifestViewModel()
         {
-            var testOrder = new Order() { Arrive = DateTime.Now.AddMonths(1), Description = "test" };
-            MobileApplicationData = Enumerable.Repeat<Order>(testOrder, 1);
+            var testOrder = new MobileApplicationData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "test" };
+            MobileApplicationData = Enumerable.Repeat<MobileApplicationData>(testOrder, 1);
         }
 
         public override string FragmentTitle
@@ -25,8 +25,8 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Manifest"; }
         }
 
-        private IEnumerable<Order> _mobileApplicationData;
-        public IEnumerable<Order> MobileApplicationData
+        private IEnumerable<MobileApplicationData> _mobileApplicationData;
+        public IEnumerable<MobileApplicationData> MobileApplicationData
         {
             get { return _mobileApplicationData; }
             set { _mobileApplicationData = value; RaisePropertyChanged(() => MobileApplicationData); }

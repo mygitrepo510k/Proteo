@@ -41,7 +41,7 @@ namespace MWF.Mobile.Core.ViewModels
 //#if DEBUG
 //            userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
 //#endif
-            //this.InitialViewModel = new ManifestViewModel();
+            this.InitialViewModel = new ManifestViewModel();
             
 
             _menuItems = new List<MenuViewModel>
@@ -62,7 +62,7 @@ namespace MWF.Mobile.Core.ViewModels
                     Text = "SafetyCheck"
                 },
             };
-
+            /*
             var customerRepository = repositories.CustomerRepository;
 
             if (customerRepository.GetAll().Any())
@@ -73,7 +73,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService, repositories, userInteraction);
             }
-             
+             */
         }
 
         private void DEBUGGING_ClearAllData(IRepositories repositories)

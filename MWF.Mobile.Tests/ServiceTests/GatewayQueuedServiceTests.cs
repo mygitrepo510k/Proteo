@@ -77,12 +77,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service =_fixture.Create<Core.Services.GatewayQueuedService>();
             service.StartQueueTimer();
 
-            service.AddToQueue("01");
-            // One item in the queue
-            Assert.Equal(1, _queueItems.Count);
-
-            service.AddToQueueAndSubmit("02");
-            // No items in the queue, all have been submitted
+            service.AddToQueue("test");
+            // Nothing in the queue, item has been submitted
             Assert.Equal(0, _queueItems.Count);
         }
 
@@ -95,13 +91,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service =_fixture.Create<Core.Services.GatewayQueuedService>();
             service.StartQueueTimer();
 
-            service.AddToQueue("01");
-            // One item in the queue
+            service.AddToQueue("test");
+            // item remains in the queue because there is no network connectivity
             Assert.Equal(1, _queueItems.Count);
-
-            service.AddToQueueAndSubmit("02");
-            // Both items remain in the queue because there is no network connectivity
-            Assert.Equal(2, _queueItems.Count);
         }
 
     }

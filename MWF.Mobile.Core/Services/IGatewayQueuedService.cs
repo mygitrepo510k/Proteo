@@ -7,11 +7,20 @@ using System.Threading.Tasks;
 namespace MWF.Mobile.Core.Services
 {
 
+    public class QueueAction<TData>
+        where TData: class
+    {
+        public string Command { get; set; }
+        public TData Data { get; set; }
+        public Models.GatewayServiceRequest.Parameter[] Parameters { get; set; }
+    }
+
     public interface IGatewayQueuedService
     {
         void StartQueueTimer();
         void AddToQueue(string command, Models.GatewayServiceRequest.Parameter[] parameters = null);
-        void AddToQueueAndSubmit(string command, Models.GatewayServiceRequest.Parameter[] parameters = null);
+        void AddToQueue<TData>(string command, TData data, Models.GatewayServiceRequest.Parameter[] parameters = null) where TData : class;
+        void AddToQueue(IEnumerable<Models.GatewayServiceRequest.Action> actions);
     }
 
 }

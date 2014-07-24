@@ -26,8 +26,6 @@ namespace MWF.Mobile.Android.Presenters
         : MvxAndroidViewPresenter, ICustomPresenter
     {
 
-        private IFragmentHost _currentFragmentHost = null;
-
         public override void Show(MvxViewModelRequest request)
         {
 

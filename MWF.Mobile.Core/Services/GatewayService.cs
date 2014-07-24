@@ -20,6 +20,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IHttpService _httpService = null;
         private readonly string _gatewayDeviceRequestUrl = null;
         private readonly string _gatewayDeviceCreateUrl = null;
+        private readonly string _gatewayConfigRequestUrl = null;
         private readonly IDeviceRepository _deviceRepository;
 
         public GatewayService(IDeviceInfo deviceInfo, IHttpService httpService, IRepositories repositories)
@@ -30,6 +31,8 @@ namespace MWF.Mobile.Core.Services
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
             _gatewayDeviceCreateUrl = "http://87.117.243.226:7090/api/gateway/createdevice";
+            _gatewayConfigRequestUrl = "http://87.117.243.226.7090/api/gateway/configrequest";
+
             _deviceRepository = repositories.DeviceRepository;
         }
 
@@ -41,12 +44,23 @@ namespace MWF.Mobile.Core.Services
             return data.Result;
         }
 
+        public async Task<Models.MWFMobileConfig> GetConfig()
+        {
+            var deviceInfo = new DeviceInfo()
+            {
+                DeviceIdentifier = _deviceInfo.GetDeviceIdentifier(),
+                Password = _deviceInfo.GatewayPassword
+            };
+            var response = await _httpService.PostAsJsonAsync<DeviceInfo, MWFMobileConfig>(deviceInfo, _gatewayConfigRequestUrl);
+            return response.Content;
+        }
+
         public async Task<bool> CreateDevice()
         {
             var deviceInfo = new DeviceInfo()
             {
                 IMEI = _deviceInfo.IMEI,
-                DeviceIdentifier = _deviceInfo.GetDeviceIndentifier(),
+                DeviceIdentifier = _deviceInfo.GetDeviceIdentifier(),
                 OsVersion = _deviceInfo.OsVersion,
                 Manufacturer = _deviceInfo.Manufacturer,
                 Model = _deviceInfo.Model,
@@ -56,6 +70,7 @@ namespace MWF.Mobile.Core.Services
             var response = await _httpService.PostAsJsonAsync<DeviceInfo, HttpStatusCode>(deviceInfo, _gatewayDeviceCreateUrl);
             return (response.StatusCode != HttpStatusCode.InternalServerError);
         }
+
 
         public async Task<Models.Device> GetDevice(string customerID)
         {
@@ -147,12 +162,8 @@ namespace MWF.Mobile.Core.Services
         private Models.GatewayServiceRequest.Content CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
         {
 
-            Device device = _deviceRepository.GetAll().FirstOrDefault();
-            string deviceIdentifier;
-            if (device != null)
-                deviceIdentifier = device.DeviceIdentifier;
-            else
-                deviceIdentifier = _deviceInfo.GetDeviceIndentifier();
+            Models.Device device = _deviceRepository.GetAll().FirstOrDefault();
+            var deviceIdentifier = device == null ? _deviceInfo.GetDeviceIdentifier() : device.DeviceIdentifier;
 
             return new Core.Models.GatewayServiceRequest.Content
             {

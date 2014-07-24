@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using MWF.Mobile.Core.Converters;
 using Newtonsoft.Json;
 using MWF.Mobile.Core.Models.Attributes;
 

@@ -5,12 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Helpers;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using Chance.MvvmCross.Plugins.UserInteraction;
+using MWF.Mobile.Core.Repositories.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -31,6 +33,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly ITrailerRepository _trailerRepository;
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IVerbProfileRepository _verbProfileRepository;
+        private readonly IConfigRepository _configRepository;
 
         public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, IUserInteraction userInteraction)
         {
@@ -47,13 +50,14 @@ namespace MWF.Mobile.Core.ViewModels
             _trailerRepository = repositories.TrailerRepository;
             _vehicleRepository = repositories.VehicleRepository;
             _verbProfileRepository = repositories.VerbProfileRepository;
+            _configRepository = repositories.ConfigRepository;
 
-//#if DEBUG
-//            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", () => _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031");
-//#endif
+#if DEBUG
+            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", () => this.CustomerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031");
+#endif
         }
 
-        private string _customerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031";
+        private string _customerCode = string.Empty;
         public string CustomerCode
         {
             get { return _customerCode; }
@@ -123,7 +127,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     success = await this.SetupDevice();
                 }
-                catch (Exception ex)
+                catch
                 {
                     //TODO: save to unhandled exceptions log
                     success = false;
@@ -156,8 +160,8 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 _errorMessage = "Invalid customer code.";
                 return false;
-            } 
-
+            }
+            var config = await _gatewayService.GetConfig();
             var applicationProfile = await _gatewayService.GetApplicationProfile();
             var drivers = await _gatewayService.GetDrivers();
             var vehicleViews = await _gatewayService.GetVehicleViews();
@@ -197,6 +201,7 @@ namespace MWF.Mobile.Core.ViewModels
                 _vehicleRepository.Insert(vehicles);
                 _trailerRepository.Insert(trailers);
                 _safetyProfileRepository.Insert(safetyProfiles);
+                _configRepository.Insert(config);
             });
 
 

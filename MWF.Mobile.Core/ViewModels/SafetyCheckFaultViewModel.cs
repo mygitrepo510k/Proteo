@@ -59,6 +59,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
+        public override string FragmentTitle
+        {
+            get { return "Falut Screen"; }
+        }
+
         public string DoneButtonLabel
         {
             get { return "Done"; }
@@ -116,7 +121,6 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion
-
 
 
     }

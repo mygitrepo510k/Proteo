@@ -1,6 +1,7 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
@@ -18,7 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
 
     public class VehicleListViewModel
-        : MvxViewModel
+        : BaseFragmentViewModel
     {
         private Services.IGatewayService _gatewayService;
         private IEnumerable<Vehicle> _originalVehicleList;
@@ -31,12 +32,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string VehicleSelectText
         {
-            get { return "Please select a vehicle."; }
+            get { return "Select vehicle."; }
         }
 
-        public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty,
+        public override string FragmentTitle
+        {
+            get { return "Vehicle"; }
+        }
+
+        public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,
             IToast toast, IStartupInfoService startupInfoService, ICurrentDriverRepository currentDriverRepository)
         {
+            _gatewayService = gatewayService;
             _toast = toast;
             _reachability = reachabibilty;
             _startupInfoService = startupInfoService;
@@ -53,6 +60,13 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get { return _vehicles; }
             set { _vehicles = value; RaisePropertyChanged(() => Vehicles); }
+        }
+
+        public void ShowTrailerScreen(Vehicle vehicle)
+        {
+            _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
+            _startupInfoService.CurrentVehicle = vehicle;
+            ShowViewModel<TrailerListViewModel>();
         }
 
         public void LastVehicleSelect()
@@ -72,14 +86,13 @@ namespace MWF.Mobile.Core.ViewModels
             if (vehicle == null)
                 return;
 
-            Mvx.Resolve<IUserInteraction>().Confirm(("Do you wish to reuse vehicle " + vehicle.Registration + "?"),isConfirmed =>
+            Mvx.Resolve<IUserInteraction>().Confirm((vehicle.Registration),isConfirmed =>
             {
                 if (isConfirmed)
                 {
-                    _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
-                    ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = lastVehicleID });
+                    ShowTrailerScreen(vehicle);
                 }
-            }, "Last used vehicle");
+            }, "Last used vehicle", "Select");
         }
 
         private MvxCommand<Vehicle> _showVehicleDetailCommand;
@@ -93,6 +106,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void VehicleDetail(Vehicle vehicle)
         {
+
             Mvx.Resolve<IUserInteraction>().Confirm(vehicle.Registration, isConfirmed =>
             {
                 if (isConfirmed)
@@ -106,10 +120,9 @@ namespace MWF.Mobile.Core.ViewModels
                     newDriver.LastVehicleID = vehicle.ID;
                     _currentDriverRepository.Insert(newDriver);
 
-                    _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
-                    ShowViewModel<TrailerSelectionViewModel>(new TrailerSelectionViewModel.Nav { ID = vehicle.ID });
+                    ShowTrailerScreen(vehicle);
                 }
-            }, "Please confirm your vehicle");
+            }, "Please confirm your vehicle", "Select");
         }
 
         private string _searchText;
@@ -118,7 +131,6 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _searchText; }
             set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); }
         }
-
 
         private void FilterList()
         {
@@ -130,11 +142,11 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(() => updateVehicleList()));
+                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(async () => await UpdateVehicleListAsync()));
             }
         }
 
-        public async Task updateVehicleList()
+        public async Task UpdateVehicleListAsync()
         {
 
             if (!_reachability.IsConnected())
@@ -143,7 +155,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
             else
             {
-                _gatewayService = Mvx.Resolve<IGatewayService>();
                 var vehicleViews = await _gatewayService.GetVehicleViews();
 
                 var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());

@@ -8,6 +8,8 @@ using MWF.Mobile.Android.Portable;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using System.Collections.Generic;
+using Android.Support;
 
 namespace MWF.Mobile.Android
 {
@@ -43,6 +45,7 @@ namespace MWF.Mobile.Android
             Mvx.RegisterSingleton<IReachability>(() => new Reachability());
             Mvx.RegisterSingleton<IDeviceInfo>(() => new DeviceInfo());
             Mvx.RegisterSingleton<IToast>(() => new Portable.Toast());
+            Mvx.RegisterSingleton<ISound>(() => new Portable.Sound());
         }
 
         protected override System.Collections.Generic.List<System.Reflection.Assembly> ValueConverterAssemblies
@@ -60,6 +63,16 @@ namespace MWF.Mobile.Android
             pluginManager.EnsurePluginLoaded<PluginLoader>();
             pluginManager.EnsurePluginLoaded<Cirrious.MvvmCross.Plugins.Visibility.PluginLoader>();
             base.LoadPlugins(pluginManager);
+        }
+
+        protected override IList<System.Reflection.Assembly> AndroidViewAssemblies
+        {
+            get
+            {
+                var assemblies = base.AndroidViewAssemblies;
+                assemblies.Add(typeof(global::Android.Support.V4.Widget.DrawerLayout).Assembly);
+                return assemblies;
+            }
         }
 
     }

@@ -73,6 +73,7 @@ namespace MWF.Mobile.Core.Services
             _connection.CreateTable<VehicleView>();
             _connection.CreateTable<VerbProfile>();
             _connection.CreateTable<VerbProfileItem>();
+            _connection.CreateTable<MWFMobileConfig>();
         }
 
         #endregion

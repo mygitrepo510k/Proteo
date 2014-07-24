@@ -18,7 +18,7 @@ using Cirrious.MvvmCross.Binding.Droid.Views;
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class SafetyCheckFaultFragment : MvxFragment
+    public class SafetyCheckFaultFragment : BaseFragment
     {
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

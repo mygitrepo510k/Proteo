@@ -13,7 +13,7 @@ namespace MWF.Mobile.Core.ViewModels
     // when user has done interacting with it.
     // See http://www.gregshackles.com/2012/11/returning-results-from-view-models-in-mvvmcross/
 
-    public abstract class BaseModalViewModel<TResult> : BaseViewModel
+    public abstract class BaseModalViewModel<TResult> : BaseFragmentViewModel
     {
         protected Guid MessageId { get; private set; }
 

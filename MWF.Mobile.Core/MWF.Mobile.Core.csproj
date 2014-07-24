@@ -80,12 +80,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Converters\JsonDigitToBooleanConverter.cs" />
+    <Compile Include="Converters\JsonWrappedItemConverter.cs" />
+    <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
-    <Compile Include="Helpers\JsonDigitToBooleanConverter.cs" />
-    <Compile Include="Helpers\JsonWrappedListConverter.cs" />
-    <Compile Include="Helpers\JsonWrappedItemConverter.cs" />
-    <Compile Include="Helpers\LinqExtensions.cs" />
-    <Compile Include="Helpers\ReflectionExtensions.cs" />
+    <Compile Include="Converters\StringHasLengthConverter.cs" />
+    <Compile Include="Enums\ReportReason.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
+    <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Helpers\SMP.cs" />
     <Compile Include="Messages\GatewayQueueTimerCommandMessage.cs" />
     <Compile Include="Messages\GatewayQueueTimerElapsedMessage.cs" />
     <Compile Include="Messages\ModalNavigationResultMessage.cs" />
@@ -94,6 +97,8 @@
     <Compile Include="Models\CurrentDriver.cs" />
     <Compile Include="Models\GatewayQueueItem.cs" />
     <Compile Include="Models\GatewayServiceRequest\Action.cs" />
+    <Compile Include="Models\GatewayServiceRequest\ActionOfT.cs" />
+    <Compile Include="Models\GatewayServiceRequest\BaseContent.cs" />
     <Compile Include="Models\GatewayServiceRequest\Content.cs" />
     <Compile Include="Models\GatewayServiceRequest\DeviceInfo.cs" />
     <Compile Include="Models\GatewayServiceRequest\Parameter.cs" />
@@ -111,6 +116,8 @@
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\IBlueSphereEntity.cs" />
     <Compile Include="Models\Image.cs" />
+    <Compile Include="Models\Instruction.cs" />
+    <Compile Include="Models\MWFMobileConfig.cs" />
     <Compile Include="Models\Signature.cs" />
     <Compile Include="Models\SafetyCheckFault.cs" />
     <Compile Include="Models\SafetyCheckFaultType.cs" />
@@ -125,11 +132,14 @@
     <Compile Include="Models\ApplicationProfile.cs" />
     <Compile Include="Models\VerbProfileItem.cs" />
     <Compile Include="Portable\IReachability.cs" />
+    <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ApplicationProfileRepository.cs" />
+    <Compile Include="Repositories\ConfigRepository.cs" />
     <Compile Include="Repositories\CurrentDriverRepository.cs" />
     <Compile Include="Repositories\CustomerRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IConfigRepository.cs" />
     <Compile Include="Repositories\Interfaces\ICurrentDriverRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepositories.cs" />
     <Compile Include="Repositories\Interfaces\ISafetyCheckDataRepository.cs" />
@@ -157,23 +167,27 @@
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\GatewayQueuedService.cs" />
     <Compile Include="Services\GatewayService.cs" />
+    <Compile Include="Services\GpsService.cs" />
     <Compile Include="Services\HttpService.cs" />
     <Compile Include="Services\IAuthenticationService.cs" />
     <Compile Include="Services\IDataService.cs" />
     <Compile Include="Services\IGatewayQueuedService.cs" />
     <Compile Include="Portable\IDeviceInfo.cs" />
     <Compile Include="Services\IGatewayService.cs" />
+    <Compile Include="Services\IGpsService.cs" />
     <Compile Include="Services\IHttpService.cs" />
     <Compile Include="Services\IStartupInfoService.cs" />
     <Compile Include="Services\StartupInfoService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
-    <Compile Include="ValueConverters\StringHasLengthConverter.cs" />
-    <Compile Include="ViewModels\BaseViewModel.cs" />
-    <Compile Include="ViewModels\ModalBaseActivityModel.cs" />
+    <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="ViewModels\Navigation\IViewModelNavItem.cs" />
     <Compile Include="ViewModels\Navigation\SafetyCheckNavItem.cs" />
+    <Compile Include="ViewModels\MenuViewModel.cs" />
+    <Compile Include="ViewModels\BaseFragmentViewModel.cs" />
+    <Compile Include="ViewModels\Interfaces\IBackButtonHandler.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />
+    <Compile Include="ViewModels\SafetyCheckSignatureViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\OdometerViewModel.cs" />
@@ -184,7 +198,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\BaseActivityViewModel.cs" />
     <Compile Include="ViewModels\StartupViewModel.cs" />
-    <Compile Include="ViewModels\TrailerSelectionViewModel.cs" />
+    <Compile Include="ViewModels\TrailerListViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Chance.MvvmCross.Plugins.UserInteraction">
@@ -201,6 +215,9 @@
     </Reference>
     <Reference Include="Cirrious.MvvmCross.Localization">
       <HintPath>..\packages\MvvmCross.HotTuna.CrossCore.3.2.1-beta1\lib\portable-win+net45+wp8+win8+wpa81+MonoTouch+MonoAndroid\Cirrious.MvvmCross.Localization.dll</HintPath>
+    </Reference>
+    <Reference Include="Cirrious.MvvmCross.Plugins.Location">
+      <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Location.3.1.1\lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\Cirrious.MvvmCross.Plugins.Location.dll</HintPath>
     </Reference>
     <Reference Include="Cirrious.MvvmCross.Plugins.Visibility">
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Visibility.3.1.1\lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\Cirrious.MvvmCross.Plugins.Visibility.dll</HintPath>

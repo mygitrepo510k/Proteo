@@ -27,10 +27,9 @@ namespace MWF.Mobile.Android.Views.Fragments
         Failed = 2
     }
 
-    public class SafetyCheckFragment : MvxFragment
+    public class SafetyCheckFragment : BaseFragment
     {
-        private ListView itemList;
-        private long selectedItemId;
+        private ListView _itemList;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -41,12 +40,9 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
-            base.OnViewCreated(view, savedInstanceState);
-
-
-            itemList = (ListView)view.FindViewById(Resource.Id.SafetyListView);
-            itemList.ItemClick += itemList_ItemClick;
-            RegisterForContextMenu(itemList);
+            _itemList = (ListView)view.FindViewById(Resource.Id.SafetyListView);
+            _itemList.ItemClick += itemList_ItemClick;
+            RegisterForContextMenu(_itemList);
 
             var checksDoneButton = (Button)view.FindViewById(Resource.Id.checksdonebutton);
             var set = this.CreateBindingSet<SafetyCheckFragment, SafetyCheckViewModel>();
@@ -54,8 +50,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             set.Apply();
 
 
-            this.Activity.ActionBar.Show();
-            this.Activity.ActionBar.Title = "Safety Checklist";
+            base.OnViewCreated(view, savedInstanceState);
         }
 
         void itemList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
@@ -69,7 +64,6 @@ namespace MWF.Mobile.Android.Views.Fragments
             var menuInfo = (AdapterView.AdapterContextMenuInfo)info;
             var safetyCheckItem = ((SafetyCheckItemViewModel)((MvxListItemView)menuInfo.TargetView).DataContext);
 
-            selectedItemId = menuInfo.Id;
             menu.SetHeaderTitle(safetyCheckItem.Title);
             menu.Add(0, (int)MenuOption.Passed, 0, "Pass");
             if (safetyCheckItem.IsDiscreationaryQuestion)
@@ -83,7 +77,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             if (item.ItemId.Equals((int)MenuOption.Passed))
             {
-                safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.Passed;
+                safetyCheckViewModel.CheckStatus = SafetyCheckEnum.Passed;
             }
             else if (item.ItemId.Equals((int)MenuOption.DiscretionaryPass))
             {
@@ -93,10 +87,11 @@ namespace MWF.Mobile.Android.Views.Fragments
             else if (item.ItemId.Equals((int)MenuOption.Failed))
             {
                 safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.Failed;
-
             }
 
             return base.OnOptionsItemSelected(item);
         }
+
+        
     }
 }

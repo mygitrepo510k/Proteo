@@ -9,6 +9,8 @@ namespace MWF.Mobile.Core.Services
         SafetyCheckData CurrentVehicleSafetyCheckData { get; set; }
         SafetyCheckData CurrentTrailerSafetyCheckData { get; set; }
         Vehicle CurrentVehicle { get; set; }
+        Trailer CurrentTrailer { get; set; }
         int Mileage { get; set; }
+
     }
 }

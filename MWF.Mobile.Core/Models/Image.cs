@@ -5,24 +5,26 @@ using System.Text;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Newtonsoft.Json;
 using MWF.Mobile.Core.Models.Attributes;
+using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models
 {
     // Model class which holds an image associated with a safety check fault
-    public class Signature: IBlueSphereEntity
+    public class Image: IBlueSphereEntity
     {
         [Unique]
         [PrimaryKey]
-        [JsonProperty("@id")]
+        [XmlAttribute("id")]
         public Guid ID { get; set; }
 
-        [JsonProperty("@sequence")]
+        [XmlAttribute("sequence")]
         public int Sequence { get; set; }
 
-        [JsonProperty("@encoded")]
+        [XmlAttribute("encoded")]
         public string EncodeImageData { get; set; }
 
         [ForeignKey(typeof(SafetyCheckFault))]
+        [XmlIgnore]
         public Guid SafetyCheckFaultID { get; set; }
 
     }

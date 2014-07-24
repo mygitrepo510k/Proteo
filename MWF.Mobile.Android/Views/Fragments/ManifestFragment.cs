@@ -15,7 +15,7 @@ using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class ManifestFragment : MvxFragment
+    public class ManifestFragment : BaseFragment
     {
 
         public Core.ViewModels.ManifestViewModel ManifestViewModel

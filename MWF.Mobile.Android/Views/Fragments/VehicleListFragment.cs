@@ -16,7 +16,7 @@ using MWF.Mobile.Core.ViewModels;
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class VehicleListFragment : MvxFragment
+    public class VehicleListFragment : BaseFragment
     {
         private SearchView _searchView;
 

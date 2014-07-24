@@ -138,11 +138,9 @@ namespace MWF.Mobile.Core.ViewModels
         private void DoChecksDoneCommand()
         {
             if (SafetyProfileVehicle.OdometerRequired)
-                // Redirect to odometer screen
                 ShowViewModel<OdometerViewModel>();
             else
-                // Redirect to safety check acceptance screen 
-                Mvx.Resolve<IUserInteraction>().Alert("Safety checks completed");
+                ShowViewModel<SafetyCheckSignatureViewModel>();
         }
 
         public override string FragmentTitle

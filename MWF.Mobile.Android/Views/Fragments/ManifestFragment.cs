@@ -10,7 +10,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using Cirrious.MvvmCross.Binding.BindingContext;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
@@ -28,6 +30,17 @@ namespace MWF.Mobile.Android.Views.Fragments
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             return this.BindingInflate(Resource.Layout.Fragment_Manifest, null);
+        }
+
+        public override void OnViewCreated(View view, Bundle savedInstanceState)
+        {
+
+            var instructionItem = (TextView)view.FindViewById(Resource.Id.instructionItem);
+            var set = this.CreateBindingSet<ManifestFragment, ManifestViewModel>();
+            set.Bind(instructionItem).For(i => i.Text).To(vm => vm.MobileApplicationData);
+            set.Apply();
+
+            base.OnViewCreated(view, savedInstanceState);
         }
 
     }

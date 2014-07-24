@@ -18,5 +18,14 @@ namespace MWF.Mobile.Core.Repositories
         { }
 
         #endregion
+
+        /// <summary>
+        /// Return the single config row
+        /// </summary>
+        public MWFMobileConfig Get()
+        {
+            return this.GetAll().First();
+        }
+
     }
 }

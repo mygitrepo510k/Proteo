@@ -69,7 +69,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void GatewayQueuedService_SubmitRemovesAllItems()
+        public async Task GatewayQueuedService_SubmitRemovesAllItems()
         {
             base.ClearAll();
 
@@ -78,12 +78,16 @@ namespace MWF.Mobile.Tests.ServiceTests
             service.StartQueueTimer();
 
             service.AddToQueue("test");
+            
+            // Allow the timer to process the queue
+            await Task.Delay(100);
+
             // Nothing in the queue, item has been submitted
             Assert.Equal(0, _queueItems.Count);
         }
 
         [Fact]
-        public void GatewayQueuedService_NoConnectivity_QueuedItemsRetained()
+        public async Task GatewayQueuedService_NoConnectivity_QueuedItemsRetained()
         {
             base.ClearAll();
 
@@ -92,6 +96,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             service.StartQueueTimer();
 
             service.AddToQueue("test");
+
+            // Allow the timer to process the queue
+            await Task.Delay(100);
+
             // item remains in the queue because there is no network connectivity
             Assert.Equal(1, _queueItems.Count);
         }

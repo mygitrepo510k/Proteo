@@ -178,6 +178,7 @@ namespace MWF.Mobile.Core.ViewModels
             var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
             var trailers = vehiclesAndTrailers.Where(bv => bv.IsTrailer).Select(bv => new Models.Trailer(bv));
 
+            //TODO: I'm not sure whether verb profiles will be used anywhere within this app, or whether this is a hangover from the Tough Touch implementation? If not used on completion of the project then remove from here and local db.
             // TODO: Get verb profile titles from config or somewhere?
             var verbProfileTitles = new[] { "Palletforce", "Cancel", "Complete", "Suspend" };
             var verbProfiles = new List<Models.VerbProfile>(verbProfileTitles.Count());
@@ -186,7 +187,6 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 verbProfiles.Add(await _gatewayService.GetVerbProfile(verbProfileTitle));
             }          
-
 
             // write all this retrieved data to the database
             _dataService.RunInTransaction(() =>

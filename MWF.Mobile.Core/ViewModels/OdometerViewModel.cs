@@ -10,10 +10,10 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class OdometerViewModel : BaseFragmentViewModel
     {
-        private IStartupInfoService _startupInfoService;
-        public OdometerViewModel(IStartupInfoService startupInfoService)
+        private IStartupService _startupService;
+        public OdometerViewModel(IStartupService startupService)
         {
-            _startupInfoService = startupInfoService;
+            _startupService = startupService;
         }
 
         public override string FragmentTitle
@@ -51,14 +51,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string Registration
         {
-            get { return _startupInfoService.CurrentVehicle.Registration; }
+            get { return _startupService.CurrentVehicle.Registration; }
         }
         
 
         private void DoStoreCommand()
         {
             int odometerValue = int.Parse(OdometerValue);
-            _startupInfoService.Mileage = odometerValue;
+            _startupService.Mileage = odometerValue;
 
             //TODO navigate to safety check acceptance screen
             

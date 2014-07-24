@@ -75,16 +75,29 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var startUpInfoService = new StartupInfoService();
-            _fixture.Inject<IStartupInfoService>(startUpInfoService);
+            var testDriver = new Core.Models.Driver
+            {
+                ID = Guid.NewGuid(),
+                Passcode = "9999",
+                LastName = "TestName",
+            };
+
+            var mockDriverRepo = Mock.Of<IDriverRepository>(m =>
+                m.GetByID(testDriver.ID) == testDriver &&
+                m.GetAll() == new[] { testDriver });
+
+            _fixture.Inject(mockDriverRepo);
+
+            var startUpService = _fixture.Create<StartupService>();
+            _fixture.Inject<IStartupService>(startUpService);
+
             var vm = _fixture.Create<PasscodeViewModel>();
-            vm.Passcode = "9999";
+            vm.Passcode = testDriver.Passcode;
 
             vm.LoginCommand.Execute(null);
 
-            Assert.NotNull(startUpInfoService.LoggedInDriver);
-            Assert.Equal("TestName", startUpInfoService.LoggedInDriver.LastName);
-
+            Assert.NotNull(startUpService.LoggedInDriver);
+            Assert.Equal(testDriver.LastName, startUpService.LoggedInDriver.LastName);
         }
 
         /// <summary>
@@ -99,8 +112,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<ICurrentDriverRepository>(currentDriverRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
-            var startUpInfoService = new StartupInfoService();
-            _fixture.Inject<IStartupInfoService>(startUpInfoService);
             var vm = _fixture.Create<PasscodeViewModel>();
       
             vm.Passcode = "9999";

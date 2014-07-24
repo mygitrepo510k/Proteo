@@ -18,19 +18,18 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Members
 
         private MvxCommand _doneCommand;
-        private IStartupInfoService _startupInfoService;
+        private IStartupService _startupService;
         private SafetyCheckFault _safetyCheckFault;             // working copy of safety check fault for duration of this screen
         private SafetyCheckFault _originalSafetyCheckFault;     // original copy of safety check fault we'll write to when "done" is clicked
         private string _faultTypeText;
 
         #endregion
 
-
         #region Construction
 
-        public SafetyCheckFaultViewModel(IStartupInfoService startupInfoService)
+        public SafetyCheckFaultViewModel(IStartupService startupService)
         {
-            _startupInfoService = startupInfoService;
+            _startupService = startupService;
         }
 
 
@@ -41,21 +40,19 @@ namespace MWF.Mobile.Core.ViewModels
             // Get the safety check fault to display
             if (item.IsVehicle)
             {
-                _originalSafetyCheckFault = _startupInfoService.CurrentVehicleSafetyCheckData.Faults.SingleOrDefault(f => f.ID == item.FaultID);
+                _originalSafetyCheckFault = _startupService.CurrentVehicleSafetyCheckData.Faults.SingleOrDefault(f => f.ID == item.FaultID);
             }
             else
             {
-                _originalSafetyCheckFault = _startupInfoService.CurrentTrailerSafetyCheckData.Faults.SingleOrDefault(f => f.ID == item.FaultID);
+                _originalSafetyCheckFault = _startupService.CurrentTrailerSafetyCheckData.Faults.SingleOrDefault(f => f.ID == item.FaultID);
             }
 
             _faultTypeText = item.FaultTypeText;
 
             _safetyCheckFault = _originalSafetyCheckFault.Clone();
-            
         }
 
         #endregion
-
 
         #region Public Properties
 
@@ -122,8 +119,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
-
     }
-
 
 }

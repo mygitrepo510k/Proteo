@@ -28,7 +28,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
-        private readonly IStartupInfoService _startupInfoService;
+        private readonly IStartupService _startupService;
 
         public string VehicleSelectText
         {
@@ -41,12 +41,12 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,
-            IToast toast, IStartupInfoService startupInfoService, ICurrentDriverRepository currentDriverRepository)
+            IToast toast, IStartupService startupService, ICurrentDriverRepository currentDriverRepository)
         {
             _gatewayService = gatewayService;
             _toast = toast;
             _reachability = reachabibilty;
-            _startupInfoService = startupInfoService;
+            _startupService = startupService;
 
             _currentDriverRepository = currentDriverRepository;
             _vehicleRepository = vehicleRepository;
@@ -64,14 +64,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void ShowTrailerScreen(Vehicle vehicle)
         {
-            _startupInfoService.LoggedInDriver.LastVehicleID = vehicle.ID;
-            _startupInfoService.CurrentVehicle = vehicle;
+            _startupService.LoggedInDriver.LastVehicleID = vehicle.ID;
+            _startupService.CurrentVehicle = vehicle;
             ShowViewModel<TrailerListViewModel>();
         }
 
         public void LastVehicleSelect()
         {
-            var currentDriver = _currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID);
+            var currentDriver = _currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID);
 
             if (currentDriver == null)
                 return;
@@ -111,7 +111,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (isConfirmed)
                 {
-                    var newDriver = _currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID);
+                    var newDriver = _currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID);
 
                     if (newDriver == null)
                         return;

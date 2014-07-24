@@ -13,55 +13,11 @@ namespace MWF.Mobile.Core.Services
     {
 
         public Driver LoggedInDriver {get; set;}
+        public SafetyCheckData CurrentVehicleSafetyCheckData { get; set; }
+        public SafetyCheckData CurrentTrailerSafetyCheckData { get; set; }
         public Vehicle CurrentVehicle { get; set; }
         public Trailer CurrentTrailer { get; set; }
-        public SafetyCheckData CurrentSafetyCheckData { get; set; }
         public int Mileage { get; set; }
-
-		#region STUBS
-
-        public SafetyCheckData VehicleSafetyCheckData
-        {
-            get
-            {
-                return new Models.SafetyCheckData
-                {
-                    DriverID = this.LoggedInDriver.ID,
-                    DriverTitle = this.LoggedInDriver.Title,
-                    VehicleID = this.CurrentVehicle.ID,
-                    VehicleRegistration = this.CurrentVehicle.Registration,
-                    EffectiveDate = DateTime.UtcNow,
-                    Mileage = 0,
-                    SMP = "838540DE98807598CB800300000000000000000000000",
-                    ProfileIntLink = 477,
-                };
-            }
-            set { }
-        }
-
-        public SafetyCheckData TrailerSafetyCheckData
-        {
-            get
-            {
-                if (this.CurrentTrailer == null)
-                    return null;
-                else
-                    return new Models.SafetyCheckData
-                    {
-                        DriverID = this.LoggedInDriver.ID,
-                        DriverTitle = this.LoggedInDriver.Title,
-                        VehicleID = this.CurrentTrailer.ID,
-                        VehicleRegistration = this.CurrentTrailer.Registration,
-                        EffectiveDate = DateTime.UtcNow,
-                        Mileage = 0,
-                        SMP = "838540DE98807598CB800300000000000000000000000",
-                        ProfileIntLink = 477,
-                    };
-            }
-            set { }
-        }
-
- 		#endregion STUBS
 
     }
 

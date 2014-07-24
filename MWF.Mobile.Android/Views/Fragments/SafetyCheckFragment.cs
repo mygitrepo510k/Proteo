@@ -49,6 +49,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.AllSafetyChecksCompleted);
             set.Apply();
 
+
             base.OnViewCreated(view, savedInstanceState);
         }
 
@@ -76,22 +77,19 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             if (item.ItemId.Equals((int)MenuOption.Passed))
             {
-                safetyCheckViewModel.CheckStatus = SafetyCheckEnum.Passed;
+                safetyCheckViewModel.CheckStatus = Core.Enums.SafetyCheckStatus.Passed;
             }
             else if (item.ItemId.Equals((int)MenuOption.DiscretionaryPass))
             {
-                safetyCheckViewModel.CheckStatus = SafetyCheckEnum.DiscretionaryPass;
-                // TODO: Forward to comments screen
+                safetyCheckViewModel.CheckStatus = Core.Enums.SafetyCheckStatus.DiscretionaryPass;
             }
             else if (item.ItemId.Equals((int)MenuOption.Failed))
             {
-                safetyCheckViewModel.CheckStatus = SafetyCheckEnum.Failed;
-                // TODO: Forward to comments screen
+                safetyCheckViewModel.CheckStatus = Core.Enums.SafetyCheckStatus.Failed;
             }
 
             return base.OnOptionsItemSelected(item);
         }
 
-        
     }
 }

@@ -26,7 +26,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private Driver _driver;
         private Trailer _trailer;
-        private IStartupInfoService _startupInfoServeice;
+        private IStartupService _startupService;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
 
         protected override void AdditionalSetup()
@@ -47,9 +47,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _trailer = new Core.Models.Trailer() { Registration = "TestRegistration", ID = Guid.NewGuid() };
 
-            _startupInfoServeice = new StartupInfoService();
-            _startupInfoServeice.LoggedInDriver = _driver;
-            _fixture.Inject<IStartupInfoService>(_startupInfoServeice);
+            _startupService = _fixture.Create<StartupService>();
+            _startupService.LoggedInDriver = _driver;
+            _fixture.Inject<IStartupService>(_startupService);
 
             _currentDriverRepository = new Mock<ICurrentDriverRepository>();
             _currentDriverRepository.Setup(cdr => cdr.GetByID(It.IsAny<Guid>())).Returns(new CurrentDriver());
@@ -92,8 +92,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.TrailerSelectorCommand.Execute(_trailer);
 
-            Assert.NotNull(_startupInfoServeice.LoggedInDriver);
-            Assert.Equal(_trailer.ID, _startupInfoServeice.LoggedInDriver.LastSecondaryVehicleID);
+            Assert.NotNull(_startupService.LoggedInDriver);
+            Assert.Equal(_trailer.ID, _startupService.LoggedInDriver.LastSecondaryVehicleID);
 
         }
 
@@ -109,8 +109,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.NoTrailerSelectorCommand.Execute(null);
 
-            Assert.NotNull(_startupInfoServeice.LoggedInDriver);
-            Assert.Equal(Guid.Empty, _startupInfoServeice.LoggedInDriver.LastSecondaryVehicleID);
+            Assert.NotNull(_startupService.LoggedInDriver);
+            Assert.Equal(Guid.Empty, _startupService.LoggedInDriver.LastSecondaryVehicleID);
 
         }
 

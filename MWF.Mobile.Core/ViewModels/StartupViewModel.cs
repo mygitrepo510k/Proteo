@@ -32,7 +32,7 @@ namespace MWF.Mobile.Core.ViewModels
                                 IDataService dataService, 
                                 IRepositories repositories, 
                                 IDeviceInfo deviceInfo, 
-                                IStartupInfoService startupInfoService, 
+                                IStartupService startupService, 
                                 IUserInteraction userInteraction, 
                                 ICurrentDriverRepository currentDriver,
                                 IGpsService gpsService)
@@ -67,7 +67,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (customerRepository.GetAll().Any())
             {
-                this.InitialViewModel = new PasscodeViewModel(authenticationService, startupInfoService,currentDriver);
+                this.InitialViewModel = new PasscodeViewModel(authenticationService, startupService,currentDriver);
             }
             else
             {

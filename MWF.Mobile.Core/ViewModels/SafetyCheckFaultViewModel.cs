@@ -12,37 +12,47 @@ using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class SafetyCheckFaultViewModel : BaseFragmentViewModel
+    public class SafetyCheckFaultViewModel : BaseModalViewModel<bool>
     {
 
         #region Private Members
 
-        private MvxCommand _doneCheckCommand;
-        private IStartupInfoService _startupInfoService;
-        private SafetyCheckFault _safetyCheckFault;
+        private MvxCommand _doneCommand;
+        private IStartupService _startupService;
+        private SafetyCheckFault _safetyCheckFault;             // working copy of safety check fault for duration of this screen
+        private SafetyCheckFault _originalSafetyCheckFault;     // original copy of safety check fault we'll write to when "done" is clicked
+        private string _faultTypeText;
 
         #endregion
-
 
         #region Construction
 
-        public SafetyCheckFaultViewModel(IStartupInfoService startupInfoService)
+        public SafetyCheckFaultViewModel(IStartupService startupService)
         {
-            _startupInfoService = startupInfoService;
+            _startupService = startupService;
         }
 
 
-        public void Init(SafetyCheckFaultNavItem item)
+        public void Init(SafetyCheckNavItem item)
         {
-            // Get the safety check fault
-            _safetyCheckFault = _startupInfoService.CurrentSafetyCheckData.Faults.Single(f => f.ID == item.ID);
+            base.Init(item.MessageID);
+
+            // Get the safety check fault to display
+            if (item.IsVehicle)
+            {
+                _originalSafetyCheckFault = _startupService.CurrentVehicleSafetyCheckData.Faults.SingleOrDefault(f => f.ID == item.FaultID);
+            }
+            else
+            {
+                _originalSafetyCheckFault = _startupService.CurrentTrailerSafetyCheckData.Faults.SingleOrDefault(f => f.ID == item.FaultID);
+            }
+
+            _faultTypeText = item.FaultTypeText;
+
+            _safetyCheckFault = _originalSafetyCheckFault.Clone();
         }
-
-
-
 
         #endregion
-
 
         #region Public Properties
 
@@ -61,26 +71,54 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _safetyCheckFault.Title;  }
         }
 
-        public string DiscretionaryOrFailureText
+        public string CommentHintText
         {
-            get { return (_safetyCheckFault.IsDiscretionaryPass) ? "Discretionary Pass" : "Failure"; }
+            get { return "Type Comment"; }
         }
 
-        public System.Windows.Input.ICommand DoneCheckCommand
+        public string CommentText
         {
-            get { return (_doneCheckCommand = _doneCheckCommand ?? new MvxCommand(async () => await Mvx.Resolve<IUserInteraction>().AlertAsync("Fault Logged."))); }
+            get { return _safetyCheckFault.Comment; }
+            set 
+            {
+                _safetyCheckFault.Comment = value;
+                RaisePropertyChanged(() => CommentText);
+                RaisePropertyChanged(() => HasCommentText);
+            }
+        }
+
+        public string InstructionsText
+        {
+            get { return "Add a comment and add an image"; }
+        }
+
+        public bool HasCommentText
+        {
+            get { return !string.IsNullOrEmpty(_safetyCheckFault.Comment); }
+        }
+
+        public string DiscretionaryOrFailureText
+        {
+            get { return _faultTypeText; }
+        }
+
+        public System.Windows.Input.ICommand DoneCommand
+        {
+            get { return (_doneCommand = _doneCommand ?? new MvxCommand( () => DoDoneCommand())); }
         }
 
         #endregion
 
+        #region Private Methods
 
-        public class SafetyCheckFaultNavItem
+        private void DoDoneCommand()
         {
-            public Guid ID { get; set; }
+            _originalSafetyCheckFault.ValuesFrom(_safetyCheckFault);
+            ReturnResult(true);
         }
 
-
-
+        #endregion
 
     }
+
 }

@@ -10,9 +10,9 @@ using System.Globalization;
 
 namespace MWF.Mobile.Core.Converters
 {
-    public class SafetyCheckEnumValueConverter : MvxBaseVisibilityValueConverter<SafetyCheckEnum>
+    public class SafetyCheckEnumValueConverter : MvxBaseVisibilityValueConverter<Enums.SafetyCheckStatus>
     {
-        protected override MvxVisibility Convert(SafetyCheckEnum value, object parameter, CultureInfo culture)
+        protected override MvxVisibility Convert(Enums.SafetyCheckStatus value, object parameter, CultureInfo culture)
         {
             return (value.ToString() == (string)parameter) ? MvxVisibility.Visible : MvxVisibility.Collapsed;
         }

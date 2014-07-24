@@ -6,23 +6,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public enum SafetyCheckEnum
-    {
-        NotSet,
-        Passed, 
-        DiscretionaryPass, 
-        Failed
-    }
-
     public class SafetyCheckItemViewModel : MvxViewModel
     {
         public SafetyCheckItemViewModel(SafetyCheckViewModel safetyCheckViewModel)
         {
             _safetyCheckViewModel = safetyCheckViewModel;
-            _checkStatus = SafetyCheckEnum.NotSet;
+            _checkStatus = Enums.SafetyCheckStatus.NotSet;
         }
 
         private SafetyCheckViewModel _safetyCheckViewModel;
@@ -48,14 +41,17 @@ namespace MWF.Mobile.Core.ViewModels
             set { _isDiscretionaryQuestion = value; }
         }
 
-        private SafetyCheckEnum _checkStatus;
-        public SafetyCheckEnum CheckStatus
+        // The safety check fault model that will be persisted back to bluesphere/local db
+        public SafetyCheckFault SafetyCheckFault { get; set; }
+
+        private Enums.SafetyCheckStatus _checkStatus;
+        public Enums.SafetyCheckStatus CheckStatus
         {
             get { return _checkStatus; }
             set 
             { 
-                if (_checkStatus == SafetyCheckEnum.DiscretionaryPass ||
-                    _checkStatus == SafetyCheckEnum.Failed)
+                if ((_checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass ||
+                    _checkStatus == Enums.SafetyCheckStatus.Failed) && value == Enums.SafetyCheckStatus.Passed)
                 {
                     Mvx.Resolve<IUserInteraction>().Confirm(("Change this item to passed?"), isConfirmed =>
                     {
@@ -63,17 +59,43 @@ namespace MWF.Mobile.Core.ViewModels
                         {
                             _checkStatus = value;
                             _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                            this.SafetyCheckFault.IsDiscretionaryPass = false;
                             RaisePropertyChanged(() => CheckStatus);
                         }
                     }, "Change Status");
                 }
                 else
                 {
-                    _checkStatus = value;
-                    _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
-                    RaisePropertyChanged(() => CheckStatus);
+
+                    if (value == Enums.SafetyCheckStatus.DiscretionaryPass || value == Enums.SafetyCheckStatus.Failed)
+                    {
+                        string faultTypeText = (value == Enums.SafetyCheckStatus.DiscretionaryPass) ? "Discretionary Pass" : "Failure";
+                        var navItem = new SafetyCheckNavItem() { FaultID = this.SafetyCheckFault.ID, IsVehicle = this.SafetyCheckFault.Title.StartsWith("VEH"), FaultTypeText = faultTypeText };
+                        _safetyCheckViewModel.ShowModalViewModel<SafetyCheckFaultViewModel, bool>(navItem, (faultLogged) =>
+                        {
+                            if (faultLogged)
+                            {
+                                _checkStatus = value;
+                                _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                                this.SafetyCheckFault.IsDiscretionaryPass = _checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass;
+                                RaisePropertyChanged(() => CheckStatus);
+                            }
+
+                        });
+
+                    }
+                    else
+                    {
+                        _checkStatus = value;
+                        _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                        this.SafetyCheckFault.IsDiscretionaryPass = _checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass;
+                        RaisePropertyChanged(() => CheckStatus);
+                    }
+                   
+               
                 }
             }
         }
+
     }
 }

@@ -28,7 +28,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private Driver _driver;
         private Vehicle _vehicle;
-        private IStartupInfoService _startupInfoServeice;
+        private IStartupService _startupService;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
 
         protected override void AdditionalSetup()
@@ -49,9 +49,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _vehicle = new Core.Models.Vehicle() { Registration = "TestRegistration", ID = new Guid() };
 
-            _startupInfoServeice = new StartupInfoService();
-            _startupInfoServeice.LoggedInDriver = _driver;
-            _fixture.Inject<IStartupInfoService>(_startupInfoServeice);
+            _startupService = _fixture.Create<StartupService>();
+            _startupService.LoggedInDriver = _driver;
+            _fixture.Inject<IStartupService>(_startupService);
 
             _currentDriverRepository = new Mock<ICurrentDriverRepository>();
             _currentDriverRepository.Setup(cdr => cdr.GetByID(It.IsAny<Guid>())).Returns(new CurrentDriver());
@@ -98,8 +98,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.ShowVehicleDetailCommand.Execute(_vehicle);
 
-            Assert.NotNull(_startupInfoServeice.LoggedInDriver);
-            Assert.Equal(_vehicle.ID, _startupInfoServeice.LoggedInDriver.LastVehicleID);
+            Assert.NotNull(_startupService.LoggedInDriver);
+            Assert.Equal(_vehicle.ID, _startupService.LoggedInDriver.LastVehicleID);
 
         }
 

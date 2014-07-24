@@ -63,6 +63,7 @@ namespace MWF.Mobile.Core.Services
             _connection.CreateTable<Driver>();
             _connection.CreateTable<GatewayQueueItem>();
             _connection.CreateTable<Image>();
+            _connection.CreateTable<MWFMobileConfig>();
             _connection.CreateTable<SafetyCheckData>();
             _connection.CreateTable<SafetyCheckFault>();
             _connection.CreateTable<SafetyCheckFaultType>();
@@ -73,7 +74,6 @@ namespace MWF.Mobile.Core.Services
             _connection.CreateTable<VehicleView>();
             _connection.CreateTable<VerbProfile>();
             _connection.CreateTable<VerbProfileItem>();
-            _connection.CreateTable<MWFMobileConfig>();
         }
 
         #endregion

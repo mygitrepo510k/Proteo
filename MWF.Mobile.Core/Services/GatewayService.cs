@@ -29,13 +29,10 @@ namespace MWF.Mobile.Core.Services
             _httpService = httpService;
 
             //TODO: read this from config or somewhere?
-            //_gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
-            //_gatewayDeviceCreateUrl = "http://87.117.243.226:7090/api/gateway/createdevice";
-            //_gatewayConfigRequestUrl = "http://87.117.243.226.7090/api/gateway/configrequest";
+            _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
+            _gatewayDeviceCreateUrl = "http://87.117.243.226:7090/api/gateway/createdevice";
+            _gatewayConfigRequestUrl = "http://87.117.243.226.7090/api/gateway/configrequest";
 
-            _gatewayDeviceRequestUrl = "http://proteo-infr2.p1tp.com:8080/api/gateway/devicerequest";
-            _gatewayDeviceCreateUrl = "http://proteo-infr2.p1tp.com:8080/api/gateway/createdevice";
-            _gatewayConfigRequestUrl = "http://proteo-infr2.p1tp.com:8080/api/gateway/configrequest";
             _deviceRepository = repositories.DeviceRepository;
         }
 

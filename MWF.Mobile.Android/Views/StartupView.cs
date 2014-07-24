@@ -104,6 +104,9 @@ namespace MWF.Mobile.Android.Views
             if (fragment == null)
                 return false;
 
+            var viewModel = fragment.ViewModel;
+            this.ActionBar.Title = ((BaseFragmentViewModel)viewModel).FragmentTitle;
+
             var transaction = FragmentManager.BeginTransaction();
             transaction.Replace(Resource.Id.fragment_host, fragment);
             transaction.AddToBackStack(null);

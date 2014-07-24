@@ -40,9 +40,10 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Vehicle"; }
         }
 
-        public VehicleListViewModel(IVehicleRepository vehicleRepository, IReachability reachabibilty,
+        public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,
             IToast toast, IStartupInfoService startupInfoService, ICurrentDriverRepository currentDriverRepository)
         {
+            _gatewayService = gatewayService;
             _toast = toast;
             _reachability = reachabibilty;
             _startupInfoService = startupInfoService;
@@ -131,7 +132,6 @@ namespace MWF.Mobile.Core.ViewModels
             set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); }
         }
 
-
         private void FilterList()
         {
             Vehicles = _originalVehicleList.Where(v => v.Registration.ToUpper().Contains(SearchText.ToUpper()));
@@ -155,7 +155,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
             else
             {
-                _gatewayService = Mvx.Resolve<IGatewayService>();
                 var vehicleViews = await _gatewayService.GetVehicleViews();
 
                 var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());

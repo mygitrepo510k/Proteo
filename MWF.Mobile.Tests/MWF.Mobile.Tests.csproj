@@ -131,6 +131,7 @@
     <Compile Include="ServiceTests\GatewayServiceTests.cs" />
     <Compile Include="ViewModelTests\StartupViewModelTests.cs" />
     <Compile Include="ViewModelTests\PasscodeViewModelTests.cs" />
+    <Compile Include="ViewModelTests\TrailerListViewModelTests.cs" />
     <Compile Include="ViewModelTests\VehicleListViewModelTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -4,7 +4,6 @@ using Cirrious.MvvmCross.Test.Core;
 using Cirrious.MvvmCross.Views;
 using Moq;
 using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Models.GatewayServiceResponse;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Repositories.Interfaces;
@@ -21,13 +20,12 @@ using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
-    public class VehicleListViewModelTests 
-        : MvxIoCSupportingTest
+    public class TrailerListViewModelTests
+        :  MvxIoCSupportingTest
     {
-
         private IFixture _fixture;
         private Driver _driver;
-        private Vehicle _vehicle;
+        private Trailer _trailer;
         private IStartupInfoService _startupInfoServeice;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
 
@@ -45,9 +43,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            _driver = new Core.Models.Driver() { LastName = "TestName", ID = new Guid()  };
+            _driver = new Core.Models.Driver() { LastName = "TestName", ID = new Guid() };
 
-            _vehicle = new Core.Models.Vehicle() { Registration = "TestRegistration", ID = new Guid() };
+            _trailer = new Core.Models.Trailer() { Registration = "TestRegistration", ID = Guid.NewGuid() };
 
             _startupInfoServeice = new StartupInfoService();
             _startupInfoServeice.LoggedInDriver = _driver;
@@ -61,69 +59,67 @@ namespace MWF.Mobile.Tests.ViewModelTests
             mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.IsAny<string>())).ReturnsAsync(new AuthenticationResult { Success = false });
             mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.Is<string>(s => s == "9999"))).ReturnsAsync(new AuthenticationResult { Success = true, Driver = _driver });
             _fixture.Inject<IAuthenticationService>(mockAuthenticationService.Object);
-
         }
 
         /// <summary>
-        /// Tests that on successful authentication the TrailerListViewModel is navigated to
+        /// Tests that on successful authentication the SafetyCheckViewModel is navigated to
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulAuthenticationRedirectsToTrailerListView()
+        public void TrailerListVM_SuccessfulAuthenticationRedirectsToSafetyCheckListView()
         {
             base.ClearAll();
 
-            var vm = _fixture.Create<VehicleListViewModel>();
+            var vm = _fixture.Create<TrailerListViewModel>();
 
-
-            vm.ShowVehicleDetailCommand.Execute(_vehicle);
+            vm.TrailerSelectorCommand.Execute(_trailer);
 
             var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
-            //Its two because the showViewModel is called twice once on the Setup,
-            //and again in the show vehicle detail command.
-            Assert.Equal(2, mockDispatcher.Requests.Count);
+            Assert.Equal(1, mockDispatcher.Requests.Count);
             var request = mockDispatcher.Requests.First();
-            Assert.Equal(typeof(TrailerListViewModel), request.ViewModelType);
+            Assert.Equal(typeof(SafetyCheckViewModel), request.ViewModelType);
 
         }
 
         /// <summary>
-        /// Tests that on successful authentication a drivers vehicle ID 
+        /// Tests that on successful authentication a drivers trailer ID 
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulAuthenticationStoresDriverVehicleID()
+        public void TrailerListVM_SuccessfulAuthenticationStoresDriverTrailerID()
         {
             base.ClearAll();
 
-            var vm = _fixture.Create<VehicleListViewModel>();
+            var vm = _fixture.Create<TrailerListViewModel>();
 
-            vm.ShowVehicleDetailCommand.Execute(_vehicle);
+            vm.TrailerSelectorCommand.Execute(_trailer);
 
             Assert.NotNull(_startupInfoServeice.LoggedInDriver);
-            Assert.Equal(_vehicle.ID, _startupInfoServeice.LoggedInDriver.LastVehicleID);
+            Assert.Equal(_trailer.ID, _startupInfoServeice.LoggedInDriver.LastSecondaryVehicleID);
 
         }
 
         /// <summary>
-        /// Tests that on successful authentication a current drivers vehicle ID 
+        /// Tests that on successful selection of no trailer 
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulAuthenticationStoresCurrentDriverVehicleID()
+        public void TrailerListVM_SuccessfulSelectionOfNoTrailer()
         {
             base.ClearAll();
 
-            var vm = _fixture.Create<VehicleListViewModel>();
+            var vm = _fixture.Create<TrailerListViewModel>();
 
-            vm.ShowVehicleDetailCommand.Execute(_vehicle);
+            vm.NoTrailerSelectorCommand.Execute(null);
 
-            _currentDriverRepository.Verify(cdr => cdr.Insert(It.Is<CurrentDriver>(cd => cd.ID == _driver.LastVehicleID)), Times.Once);   
+            Assert.NotNull(_startupInfoServeice.LoggedInDriver);
+            Assert.Equal(Guid.Empty, _startupInfoServeice.LoggedInDriver.LastSecondaryVehicleID);
+
         }
 
         /// <summary>
         /// Tests that the toast message appears when there is no internet connection
-        /// on the refresh of the vehicle list.
+        /// on the refresh of the trailer list.
         /// </summary>
         [Fact]
-        public void VehicleListVM_NoInternetShowToast()
+        public void TrailerListVM_NoInternetShowToast()
         {
             base.ClearAll();
 
@@ -132,93 +128,92 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var toast = new Mock<IToast>();
             _fixture.Inject<IToast>(toast.Object);
 
-            var vm = _fixture.Create<VehicleListViewModel>();
+            var vm = _fixture.Create<TrailerListViewModel>();
 
             vm.RefreshListCommand.Execute(null);
 
             toast.Verify(t => t.Show("No internet connection!"));
-             
+
         }
 
         /// <summary>
-        /// Tests that the list is filtered correctly when you search for a vehicle.
+        /// Tests that the list is filtered correctly when you search for a trailer.
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulVehicleListFilter()
+        public void TrailerListVM_SuccessfulTrailerListFilter()
         {
             base.ClearAll();
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            var vehicleRepositry = new Mock<IVehicleRepository>();
-            var vehicles = _fixture.CreateMany<Vehicle>();
-            vehicleRepositry.Setup(vr => vr.GetAll()).Returns(vehicles);
+            var trailerRepositry = new Mock<ITrailerRepository>();
+            var trailers = _fixture.CreateMany<Trailer>();
+            trailerRepositry.Setup(vr => vr.GetAll()).Returns(trailers);
 
-            _fixture.Inject<IVehicleRepository>(vehicleRepositry.Object);
+            _fixture.Inject<ITrailerRepository>(trailerRepositry.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
-            var vm = _fixture.Create<VehicleListViewModel>();
+            var vm = _fixture.Create<TrailerListViewModel>();
             vm.SearchText = "registration";
 
-            Assert.Equal(vehicles, vm.Vehicles);
+            Assert.Equal(trailers, vm.Trailers);
 
         }
 
         /// <summary>
-        /// Tests that the refresh function on the vehicle list works.
+        /// Tests that the refresh function on the trailer list works.
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulVehicleListRefreshNoFilter()
+        public void TrailerListVM_SuccessfulTrailerListRefreshNoFilter()
         {
             base.ClearAll();
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            var vehicleRepositry = new Mock<IVehicleRepository>();
-            var vehicles = _fixture.CreateMany<Vehicle>();
-            vehicleRepositry.Setup(vr => vr.GetAll()).Returns( vehicles);
+            var trailerRepositry = new Mock<ITrailerRepository>();
+            var trailers = _fixture.CreateMany<Trailer>();
+            trailerRepositry.Setup(vr => vr.GetAll()).Returns(trailers);
 
-            _fixture.Inject<IVehicleRepository>(vehicleRepositry.Object);
+            _fixture.Inject<ITrailerRepository>(trailerRepositry.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
-            var vm = _fixture.Create<VehicleListViewModel>();
+            var vm = _fixture.Create<TrailerListViewModel>();
             vm.SearchText = null;
 
             vm.RefreshListCommand.Execute(null);
 
-            Assert.Same(vm.Vehicles, vehicles);
+            Assert.Same(vm.Trailers, trailers);
             //Its get all twice because it calls it once on setup and another on refresh
-            vehicleRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
-  
+            trailerRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
+
         }
-        
+
         /// <summary>
-        /// Tests that the refresh function on the vehicle list works but refilters the list.
+        /// Tests that the refresh function on the trailer list works but refilters the list.
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulVehicleListRefreshFilter()
+        public void TrailerListVM_SuccessfulTrailerListRefreshFilter()
         {
             base.ClearAll();
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            var vehicleRepositry = new Mock<IVehicleRepository>();
-            var vehicles = _fixture.CreateMany<Vehicle>(20);
-            vehicleRepositry.Setup(vr => vr.GetAll()).Returns(vehicles);
+            var trailerRepositry = new Mock<ITrailerRepository>();
+            var trailers = _fixture.CreateMany<Trailer>(20);
+            trailerRepositry.Setup(vr => vr.GetAll()).Returns(trailers);
 
-            _fixture.Inject<IVehicleRepository>(vehicleRepositry.Object);
+            _fixture.Inject<ITrailerRepository>(trailerRepositry.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
-            var vm = _fixture.Create<VehicleListViewModel>();
+            var vm = _fixture.Create<TrailerListViewModel>();
             vm.SearchText = "Registration";
 
             vm.RefreshListCommand.Execute(null);
 
-            Assert.Equal(vehicles, vm.Vehicles);
+            Assert.Equal(trailers, vm.Trailers);
             //Its get all twice because it calls it once on setup and another on refresh
-            vehicleRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
+            trailerRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
 
         }
-         
     }
 }

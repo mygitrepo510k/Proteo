@@ -21,7 +21,6 @@ namespace MWF.Mobile.Core.ViewModels
         : BaseFragmentViewModel
     {
 
-
         private Services.IGatewayService _gatewayService;
         private IEnumerable<Trailer> _originalTrailerList;
 
@@ -31,9 +30,11 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IReachability _reachability;
         private readonly IStartupInfoService _startupInfoService;
 
-        public TrailerListViewModel(IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IReachability reachabibilty,
+        public TrailerListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IReachability reachabibilty,
+
             IToast toast, IStartupInfoService startupInfoService)
         {
+            _gatewayService = gatewayService;
             _toast = toast;
             _reachability = reachabibilty;
             _startupInfoService = startupInfoService;
@@ -42,20 +43,6 @@ namespace MWF.Mobile.Core.ViewModels
             Trailers = _originalTrailerList = _trailerRepository.GetAll();
             _vehicleRepository = vehicleRepository;
         }
-/*
-        public class Nav
-        {
-            public Guid ID { get; set; }
-        }
-
-        public void Init(Nav nav)
-        {
-            Trailer = new Trailer
-            {
-                ID = nav.ID
-            };
-        }
- * */
 
         public override string FragmentTitle
         {
@@ -79,13 +66,6 @@ namespace MWF.Mobile.Core.ViewModels
                 return _vehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID).Registration;
             }
         }
-        /*
-        public Trailer Trailer
-        {
-            get { return _trailer; }
-            set { _trailer = value; RaisePropertyChanged(() => Trailer); }
-        }
-         */
 
         private IEnumerable<Trailer> _trailers;
         public IEnumerable<Trailer> Trailers
@@ -166,7 +146,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
             else
             {
-                _gatewayService = Mvx.Resolve<IGatewayService>();
                 var vehicleViews = await _gatewayService.GetVehicleViews();
 
                 var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());

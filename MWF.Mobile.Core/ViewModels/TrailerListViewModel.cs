@@ -31,9 +31,6 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IReachability _reachability;
         private readonly IStartupInfoService _startupInfoService;
 
-        private Trailer _trailer;
-
-        private IEnumerable<Trailer> _trailerList;
         public TrailerListViewModel(IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IReachability reachabibilty,
             IToast toast, IStartupInfoService startupInfoService)
         {

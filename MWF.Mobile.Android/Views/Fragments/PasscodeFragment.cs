@@ -23,7 +23,6 @@ namespace MWF.Mobile.Android.Views.Fragments
     {
 
         private BindableProgress _bindableProgress;
-        private View _view;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {

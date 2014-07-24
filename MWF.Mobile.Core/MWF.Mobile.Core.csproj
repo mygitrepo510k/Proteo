@@ -115,6 +115,7 @@
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\IBlueSphereEntity.cs" />
     <Compile Include="Models\Image.cs" />
+    <Compile Include="Models\Instruction.cs" />
     <Compile Include="Models\MWFMobileConfig.cs" />
     <Compile Include="Models\Signature.cs" />
     <Compile Include="Models\SafetyCheckFault.cs" />

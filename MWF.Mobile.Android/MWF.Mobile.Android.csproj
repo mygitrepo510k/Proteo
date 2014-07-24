@@ -255,6 +255,7 @@
     <AndroidResource Include="Resources\drawable-mdpi\ic_action_refresh.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\ic_action_refresh.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_refresh.png" />
+    <AndroidResource Include="Resources\drawable\Border.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

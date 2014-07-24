@@ -10,6 +10,8 @@ namespace MWF.Mobile.Android.Presenters
     public interface IFragmentHost
     {
         bool Show(MvxViewModelRequest request);
+        bool Close(IMvxViewModel viewModel);
+        //Fragment CurrentFragment
     }
 
     public interface ICustomPresenter
@@ -28,6 +30,7 @@ namespace MWF.Mobile.Android.Presenters
 
         public override void Show(MvxViewModelRequest request)
         {
+
             var currentFragmentHost = this.Activity as IFragmentHost;
 
             if (currentFragmentHost != null)
@@ -35,6 +38,17 @@ namespace MWF.Mobile.Android.Presenters
                     return;
 
             base.Show(request);
+        }
+
+        public override void Close(IMvxViewModel viewModel)
+        {
+            var currentFragmentHost = this.Activity as IFragmentHost;
+
+            if (currentFragmentHost != null)
+                if (currentFragmentHost.Close(viewModel))
+                    return;
+
+            base.Close(viewModel);
         }
 
     }

@@ -11,7 +11,8 @@ namespace MWF.Mobile.Core.Services
     public class StartupInfoService : IStartupInfoService
     {
         public Driver LoggedInDriver {get; set;}
-        public SafetyCheckData CurrentSafetyCheckData { get; set; }
+        public SafetyCheckData CurrentVehicleSafetyCheckData { get; set; }
+        public SafetyCheckData CurrentTrailerSafetyCheckData { get; set; }
         public Vehicle CurrentVehicle { get; set; }
         public int Mileage { get; set; }
     }

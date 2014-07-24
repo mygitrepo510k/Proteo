@@ -28,6 +28,18 @@
     <item name = "android:textSize">25dp</item>
   </style>
 
+  <style name = "Proteo.TextView.Instructions" parent="style/Proteo">
+    <item name = "android:textSize">10dp</item>
+    <item name = "android:layout_marginBottom">5dp</item>
+    <item name = "android:paddingLeft">10dp</item>
+    <item name = "android:background">#cccfd1</item>
+    <item name = "android:gravity">left</item>
+    <item name = "android:layout_marginTop">0dp</item>
+    <item name = "android:layout_marginLeft">0dp</item>
+    <item name = "android:layout_marginRight">0dp</item>
+  </style>
+
+
   <!-- ===================== Buttons ========================= -->
 
   <style name="Proteo.Button" parent="style/Proteo">
@@ -57,6 +69,12 @@
     <item name = "android:inputType">numberPassword</item>
     <item name = "android:password">true</item>
   </style>
+
+  <style name = "Proteo.Multiline" parent="style/Proteo">
+    <item name = "android:gravity">left</item>
+    <item name = "android:singleLine">false</item>
+  </style>
+
 
   <!-- ===================== ImageViews ========================= -->
 

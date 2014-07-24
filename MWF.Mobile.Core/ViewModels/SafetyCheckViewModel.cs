@@ -12,10 +12,13 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class SafetyCheckViewModel : MvxViewModel
+    public class SafetyCheckViewModel : BaseViewModel
     {
         private IStartupInfoService _startupInfoService;
         private IRepositories _repositories;
+
+
+        #region Construction
 
         public SafetyCheckViewModel(IStartupInfoService startupInfoService, IRepositories repositories)
         {
@@ -45,7 +48,6 @@ namespace MWF.Mobile.Core.ViewModels
                     {
                         ID = child.ID,
                         Title = "VEH: " + child.Title,
-                        CheckStatus = SafetyCheckEnum.NotSet,
                         IsDiscreationaryQuestion = child.IsDiscretionaryQuestion
                     };
 
@@ -61,7 +63,6 @@ namespace MWF.Mobile.Core.ViewModels
                     {
                         ID = child.ID,
                         Title = "TRL: " + child.Title,
-                        CheckStatus = SafetyCheckEnum.NotSet,
                         IsDiscreationaryQuestion = child.IsDiscretionaryQuestion
                     };
 
@@ -70,7 +71,14 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             SafetyCheckItemViewModels = allSafetyChecks;
+
+            SetUpSafetyCheckData();
+
         }
+
+        #endregion
+
+        #region Public Properties
 
         private SafetyProfile _safetyProfileVehicle;
         public SafetyProfile SafetyProfileVehicle
@@ -108,6 +116,16 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private MvxCommand _logFaultCommand;
+        public System.Windows.Input.ICommand LogFaultCommand
+        {
+            get
+            {
+                _logFaultCommand = _logFaultCommand ?? new MvxCommand(DoLogFaultCommand);
+                return _logFaultCommand;
+            }
+        }
+
         public bool AllSafetyChecksCompleted
         {
             get 
@@ -134,6 +152,12 @@ namespace MWF.Mobile.Core.ViewModels
             RaisePropertyChanged(() => AllSafetyChecksCompleted);
         }
 
+
+        #endregion
+
+        #region Private Methods
+
+
         private void DoChecksDoneCommand()
         {
             if (SafetyProfileVehicle.OdometerRequired)
@@ -143,5 +167,54 @@ namespace MWF.Mobile.Core.ViewModels
                 // Redirect to safety check acceptance screen 
                 Mvx.Resolve<IUserInteraction>().Alert("Safety checks completed");
         }
+
+
+        private void DoLogFaultCommand()
+        {
+
+        }
+
+        
+        //Sets up the safety check data in the startup info service
+        //This is the result of the safety check which will be sent to bluesphere
+        //and persisted locally in case the safety check needs to be shown by the driver
+        private void SetUpSafetyCheckData()
+        {
+            //TODO: make sure all of the safety check data fields are populated
+            SafetyCheckData vehicleSafetyCheckData = new SafetyCheckData() { ID = Guid.NewGuid(), Faults = new List<SafetyCheckFault>()};
+            SafetyCheckData trailerSafetyCheckData = new SafetyCheckData() { ID = Guid.NewGuid(), Faults = new List<SafetyCheckFault>() };
+
+
+            //create a safety fault for every item in the visual list (we'll remove the passes later)
+            foreach (var item in SafetyCheckItemViewModels)
+            {
+                SafetyCheckFault safetyCheckFault = new SafetyCheckFault() { ID = Guid.NewGuid(), Title = item.Title, FaultTypeID = item.ID };
+
+
+                if (item.Title.StartsWith("VEH"))
+                {
+                    safetyCheckFault.SafetyCheckDataID = SafetyProfileVehicle.ID;
+                    vehicleSafetyCheckData.Faults.Add(safetyCheckFault);
+                }
+                else
+                {
+                    safetyCheckFault.SafetyCheckDataID = SafetyProfileTrailer.ID;
+                    trailerSafetyCheckData.Faults.Add(safetyCheckFault);
+                }
+
+                item.SafetyCheckFault = safetyCheckFault;
+
+            }
+
+            _startupInfoService.CurrentVehicleSafetyCheckData = vehicleSafetyCheckData;
+            _startupInfoService.CurrentTrailerSafetyCheckData = trailerSafetyCheckData;
+
+
+        }
+
+        #endregion
+
+
+
     }
 }

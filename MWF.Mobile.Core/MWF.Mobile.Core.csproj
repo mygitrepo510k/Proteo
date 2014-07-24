@@ -88,6 +88,7 @@
     <Compile Include="Helpers\ReflectionExtensions.cs" />
     <Compile Include="Messages\GatewayQueueTimerCommandMessage.cs" />
     <Compile Include="Messages\GatewayQueueTimerElapsedMessage.cs" />
+    <Compile Include="Messages\ModalNavigationResultMessage.cs" />
     <Compile Include="Models\Attributes\ChildRelationshipAttribute.cs" />
     <Compile Include="Models\Attributes\ForeignKeyAttribute.cs" />
     <Compile Include="Models\CurrentDriver.cs" />
@@ -113,7 +114,6 @@
     <Compile Include="Models\Signature.cs" />
     <Compile Include="Models\SafetyCheckFault.cs" />
     <Compile Include="Models\SafetyCheckFaultType.cs" />
-    <Compile Include="Models\SafetyCheckFaultTypeView.cs" />
     <Compile Include="Models\SafetyCheckData.cs" />
     <Compile Include="Models\SafetyProfile.cs" />
     <Compile Include="Models\Vehicle.cs" />
@@ -168,6 +168,10 @@
     <Compile Include="Services\StartupInfoService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ValueConverters\StringHasLengthConverter.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\ModalBaseActivityModel.cs" />
+    <Compile Include="ViewModels\Navigation\IViewModelNavItem.cs" />
+    <Compile Include="ViewModels\Navigation\SafetyCheckNavItem.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckViewModel.cs" />

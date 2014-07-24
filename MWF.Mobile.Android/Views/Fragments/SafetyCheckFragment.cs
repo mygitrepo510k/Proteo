@@ -52,6 +52,10 @@ namespace MWF.Mobile.Android.Views.Fragments
             var set = this.CreateBindingSet<SafetyCheckFragment, SafetyCheckViewModel>();
             set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.AllSafetyChecksCompleted);
             set.Apply();
+
+
+            this.Activity.ActionBar.Show();
+            this.Activity.ActionBar.Title = "Safety Checklist";
         }
 
         void itemList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
@@ -84,12 +88,12 @@ namespace MWF.Mobile.Android.Views.Fragments
             else if (item.ItemId.Equals((int)MenuOption.DiscretionaryPass))
             {
                 safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.DiscretionaryPass;
-                // TODO: Forward to comments screen
+
             }
             else if (item.ItemId.Equals((int)MenuOption.Failed))
             {
                 safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.Failed;
-                // TODO: Forward to comments screen
+
             }
 
             return base.OnOptionsItemSelected(item);

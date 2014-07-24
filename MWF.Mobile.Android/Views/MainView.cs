@@ -67,6 +67,11 @@ namespace MWF.Mobile.Android.Views
             return true;
         }
 
+        public bool Close(IMvxViewModel viewModel)
+        {
+            return false;
+        }
+
  		#endregion Fragment host
 
     }

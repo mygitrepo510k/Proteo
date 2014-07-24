@@ -44,7 +44,7 @@ namespace MWF.Mobile.Android.Views
             { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
             { typeof(Core.ViewModels.TrailerSelectionViewModel), typeof(Fragments.TrailerSelectionFragment)},
             { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
-            {typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
+            { typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
             { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
 			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)}
 
@@ -68,7 +68,10 @@ namespace MWF.Mobile.Android.Views
             if (fragment == null)
                 return false;
 
+
             var transaction = FragmentManager.BeginTransaction();
+            // Note: this *replaces* the actual fragment host specified in Page_StartUp.axml
+            // but keeps the same id
             transaction.Replace(Resource.Id.fragment_host, fragment);
             transaction.AddToBackStack(null);
             transaction.Commit();
@@ -76,7 +79,33 @@ namespace MWF.Mobile.Android.Views
             return true;
         }
 
- 		#endregion Fragment host
+        /// <summary>
+        /// Given a view model attempts to close the fragment associated with it. If the fragment
+        /// associated is currently being displayed in the fragment host then the backstack
+        /// is popped.
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
+        public bool Close(IMvxViewModel viewModel)
+        {
+            var fragmentTypeToClose = _supportedFragmentViewModels[viewModel.GetType()];
+
+            if (CurrentFragment != null && CurrentFragment.GetType() == fragmentTypeToClose)
+            {
+                FragmentManager.PopBackStack();
+                return true;
+            }
+            else return false;
+        }
+
+        // Current Fragment in the fragment host. Note although the id being used appears to be that of the 
+        // original container, it gets replaced during a show by the new fragment *but* keeps it's old id.
+        public Fragment CurrentFragment
+        {
+            get { return FragmentManager.FindFragmentById(Resource.Id.fragment_host); }
+        }
+
+ 		#endregion
 
 
         public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)

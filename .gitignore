@@ -225,3 +225,4 @@ pip-log.txt
 #############
 
 /Components/
+/MWF.Mobile.Android/Resources/Resource.Designer.cs

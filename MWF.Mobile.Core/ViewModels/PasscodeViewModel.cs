@@ -111,7 +111,7 @@ namespace MWF.Mobile.Core.ViewModels
                 }
 
             }
-            catch (Exception ex)
+            catch
             {
                 // TODO: log the exception to be picked up by bluesphere
                 result = new AuthenticationResult() { AuthenticationFailedMessage = "Unable to check your passcode.", Success = false };

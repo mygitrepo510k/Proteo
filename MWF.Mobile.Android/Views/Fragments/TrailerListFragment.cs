@@ -52,6 +52,8 @@ namespace MWF.Mobile.Android.Views.Fragments
             this.Activity.ActionBar.Show();
             base.OnViewCreated(view, savedInstanceState);
         }
+
+        
     }
 
 }

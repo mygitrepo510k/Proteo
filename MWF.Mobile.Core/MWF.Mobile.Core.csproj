@@ -183,6 +183,7 @@
     <Compile Include="ViewModels\Interfaces\IBackButtonHandler.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />
+    <Compile Include="ViewModels\SafetyCheckSignatureViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\OdometerViewModel.cs" />

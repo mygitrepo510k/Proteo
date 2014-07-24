@@ -161,6 +161,7 @@
     <Compile Include="Views\Fragments\SafetyCheckFaultFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\OdometerFragment.cs" />
+    <Compile Include="Views\Fragments\SafetyCheckSignatureFragment.cs" />
     <Compile Include="Views\Fragments\TrailerListFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
@@ -220,6 +221,7 @@
     <AndroidResource Include="Resources\layout\item_menu.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_SafetyCheckSignature.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />

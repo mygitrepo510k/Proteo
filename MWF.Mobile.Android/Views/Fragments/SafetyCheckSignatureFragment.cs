@@ -21,7 +21,7 @@ using AndroidGraphics = Android.Graphics;
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class SafetyCheckSignatureFragment : BaseFragment
+    public class SafetyCheckSignatureFragment : MvxFragment
     {
         SignaturePadView signaturePad;
 

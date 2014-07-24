@@ -34,10 +34,10 @@ namespace MWF.Mobile.Core.Services
         {
             var retVal = new List<Models.SafetyCheckData>(2);
 
-            if (this.CurrentVehicleSafetyCheckData != null)
+            if (this.CurrentVehicleSafetyCheckData != null && this.CurrentVehicleSafetyCheckData.Faults.Any())
                 retVal.Add(this.CurrentVehicleSafetyCheckData);
 
-            if (this.CurrentTrailerSafetyCheckData != null)
+            if (this.CurrentTrailerSafetyCheckData != null && this.CurrentTrailerSafetyCheckData.Faults.Any())
                 retVal.Add(this.CurrentTrailerSafetyCheckData);
 
             return retVal;

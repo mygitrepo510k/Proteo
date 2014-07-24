@@ -59,6 +59,7 @@ namespace MWF.Mobile.Core.ViewModels
                         {
                             _checkStatus = value;
                             _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                            this.SafetyCheckFault.Status = value;
                             this.SafetyCheckFault.IsDiscretionaryPass = false;
                             RaisePropertyChanged(() => CheckStatus);
                         }
@@ -77,6 +78,7 @@ namespace MWF.Mobile.Core.ViewModels
                             {
                                 _checkStatus = value;
                                 _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                                this.SafetyCheckFault.Status = value;
                                 this.SafetyCheckFault.IsDiscretionaryPass = _checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass;
                                 RaisePropertyChanged(() => CheckStatus);
                             }
@@ -88,6 +90,7 @@ namespace MWF.Mobile.Core.ViewModels
                     {
                         _checkStatus = value;
                         _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                        this.SafetyCheckFault.Status = value;
                         this.SafetyCheckFault.IsDiscretionaryPass = _checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass;
                         RaisePropertyChanged(() => CheckStatus);
                     }

@@ -2,18 +2,43 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+    <imageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_toLeftOf="@+id/clientTitle"
+        android:src="@drawable/Icon" />
     <TextView
-        android:id="@+id/row1"
-        android:layout_width="0dp"
+        android:id="@+id/clientTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="right"
         android:layout_alignParentLeft="true"
-        android:text="Row 1 ewfhskhfsulihff" />
+        local:MvxBind="Text Title" />
     <TextView
-        android:layout_width="100dp"
+        android:id="@+id/row2"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/row1"
+        android:layout_below="@+id/clientTitle"
+        android:layout_alignParentLeft="true"
+        local:MvxBind="Text VehicleRegistration" />
+    <TextView
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/clientTitle"
         android:layout_alignParentRight="true"
-        android:id="@+id/instructionItem"
+        android:id="@+id/instructionDate"
+        android:gravity="right"
         local:MvxBind="Text EffectiveDate,Converter=DateToTextMessage" />
+    <TextView
+        android:id="@+id/instructionTime"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/instructionDate"
+        android:layout_toRightOf="@+id/row2"
+        android:layout_alignParentRight="true"
+        android:gravity="right"
+        local:MvxBind="Text EffectiveDate,Converter=DateToTextTime" />
 </RelativeLayout>

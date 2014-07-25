@@ -11,8 +11,14 @@
         android:textSize="30dp"
         android:gravity="center_horizontal"
         android:text="The instruction list will be displayed here - not yet implemented" />
+        
         -->
+    <textView
+        style="@style/Proteo.TextView.ListHeading"
+        android:id="@+id/instructionText"
+        local:MvxBind="Text ManifestHeaderText" />
     <Mvx.MvxListView
         local:MvxBind="ItemsSource MobileApplicationData"
+        android:layout_below="@id/instructionText"
         local:MvxItemTemplate="@layout/item_instruction" />
 </LinearLayout>

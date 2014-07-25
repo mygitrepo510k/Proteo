@@ -16,13 +16,23 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ManifestViewModel()
         {
-            var testOrder = new MobileApplicationData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "test" };
-            MobileApplicationData = Enumerable.Repeat<MobileApplicationData>(testOrder, 1);
+            var testOrder = new MobileApplicationData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "Proteo Test Client", VehicleRegistration = "243 234" };
+            MobileApplicationData = Enumerable.Repeat<MobileApplicationData>(testOrder, 5);
         }
 
         public override string FragmentTitle
         {
             get { return "Manifest"; }
+        }
+
+        public string ManifestHeaderText
+        {
+            get { return "Select instructions - Showing " + MobileApplicationDataCount;  }
+        }
+
+        public int MobileApplicationDataCount
+        {
+            get { return MobileApplicationData.ToList().Count(); }
         }
 
         private IEnumerable<MobileApplicationData> _mobileApplicationData;
@@ -38,6 +48,8 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _dateOutput; }
             set { _dateOutput = value; RaisePropertyChanged(() => DateOutput); }
         }
+
+        
     }
 
 }

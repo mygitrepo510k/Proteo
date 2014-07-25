@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Converters\DateToTextTimeValueConverter.cs" />
     <Compile Include="Converters\DateToTextMessageValueConverter.cs" />
     <Compile Include="Converters\JsonDigitToBooleanConverter.cs" />
     <Compile Include="Converters\JsonWrappedItemConverter.cs" />

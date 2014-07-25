@@ -177,6 +177,13 @@ namespace MWF.Mobile.Core.Repositories
                         Debug.Assert(children.Count == 1);
                         relationshipProperty.SetValue(parent, children[0]);
                     }
+                    else if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToZeroOrOne)
+                    {
+                        Debug.Assert(children.Count <= 1);
+
+                        if (children.Count == 1)
+                            relationshipProperty.SetValue(parent, children[0]);
+                    }
                     else
                     {                     
                         relationshipProperty.SetValue(parent, children);
@@ -261,6 +268,23 @@ namespace MWF.Mobile.Core.Repositories
 
                     action.Invoke(entity, singleChild);
                 }
+                else if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToZeroOrOne)
+                {
+                    //Child Property is a single Bluesphere entity but may be null
+                    var singleChild = relationshipProperty.GetValue(entity, null);
+
+                    if (singleChild != null)
+                    {
+                        var singleChildBlueSphereEntity = singleChild as IBlueSphereEntity;
+
+                        if (singleChildBlueSphereEntity == null)
+                        {
+                            throw new ArgumentException(string.Format("{0} type property {1} is not a  BlueSphere entity", entity.GetType().ToString(), relationshipProperty.Name));
+                        }
+
+                        action.Invoke(entity, singleChildBlueSphereEntity);
+                    }
+                }
                 else
                 {
                     // Child property is a collection of Bluesphere entities
@@ -274,8 +298,6 @@ namespace MWF.Mobile.Core.Repositories
                     {
                         action.Invoke(entity, child);
                     }
-
-
                 }
             }
 

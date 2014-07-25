@@ -25,25 +25,60 @@ namespace MWF.Mobile.Core.ViewModels
             History
         }
 
+        private readonly IAuthenticationService _authenticationService = null; 
+        private readonly IGatewayService _gatewayService = null; 
+        private readonly IGatewayQueuedService _gatewayQueuedService = null; 
+        private readonly Portable.IReachability _reachability = null; 
+        private readonly IDataService _dataService = null; 
+        private readonly IRepositories _repositories = null; 
+        private readonly IDeviceInfo _deviceInfo = null; 
+        private readonly IStartupService _startupService = null; 
+        private readonly IUserInteraction _userInteraction = null; 
+        private readonly IGpsService _gpsService = null;
+
         public StartupViewModel(IAuthenticationService authenticationService, 
                                 IGatewayService gatewayService, 
                                 IGatewayQueuedService gatewayQueuedService, 
-                                Portable.IReachability reachableService, 
+                                Portable.IReachability reachability, 
                                 IDataService dataService, 
                                 IRepositories repositories, 
                                 IDeviceInfo deviceInfo, 
                                 IStartupService startupService, 
                                 IUserInteraction userInteraction, 
-                                ICurrentDriverRepository currentDriver,
                                 IGpsService gpsService)
-
         {
-//#if DEBUG
-//            userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
-//#endif
-            //this.InitialViewModel = new ManifestViewModel();
-            
+            _authenticationService = authenticationService;
+            _gatewayService = gatewayService;
+            _gatewayQueuedService = gatewayQueuedService;
+            _reachability = reachability;
+            _dataService = dataService;
+            _repositories = repositories;
+            _deviceInfo = deviceInfo;
+            _startupService = startupService;
+            _userInteraction = userInteraction;
+            _gpsService = gpsService;
 
+#if DEBUG
+            // Uncomment the following line to clear all data on startup
+            //DEBUGGING_ClearAllData(repositories);
+#endif
+
+            this.SetInitialViewModel();
+            this.InitializeMenu();
+        }
+
+        private void SetInitialViewModel()
+        {
+            var customerRepository = _repositories.CustomerRepository;
+
+            if (customerRepository.GetAll().Any())
+                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _startupService, _repositories.CurrentDriverRepository);
+            else
+                this.InitialViewModel = new CustomerCodeViewModel(_gatewayService, _reachability, _dataService, _repositories, _userInteraction);
+        }
+
+        private void InitializeMenu()
+        {
             _menuItems = new List<MenuViewModel>
             {
                 new MenuViewModel
@@ -62,23 +97,12 @@ namespace MWF.Mobile.Core.ViewModels
                     Text = "SafetyCheck"
                 },
             };
-
-            var customerRepository = repositories.CustomerRepository;
-
-            if (customerRepository.GetAll().Any())
-            {
-                this.InitialViewModel = new PasscodeViewModel(authenticationService, startupService,currentDriver);
-            }
-            else
-            {
-                this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService, repositories, userInteraction);
-            }
-             
         }
 
         private void DEBUGGING_ClearAllData(IRepositories repositories)
         {
             repositories.ApplicationRepository.DeleteAll();
+            repositories.ConfigRepository.DeleteAll();
             repositories.CustomerRepository.DeleteAll();
             repositories.DeviceRepository.DeleteAll();
             repositories.DriverRepository.DeleteAll();
@@ -110,6 +134,6 @@ namespace MWF.Mobile.Core.ViewModels
             
         }
 
-
     }
+
 }

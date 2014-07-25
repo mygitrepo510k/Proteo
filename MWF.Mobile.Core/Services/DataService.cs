@@ -63,6 +63,7 @@ namespace MWF.Mobile.Core.Services
             _connection.CreateTable<Driver>();
             _connection.CreateTable<GatewayQueueItem>();
             _connection.CreateTable<Image>();
+            _connection.CreateTable<LatestSafetyCheck>();
             _connection.CreateTable<MWFMobileConfig>();
             _connection.CreateTable<SafetyCheckData>();
             _connection.CreateTable<SafetyCheckFault>();

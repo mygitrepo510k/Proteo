@@ -51,12 +51,13 @@ namespace MWF.Mobile.Core.Services
             if (safetyCheckData.Any())
             {
                 // Store the latest safety check so the driver can display it at a later point if required
-                var latestSafetyCheck = new LatestSafetyCheck
-                {
-                    DriverID = this.LoggedInDriver.ID,
-                    VehicleSafetyCheck = this.CurrentVehicleSafetyCheckData,
-                    TrailerSafetyCheck = this.CurrentTrailerSafetyCheckData,
-                };
+                var latestSafetyCheck = new LatestSafetyCheck { DriverID = this.LoggedInDriver.ID };
+
+                if (this.CurrentVehicleSafetyCheckData != null && this.CurrentVehicleSafetyCheckData.Faults.Any())
+                    latestSafetyCheck.VehicleSafetyCheck = this.CurrentVehicleSafetyCheckData;
+
+                if (this.CurrentTrailerSafetyCheckData != null && this.CurrentTrailerSafetyCheckData.Faults.Any())
+                    latestSafetyCheck.TrailerSafetyCheck = this.CurrentTrailerSafetyCheckData;
 
                 _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
 

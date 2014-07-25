@@ -16,17 +16,18 @@ namespace MWF.Mobile.Core.Repositories
         {
 
             ApplicationRepository = applicationRepository;
+            ConfigRepository = configRepository;
             CurrentDriverRepository = currentDriverRepository;
             CustomerRepository = customerRepository;
             DeviceRepository = deviceRepository;
             DriverRepository = driverRepository;
             GatewayQueueItemRepository = gatewayQueueItemRepository;
+            LatestSafetyCheckRepository = latestSafetyCheckRepository;
             SafetyProfileRepository = safetyProfileRepository;
             TrailerRepository = trailerRepository;
             VehicleRepository = vehicleRepository;
             VerbProfileRepository = verbProfileRepository;
             TrailerRepository = trailerRepository;
-            ConfigRepository = configRepository;
         }
 
         public IApplicationProfileRepository ApplicationRepository

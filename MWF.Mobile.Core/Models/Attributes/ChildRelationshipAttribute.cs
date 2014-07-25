@@ -13,7 +13,8 @@ namespace MWF.Mobile.Core.Models.Attributes
     public enum RelationshipCardinality
     {
         OneToOne,
-        OneToMany
+        OneToMany,
+        OneToZeroOrOne,
     }
 
     [AttributeUsage(AttributeTargets.Property)]

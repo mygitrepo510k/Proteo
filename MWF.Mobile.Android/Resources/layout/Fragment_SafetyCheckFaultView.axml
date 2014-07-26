@@ -17,19 +17,39 @@
         <TextView
             style="@style/Proteo.TextView.SubHeading"
             local:MvxBind="Text DiscretionaryOrFailureText" />
-        <ScrollView
-            android:layout_marginTop="10dp"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="fill_parent">
             <EditText
                 style="@style/Proteo.Multiline"
+                android:scrollbars="vertical"
+                android:maxLines="4"
                 android:layout_marginTop="0dp"
-                android:background="@drawable/border"
                 local:MvxBind="Text CommentText; Hint CommentHintText" />
-        </ScrollView>
+            <Mvx.MvxGridView
+                android:id="@+id/GridView"
+                android:layout_weight="1"
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:numColumns="auto_fit"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:columnWidth="80dp"
+                android:verticalSpacing="2dp"
+                android:horizontalSpacing="2dp"
+                local:MvxBind="ItemsSource Images"
+                local:MvxItemTemplate="@layout/item_safetycheckfaultimage" />
+            <Button
+                style="@style/Proteo.Button.Secondary"
+                android:layout_weight="0"
+                android:id="@+id/takePictureButton"
+                local:MvxBind="Text TakePictureButtonLabel; Click TakePictureCommand;" />
+        </LinearLayout>
     </LinearLayout>
     <Button
         style="@style/Proteo.Button.Bottom"
-        android:id="@+id/donebutton"
+        android:id="@+id/doneButton"
         android:layout_weight="0"
         local:MvxBind="Text DoneButtonLabel; Click DoneCommand; Enabled HasCommentText;" />
 </LinearLayout>

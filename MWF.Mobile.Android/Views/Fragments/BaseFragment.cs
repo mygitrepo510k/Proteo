@@ -18,7 +18,6 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             var myActivity = (BaseActivityView)this.Activity;
-            myActivity.CurrentFragment = this;
 
             base.OnViewCreated(view, savedInstanceState);
         }

@@ -15,15 +15,17 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         abstract public string FragmentTitle { get; }
+        private IMvxMessenger _messenger;
 
 
-        public BaseFragmentViewModel()
+
+        protected IMvxMessenger Messenger
         {
-
-            Messenger = Mvx.Resolve<IMvxMessenger>();
+            get
+            {
+                return (_messenger = _messenger ?? Mvx.Resolve<IMvxMessenger>());
+            }
         }
-
-        protected IMvxMessenger Messenger { get; private set; }
 
 
         /// <summary>

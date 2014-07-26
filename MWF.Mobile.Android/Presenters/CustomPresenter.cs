@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cirrious.MvvmCross.Droid.Views;
+using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.ViewModels;
 
 namespace MWF.Mobile.Android.Presenters
@@ -11,7 +12,7 @@ namespace MWF.Mobile.Android.Presenters
     {
         bool Show(MvxViewModelRequest request);
         bool Close(IMvxViewModel viewModel);
-        //Fragment CurrentFragment
+        MvxFragment CurrentFragment { get; }
     }
 
     public interface ICustomPresenter

@@ -15,6 +15,7 @@ using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 using support = Android.Support.V4.App;
 using MWF.Mobile.Android.Helpers;
 
@@ -139,12 +140,27 @@ namespace MWF.Mobile.Android.Views
 
         // Current Fragment in the fragment host. Note although the id being used appears to be that of the 
         // original container, it gets replaced during a show by the new fragment *but* keeps it's old id.
-        public Fragment CurrentFragment
+        public MvxFragment CurrentFragment
         {
-            get { return FragmentManager.FindFragmentById(Resource.Id.fragment_host); }
+            get { return FragmentManager.FindFragmentById(Resource.Id.fragment_host) as MvxFragment; }
         }
 
  		#endregion
+
+        public async override void OnBackPressed()
+        {
+            if (CurrentFragment.DataContext is IBackButtonHandler)
+            {
+                var continueBack = await (CurrentFragment.DataContext as IBackButtonHandler).OnBackButtonPressed();
+
+                if (continueBack)
+                    base.OnBackPressed();
+            }
+            else
+            {
+                base.OnBackPressed();
+            }
+        }
 
 
         public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)

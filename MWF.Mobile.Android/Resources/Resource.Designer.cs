@@ -69,55 +69,61 @@ namespace MWF.Mobile.Android
 			public const int arrowIcon = 2130837504;
 			
 			// aapt resource value: 0x7f020001
-			public const int Border = 2130837505;
+			public const int border = 2130837505;
 			
 			// aapt resource value: 0x7f020002
 			public const int cross = 2130837506;
 			
 			// aapt resource value: 0x7f020003
-			public const int empty_square = 2130837507;
+			public const int drop_shadow = 2130837507;
 			
 			// aapt resource value: 0x7f020004
-			public const int ic_action_accept = 2130837508;
+			public const int empty_square = 2130837508;
 			
 			// aapt resource value: 0x7f020005
-			public const int ic_action_error = 2130837509;
+			public const int ic_action_accept = 2130837509;
 			
 			// aapt resource value: 0x7f020006
-			public const int ic_action_overflow = 2130837510;
+			public const int ic_action_error = 2130837510;
 			
 			// aapt resource value: 0x7f020007
-			public const int ic_action_refresh = 2130837511;
+			public const int ic_action_overflow = 2130837511;
 			
 			// aapt resource value: 0x7f020008
-			public const int ic_action_search = 2130837512;
+			public const int ic_action_refresh = 2130837512;
 			
 			// aapt resource value: 0x7f020009
-			public const int ic_action_warning = 2130837513;
+			public const int ic_action_search = 2130837513;
 			
 			// aapt resource value: 0x7f02000a
-			public const int ic_drawer_light = 2130837514;
+			public const int ic_action_warning = 2130837514;
 			
 			// aapt resource value: 0x7f02000b
-			public const int Icon = 2130837515;
+			public const int ic_drawer_light = 2130837515;
 			
 			// aapt resource value: 0x7f02000c
-			public const int monoandroidsplash = 2130837516;
+			public const int Icon = 2130837516;
 			
 			// aapt resource value: 0x7f02000d
-			public const int mwf_logo = 2130837517;
+			public const int monoandroidsplash = 2130837517;
 			
 			// aapt resource value: 0x7f02000e
-			public const int proteoLogo = 2130837518;
+			public const int mwf_logo = 2130837518;
 			
 			// aapt resource value: 0x7f02000f
-			public const int splash = 2130837519;
+			public const int proteoLogo = 2130837519;
 			
 			// aapt resource value: 0x7f020010
-			public const int tick = 2130837520;
+			public const int small_cross = 2130837520;
 			
 			// aapt resource value: 0x7f020011
-			public const int warning = 2130837521;
+			public const int splash = 2130837521;
+			
+			// aapt resource value: 0x7f020012
+			public const int tick = 2130837522;
+			
+			// aapt resource value: 0x7f020013
+			public const int warning = 2130837523;
 			
 			static Drawable()
 			{
@@ -132,47 +138,53 @@ namespace MWF.Mobile.Android
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f060009
-			public const int ButtonNoTrailer = 2131099657;
+			// aapt resource value: 0x7f06000b
+			public const int ButtonNoTrailer = 2131099659;
+			
+			// aapt resource value: 0x7f060005
+			public const int GridView = 2131099653;
 			
 			// aapt resource value: 0x7f060000
 			public const int MvxBindingTagUnique = 2131099648;
 			
-			// aapt resource value: 0x7f06000a
-			public const int SafetyCheckItem = 2131099658;
+			// aapt resource value: 0x7f06000d
+			public const int SafetyCheckItem = 2131099661;
 			
-			// aapt resource value: 0x7f06000b
-			public const int SafetyCheckTitle = 2131099659;
+			// aapt resource value: 0x7f06000e
+			public const int SafetyCheckTitle = 2131099662;
 			
-			// aapt resource value: 0x7f060010
-			public const int SafetyListView = 2131099664;
+			// aapt resource value: 0x7f060013
+			public const int SafetyListView = 2131099667;
 			
-			// aapt resource value: 0x7f060012
-			public const int action_refresh = 2131099666;
+			// aapt resource value: 0x7f060015
+			public const int action_refresh = 2131099669;
 			
-			// aapt resource value: 0x7f060011
-			public const int action_search = 2131099665;
+			// aapt resource value: 0x7f060014
+			public const int action_search = 2131099668;
 			
 			// aapt resource value: 0x7f060003
 			public const int buttonPasscode = 2131099651;
 			
+			// aapt resource value: 0x7f060009
+			public const int button_done = 2131099657;
+			
+			// aapt resource value: 0x7f060012
+			public const int checksdonebutton = 2131099666;
+			
 			// aapt resource value: 0x7f060007
-			public const int button_done = 2131099655;
+			public const int doneButton = 2131099655;
 			
-			// aapt resource value: 0x7f06000f
-			public const int checksdonebutton = 2131099663;
-			
-			// aapt resource value: 0x7f060005
-			public const int donebutton = 2131099653;
-			
-			// aapt resource value: 0x7f06000d
-			public const int drawer_layout = 2131099661;
+			// aapt resource value: 0x7f060010
+			public const int drawer_layout = 2131099664;
 			
 			// aapt resource value: 0x7f06000c
-			public const int fragment_host = 2131099660;
+			public const int faultImageView = 2131099660;
 			
-			// aapt resource value: 0x7f06000e
-			public const int left_drawer = 2131099662;
+			// aapt resource value: 0x7f06000f
+			public const int fragment_host = 2131099663;
+			
+			// aapt resource value: 0x7f060011
+			public const int left_drawer = 2131099665;
 			
 			// aapt resource value: 0x7f060004
 			public const int logFaultTitleBlock = 2131099652;
@@ -180,14 +192,17 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f060001
 			public const int odometerText = 2131099649;
 			
-			// aapt resource value: 0x7f060006
-			public const int signature_view = 2131099654;
+			// aapt resource value: 0x7f060008
+			public const int signature_view = 2131099656;
 			
 			// aapt resource value: 0x7f060002
 			public const int submit = 2131099650;
 			
-			// aapt resource value: 0x7f060008
-			public const int trailerText = 2131099656;
+			// aapt resource value: 0x7f060006
+			public const int takePictureButton = 2131099654;
+			
+			// aapt resource value: 0x7f06000a
+			public const int trailerText = 2131099658;
 			
 			static Id()
 			{
@@ -233,25 +248,28 @@ namespace MWF.Mobile.Android
 			public const int item_menu = 2130903049;
 			
 			// aapt resource value: 0x7f03000a
-			public const int Item_SafetyCheckItem = 2130903050;
+			public const int Item_SafetyCheckFaultImage = 2130903050;
 			
 			// aapt resource value: 0x7f03000b
-			public const int Item_Trailer = 2130903051;
+			public const int Item_SafetyCheckItem = 2130903051;
 			
 			// aapt resource value: 0x7f03000c
-			public const int Item_Vehicle = 2130903052;
+			public const int Item_Trailer = 2130903052;
 			
 			// aapt resource value: 0x7f03000d
-			public const int Page_Main = 2130903053;
+			public const int Item_Vehicle = 2130903053;
 			
 			// aapt resource value: 0x7f03000e
-			public const int Page_Startup = 2130903054;
+			public const int Page_Main = 2130903054;
 			
 			// aapt resource value: 0x7f03000f
-			public const int SafetyCheckView = 2130903055;
+			public const int Page_Startup = 2130903055;
 			
 			// aapt resource value: 0x7f030010
-			public const int SplashScreen = 2130903056;
+			public const int SafetyCheckView = 2130903056;
+			
+			// aapt resource value: 0x7f030011
+			public const int SplashScreen = 2130903057;
 			
 			static Layout()
 			{
@@ -341,8 +359,8 @@ namespace MWF.Mobile.Android
 		public partial class Style
 		{
 			
-			// aapt resource value: 0x7f070011
-			public const int Mono_Android_Theme_Splash = 2131165201;
+			// aapt resource value: 0x7f070012
+			public const int Mono_Android_Theme_Splash = 2131165202;
 			
 			// aapt resource value: 0x7f070001
 			public const int Proteo = 2131165185;
@@ -350,23 +368,26 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f070009
 			public const int Proteo_Button = 2131165193;
 			
-			// aapt resource value: 0x7f07000a
-			public const int Proteo_Button_Bottom = 2131165194;
-			
 			// aapt resource value: 0x7f07000b
-			public const int Proteo_EditText = 2131165195;
+			public const int Proteo_Button_Bottom = 2131165195;
+			
+			// aapt resource value: 0x7f07000a
+			public const int Proteo_Button_Secondary = 2131165194;
 			
 			// aapt resource value: 0x7f07000c
-			public const int Proteo_EditText_NumberPasscode = 2131165196;
-			
-			// aapt resource value: 0x7f07000e
-			public const int Proteo_ImageView_MWFLogo = 2131165198;
+			public const int Proteo_EditText = 2131165196;
 			
 			// aapt resource value: 0x7f07000d
-			public const int Proteo_Multiline = 2131165197;
+			public const int Proteo_EditText_NumberPasscode = 2131165197;
 			
 			// aapt resource value: 0x7f07000f
-			public const int Proteo_SignaturePad = 2131165199;
+			public const int Proteo_ImageView_MWFLogo = 2131165199;
+			
+			// aapt resource value: 0x7f07000e
+			public const int Proteo_Multiline = 2131165198;
+			
+			// aapt resource value: 0x7f070010
+			public const int Proteo_SignaturePad = 2131165200;
 			
 			// aapt resource value: 0x7f070005
 			public const int Proteo_TextView_Information = 2131165189;
@@ -392,8 +413,8 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f070000
 			public const int ProteoNoMargins = 2131165184;
 			
-			// aapt resource value: 0x7f070010
-			public const int Theme_Splash = 2131165200;
+			// aapt resource value: 0x7f070011
+			public const int Theme_Splash = 2131165201;
 			
 			static Style()
 			{

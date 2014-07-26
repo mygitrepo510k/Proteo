@@ -67,9 +67,30 @@ namespace MWF.Mobile.Android.Views
             return true;
         }
 
+        /// <summary>
+        /// Given a view model attempts to close the fragment associated with it. If the fragment
+        /// associated is currently being displayed in the fragment host then the backstack
+        /// is popped.
+        /// </summary>
+        /// <param name="viewModel"></param>
+        /// <returns></returns>
         public bool Close(IMvxViewModel viewModel)
         {
-            return false;
+            var fragmentTypeToClose = _supportedFragmentViewModels[viewModel.GetType()];
+
+            if (CurrentFragment != null && CurrentFragment.GetType() == fragmentTypeToClose)
+            {
+                FragmentManager.PopBackStack();
+                return true;
+            }
+            else return false;
+        }
+
+        // Current Fragment in the fragment host. Note although the id being used appears to be that of the 
+        // original container, it gets replaced during a show by the new fragment *but* keeps it's old id.
+        public MvxFragment CurrentFragment
+        {
+            get { return FragmentManager.FindFragmentById(Resource.Id.fragment_host) as MvxFragment; }
         }
 
  		#endregion Fragment host

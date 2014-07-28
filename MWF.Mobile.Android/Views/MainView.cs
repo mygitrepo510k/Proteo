@@ -72,7 +72,18 @@ namespace MWF.Mobile.Android.Views
             return false;
         }
 
- 		#endregion Fragment host
+        public void CloseToInitialView()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CloseUpToView<TViewModel>()
+            where TViewModel : IMvxViewModel
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion Fragment host
 
     }
 

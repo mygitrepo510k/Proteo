@@ -70,7 +70,6 @@ namespace MWF.Mobile.Android.Views
             return _supportedFragmentViewModels[viewModelType];
         }
 
-
 		#region Fragment host
 
         private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
@@ -105,7 +104,6 @@ namespace MWF.Mobile.Android.Views
             if (fragment == null)
                 return false;
 
-
             var viewModel = fragment.ViewModel;
             this.ActionBar.Title = ((BaseFragmentViewModel)viewModel).FragmentTitle;
 
@@ -138,15 +136,48 @@ namespace MWF.Mobile.Android.Views
             else return false;
         }
 
+        /// <summary>
+        /// Remove all fragments from the back stack up to, but not including, the initial view.
+        /// </summary>
+        public void CloseToInitialView()
+        {
+            var backStackEntryCount = FragmentManager.BackStackEntryCount;
+
+            for (var i = 0; i < backStackEntryCount; i++)
+            {
+                FragmentManager.PopBackStack();
+            }
+        }
+
+        /// <summary>
+        /// Remove all fragments from the back stack up to, but not including the specified view.
+        /// </summary>
+        /// <remarks>
+        /// If the specified view is not found then all fragments will be removed up to, but not including, the initial view.
+        /// </remarks>
+        public void CloseUpToView<TViewModel>()
+            where TViewModel : IMvxViewModel
+        {
+            var targetFragmentType = _supportedFragmentViewModels[typeof(TViewModel)];
+            var backStackEntryCount = FragmentManager.BackStackEntryCount;
+
+            for (var i = 0; i < backStackEntryCount; i++)
+            {
+                if (CurrentFragment.GetType() == targetFragmentType)
+                    break;
+
+                FragmentManager.PopBackStack();
+            }
+        }
+
         // Current Fragment in the fragment host. Note although the id being used appears to be that of the 
-        // original container, it gets replaced during a show by the new fragment *but* keeps it's old id.
+        // original container, it gets replaced during a show by the new fragment *but* keeps its old id.
         public Fragment CurrentFragment
         {
             get { return FragmentManager.FindFragmentById(Resource.Id.fragment_host); }
         }
 
- 		#endregion
-
+        #endregion
 
         public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
         {

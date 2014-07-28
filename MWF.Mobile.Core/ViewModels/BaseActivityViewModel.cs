@@ -13,6 +13,17 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         public IMvxViewModel InitialViewModel { get; protected set; }
+        
+        protected void CloseToInitialView()
+        {
+            this.ChangePresentation(new Presentation.CloseToInitialViewPresentationHint());
+        }
+
+        protected void CloseUpToView<TViewModel>()
+            where TViewModel : IMvxViewModel
+        {
+            this.ChangePresentation(new Presentation.CloseUpToViewPresentationHint<TViewModel>());
+        }
 
     }
 

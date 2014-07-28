@@ -11,7 +11,8 @@ namespace MWF.Mobile.Android.Presenters
     {
         bool Show(MvxViewModelRequest request);
         bool Close(IMvxViewModel viewModel);
-        //Fragment CurrentFragment
+        void CloseUpToView<TViewModel>() where TViewModel : IMvxViewModel;
+        void CloseToInitialView();
     }
 
     public interface ICustomPresenter
@@ -28,7 +29,6 @@ namespace MWF.Mobile.Android.Presenters
 
         public override void Show(MvxViewModelRequest request)
         {
-
             var currentFragmentHost = this.Activity as IFragmentHost;
 
             if (currentFragmentHost != null)
@@ -47,6 +47,46 @@ namespace MWF.Mobile.Android.Presenters
                     return;
 
             base.Close(viewModel);
+        }
+
+        public override void ChangePresentation(MvxPresentationHint hint)
+        {
+            if (hint is Core.Presentation.CloseToInitialViewPresentationHint)
+            {
+                var currentFragmentHost = this.Activity as IFragmentHost;
+
+                if (currentFragmentHost != null)
+                {
+                    currentFragmentHost.CloseToInitialView();
+                    return;
+                }
+            }
+            else
+            {
+                var hintType = hint.GetType();
+
+                if (hintType.IsGenericType)
+                {
+                    if (hintType.GetGenericTypeDefinition() == typeof(Core.Presentation.CloseUpToViewPresentationHint<>))
+                    {
+                        var typeParameter = hintType.GetGenericArguments().First();
+
+                        if (typeof(IMvxViewModel).IsAssignableFrom(typeParameter))
+                        {
+                            var currentFragmentHost = this.Activity as IFragmentHost;
+
+                            if (currentFragmentHost != null)
+                            {
+                                var method = currentFragmentHost.GetType().GetMethod("CloseUpToView");
+                                method.MakeGenericMethod(typeParameter).Invoke(currentFragmentHost, null);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            base.ChangePresentation(hint);
         }
 
     }

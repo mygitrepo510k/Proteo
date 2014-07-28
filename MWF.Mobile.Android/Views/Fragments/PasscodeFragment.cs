@@ -15,6 +15,7 @@ using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Core.ViewModels;
 using Cirrious.MvvmCross.Droid.Views;
+using Android.Views.InputMethods;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
@@ -29,6 +30,15 @@ namespace MWF.Mobile.Android.Views.Fragments
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             return this.BindingInflate(Resource.Layout.Fragment_Passcode, null);
+        }
+
+        public override void OnResume()
+        {
+            base.OnResume();
+
+            EditText passcodeText = (EditText)this.View.FindViewById(Resource.Id.editTextPasscode);
+            passcodeText.RequestFocus();
+            this.ShowSoftKeyboard();
         }
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
@@ -46,6 +56,12 @@ namespace MWF.Mobile.Android.Views.Fragments
             set.Bind(_bindableProgress).For(p => p.Title).To(vm => vm.ProgressTitle);
             set.Apply();
 
+        }
+
+        public override void OnPause()
+        {
+            base.OnPause();
+            this.HideKeyboard();
         }
 
     }

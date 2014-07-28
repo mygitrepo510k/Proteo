@@ -61,12 +61,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
-            //Closes the android keyboard if its still up.
-            InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
-            mgr.HideSoftInputFromWindow(this.View.WindowToken, 0);
-  
             this.Activity.ActionBar.Show();
-
             base.OnViewCreated(view, savedInstanceState);
         }
     }

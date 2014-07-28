@@ -162,6 +162,14 @@ namespace MWF.Mobile.Core.ViewModels
                     _repositories.SafetyProfileRepository.Insert(safetyProfiles);
                 }
             }
+            else
+            {
+                var safetyProfileRepository = _repositories.SafetyProfileRepository;
+                if(safetyProfileRepository.GetAll().ToList().Count == 0)
+                {
+                    Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found - Redirecting to Manifest Screen.");
+                }
+            }
         }
 
         public async Task UpdateTrailerListAsync()

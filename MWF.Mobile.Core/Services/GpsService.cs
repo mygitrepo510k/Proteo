@@ -32,21 +32,37 @@ namespace MWF.Mobile.Core.Services
 
         public string GetSmpData(ReportReason reportReason)
         {
-            var smp = new SMP
+            // Check if we have some location data
+            if (_location != null)
             {
-                Reason = reportReason,
-                Latitude =  Convert.ToDecimal(_location.Coordinates.Latitude),
-                Longitude = Convert.ToDecimal(_location.Coordinates.Longitude),
-                Speed = Convert.ToInt16(_location.Coordinates.Speed) > (short)2 
-                                        ? Convert.ToInt16(_location.Coordinates.Speed) 
-                                        : (short)0,
-                Quality = Convert.ToInt32(_location.Coordinates.Accuracy),
-                LastFixDateTime = _location.Timestamp.DateTime,
-                Heading = Convert.ToInt16(_location.Coordinates.Heading),
-                ReportDateTime = DateTime.UtcNow
-            };
+                // We do so build the SMP string and return it
+                var smp = new SMP
+                {
+                    Reason = reportReason,
+                    Latitude = Convert.ToDecimal(_location.Coordinates.Latitude),
+                    Longitude = Convert.ToDecimal(_location.Coordinates.Longitude),
+                    Speed = Convert.ToInt16(_location.Coordinates.Speed) > (short) 2
+                                ? Convert.ToInt16(_location.Coordinates.Speed)
+                                : (short) 0,
+                    Quality = Convert.ToInt32(_location.Coordinates.Accuracy),
+                    LastFixDateTime = _location.Timestamp.DateTime,
+                    Heading = Convert.ToInt16(_location.Coordinates.Heading),
+                    ReportDateTime = DateTime.UtcNow
+                };
 
-            return smp.ToString();
+                return smp.ToString();
+            }
+            else
+            {
+                // We don't so build what we can and return it
+                var smp = new SMP
+                {
+                    Reason = reportReason,
+                    ReportDateTime = DateTime.UtcNow
+                };
+
+                return smp.ToString();
+            }
         }
 
         #endregion

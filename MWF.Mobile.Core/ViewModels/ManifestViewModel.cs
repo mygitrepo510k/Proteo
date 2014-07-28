@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using MWF.Mobile.Core.Models;
 using System.Linq;
 using System;
+using MWF.Mobile.Core.Models.Instruction;
 
 namespace MWF.Mobile.Core.ViewModels
 {

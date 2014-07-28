@@ -24,13 +24,12 @@ namespace MWF.Mobile.Core.ViewModels
         private Services.IGatewayService _gatewayService;
         private IEnumerable<Trailer> _originalTrailerList;
 
-        private readonly IVehicleRepository _vehicleRepository;
-        private readonly ITrailerRepository _trailerRepository;
+        private readonly IRepositories _repositories;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
         private readonly IStartupService _startupService;
 
-        public TrailerListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IReachability reachabibilty,
+        public TrailerListViewModel(IGatewayService gatewayService, IRepositories repositories, IReachability reachabibilty,
             IToast toast, IStartupService startupService)
         {
             _gatewayService = gatewayService;
@@ -38,9 +37,8 @@ namespace MWF.Mobile.Core.ViewModels
             _reachability = reachabibilty;
             _startupService = startupService;
 
-            _trailerRepository = trailerRepository;
-            Trailers = _originalTrailerList = _trailerRepository.GetAll();
-            _vehicleRepository = vehicleRepository;
+            _repositories = repositories;
+            Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll();
         }
 
         public override string FragmentTitle
@@ -62,7 +60,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return _vehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID).Registration;
+                return _repositories.VehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID).Registration;
             }
         }
 
@@ -92,7 +90,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public void TrailerDetail(Trailer trailer, string message)
+        public async void TrailerDetail(Trailer trailer, string message)
         {
             Guid trailerID = Guid.Empty;
 
@@ -100,6 +98,9 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 trailerID = trailer.ID;
             }
+
+            // Try and update safety profiles before continuing
+            await UpdateSafetyProfilesAsync();
 
             //This will take to the next view model with a trailer value of null.
             Mvx.Resolve<IUserInteraction>().Confirm(message, isConfirmed =>
@@ -136,6 +137,21 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        public async Task UpdateSafetyProfilesAsync()
+        {
+            // First check if we have a internet connection. If we do go and get the latest safety checks from Blue Sphere.
+            if (_reachability.IsConnected())
+            {
+                var safetyProfiles = await _gatewayService.GetSafetyProfiles();
+
+                if (safetyProfiles != null)
+                {
+                    _repositories.SafetyProfileRepository.DeleteAll();
+                    _repositories.SafetyProfileRepository.Insert(safetyProfiles);
+                }
+            }
+        }
+
         public async Task UpdateTrailerListAsync()
         {
 
@@ -160,11 +176,11 @@ namespace MWF.Mobile.Core.ViewModels
                 if (trailers != null)
                 {
 
-                    _trailerRepository.DeleteAll();
+                    _repositories.TrailerRepository.DeleteAll();
 
-                    _trailerRepository.Insert(trailers);
+                    _repositories.TrailerRepository.Insert(trailers);
 
-                    Trailers = _originalTrailerList = _trailerRepository.GetAll();
+                    Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll();
 
                     //Recalls the filter text if there is text in the search field.
                     if (SearchText != null)

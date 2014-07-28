@@ -11,6 +11,7 @@
         local:MvxBind="Text PasscodeLabel" />
     <EditText
         style="@style/Proteo.EditText.NumberPasscode"
+        android:id="@+id/editTextPasscode"
         local:MvxBind="Text Passcode" />
     <Button
         style="@style/Proteo.Button"

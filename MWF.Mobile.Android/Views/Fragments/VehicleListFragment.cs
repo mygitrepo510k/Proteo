@@ -12,6 +12,7 @@ using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Core.ViewModels;
+using Android.Views.InputMethods;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
@@ -54,11 +55,16 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+
             SetHasOptionsMenu(true);
         }
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
+            //Closes the android keyboard if its still up.
+            InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
+            mgr.HideSoftInputFromWindow(this.View.WindowToken, 0);
+  
             this.Activity.ActionBar.Show();
 
             base.OnViewCreated(view, savedInstanceState);

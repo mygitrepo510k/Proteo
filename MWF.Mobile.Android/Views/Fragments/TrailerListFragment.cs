@@ -11,6 +11,7 @@ namespace MWF.Mobile.Android.Views.Fragments
     public class TrailerListFragment : BaseFragment
     {
         private SearchView _searchView;
+        private IMenu optionsMenu;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -24,6 +25,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             inflater.Inflate(Resource.Menu.vehicle_activity_actions, menu);
             base.OnCreateOptionsMenu(menu, inflater);
 
+            this.optionsMenu = menu;
             
             var searchItem = menu.FindItem(Resource.Id.action_search).ActionView;
             _searchView = searchItem.JavaCast<SearchView>();
@@ -35,7 +37,9 @@ namespace MWF.Mobile.Android.Views.Fragments
             switch (item.ItemId)
             {
                 case Android.Resource.Id.action_refresh:
+                    SetRefreshActionButtonState(true);
                   ((TrailerListViewModel)ViewModel).RefreshListCommand.Execute(null);
+                    SetRefreshActionButtonState(false);
                     return true;
             }
 
@@ -53,7 +57,24 @@ namespace MWF.Mobile.Android.Views.Fragments
             base.OnViewCreated(view, savedInstanceState);
         }
 
-        
+        public void SetRefreshActionButtonState(bool refreshing)
+        {
+            if (optionsMenu != null)
+            {
+                var refreshItem = optionsMenu.FindItem(Resource.Id.action_refresh);
+                if (refreshItem != null)
+                {
+                    if (refreshing)
+                    {
+                        refreshItem.SetActionView(Resource.Menu.actionbar_indeterminate_progress);
+                    }
+                    else
+                    {
+                        refreshItem.SetActionView(null);
+                    }
+                }
+            }
+        }
     }
 
 }

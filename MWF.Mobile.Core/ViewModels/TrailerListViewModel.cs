@@ -39,6 +39,8 @@ namespace MWF.Mobile.Core.ViewModels
 
             _repositories = repositories;
             Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll();
+
+            _trailersListCount = FilteredtrailerCount;
         }
 
         public override string FragmentTitle
@@ -53,7 +55,19 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string TrailerSelectText
         {
-            get { return "Select trailer for " + VehicleRegistration; }
+            get { return "Select trailer for " + VehicleRegistration + " - Showing " + FilteredtrailerCount + " of " + TrailerListCount; }
+        }
+
+        private int _trailersListCount;
+        public int TrailerListCount
+        {
+            get { return _trailersListCount; }
+            set { _trailersListCount = value; }
+        }
+
+        public int FilteredtrailerCount
+        {
+            get { return Trailers.ToList().Count; }
         }
 
         public String VehicleRegistration
@@ -85,7 +99,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                var message = "Are you sure you don't want to select a trailer.";
+                var message = "Confirm you don't have a trailer";
                 return (_notrailerSelectorCommand = _notrailerSelectorCommand ?? new MvxCommand<Trailer>(t => TrailerDetail(null, message)));
             }
         }
@@ -111,7 +125,7 @@ namespace MWF.Mobile.Core.ViewModels
                     _startupService.CurrentTrailer = trailer;
                     ShowViewModel<SafetyCheckViewModel>();
                 }
-            }, "Confirm trailer", "Select");
+            }, "Confirm your trailer", "Confirm");
         }
 
         //This is method associated with the search button in the action bar.
@@ -119,7 +133,7 @@ namespace MWF.Mobile.Core.ViewModels
         public string SearchText
         {
             get { return _searchText; }
-            set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); }
+            set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); RaisePropertyChanged(() => TrailerSelectText); }
         }
 
 

@@ -17,14 +17,6 @@ namespace MWF.Mobile.Core.ViewModels
     public class StartupViewModel 
 		: BaseActivityViewModel
     {
-
-        public enum Option
-        {
-            Camera,
-            SafetyCheck,
-            History
-        }
-
         private readonly IAuthenticationService _authenticationService = null; 
         private readonly IGatewayService _gatewayService = null; 
         private readonly IGatewayQueuedService _gatewayQueuedService = null; 
@@ -61,7 +53,6 @@ namespace MWF.Mobile.Core.ViewModels
 #endif
 
             this.SetInitialViewModel();
-            this.InitializeMenu();
         }
 
         private void SetInitialViewModel()
@@ -74,27 +65,7 @@ namespace MWF.Mobile.Core.ViewModels
                 this.InitialViewModel = new CustomerCodeViewModel(_gatewayService, _reachability, _dataService, _repositories, _userInteraction);
         }
 
-        private void InitializeMenu()
-        {
-            _menuItems = new List<MenuViewModel>
-            {
-                new MenuViewModel
-                {
-                    Option = Option.Camera,
-                    Text = "Camera"
-                },
-                new MenuViewModel
-                {
-                    Option = Option.History,
-                    Text = "History"
-                },
-                new MenuViewModel
-                {
-                    Option = Option.SafetyCheck,
-                    Text = "SafetyCheck"
-                },
-            };
-        }
+        
 
         private void DEBUGGING_ClearAllData(IRepositories repositories)
         {
@@ -109,28 +80,6 @@ namespace MWF.Mobile.Core.ViewModels
             repositories.VehicleRepository.DeleteAll();
             repositories.VerbProfileRepository.DeleteAll();
         }
-
-        private List<MenuViewModel> _menuItems;
-        public List<MenuViewModel> MenuItems
-        {
-            get { return this._menuItems; }
-            set { this._menuItems = value; this.RaisePropertyChanged(() => this.MenuItems); }
-        }
-
-        private MvxCommand<MenuViewModel> _selectMenuItemCommand;
-        public System.Windows.Input.ICommand SelectMenuItemCommand
-        {
-            get
-            {
-                return this._selectMenuItemCommand ?? (this._selectMenuItemCommand = new MvxCommand<MenuViewModel>(this.DoSelectMenuItemCommand));
-            }
-        }
-
-        private void DoSelectMenuItemCommand(MenuViewModel item)
-        {
-            
-        }
-
     }
 
 }

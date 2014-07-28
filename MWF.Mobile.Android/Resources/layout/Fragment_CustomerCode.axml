@@ -10,6 +10,9 @@
         style="@style/Proteo.TextView.MainHeading"
         local:MvxBind="Text CustomerCodeLabel" />
     <EditText
+        android:id="@+id/CustomerCodeBox"
+        android:imeOptions="actionDone"
+        android:singleLine="true"
         style="@style/Proteo.EditText"
         local:MvxBind="Text CustomerCode" />
     <Button

@@ -9,6 +9,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
+using Android.Views.InputMethods;
 using Android.Widget;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
@@ -46,8 +47,22 @@ namespace MWF.Mobile.Android.Views.Fragments
             set.Bind(_bindableProgress).For(p => p.Title).To(vm => vm.ProgressTitle);
             set.Apply();
 
+            var passCodeBox = view.FindViewById<EditText>(Resource.Id.editTextPasscode);
+            passCodeBox.EditorAction += PassCodeBoxOnEditorAction;
         }
 
+        private void PassCodeBoxOnEditorAction(object sender, TextView.EditorActionEventArgs e)
+        {
+            e.Handled = false;
+
+            if (e.ActionId == ImeAction.Done)
+            {
+                var viewModel = this.ViewModel as PasscodeViewModel;
+                
+                viewModel.LoginCommand.Execute(null);
+                e.Handled = true;
+            }
+        }
     }
 
 }

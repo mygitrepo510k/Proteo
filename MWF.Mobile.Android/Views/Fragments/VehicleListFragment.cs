@@ -20,6 +20,7 @@ namespace MWF.Mobile.Android.Views.Fragments
     public class VehicleListFragment : BaseFragment
     {
         private SearchView _searchView;
+        private IMenu optionsMenu;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -32,11 +33,12 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             inflater.Inflate(Resource.Menu.vehicle_activity_actions, menu);
             base.OnCreateOptionsMenu(menu, inflater);
-            
+
+            this.optionsMenu = menu;
 
             var searchItem = menu.FindItem(Resource.Id.action_search).ActionView;
             _searchView = searchItem.JavaCast<SearchView>();
-            
+
             _searchView.QueryTextChange += (s, e) => ((VehicleListViewModel)this.ViewModel).SearchText = e.NewText;
 
         }
@@ -45,10 +47,12 @@ namespace MWF.Mobile.Android.Views.Fragments
             switch (item.ItemId)
             {
                 case Android.Resource.Id.action_refresh:
+                    SetRefreshActionButtonState(true);
                     ((VehicleListViewModel)ViewModel).RefreshListCommand.Execute(null);
+                    SetRefreshActionButtonState(false);
                     return true;
             }
-            
+
             return base.OnOptionsItemSelected(item);
         }
 
@@ -64,10 +68,29 @@ namespace MWF.Mobile.Android.Views.Fragments
             //Closes the android keyboard if its still up.
             InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
             mgr.HideSoftInputFromWindow(this.View.WindowToken, 0);
-  
+
             this.Activity.ActionBar.Show();
 
             base.OnViewCreated(view, savedInstanceState);
+        }
+
+        public void SetRefreshActionButtonState(bool refreshing)
+        {
+            if (optionsMenu != null)
+            {
+                var refreshItem = optionsMenu.FindItem(Resource.Id.action_refresh);
+                if (refreshItem != null)
+                {
+                    if (refreshing)
+                    {
+                        refreshItem.SetActionView(Resource.Menu.actionbar_indeterminate_progress);
+                    }
+                    else
+                    {
+                        refreshItem.SetActionView(null);
+                    }
+                }
+            }
         }
     }
 

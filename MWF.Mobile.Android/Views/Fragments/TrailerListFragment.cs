@@ -3,6 +3,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
@@ -12,6 +13,8 @@ namespace MWF.Mobile.Android.Views.Fragments
     {
         private SearchView _searchView;
         private IMenu optionsMenu;
+        private BindableProgress _bindableProgress;
+
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -53,8 +56,15 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
+            _bindableProgress = new MWF.Mobile.Android.Views.BindableProgress(view.Context);
+
             this.Activity.ActionBar.Show();
             base.OnViewCreated(view, savedInstanceState);
+            var set = this.CreateBindingSet<TrailerListFragment, TrailerListViewModel>();
+            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsBusy);
+            set.Bind(_bindableProgress).For(p => p.Message).To(vm => vm.ProgressMessage);
+            set.Bind(_bindableProgress).For(p => p.Title).To(vm => vm.ProgressTitle);
+            set.Apply();
         }
 
         public void SetRefreshActionButtonState(bool refreshing)

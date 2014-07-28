@@ -25,11 +25,12 @@ namespace MWF.Mobile.Core.ViewModels
         private IEnumerable<Trailer> _originalTrailerList;
 
         private readonly IRepositories _repositories;
+        private readonly IVehicleRepository _vehicleRepository;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
         private readonly IStartupService _startupService;
 
-        public TrailerListViewModel(IGatewayService gatewayService, IRepositories repositories, IReachability reachabibilty,
+        public TrailerListViewModel(IVehicleRepository vehicleRepository, IGatewayService gatewayService, IRepositories repositories, IReachability reachabibilty,
             IToast toast, IStartupService startupService)
         {
             _gatewayService = gatewayService;
@@ -39,6 +40,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             _repositories = repositories;
             Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll();
+            _vehicleRepository = vehicleRepository;
 
             _trailersListCount = FilteredtrailerCount;
         }
@@ -78,6 +80,24 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private bool _isBusy = false;
+        public bool IsBusy
+        {
+            get { return _isBusy; }
+            set { _isBusy = value; RaisePropertyChanged(() => IsBusy); }
+        }
+
+        public string ProgressTitle
+        {
+            get { return "Downloading data..."; }
+        }
+
+        public string ProgressMessage
+        {
+            get { return "Please wait while we setup your safety checks..."; }
+        }
+  
+
         private IEnumerable<Trailer> _trailers;
         public IEnumerable<Trailer> Trailers
         {
@@ -106,6 +126,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async void TrailerDetail(Trailer trailer, string message)
         {
+
+            this.IsBusy = true;
             Guid trailerID = Guid.Empty;
 
             if (trailer != null)
@@ -113,9 +135,13 @@ namespace MWF.Mobile.Core.ViewModels
                 trailerID = trailer.ID;
             }
 
+            await UpdateVehicleListAsync();
+ 
+            await UpdateTrailerListAsync();
             // Try and update safety profiles before continuing
             await UpdateSafetyProfilesAsync();
 
+            this.IsBusy = false;
             //This will take to the next view model with a trailer value of null.
             Mvx.Resolve<IUserInteraction>().Confirm(message, isConfirmed =>
             {
@@ -124,6 +150,7 @@ namespace MWF.Mobile.Core.ViewModels
                     _startupService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
                     _startupService.CurrentTrailer = trailer;
                     ShowViewModel<SafetyCheckViewModel>();
+                    
                 }
             }, "Confirm your trailer", "Confirm");
         }
@@ -165,6 +192,14 @@ namespace MWF.Mobile.Core.ViewModels
                     _repositories.SafetyProfileRepository.Insert(safetyProfiles);
                 }
             }
+            else
+            {
+                var safetyProfileRepository = _repositories.SafetyProfileRepository;
+                if(safetyProfileRepository.GetAll().ToList().Count == 0)
+                {
+                    Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found.");
+                }
+            }
         }
 
         public async Task UpdateTrailerListAsync()
@@ -202,6 +237,38 @@ namespace MWF.Mobile.Core.ViewModels
                     {
                         FilterList();
                     }
+                }
+            }
+        }
+
+        public async Task UpdateVehicleListAsync()
+        {
+
+            if (!_reachability.IsConnected())
+            {
+                _toast.Show("No internet connection!");
+            }
+            else
+            {
+                var vehicleViews = await _gatewayService.GetVehicleViews();
+
+                var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
+
+                foreach (var vehicleView in vehicleViews)
+                {
+                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+                }
+
+                var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+                var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
+
+                if (vehicles != null)
+                {
+                    _vehicleRepository.DeleteAll();
+
+                    _vehicleRepository.Insert(vehicles);
+
+                   
                 }
             }
         }

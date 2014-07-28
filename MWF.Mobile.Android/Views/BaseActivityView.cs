@@ -47,6 +47,6 @@ namespace MWF.Mobile.Android.Views
 
         }
 
-        public MvxFragment CurrentFragment { get; set; }
     }
+
 }

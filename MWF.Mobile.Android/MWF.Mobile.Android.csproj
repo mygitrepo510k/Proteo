@@ -93,6 +93,12 @@
     <Reference Include="Cirrious.MvvmCross.Plugins.Location.Droid">
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Location.3.1.1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Location.Droid.dll</HintPath>
     </Reference>
+    <Reference Include="Cirrious.MvvmCross.Plugins.PictureChooser">
+      <HintPath>..\packages\MvvmCross.HotTuna.Plugin.PictureChooser.3.1.1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.PictureChooser.dll</HintPath>
+    </Reference>
+    <Reference Include="Cirrious.MvvmCross.Plugins.PictureChooser.Droid">
+      <HintPath>..\packages\MvvmCross.HotTuna.Plugin.PictureChooser.3.1.1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.PictureChooser.Droid.dll</HintPath>
+    </Reference>
     <Reference Include="Cirrious.MvvmCross.Plugins.Visibility">
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Visibility.3.1.1\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Visibility.dll</HintPath>
     </Reference>
@@ -138,11 +144,13 @@
     <Compile Include="Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="Bootstrap\LocationPluginBootstrap.cs" />
     <Compile Include="Bootstrap\MessengerPluginBootstrap.cs" />
+    <Compile Include="Bootstrap\PictureChooserPluginBootstrap.cs" />
     <Compile Include="Bootstrap\UserInteractionPluginBootstrap.cs" />
     <Compile Include="Bootstrap\VisibilityPluginBootstrap.cs" />
     <Compile Include="DebugTrace.cs" />
     <Compile Include="Helpers\CustomActionBarDrawerToggle.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
+    <Compile Include="Portable\CustomUserInteraction.cs" />
     <Compile Include="Portable\DeviceInfo.cs" />
     <Compile Include="Portable\Reachability.cs" />
     <Compile Include="Portable\Sound.cs" />
@@ -222,6 +230,12 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_SafetyCheckSignature.axml" />
+    <AndroidResource Include="Resources\layout\Item_SafetyCheckFaultImage.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\PopUp_Image.axml">
+	 <SubType>AndroidResource</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Instruction.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
@@ -280,8 +294,12 @@
     <AndroidResource Include="Resources\drawable-mdpi\ic_action_refresh.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\ic_action_refresh.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_refresh.png" />
-    <AndroidResource Include="Resources\drawable\Border.xml" />
+    <AndroidResource Include="Resources\drawable\border.xml" />
     <AndroidResource Include="Resources\drawable-hdpi\ic_drawer_light.png" />
+    <AndroidResource Include="Resources\drawable\drop_shadow.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\small_cross.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

@@ -48,8 +48,13 @@ namespace MWF.Mobile.Core.Services
             // Add the safety checks to the gateway queue
             var safetyCheckData = this.GetCurrentSafetyCheckData();
 
+            var safetyCheckFailed = false;
+
             if (safetyCheckData.Any())
             {
+                var overallStatus = SafetyCheckData.GetOverallStatus(safetyCheckData.Select(scd => scd.GetOverallStatus()));
+                safetyCheckFailed = overallStatus == Enums.SafetyCheckStatus.Failed;
+
                 // Store the latest safety check so the driver can display it at a later point if required
                 var latestSafetyCheck = new LatestSafetyCheck { DriverID = this.LoggedInDriver.ID };
 
@@ -74,8 +79,13 @@ namespace MWF.Mobile.Core.Services
 
             //TODO: add the logon event to the gateway queue
 
-            // The startup process is now complete - redirect to the main view
-            ShowViewModel<ViewModels.MainViewModel>();
+            // The startup process is now complete
+            if (safetyCheckFailed)
+                // The safety check failed so the user should not be logged in
+                ChangePresentation(new Presentation.CloseUpToViewPresentationHint<ViewModels.PasscodeViewModel>());
+            else
+                // Redirect to the main view
+                ShowViewModel<ViewModels.MainViewModel>();
         }
 
     }

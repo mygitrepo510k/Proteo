@@ -108,6 +108,7 @@ namespace MWF.Mobile.Core.ViewModels
                 if (isConfirmed)
                 {
                     _startupService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
+                    _startupService.CurrentTrailer = trailer;
                     ShowViewModel<SafetyCheckViewModel>();
                 }
             }, "Confirm trailer", "Select");

@@ -31,8 +31,6 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
-            this.Activity.ActionBar.Show();
-            this.Activity.ActionBar.Title = "Log Fault";
 
             base.OnViewCreated(view, savedInstanceState);
         }

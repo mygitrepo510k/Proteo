@@ -15,6 +15,7 @@ using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 using support = Android.Support.V4.App;
 using MWF.Mobile.Android.Helpers;
 
@@ -70,7 +71,6 @@ namespace MWF.Mobile.Android.Views
             return _supportedFragmentViewModels[viewModelType];
         }
 
-
 		#region Fragment host
 
         private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
@@ -105,7 +105,6 @@ namespace MWF.Mobile.Android.Views
             if (fragment == null)
                 return false;
 
-
             var viewModel = fragment.ViewModel;
             this.ActionBar.Title = ((BaseFragmentViewModel)viewModel).FragmentTitle;
 
@@ -132,20 +131,80 @@ namespace MWF.Mobile.Android.Views
 
             if (CurrentFragment != null && CurrentFragment.GetType() == fragmentTypeToClose)
             {
-                FragmentManager.PopBackStack();
+                FragmentManager.PopBackStackImmediate();
+
+                SetActivityTitleFromFragment();
+
                 return true;
             }
             else return false;
         }
 
-        // Current Fragment in the fragment host. Note although the id being used appears to be that of the 
-        // original container, it gets replaced during a show by the new fragment *but* keeps it's old id.
-        public Fragment CurrentFragment
+        /// <summary>
+        /// Remove all fragments from the back stack up to, but not including, the initial view.
+        /// </summary>
+        public void CloseToInitialView()
         {
-            get { return FragmentManager.FindFragmentById(Resource.Id.fragment_host); }
+            var backStackEntryCount = FragmentManager.BackStackEntryCount;
+
+            for (var i = 0; i < backStackEntryCount; i++)
+            {
+                FragmentManager.PopBackStackImmediate();
+            }
+
+            SetActivityTitleFromFragment();
+        }
+
+        /// <summary>
+        /// Remove all fragments from the back stack up to, but not including the specified view.
+        /// </summary>
+        /// <remarks>
+        /// If the specified view is not found then all fragments will be removed up to, but not including, the initial view.
+        /// </remarks>
+        public void CloseUpToView<TViewModel>()
+            where TViewModel : IMvxViewModel
+        {
+            var targetFragmentType = _supportedFragmentViewModels[typeof(TViewModel)];
+            var backStackEntryCount = FragmentManager.BackStackEntryCount;
+
+            for (var i = 0; i < backStackEntryCount; i++)
+            {
+                if (CurrentFragment.GetType() == targetFragmentType)
+                    break;
+
+                FragmentManager.PopBackStackImmediate();            
+            }
+
+            SetActivityTitleFromFragment();
+        }
+
+        // Current Fragment in the fragment host. Note although the id being used appears to be that of the 
+        // original container, it gets replaced during a show by the new fragment *but* keeps its old id.
+        public MvxFragment CurrentFragment
+        {
+            get { return FragmentManager.FindFragmentById(Resource.Id.fragment_host) as MvxFragment; }
         }
 
  		#endregion
+
+        public async override void OnBackPressed()
+        {
+            if (CurrentFragment.DataContext is IBackButtonHandler)
+            {
+                var continueBack = await (CurrentFragment.DataContext as IBackButtonHandler).OnBackButtonPressed();
+
+                if (continueBack)
+                {
+                    base.OnBackPressed();
+                    SetActivityTitleFromFragment();
+                }
+            }
+            else
+            {
+                base.OnBackPressed();
+                SetActivityTitleFromFragment();
+            }
+        }
 
 
         public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
@@ -176,6 +235,11 @@ namespace MWF.Mobile.Android.Views
         {
             base.OnPostCreate(savedInstanceState);
             this._drawerToggle.SyncState();
+        }
+
+        private void SetActivityTitleFromFragment()
+        {
+            this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
         }
 
     }

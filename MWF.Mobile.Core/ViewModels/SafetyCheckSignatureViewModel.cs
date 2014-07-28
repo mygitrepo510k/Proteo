@@ -112,11 +112,9 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             // Set the signature on the vehicle and trailer safety checks
-            var signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
-
             foreach (var safetyCheckData in _safetyCheckData)
             {
-                safetyCheckData.Signature = signature;
+                safetyCheckData.Signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
             }
 
             // Complete the startup process

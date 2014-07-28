@@ -8,6 +8,8 @@ using Android.Widget;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using MWF.Mobile.Core.ViewModels;
+using Android.Views.InputMethods;
+using Android.Content;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
@@ -15,11 +17,25 @@ namespace MWF.Mobile.Android.Views.Fragments
     {
         protected MvxFragment CurrentFragment;
 
+
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             var myActivity = (BaseActivityView)this.Activity;
 
             base.OnViewCreated(view, savedInstanceState);
+        }
+
+        protected void HideKeyboard()
+        {
+            InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
+            mgr.HideSoftInputFromWindow(this.View.WindowToken, 0);
+        }
+
+        protected void ShowSoftKeyboard()
+        {
+            InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
+            mgr.ShowSoftInput(this.View, ShowFlags.Forced);
+            mgr.ToggleSoftInput(ShowFlags.Forced, HideSoftInputFlags.ImplicitOnly);
         }
     }
 }

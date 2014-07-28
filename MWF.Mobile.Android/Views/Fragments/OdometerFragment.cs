@@ -35,11 +35,9 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnResume()
         {
             base.OnResume();
-            EditText odometerText = (EditText)this.View.FindViewById(Resource.Id.odometerText);
-            InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
-            mgr.ShowSoftInput(odometerText, ShowFlags.Forced);
-            mgr.ToggleSoftInput(ShowFlags.Forced, HideSoftInputFlags.ImplicitOnly);
-
+            EditText odometerText = (EditText)this.View.FindViewById(Resource.Id.odometerText);            
+            odometerText.RequestFocus();
+            this.ShowSoftKeyboard();
         }
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
@@ -54,8 +52,7 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnPause()
         {
             base.OnPause();
-            InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
-            mgr.HideSoftInputFromWindow(this.View.WindowToken, HideSoftInputFlags.None);
+            this.HideKeyboard();
         }
     }
 }

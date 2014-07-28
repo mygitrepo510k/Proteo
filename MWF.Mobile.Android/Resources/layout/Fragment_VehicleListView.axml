@@ -6,7 +6,7 @@
     android:layout_height="fill_parent">
     <textView
         style="@style/Proteo.TextView.ListHeading"
-        local:MvxBind="Text VehicleSelectText" />
+        local:MvxBind="Text VehicleSelectText + VehicleListCount" />
     <Mvx.MvxListView
         local:MvxBind="ItemsSource Vehicles; ItemClick ShowVehicleDetailCommand"
         local:MvxItemTemplate="@layout/item_vehicle" />

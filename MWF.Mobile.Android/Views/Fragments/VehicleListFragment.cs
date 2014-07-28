@@ -70,7 +70,6 @@ namespace MWF.Mobile.Android.Views.Fragments
             mgr.HideSoftInputFromWindow(this.View.WindowToken, 0);
 
             this.Activity.ActionBar.Show();
-
             base.OnViewCreated(view, savedInstanceState);
         }
 

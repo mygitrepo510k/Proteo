@@ -31,18 +31,18 @@ namespace MWF.Mobile.Android.Views.Fragments
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             return this.BindingInflate(Resource.Layout.Fragment_Manifest, null);
         }
-
+        
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
 
-            var instructionItem = (TextView)view.FindViewById(Resource.Id.instructionItem);
+            var instructionItem = (TextView)view.FindViewById(Resource.Id.instructionDate);
             var set = this.CreateBindingSet<ManifestFragment, ManifestViewModel>();
             set.Bind(instructionItem).For(i => i.Text).To(vm => vm.MobileApplicationData);
             set.Apply();
 
             base.OnViewCreated(view, savedInstanceState);
         }
-
+        
     }
 
 }

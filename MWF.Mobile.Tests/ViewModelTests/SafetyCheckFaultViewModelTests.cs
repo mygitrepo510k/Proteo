@@ -1,0 +1,435 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore.Core;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.Test.Core;
+using Cirrious.MvvmCross.Views;
+using Moq;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels;
+using Xunit;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using Cirrious.MvvmCross.Plugins.Messenger;
+using Cirrious.MvvmCross.Plugins.PictureChooser;
+using MWF.Mobile.Core.Messages;
+
+namespace MWF.Mobile.Tests.ViewModelTests
+{
+    
+    public class SafetyCheckFaultViewModelTests
+        : MvxIoCSupportingTest
+    {
+
+        private IFixture _fixture;
+        private IStartupService _startupService;
+        private Guid _vehicleFaultGuid;
+        private Guid _trailerFaultGuid;
+        private SafetyCheckFault _vehicleSafetyCheckFault;
+        private SafetyCheckFault _trailerSafetyCheckFault;
+        private Mock<IMvxPictureChooserTask> _pictureChooserMock;
+        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<IMvxMessenger> _mockMessenger;
+        private byte[] _pictureBytes;
+
+        protected override void AdditionalSetup()
+        {
+
+            _mockUserInteraction = new Mock<IUserInteraction>();
+            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
+
+            _mockMessenger = new Mock<IMvxMessenger>();
+            Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
+
+            _fixture = new Fixture().Customize(new AutoMoqCustomization());
+
+            _startupService = _fixture.Create<StartupService>();
+            _fixture.Inject<IStartupService>(_startupService);
+
+
+            _pictureBytes = new byte[] {1, 2, 3, 4};
+            _pictureChooserMock = new Mock<IMvxPictureChooserTask>();
+            _pictureChooserMock.Setup(pc => pc.TakePicture(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Action<Stream>>(), It.IsAny<Action>())).
+                                Callback<int, int, Action<Stream>, Action>((s1, s2, a1, a2) => { a1.Invoke(new MemoryStream(_pictureBytes)); });
+            _fixture.Inject<IMvxPictureChooserTask>(_pictureChooserMock.Object);
+            
+
+            _vehicleSafetyCheckFault = _startupService.CurrentVehicleSafetyCheckData.Faults.First();
+            _vehicleFaultGuid = _vehicleSafetyCheckFault.ID;
+
+            _trailerSafetyCheckFault = _startupService.CurrentTrailerSafetyCheckData.Faults.First();
+            _trailerFaultGuid = _trailerSafetyCheckFault.ID;
+
+
+
+        }
+
+        // Checks that after initialization the "DiscretionaryOrFailureText" property is set correctly
+        // i.e. to the FaultTypeText it was initialized with
+        [Fact]
+        public void SafetyCheckFaultVM_Init_DiscretionaryOrFailureText()
+        {
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() {FaultTypeText =  "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true};
+
+            safetyCheckFaultVM.Init(navItem);
+
+            Assert.Equal(navItem.FaultTypeText, safetyCheckFaultVM.DiscretionaryOrFailureText);
+
+        }
+
+        // Checks that after initialization the "CheckTypeText" property is set correctly
+        // i.e. to the title of the SafetyCheckFault data model
+        [Fact]
+        public void SafetyCheckFaultVM_Init_CheckTypeText()
+        {
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            Assert.Equal(_vehicleSafetyCheckFault.Title, safetyCheckFaultVM.CheckTypeText);
+        }
+
+        // Checks that after initialization the "CommentText" property is set correctly
+        // i.e. to the comment property of the SafetyCheckFault data model
+        [Fact]
+        public void SafetyCheckFaultVM_Init_CommentText()
+        {
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            Assert.Equal(_vehicleSafetyCheckFault.Comment, safetyCheckFaultVM.CommentText);
+        }
+
+        // Checks that after initialization the "HasCommentText" property is false
+        // if the Comment field is empty
+        [Fact]
+        public void SafetyCheckFaultVM_Init_HasCommentText_CommentEmpty()
+        {
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            _vehicleSafetyCheckFault.Comment = string.Empty;
+
+            safetyCheckFaultVM.Init(navItem);
+
+            Assert.False(safetyCheckFaultVM.HasCommentText);
+        }
+
+        // Checks that after initialization the "HasCommentText" property is true
+        // if the Comment field has a value
+        [Fact]
+        public void SafetyCheckFaultVM_Init_HasCommentText()
+        {
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _trailerFaultGuid, IsVehicle = false };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            Assert.True(safetyCheckFaultVM.HasCommentText);
+        }
+
+        // Checks that after initialization the image list is populated with SafetyCheckFaultImageViewModels built up from the images
+        // in the fault datamodel
+        [Fact]
+        public void SafetyCheckFaultVM_Init_ImagesPopulated()
+        {
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            Assert.Equal(_vehicleSafetyCheckFault.Images.ToList().Count, safetyCheckFaultVM.Images.Count);
+
+            for (int i = 0; i < safetyCheckFaultVM.Images.Count; i++)
+            {
+                Assert.Same(_vehicleSafetyCheckFault.Images.ToList()[i], safetyCheckFaultVM.Images[i].FaultImage);
+            }
+
+        }
+
+
+        // Checks that after initialization All the properties in the above tests are correct, but for
+        // the case when a fault is for a trailer
+        [Fact]
+        public void SafetyCheckFaultVM_Init_Trailer()
+        {
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _trailerFaultGuid, IsVehicle = false };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            Assert.Equal(navItem.FaultTypeText, safetyCheckFaultVM.DiscretionaryOrFailureText);
+            Assert.Equal(_trailerSafetyCheckFault.Title, safetyCheckFaultVM.CheckTypeText);
+            Assert.Equal(_trailerSafetyCheckFault.Comment, safetyCheckFaultVM.CommentText);
+            Assert.Equal(_trailerSafetyCheckFault.Images.ToList().Count, safetyCheckFaultVM.Images.Count);
+
+        }
+
+        // Checks that when the safety check fault comment is modified and the done command is fired
+        // the comment change has been made on the underlying safety check fault data model
+        [Fact]
+        public void SafetyCheckFaultVM_CommentTextChanged()
+        {
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            // Change the comment text
+            safetyCheckFaultVM.CommentText = "Some new text";
+
+            // Invoke the done command
+            safetyCheckFaultVM.DoneCommand.Execute(null);
+
+            Assert.Equal(safetyCheckFaultVM.CommentText, _vehicleSafetyCheckFault.Comment);
+        }
+
+        // Checks that when the TakePicture command is executed a new image view model appers in the images list
+        [Fact]
+        public void SafetyCheckFaultVM_TakePicture()
+        {
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            int previousImageCount = safetyCheckFaultVM.Images.Count;
+            int previousSequence = safetyCheckFaultVM.Images.Max(i => i.FaultImage.Sequence);
+
+            // Take the picture
+            safetyCheckFaultVM.TakePictureCommand.Execute(null);
+
+            // should have an extra image in view model model
+            Assert.Equal(previousImageCount + 1, safetyCheckFaultVM.Images.Count);
+
+            // data model should still have previous number of images at this point (we haven't pressed "done" yet)
+            Assert.Equal(previousImageCount, _vehicleSafetyCheckFault.Images.Count);
+
+            // new image bytes should be the same as the one supplied by the mock
+            Assert.Equal(_pictureBytes.Length, safetyCheckFaultVM.Images[previousImageCount].Bytes.Length);
+
+            // Invoke the done command
+            safetyCheckFaultVM.DoneCommand.Execute(null);
+
+            // should have an extra image in data model
+            Assert.Equal(previousImageCount + 1, _vehicleSafetyCheckFault.Images.Count);
+
+            // sequence number should be an in increment of previous highest sequence
+            Assert.Equal(previousSequence + 1, _vehicleSafetyCheckFault.Images[previousImageCount].Sequence);
+
+            // id should point back to parent safety fault
+            Assert.Equal(_vehicleFaultGuid , _vehicleSafetyCheckFault.Images[previousImageCount].SafetyCheckFaultID);
+
+            // new image bytes should be the same as the one supplied by the mock
+            Assert.Equal(_pictureBytes.Length, _vehicleSafetyCheckFault.Images[previousImageCount].Bytes.Length);
+        }
+
+        // Checks that when the back button is pressed a dialog is shown, and if the users oks it then the view model fires a result message
+        // back to the messenger service
+        [Fact]
+        public async void SafetyCheckFaultVM_BackButton_OK()
+        {
+
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            _mockUserInteraction.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>())).Returns( Task.FromResult<bool>(true));
+           
+            await safetyCheckFaultVM.OnBackButtonPressed();
+
+            // since user pressed "ok", the back button stack proceeds and (as a modal view model) the view model should have
+            // published a "false" result
+            _mockMessenger.Verify(mm => mm.Publish(It.Is<ModalNavigationResultMessage<bool>>(msg => msg.Result == false )), Times.Once);
+            
+        }
+
+        // Checks that when the back button is pressed a dialog is shown, and if the users cancels it then view model doesn't fire a result message
+        // back to the messenger service
+        [Fact]
+        public async void SafetyCheckFaultVM_BackButton_Cancel()
+        {
+
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            _mockUserInteraction.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>())).Returns(Task.FromResult<bool>(false));
+
+            await safetyCheckFaultVM.OnBackButtonPressed();
+
+            // since user pressed "ok", the back button stack proceeds and (as a modal view model) the view model should have
+            // published a "false" result
+            _mockMessenger.Verify(mm => mm.Publish(It.IsAny<ModalNavigationResultMessage<bool>>()), Times.Never);
+
+        }
+
+        // Checks that when the Done Command is exectuted the view model fires a result message
+        // back to the messenger service
+        [Fact]
+        public void SafetyCheckFaultVM_Done()
+        {
+
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            safetyCheckFaultVM.DoneCommand.Execute(null);
+
+            _mockMessenger.Verify(mm => mm.Publish(It.Is<ModalNavigationResultMessage<bool>>(msg => msg.Result == true)), Times.Once);
+
+        }
+
+        // Checks that when the delete command is executed on a fault image the image is deleted from the view model (initially) and the data
+        // model (when done has been pressed)
+        [Fact]
+        public void SafetyCheckFaultImageVM_Delete_OK()
+        {
+
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            int previousImageCount = safetyCheckFaultVM.Images.Count;
+
+            // dialog returns true
+            _mockUserInteraction.Setup(ui => ui.Confirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>()))
+                                .Callback<string, Action<bool>, string, string, string>( (s1,a,s2,s3,s4) => a.Invoke(true));
+
+            //delete the last image
+            safetyCheckFaultVM.Images[previousImageCount - 1].DeleteCommand.Execute(null);
+
+            // should have one less image in view model 
+            Assert.Equal(previousImageCount - 1, safetyCheckFaultVM.Images.Count);
+
+            // data model should still have previous number of images at this point (we haven't pressed "done" yet)
+            Assert.Equal(previousImageCount, _vehicleSafetyCheckFault.Images.Count);
+
+            // Invoke the done command
+            safetyCheckFaultVM.DoneCommand.Execute(null);
+
+            // Data model should now have one image less
+            Assert.Equal(previousImageCount - 1, _vehicleSafetyCheckFault.Images.Count);
+
+
+        }
+
+        [Fact]
+        // Checks that when the user cancels out of an image deletion nothing is actually deleted
+        public void SafetyCheckFaultImageVM_Delete_Cancel()
+        {
+
+            base.ClearAll();
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            int previousImageCount = safetyCheckFaultVM.Images.Count;
+
+            // dialog returns false
+            _mockUserInteraction.Setup(ui => ui.Confirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>()))
+                                .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(false));
+
+            // attempt to delete the last image
+            safetyCheckFaultVM.Images[previousImageCount - 1].DeleteCommand.Execute(null);
+
+            // nothing should have been deleted since we cancelled out of the deletion
+            Assert.Equal(previousImageCount, safetyCheckFaultVM.Images.Count);
+            Assert.Equal(previousImageCount, _vehicleSafetyCheckFault.Images.Count);
+
+
+        }
+
+
+        [Fact]
+        // Checks that when the Display command is executed on an image the image is displayed in a popup image
+        public void SafetyCheckFaultImageVM_DisplayImage()
+        {
+
+            base.ClearAll();
+
+            var customUI = new Mock<ICustomUserInteraction>();
+            Ioc.RegisterSingleton<ICustomUserInteraction>(customUI.Object);
+
+            var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
+
+            SafetyCheckNavItem navItem = new SafetyCheckNavItem() { FaultTypeText = "Test Text", FaultID = _vehicleFaultGuid, IsVehicle = true };
+
+            safetyCheckFaultVM.Init(navItem);
+
+            safetyCheckFaultVM.Images[0].DisplayCommand.Execute(null);
+
+            customUI.Verify(cui => cui.PopUpImage(It.Is<byte[]>(ba => ba[0] ==  safetyCheckFaultVM.Images[0].Bytes[0]),
+                                                  It.Is<string>(s=> String.IsNullOrEmpty(s)),
+                                                  It.IsAny<Action>(),
+                                                  It.IsAny<string>(),
+                                                  It.Is<string>(s => s=="Close")));
+
+
+
+        }
+
+
+
+    }
+
+}

@@ -8,20 +8,11 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.Converters
 {
-    public class DateToTextMessageValueConverter : MvxValueConverter<DateTime,string>
+    public class DateToTextTimeValueConverter : MvxValueConverter<DateTime,string>
     {
         protected override string Convert(DateTime value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (DateTime.Today == value.Date)
-            {
-                return "Today";
-            }
-            else if (DateTime.Today.AddDays(1) == value.Date)
-            {
-                return "Tomorrow";
-            }
-
-            return value.Date.ToString("d");
+            return value.ToString("HH:mm");
         }
 
     }

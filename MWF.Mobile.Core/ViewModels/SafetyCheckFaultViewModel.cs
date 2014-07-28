@@ -132,7 +132,7 @@ namespace MWF.Mobile.Core.ViewModels
         public ObservableCollection<SafetyCheckFaultImageViewModel> Images
         {
             get { return _images; }
-            set { _images = value; RaisePropertyChanged(() => Images); }
+            private set { _images = value; RaisePropertyChanged(() => Images); }
         }
 
         #endregion
@@ -165,7 +165,7 @@ namespace MWF.Mobile.Core.ViewModels
             var memoryStream = new MemoryStream();
             stream.CopyTo(memoryStream);
 
-            int sequenceNumber = (Images.Any()) ? _images.Max(i => i.FaultImage.Sequence) : 1;
+            int sequenceNumber = (Images.Any()) ? _images.Max(i => i.FaultImage.Sequence) + 1 : 1;
             Image image = new Image() { ID = Guid.NewGuid(), SafetyCheckFaultID = _safetyCheckFault.ID, Sequence = sequenceNumber, Bytes = memoryStream.ToArray() };
 
 

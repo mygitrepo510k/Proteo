@@ -32,7 +32,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string VehicleSelectText
         {
-            get { return "Select vehicle - Showing " + VehicleListCount; }
+            get { return "Select vehicle - Showing "; }
         }
 
         public override string FragmentTitle
@@ -40,9 +40,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Vehicle"; }
         }
 
+        private int _vehicleListCount;
         public int VehicleListCount
         {
-            get { return Vehicles.ToList().Count(); }
+            get { return _vehicleListCount; }
+            set { _vehicleListCount = value; RaisePropertyChanged(() => VehicleListCount); }
         }
 
         public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,
@@ -55,7 +57,9 @@ namespace MWF.Mobile.Core.ViewModels
 
             _currentDriverRepository = currentDriverRepository;
             _vehicleRepository = vehicleRepository;
+
             Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
+            _vehicleListCount = Vehicles.ToList().Count(); 
 
             LastVehicleSelect();
         }
@@ -140,6 +144,7 @@ namespace MWF.Mobile.Core.ViewModels
         private void FilterList()
         {
             Vehicles = _originalVehicleList.Where(v => v.Registration.ToUpper().Contains(SearchText.ToUpper()));
+            VehicleListCount = Vehicles.ToList().Count(); 
         }
 
         private MvxCommand _refreshListCommand;
@@ -179,6 +184,8 @@ namespace MWF.Mobile.Core.ViewModels
                     _vehicleRepository.Insert(vehicles);
 
                     Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
+
+                    VehicleListCount = Vehicles.ToList().Count(); 
 
                     //Recalls the filter text if there is text in the search field.
                     if (SearchText != null)

@@ -78,8 +78,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (SafetyProfileTrailer == null && SafetyProfileVehicle == null)
             {
-                Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found - Redirecting to Manifest Screen.");
-                startupService.Commit();
+                Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found - Redirecting to Manifest Screen.", () => startupService.Commit());
             }
 
         }
@@ -184,7 +183,6 @@ namespace MWF.Mobile.Core.ViewModels
         {
             return await Mvx.Resolve<IUserInteraction>().ConfirmAsync("All changes will be lost, do you wish to continue?", "Changes will be lost!");
         }
-
 
         private void DoLogFaultCommand()
         {

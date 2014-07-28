@@ -39,6 +39,9 @@ namespace MWF.Mobile.Core.ViewModels
 
             _repositories = repositories;
             Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll();
+
+            _trailerListCount = Trailers.ToList().Count(); 
+
         }
 
         public override string FragmentTitle
@@ -53,7 +56,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string TrailerSelectText
         {
-            get { return "Select trailer for " + VehicleRegistration; }
+            get { return "Select trailer for " + VehicleRegistration + " - Showing "; }
         }
 
         public String VehicleRegistration
@@ -62,6 +65,13 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 return _repositories.VehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID).Registration;
             }
+        }
+
+        private int _trailerListCount;
+        public int TrailerListCount
+        {
+            get { return _trailerListCount; }
+            set { _trailerListCount = value; RaisePropertyChanged(() => TrailerListCount); }
         }
 
         private IEnumerable<Trailer> _trailers;
@@ -126,6 +136,7 @@ namespace MWF.Mobile.Core.ViewModels
         private void FilterList()
         {
             Trailers = _originalTrailerList.Where(t => t.Registration.ToUpper().Contains(SearchText.ToUpper()));
+            TrailerListCount = Trailers.ToList().Count(); 
         }
 
         //This is method associated with the refresh button in the action bar. 
@@ -182,6 +193,8 @@ namespace MWF.Mobile.Core.ViewModels
                     _repositories.TrailerRepository.Insert(trailers);
 
                     Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll();
+
+                    TrailerListCount = Trailers.ToList().Count(); 
 
                     //Recalls the filter text if there is text in the search field.
                     if (SearchText != null)

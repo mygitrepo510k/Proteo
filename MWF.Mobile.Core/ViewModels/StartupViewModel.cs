@@ -34,7 +34,6 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IDeviceInfo _deviceInfo = null; 
         private readonly IStartupService _startupService = null; 
         private readonly IUserInteraction _userInteraction = null; 
-        private readonly IGpsService _gpsService = null;
 
         public StartupViewModel(IAuthenticationService authenticationService, 
                                 IGatewayService gatewayService, 
@@ -44,8 +43,7 @@ namespace MWF.Mobile.Core.ViewModels
                                 IRepositories repositories, 
                                 IDeviceInfo deviceInfo, 
                                 IStartupService startupService, 
-                                IUserInteraction userInteraction, 
-                                IGpsService gpsService)
+                                IUserInteraction userInteraction)
         {
             _authenticationService = authenticationService;
             _gatewayService = gatewayService;
@@ -56,7 +54,6 @@ namespace MWF.Mobile.Core.ViewModels
             _deviceInfo = deviceInfo;
             _startupService = startupService;
             _userInteraction = userInteraction;
-            _gpsService = gpsService;
 
 #if DEBUG
             // Uncomment the following line to clear all data on startup

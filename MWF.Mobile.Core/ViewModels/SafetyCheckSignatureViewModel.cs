@@ -9,25 +9,52 @@ using Chance.MvvmCross.Plugins.UserInteraction;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class SafetyCheckSignatureViewModel : MvxViewModel
+    public class SafetyCheckSignatureViewModel : BaseFragmentViewModel
     {
 
-        private readonly Services.IStartupInfoService _startupInfoService = null;
+        private readonly Services.IStartupService _startupService = null;
         private readonly Services.IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IUserInteraction _userInteraction = null;
 
-        public SafetyCheckSignatureViewModel(Services.IStartupInfoService startupInfoService, Services.IGatewayQueuedService gatewayQueuedService, IUserInteraction userInteraction)
+        IEnumerable<Models.SafetyCheckData> _safetyCheckData;
+
+        public SafetyCheckSignatureViewModel(Services.IStartupService startupService, Services.IGatewayQueuedService gatewayQueuedService, IUserInteraction userInteraction, Repositories.IRepositories repositories)
         {
-            _startupInfoService = startupInfoService;
+            _startupService = startupService;
             _gatewayQueuedService = gatewayQueuedService;
             _userInteraction = userInteraction;
 
-            DriverName = startupInfoService.LoggedInDriver.DisplayName;
-            VehicleRegistration = startupInfoService.CurrentVehicle.Registration;
-            TrailerRef = startupInfoService.CurrentTrailer == null ? "- no trailer -" : startupInfoService.CurrentTrailer.Registration;
+            // Retrieve the vehicle and trailer safety check data from the startup info service
+            _safetyCheckData = _startupService.GetCurrentSafetyCheckData();
+            
+            if (!_safetyCheckData.Any())
+                throw new Exception("Invalid application state - signature screen should not be displayed in cases where there are no safety checks.");
 
-            //TODO: retrieve the relevant message from the MWF Mobile Config repository - Luke is currently implementing this
-            ConfirmationText = "I confirm that this vehicle is NOT safe or roadworthy - Please call the traffic office on 0845 644 3750 to inform them of these fault(s).";
+            var combinedOverallStatus = Models.SafetyCheckData.GetOverallStatus(_safetyCheckData.Select(scd => scd.GetOverallStatus()));
+
+            if (combinedOverallStatus == Enums.SafetyCheckStatus.NotSet)
+                throw new Exception("Cannot proceed to safety check signature screen because the safety check hasn't been completed");
+
+            DriverName = startupService.LoggedInDriver.DisplayName;
+            VehicleRegistration = startupService.CurrentVehicle.Registration;
+            TrailerRef = startupService.CurrentTrailer == null ? "- no trailer -" : startupService.CurrentTrailer.Registration;
+
+            var config = repositories.ConfigRepository.Get();
+
+            switch (combinedOverallStatus)
+            {
+                case Enums.SafetyCheckStatus.Failed:
+                    this.ConfirmationText = config.SafetyCheckFailText;
+                    break;
+                case Enums.SafetyCheckStatus.DiscretionaryPass:
+                    this.ConfirmationText = config.SafetyCheckDiscretionaryText;
+                    break;
+                case Enums.SafetyCheckStatus.Passed:
+                    this.ConfirmationText = config.SafetyCheckPassText;
+                    break;
+                default:
+                    throw new Exception("Unexpected safety check status");
+            }
         }
 
         private string _driverName;
@@ -84,31 +111,22 @@ namespace MWF.Mobile.Core.ViewModels
                 return;
             }
 
-            // Retrieve the vehicle and trailer safety check data from the startup info service
-            var safetyCheckDataList = new List<Models.SafetyCheckData>(2);
-
-            if (_startupInfoService.CurrentVehicleSafetyCheckData != null)
-                safetyCheckDataList.Add(_startupInfoService.CurrentVehicleSafetyCheckData);
-
-            if (_startupInfoService.CurrentTrailerSafetyCheckData != null)
-                safetyCheckDataList.Add(_startupInfoService.CurrentTrailerSafetyCheckData);
-
-            // Set the signature on both
+            // Set the signature on the vehicle and trailer safety checks
             var signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
 
-            foreach (var safetyCheckData in safetyCheckDataList)
+            foreach (var safetyCheckData in _safetyCheckData)
             {
                 safetyCheckData.Signature = signature;
             }
 
-            // Add the safety checks to the gateway queue
-            var actions = safetyCheckDataList.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
-            _gatewayQueuedService.AddToQueue(actions);
-
-            // The startup process is now complete - redirect to the main view
-            ShowViewModel<MainViewModel>();
+            // Complete the startup process
+            _startupService.Commit();
         }
 
+        public override string FragmentTitle
+        {
+            get { return "Signature"; }
+        }
     }
 
 }

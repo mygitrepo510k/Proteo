@@ -15,24 +15,23 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class SafetyCheckViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
-        private IStartupInfoService _startupInfoService;
+        private IStartupService _startupService;
         private IRepositories _repositories;
-
 
         #region Construction
 
-        public SafetyCheckViewModel(IStartupInfoService startupInfoService, IRepositories repositories)
+        public SafetyCheckViewModel(IStartupService startupService, IRepositories repositories)
         {
-            _startupInfoService = startupInfoService;
+            _startupService = startupService;
             _repositories = repositories;
 
             Vehicle vehicle = null;
             Trailer trailer = null;
 
-            vehicle = _repositories.VehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID);
+            vehicle = _repositories.VehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID);
 
-            if (_startupInfoService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
-                trailer = _repositories.TrailerRepository.GetByID(_startupInfoService.LoggedInDriver.LastSecondaryVehicleID);
+            if (_startupService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
+                trailer = _repositories.TrailerRepository.GetByID(_startupService.LoggedInDriver.LastSecondaryVehicleID);
 
             SafetyProfileVehicle = _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink).SingleOrDefault();
 
@@ -137,7 +136,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (!allChecksCompleted)
                         return allChecksCompleted;
 
-                    allChecksCompleted = (safetyCheckItem.CheckStatus != SafetyCheckEnum.NotSet);
+                    allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
                 }
 
                 return allChecksCompleted;
@@ -216,15 +215,12 @@ namespace MWF.Mobile.Core.ViewModels
 
             }
 
-            _startupInfoService.CurrentVehicleSafetyCheckData = vehicleSafetyCheckData;
-            _startupInfoService.CurrentTrailerSafetyCheckData = trailerSafetyCheckData;
-
+            _startupService.CurrentVehicleSafetyCheckData = vehicleSafetyCheckData;
+            _startupService.CurrentTrailerSafetyCheckData = trailerSafetyCheckData;
 
         }
 
         #endregion
-
-
 
     }
 }

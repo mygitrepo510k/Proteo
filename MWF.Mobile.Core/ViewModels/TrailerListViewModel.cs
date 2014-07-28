@@ -28,16 +28,15 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly ITrailerRepository _trailerRepository;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
-        private readonly IStartupInfoService _startupInfoService;
+        private readonly IStartupService _startupService;
 
         public TrailerListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, ITrailerRepository trailerRepository, IReachability reachabibilty,
-
-            IToast toast, IStartupInfoService startupInfoService)
+            IToast toast, IStartupService startupService)
         {
             _gatewayService = gatewayService;
             _toast = toast;
             _reachability = reachabibilty;
-            _startupInfoService = startupInfoService;
+            _startupService = startupService;
 
             _trailerRepository = trailerRepository;
             Trailers = _originalTrailerList = _trailerRepository.GetAll();
@@ -63,7 +62,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return _vehicleRepository.GetByID(_startupInfoService.LoggedInDriver.LastVehicleID).Registration;
+                return _vehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID).Registration;
             }
         }
 
@@ -107,7 +106,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (isConfirmed)
                 {
-                    _startupInfoService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
+                    _startupService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
                     ShowViewModel<SafetyCheckViewModel>();
                 }
             }, "Confirm trailer", "Select");

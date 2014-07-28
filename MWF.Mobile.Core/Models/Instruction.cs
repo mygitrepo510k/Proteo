@@ -6,32 +6,87 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
 {
-    public class Instruction
+    public class MobileApplicationData : IBlueSphereEntity
     {
-        public IList<string> Lines { get; set; }
+        [JsonProperty(@"ID")]
+        public Guid ID { get; set; }
+        [JsonProperty(@"MobileApplicationId")]
+        public Guid MobileApplicationId { get; set; }
+        [JsonProperty(@"CustomerId")]
+        public Guid CustomerId { get; set; }
+        [JsonProperty(@"DeviceId")]
+        public Guid DeviceId { get; set; }
+        [JsonProperty(@"VehicleId")]
+        public Guid VehicleId { get; set; }
+        [JsonProperty(@"DriverId")]
+        public Guid DriverId { get; set; }
+        [JsonProperty(@"EffectiveDate")]
+        public DateTime EffectiveDate { get; set; }
+        public string Data { get; set; }
+        [JsonProperty(@"SyncState")]
+        public int SyncState { get; set; }
+        public DateTime Created { get; set; }
+        [JsonProperty(@"lock")]
+        public bool Lock { get; set; }
+        [JsonProperty(@"ondevice")]
+        public bool OnDevice { get; set; }
+        public bool IsDeleted { get; set; }
+        [JsonProperty(@"vehicle")]
+        public string VehicleRegistration { get; set; }
+        [JsonProperty(@"driver")]
+        public string DriverTitle { get; set; }
+        [JsonProperty(@"last_activity")]
+        public DateTime LastActvity { get; set; }
+        [JsonProperty(@"static")]
+        public bool Static { get; set; }
+        public bool IsDone { get; set; }
+        [JsonProperty(@"sequence")]
+        public int Sequence { get; set; }
+        [JsonProperty(@"group_title")]
+        public string GroupTitle { get; set; }
+        [JsonProperty(@"title")]
+        public string Title { get; set; }
+        [JsonProperty(@"group_subtitle")]
+        public string GroupSubTitle { get; set; }
+        [JsonProperty(@"subtitle")]
+        public string SubTitle { get; set; }
     }
 
-    public class Order : IBlueSphereEntity
+    public class Instruction
+    {
+        public List<string> Lines { get; set; }
+    }
+
+    public class Order
     {
         [Unique]
         [PrimaryKey]
         [JsonProperty(@"id")]
-        public Guid ID { get; set; }
-        [JsonProperty(@"sequence")]
-        public int Sequence { get; set; }
-        public InstructionType Type { get; set; }
-        [JsonProperty(@"priority")]
-        public string Priority { get; set; }
-        [JsonProperty(@"description")]
-        public string Description { get; set; }
-        [JsonProperty(@"description2")]
-        public string Description2 { get; set; }
+        public string Id { get; set; }
+
         [JsonProperty(@"routeid")]
         public string RouteId { get; set; }
+
         [JsonProperty(@"title")]
         public string RouteTitle { get; set; }
+
         [JsonProperty(@"routedate")]
         public DateTime RouteDate { get; set; }
+
+        [JsonProperty(@"sequence")]
+        public int Sequence { get; set; }
+        
+        [JsonProperty(@"type")]
+        public InstructionType Type { get; set; }
+        
+        [JsonProperty(@"priority")]
+        public string Priority { get; set; }
+        
+        [JsonProperty(@"description")]
+        public string Description { get; set; }
+        
+        [JsonProperty(@"description2")]
+        public string Description2 { get; set; }
 
         public string OrderName { get; set; }
 
@@ -43,18 +98,96 @@ namespace MWF.Mobile.Core.Models
 
         public string RunType { get; set; }
 
+        [JsonProperty(@"arrivedonsite")]
         public DateTime ArrivedOnSite { get; set; }
 
+        [JsonProperty(@"completed")]
         public DateTime Completed { get; set; }
 
-        public IList<Contacts> Contacts { get; set; }
+        public List<Contacts> Contacts { get; set; }
+        
+        [JsonProperty(@"addresses")]
+        public List<Address> Addresses { get; set; }
+
+        public List<OrderItem> OrderItems { get; set; }
+
+        [JsonProperty(@"instructions")]
+        public List<JobInstruction> Instructions { get; set; }
+
+        public List<Item> UnPlannedItems { get; set; }
 
         [JsonProperty(@"additional")]
-        public Additional Additional { get; set; }
-        [JsonProperty(@"addresses")]
-        public IList<Address> Addresses { get; set; }
-        [JsonProperty(@"instructions")]
-        public IList<JobInstruction> Instructions { get; set; }
+        public List<Additional> Additionals { get; set; }
+
+        [JsonProperty(@"additionalorder")]
+        public Order[] AdditionalOrders { get; set; }
+
+        [JsonProperty(@"activities")]
+        public List<DriverActivity> DriverActivities { get; set; }
+    }
+
+    public class DriverActivity
+    {
+        public Guid DeviceId { get; set; }
+        public string DeviceTitle { get; set; }
+        public Guid DriverId { get; set; }
+        public string DriverTitle { get; set; }
+        public Guid VehicleId { get; set; }
+        public string VehicleRegistration { get; set; }
+        public Guid VehicleViewId { get; set; }
+        public string VehicleViewTitle { get; set; }
+        public Guid SecondaryVehicleId { get; set; }
+        public string SecondaryVehicleTitle { get; set; }
+        public string Code { get; set; }
+        public string SubTitle { get; set; }
+        public string Category { get; set; }
+        public DateTime EffectiveDate { get; set; }
+        public byte Activity { get; set; }
+        public string Comment { get; set; }
+        public string Smp { get; set; }
+        public string Data { get; set; }
+        public List<Signature> Signatures { get; set; }
+        public int Sequence { get; set; }
+        public ScannedDelivery ScannedDelivery { get; set; }
+        public List<Picture> Pictures { get; set; }
+    }
+
+    public class Picture
+    {
+        public Guid Id { get; set; }
+        public byte[] ImageData { get; set; }
+        public string Sequance { get; set; }
+    }
+
+    public class ScannedDelivery
+    {
+        public string CustomerName { get; set; }
+        public bool HasCustomerSigned { get; set; }
+        public List<Barcode> Barcodes { get; set; }
+    }
+
+    public class OrderItem
+    {
+        public Order ParentOrder { get; set; }
+        public string Id { get; set; }
+        public string Type { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string DeliveryOrderNumber { get; set; }
+        public string CustomerOrderNumber { get; set; }
+        public string OrderId { get; set; }
+        public string Quantity { get; set; }
+        public string Weight { get; set; }
+        public string Unit { get; set; }
+        public string Barcode { get; set; }
+        public string FilledIn { get; set; }
+        public string Prince { get; set; }
+        public bool BarcodeScanRequiredForCollection { get; set; }
+        public bool BarcodeScanRequiredForDelivery { get; set; }
+        public string DeliveryType { get; set; }
+        public string BusinessType { get; set; }
+        public List<Additional> Additionals { get; set; }
+        public List<Barcode> Barcodes { get; set; }
     }
 
     public class Contacts
@@ -115,11 +248,16 @@ namespace MWF.Mobile.Core.Models
         [JsonProperty(@"confirmquality")]
         public decimal ConfirmQuality { get; set; }
         [JsonProperty(@"barcodes")]
-        public IList<Barcode> Barcodes { get; set; }
+        public List<Barcode> Barcodes { get; set; }
     }
 
     public class Barcode
     {
+        public string BarcodeData { get; set; }
+        public bool Scanned { get; set; }
+        public bool Delivered { get; set; }
+        public string OrderId { get; set; }
+        public object Tag { get; set; }
     }
 
     public enum DeliveryType

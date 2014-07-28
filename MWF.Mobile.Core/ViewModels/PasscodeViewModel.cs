@@ -15,14 +15,14 @@ namespace MWF.Mobile.Core.ViewModels
     {
         private readonly ICurrentDriverRepository _currentDriverRepository = null;
         private readonly IAuthenticationService _authenticationService = null;
-        private readonly IStartupInfoService _startupInfoService = null;
+        private readonly IStartupService _startupService = null;
         private bool _isBusy = false;
 
-        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupInfoService startupInfoService
+        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupService startupService
             , ICurrentDriverRepository currentDriverRepository)
         {
             _authenticationService = authenticationService;
-            _startupInfoService = startupInfoService;
+            _startupService = startupService;
 
             _currentDriverRepository = currentDriverRepository;
         }
@@ -98,12 +98,12 @@ namespace MWF.Mobile.Core.ViewModels
 
                 if (result.Success)
                 {
-                    _startupInfoService.LoggedInDriver = result.Driver;
+                    _startupService.LoggedInDriver = result.Driver;
 
-                    if (_currentDriverRepository.GetByID(_startupInfoService.LoggedInDriver.ID) == null)
+                    if (_currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID) == null)
                     {
                         CurrentDriver newDriver = new CurrentDriver();
-                        newDriver.ID = _startupInfoService.LoggedInDriver.ID;
+                        newDriver.ID = _startupService.LoggedInDriver.ID;
                         _currentDriverRepository.Insert(newDriver);
                     }
 

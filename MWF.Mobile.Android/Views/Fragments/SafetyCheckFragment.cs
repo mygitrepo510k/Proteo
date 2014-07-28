@@ -77,21 +77,19 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             if (item.ItemId.Equals((int)MenuOption.Passed))
             {
-                safetyCheckViewModel.CheckStatus = SafetyCheckEnum.Passed;
+                safetyCheckViewModel.CheckStatus = Core.Enums.SafetyCheckStatus.Passed;
             }
             else if (item.ItemId.Equals((int)MenuOption.DiscretionaryPass))
             {
-                safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.DiscretionaryPass;
-
+                safetyCheckViewModel.CheckStatus = Core.Enums.SafetyCheckStatus.DiscretionaryPass;
             }
             else if (item.ItemId.Equals((int)MenuOption.Failed))
             {
-                safetyCheckViewModel.CheckStatus = Core.ViewModels.SafetyCheckEnum.Failed;
+                safetyCheckViewModel.CheckStatus = Core.Enums.SafetyCheckStatus.Failed;
             }
 
             return base.OnOptionsItemSelected(item);
         }
 
-        
     }
 }

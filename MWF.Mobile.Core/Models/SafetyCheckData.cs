@@ -57,6 +57,29 @@ namespace MWF.Mobile.Core.Models
         [XmlAttribute("intlink")]
         public int ProfileIntLink { get; set; }
 
+        [ForeignKey(typeof(LatestSafetyCheck))]
+        [XmlIgnore]
+        public Guid LatestSafetyCheckID { get; set; }
+
+        public Enums.SafetyCheckStatus GetOverallStatus()
+        {
+            return GetOverallStatus(this.Faults.Select(f => f.Status));
+        }
+
+        public static Enums.SafetyCheckStatus GetOverallStatus(IEnumerable<Enums.SafetyCheckStatus> statuses)
+        {
+            if (!statuses.Any() || statuses.Any(s => s == Enums.SafetyCheckStatus.NotSet))
+                return Enums.SafetyCheckStatus.NotSet;
+
+            if (statuses.Any(s => s == Enums.SafetyCheckStatus.Failed))
+                return Enums.SafetyCheckStatus.Failed;
+
+            if (statuses.Any(s => s == Enums.SafetyCheckStatus.DiscretionaryPass))
+                return Enums.SafetyCheckStatus.DiscretionaryPass;
+
+            return Enums.SafetyCheckStatus.Passed;
+        }
+
     }
 
 }

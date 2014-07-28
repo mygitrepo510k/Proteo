@@ -10,20 +10,12 @@ using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public enum SafetyCheckEnum
-    {
-        NotSet,
-        Passed, 
-        DiscretionaryPass, 
-        Failed
-    }
-
     public class SafetyCheckItemViewModel : MvxViewModel
     {
         public SafetyCheckItemViewModel(SafetyCheckViewModel safetyCheckViewModel)
         {
             _safetyCheckViewModel = safetyCheckViewModel;
-            _checkStatus = SafetyCheckEnum.NotSet;
+            _checkStatus = Enums.SafetyCheckStatus.NotSet;
         }
 
         private SafetyCheckViewModel _safetyCheckViewModel;
@@ -52,15 +44,14 @@ namespace MWF.Mobile.Core.ViewModels
         // The safety check fault model that will be persisted back to bluesphere/local db
         public SafetyCheckFault SafetyCheckFault { get; set; }
 
-
-        private SafetyCheckEnum _checkStatus;
-        public SafetyCheckEnum CheckStatus
+        private Enums.SafetyCheckStatus _checkStatus;
+        public Enums.SafetyCheckStatus CheckStatus
         {
             get { return _checkStatus; }
             set 
             { 
-                if ((_checkStatus == SafetyCheckEnum.DiscretionaryPass ||
-                    _checkStatus == SafetyCheckEnum.Failed) && value == SafetyCheckEnum.Passed)
+                if ((_checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass ||
+                    _checkStatus == Enums.SafetyCheckStatus.Failed) && value == Enums.SafetyCheckStatus.Passed)
                 {
                     Mvx.Resolve<IUserInteraction>().Confirm(("Change this item to passed?"), isConfirmed =>
                     {
@@ -68,6 +59,7 @@ namespace MWF.Mobile.Core.ViewModels
                         {
                             _checkStatus = value;
                             _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                            this.SafetyCheckFault.Status = value;
                             this.SafetyCheckFault.IsDiscretionaryPass = false;
                             RaisePropertyChanged(() => CheckStatus);
                         }
@@ -76,9 +68,9 @@ namespace MWF.Mobile.Core.ViewModels
                 else
                 {
 
-                    if (value == SafetyCheckEnum.DiscretionaryPass || value == SafetyCheckEnum.Failed)
+                    if (value == Enums.SafetyCheckStatus.DiscretionaryPass || value == Enums.SafetyCheckStatus.Failed)
                     {
-                        string faultTypeText = (value == SafetyCheckEnum.DiscretionaryPass) ? "Discretionary Pass" : "Failure";
+                        string faultTypeText = (value == Enums.SafetyCheckStatus.DiscretionaryPass) ? "Discretionary Pass" : "Failure";
                         var navItem = new SafetyCheckNavItem() { FaultID = this.SafetyCheckFault.ID, IsVehicle = this.SafetyCheckFault.Title.StartsWith("VEH"), FaultTypeText = faultTypeText };
                         _safetyCheckViewModel.ShowModalViewModel<SafetyCheckFaultViewModel, bool>(navItem, (faultLogged) =>
                         {
@@ -86,7 +78,8 @@ namespace MWF.Mobile.Core.ViewModels
                             {
                                 _checkStatus = value;
                                 _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
-                                this.SafetyCheckFault.IsDiscretionaryPass = _checkStatus == SafetyCheckEnum.DiscretionaryPass;
+                                this.SafetyCheckFault.Status = value;
+                                this.SafetyCheckFault.IsDiscretionaryPass = _checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass;
                                 RaisePropertyChanged(() => CheckStatus);
                             }
 
@@ -97,7 +90,8 @@ namespace MWF.Mobile.Core.ViewModels
                     {
                         _checkStatus = value;
                         _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
-                        this.SafetyCheckFault.IsDiscretionaryPass = _checkStatus == SafetyCheckEnum.DiscretionaryPass;
+                        this.SafetyCheckFault.Status = value;
+                        this.SafetyCheckFault.IsDiscretionaryPass = _checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass;
                         RaisePropertyChanged(() => CheckStatus);
                     }
                    

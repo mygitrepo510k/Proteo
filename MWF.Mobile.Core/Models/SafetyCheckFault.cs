@@ -47,6 +47,9 @@ namespace MWF.Mobile.Core.Models
         [XmlIgnore]
         public Guid SafetyCheckDataID { get; set; }
 
+        [XmlIgnore]
+        public Enums.SafetyCheckStatus Status { get; set; }
+
         #region Public Methods
 
         public SafetyCheckFault Clone()

@@ -32,7 +32,10 @@ namespace MWF.Mobile.Core.Models
             set
             {
                 _encodeImageData = value;
-                _bytes = Convert.FromBase64String(_encodeImageData);
+                if (_encodeImageData != null && (_encodeImageData.Length % 4 == 0))
+                {
+                    _bytes = Convert.FromBase64String(_encodeImageData);
+                }
             }
         }
 

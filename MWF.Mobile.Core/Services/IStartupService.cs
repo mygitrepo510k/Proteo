@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.Services
 {
-    public interface IStartupInfoService
+    public interface IStartupService
     {
         Driver LoggedInDriver { get; set; }
         SafetyCheckData CurrentVehicleSafetyCheckData { get; set; }
@@ -12,5 +13,7 @@ namespace MWF.Mobile.Core.Services
         Trailer CurrentTrailer { get; set; }
         int Mileage { get; set; }
 
+        IEnumerable<SafetyCheckData> GetCurrentSafetyCheckData();
+        void Commit();
     }
 }

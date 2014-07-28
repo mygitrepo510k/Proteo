@@ -23,7 +23,6 @@ namespace MWF.Mobile.Android.Views.Fragments
 
     public class SafetyCheckSignatureFragment : MvxFragment
     {
-
         SignaturePadView signaturePad;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -63,7 +62,5 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             viewModel.DoneCommand.Execute(null);
         }
-
     }
-
 }

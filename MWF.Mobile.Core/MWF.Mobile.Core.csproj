@@ -80,12 +80,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Converters\DateToTextMessageValueConverter.cs" />
     <Compile Include="Converters\JsonDigitToBooleanConverter.cs" />
     <Compile Include="Converters\JsonWrappedItemConverter.cs" />
     <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
     <Compile Include="Converters\StringHasLengthConverter.cs" />
     <Compile Include="Enums\ReportReason.cs" />
+    <Compile Include="Enums\SafetyCheckStatus.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Helpers\SMP.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="Models\IBlueSphereEntity.cs" />
     <Compile Include="Models\Image.cs" />
     <Compile Include="Models\Instruction.cs" />
+    <Compile Include="Models\LatestSafetyCheck.cs" />
     <Compile Include="Models\MWFMobileConfig.cs" />
     <Compile Include="Models\Signature.cs" />
     <Compile Include="Models\SafetyCheckFault.cs" />
@@ -143,12 +146,12 @@
     <Compile Include="Repositories\Interfaces\IConfigRepository.cs" />
     <Compile Include="Repositories\Interfaces\ICurrentDriverRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepositories.cs" />
-    <Compile Include="Repositories\Interfaces\ISafetyCheckDataRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ILatestSafetyCheckRepository.cs" />
     <Compile Include="Repositories\Repositories.cs" />
     <Compile Include="Repositories\GatewayQueueItemRepository.cs" />
     <Compile Include="Repositories\Interfaces\IGatewayQueueItemRepository.cs" />
     <Compile Include="Repositories\Interfaces\ITrailerRepository.cs" />
-    <Compile Include="Repositories\SafetyCheckDataRepository.cs" />
+    <Compile Include="Repositories\LatestSafetyCheckRepository.cs" />
     <Compile Include="Repositories\TrailerRepository.cs" />
     <Compile Include="Repositories\VehicleRepository.cs" />
     <Compile Include="Repositories\SafetyProfileRepository.cs" />
@@ -177,8 +180,8 @@
     <Compile Include="Services\IGatewayService.cs" />
     <Compile Include="Services\IGpsService.cs" />
     <Compile Include="Services\IHttpService.cs" />
-    <Compile Include="Services\IStartupInfoService.cs" />
-    <Compile Include="Services\StartupInfoService.cs" />
+    <Compile Include="Services\IStartupService.cs" />
+    <Compile Include="Services\StartupService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="ViewModels\Navigation\IViewModelNavItem.cs" />

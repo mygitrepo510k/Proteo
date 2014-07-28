@@ -80,12 +80,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Converters\DateToTextTimeValueConverter.cs" />
     <Compile Include="Converters\DateToTextMessageValueConverter.cs" />
     <Compile Include="Converters\JsonDigitToBooleanConverter.cs" />
     <Compile Include="Converters\JsonWrappedItemConverter.cs" />
     <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
     <Compile Include="Converters\StringHasLengthConverter.cs" />
+    <Compile Include="Enums\InstructionType.cs" />
     <Compile Include="Enums\ReportReason.cs" />
     <Compile Include="Enums\SafetyCheckStatus.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
@@ -119,6 +121,12 @@
     <Compile Include="Models\IBlueSphereEntity.cs" />
     <Compile Include="Models\Image.cs" />
     <Compile Include="Models\Instruction.cs" />
+    <Compile Include="Models\Instruction\Additional.cs" />
+    <Compile Include="Models\Instruction\Instruction.cs" />
+    <Compile Include="Models\Instruction\ItemAdditional.cs" />
+    <Compile Include="Models\Instruction\MobileApplicationData.cs" />
+    <Compile Include="Models\Instruction\Order.cs" />
+    <Compile Include="Models\Instruction\Item.cs" />
     <Compile Include="Models\LatestSafetyCheck.cs" />
     <Compile Include="Models\MWFMobileConfig.cs" />
     <Compile Include="Models\Signature.cs" />

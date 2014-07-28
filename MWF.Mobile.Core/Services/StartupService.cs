@@ -16,11 +16,13 @@ namespace MWF.Mobile.Core.Services
 
         private readonly Repositories.IRepositories _repositories = null;
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
+        private readonly IGpsService _gpsService = null;
 
-        public StartupService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService)
+        public StartupService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService)
         {
             _repositories = repositories;
             _gatewayQueuedService = gatewayQueuedService;
+            _gpsService = gpsService;
         }
 
         public Driver LoggedInDriver { get; set; }
@@ -67,10 +69,16 @@ namespace MWF.Mobile.Core.Services
                 _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
 
                 // Submit the safety checks to the gateway service
+                var smp = _gpsService.GetSmpData(Enums.ReportReason.SMPREASON_SAFETYCHECKREPORT);
+
                 foreach (var safetyCheck in safetyCheckData)
                 {
                     // Passed safety check items shouldn't be submitted to the gateway service
                     safetyCheck.Faults.RemoveAll(scf => scf.Status == Enums.SafetyCheckStatus.Passed);
+
+                    // Add the SMP and odometer reading to the safety check
+                    safetyCheck.SMP = smp;
+                    safetyCheck.Mileage = this.Mileage;
                 }
 
                 var actions = safetyCheckData.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });

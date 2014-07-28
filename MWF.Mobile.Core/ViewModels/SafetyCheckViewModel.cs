@@ -2,6 +2,7 @@
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using System;
@@ -70,9 +71,15 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
 
+
             SafetyCheckItemViewModels = allSafetyChecks;
 
             SetUpSafetyCheckData();
+
+            if (SafetyProfileTrailer == null && SafetyProfileVehicle == null)
+            {
+                Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found - Redirecting to Manifest Screen.", () => startupService.Commit());
+            }
 
         }
 
@@ -176,7 +183,6 @@ namespace MWF.Mobile.Core.ViewModels
         {
             return await Mvx.Resolve<IUserInteraction>().ConfirmAsync("All changes will be lost, do you wish to continue?", "Changes will be lost!");
         }
-
 
         private void DoLogFaultCommand()
         {

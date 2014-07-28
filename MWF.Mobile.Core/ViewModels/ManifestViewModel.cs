@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using MWF.Mobile.Core.Models;
 using System.Linq;
 using System;
+using MWF.Mobile.Core.Models.Instruction;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -16,8 +17,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ManifestViewModel()
         {
-            var testOrder = new Order() { Arrive = DateTime.Now.AddMonths(1), Description = "test" };
-            MobileApplicationData = Enumerable.Repeat<Order>(testOrder, 1);
+            var testOrder = new MobileApplicationData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "Proteo Test Client", VehicleRegistration = "243 234" };
+            MobileApplicationData = Enumerable.Repeat<MobileApplicationData>(testOrder, 5);
         }
 
         public override string FragmentTitle
@@ -25,8 +26,18 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Manifest"; }
         }
 
-        private IEnumerable<Order> _mobileApplicationData;
-        public IEnumerable<Order> MobileApplicationData
+        public string ManifestHeaderText
+        {
+            get { return "Select instructions - Showing " + MobileApplicationDataCount;  }
+        }
+
+        public int MobileApplicationDataCount
+        {
+            get { return MobileApplicationData.ToList().Count(); }
+        }
+
+        private IEnumerable<MobileApplicationData> _mobileApplicationData;
+        public IEnumerable<MobileApplicationData> MobileApplicationData
         {
             get { return _mobileApplicationData; }
             set { _mobileApplicationData = value; RaisePropertyChanged(() => MobileApplicationData); }
@@ -38,6 +49,8 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _dateOutput; }
             set { _dateOutput = value; RaisePropertyChanged(() => DateOutput); }
         }
+
+        
     }
 
 }

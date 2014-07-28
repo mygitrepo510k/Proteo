@@ -71,9 +71,16 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
 
+
             SafetyCheckItemViewModels = allSafetyChecks;
 
             SetUpSafetyCheckData();
+
+            if (SafetyProfileTrailer == null && SafetyProfileVehicle == null)
+            {
+                Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found - Redirecting to Manifest Screen.");
+                startupService.Commit();
+            }
 
         }
 

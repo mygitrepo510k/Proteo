@@ -131,6 +131,7 @@
     <Compile Include="Models\VerbProfile.cs" />
     <Compile Include="Models\ApplicationProfile.cs" />
     <Compile Include="Models\VerbProfileItem.cs" />
+    <Compile Include="Portable\ICustomUserInteraction.cs" />
     <Compile Include="Portable\IReachability.cs" />
     <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />

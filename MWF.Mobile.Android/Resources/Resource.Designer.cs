@@ -153,14 +153,14 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f06000e
 			public const int SafetyCheckTitle = 2131099662;
 			
-			// aapt resource value: 0x7f060013
-			public const int SafetyListView = 2131099667;
+			// aapt resource value: 0x7f060014
+			public const int SafetyListView = 2131099668;
+			
+			// aapt resource value: 0x7f060016
+			public const int action_refresh = 2131099670;
 			
 			// aapt resource value: 0x7f060015
-			public const int action_refresh = 2131099669;
-			
-			// aapt resource value: 0x7f060014
-			public const int action_search = 2131099668;
+			public const int action_search = 2131099669;
 			
 			// aapt resource value: 0x7f060003
 			public const int buttonPasscode = 2131099651;
@@ -168,8 +168,8 @@ namespace MWF.Mobile.Android
 			// aapt resource value: 0x7f060009
 			public const int button_done = 2131099657;
 			
-			// aapt resource value: 0x7f060012
-			public const int checksdonebutton = 2131099666;
+			// aapt resource value: 0x7f060013
+			public const int checksdonebutton = 2131099667;
 			
 			// aapt resource value: 0x7f060007
 			public const int doneButton = 2131099655;
@@ -191,6 +191,9 @@ namespace MWF.Mobile.Android
 			
 			// aapt resource value: 0x7f060001
 			public const int odometerText = 2131099649;
+			
+			// aapt resource value: 0x7f060012
+			public const int popUpImageView = 2131099666;
 			
 			// aapt resource value: 0x7f060008
 			public const int signature_view = 2131099656;
@@ -266,10 +269,13 @@ namespace MWF.Mobile.Android
 			public const int Page_Startup = 2130903055;
 			
 			// aapt resource value: 0x7f030010
-			public const int SafetyCheckView = 2130903056;
+			public const int PopUp_Image = 2130903056;
 			
 			// aapt resource value: 0x7f030011
-			public const int SplashScreen = 2130903057;
+			public const int SafetyCheckView = 2130903057;
+			
+			// aapt resource value: 0x7f030012
+			public const int SplashScreen = 2130903058;
 			
 			static Layout()
 			{

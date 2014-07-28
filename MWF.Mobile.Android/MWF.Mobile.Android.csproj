@@ -150,6 +150,7 @@
     <Compile Include="DebugTrace.cs" />
     <Compile Include="Helpers\CustomActionBarDrawerToggle.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
+    <Compile Include="Portable\CustomUserInteraction.cs" />
     <Compile Include="Portable\DeviceInfo.cs" />
     <Compile Include="Portable\Reachability.cs" />
     <Compile Include="Portable\Sound.cs" />
@@ -230,6 +231,9 @@
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_SafetyCheckSignature.axml" />
     <AndroidResource Include="Resources\layout\Item_SafetyCheckFaultImage.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\PopUp_Image.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

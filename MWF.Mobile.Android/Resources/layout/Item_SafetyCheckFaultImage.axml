@@ -9,7 +9,7 @@
         android:layout_height="80dp"
         android:padding="5dp"
         android:background="@drawable/drop_shadow"
-        local:MvxBind="Bitmap Bytes, Converter=InMemoryImage" />
+        local:MvxBind="Bitmap Bytes, Converter=InMemoryImage; Click DisplayCommand" />
     <ImageButton
         android:layout_alignRight="@id/faultImageView"
         android:layout_alignTop="@id/faultImageView"

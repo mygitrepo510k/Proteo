@@ -46,6 +46,7 @@ namespace MWF.Mobile.Android
             Mvx.RegisterSingleton<IDeviceInfo>(() => new DeviceInfo());
             Mvx.RegisterSingleton<IToast>(() => new Portable.Toast());
             Mvx.RegisterSingleton<ISound>(() => new Portable.Sound());
+            Mvx.RegisterSingleton<ICustomUserInteraction>(() => new Portable.CustomUserInteraction());
         }
 
         protected override System.Collections.Generic.List<System.Reflection.Assembly> ValueConverterAssemblies

@@ -161,6 +161,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void DoChecksDoneCommand()
         {
+
             if (SafetyProfileVehicle.OdometerRequired)
                 ShowViewModel<OdometerViewModel>();
             else

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -19,6 +20,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private Image _image;
         private MvxCommand _deleteCommand;
+        private MvxCommand _displayCommand;
         private SafetyCheckFaultViewModel _parentSafetyCheckFault;
 
         #endregion
@@ -50,6 +52,12 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+
+        public System.Windows.Input.ICommand DisplayCommand
+        {
+            get { return (_displayCommand = _displayCommand ?? new MvxCommand(Display)); }
+        }
+
         
         public System.Windows.Input.ICommand DeleteCommand
         {
@@ -73,6 +81,11 @@ namespace MWF.Mobile.Core.ViewModels
 
 
            
+        }
+
+        private void Display()
+        {
+            Mvx.Resolve<ICustomUserInteraction>().PopUpImage(_image.Bytes, null, null, null, "Close");
         }
 
         #endregion

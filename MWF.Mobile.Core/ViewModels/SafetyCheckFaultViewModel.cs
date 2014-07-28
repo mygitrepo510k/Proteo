@@ -147,11 +147,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void TakePicture()
         {
-            _pictureChooserTask.ChoosePictureFromLibrary(400, 95, OnPictureTaken, () => { });
-            //_pictureChooserTask.TakePicture(400, 95, OnPictureTaken, () => { });
+            // note use "TakePicture" for release
+            // ChoosePictureFromLibrary should only be used when debugging with an emulator
+            //_pictureChooserTask.ChoosePictureFromLibrary(400, 95, OnPictureTaken, () => { });
+            _pictureChooserTask.TakePicture(400, 95, OnPictureTaken, () => { });
 
         }
 
+
+        /// <summary>
+        /// Packs up the image stre
+        /// </summary>
+        /// <param name="stream"></param>
         private void OnPictureTaken(Stream stream)
         {
 
@@ -172,6 +179,9 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
 
+        /// <summary>
+        /// Populates the image view models based on the images in the safety check fault data model
+        /// </summary>
         private void PopulateImageList()
         {
             ObservableCollection<SafetyCheckFaultImageViewModel> images = new ObservableCollection<SafetyCheckFaultImageViewModel>();
@@ -184,6 +194,10 @@ namespace MWF.Mobile.Core.ViewModels
             Images = images;
         }
 
+        /// <summary>
+        /// Deletes an image from both the the view models and datamodels
+        /// </summary>
+        /// <param name="image"></param>
         internal void Delete(SafetyCheckFaultImageViewModel image)
         {
             // remove from backing data model (exists in startup service)

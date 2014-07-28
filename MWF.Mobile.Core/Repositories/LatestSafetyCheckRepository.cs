@@ -36,8 +36,8 @@ namespace MWF.Mobile.Core.Repositories
 
             // Delete any existing latest safety check for the driver before adding a new one.
             // Currently this deletes both vehicle and trailer safety checks and it is possible that one of these will be null in the latestSafetyCheck object - if this is the case should we actually be retaining the older safety check?
-            if (latestSafetyCheck != null)
-                this.Delete(latestSafetyCheck);
+            if (latestSafetyCheckForDriver != null)
+                this.Delete(latestSafetyCheckForDriver);
 
             this.Insert(latestSafetyCheck);
         }

@@ -32,12 +32,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string VehicleSelectText
         {
-            get { return "Select vehicle."; }
+            get { return "Select vehicle - Showing " + VehicleListCount; }
         }
 
         public override string FragmentTitle
         {
             get { return "Vehicle"; }
+        }
+
+        public int VehicleListCount
+        {
+            get { return Vehicles.ToList().Count(); }
         }
 
         public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,

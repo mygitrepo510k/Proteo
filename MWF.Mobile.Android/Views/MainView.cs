@@ -93,7 +93,18 @@ namespace MWF.Mobile.Android.Views
             get { return FragmentManager.FindFragmentById(Resource.Id.fragment_host) as MvxFragment; }
         }
 
- 		#endregion Fragment host
+        public void CloseToInitialView()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CloseUpToView<TViewModel>()
+            where TViewModel : IMvxViewModel
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion Fragment host
 
     }
 

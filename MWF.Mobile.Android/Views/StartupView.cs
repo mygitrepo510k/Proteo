@@ -131,7 +131,10 @@ namespace MWF.Mobile.Android.Views
 
             if (CurrentFragment != null && CurrentFragment.GetType() == fragmentTypeToClose)
             {
-                FragmentManager.PopBackStack();
+                FragmentManager.PopBackStackImmediate();
+
+                SetActivityTitleFromFragment();
+
                 return true;
             }
             else return false;
@@ -146,8 +149,10 @@ namespace MWF.Mobile.Android.Views
 
             for (var i = 0; i < backStackEntryCount; i++)
             {
-                FragmentManager.PopBackStack();
+                FragmentManager.PopBackStackImmediate();
             }
+
+            SetActivityTitleFromFragment();
         }
 
         /// <summary>
@@ -167,8 +172,10 @@ namespace MWF.Mobile.Android.Views
                 if (CurrentFragment.GetType() == targetFragmentType)
                     break;
 
-                FragmentManager.PopBackStack();
+                FragmentManager.PopBackStackImmediate();            
             }
+
+            SetActivityTitleFromFragment();
         }
 
         // Current Fragment in the fragment host. Note although the id being used appears to be that of the 
@@ -187,13 +194,18 @@ namespace MWF.Mobile.Android.Views
                 var continueBack = await (CurrentFragment.DataContext as IBackButtonHandler).OnBackButtonPressed();
 
                 if (continueBack)
+                {
                     base.OnBackPressed();
+                    SetActivityTitleFromFragment();
+                }
             }
             else
             {
                 base.OnBackPressed();
+                SetActivityTitleFromFragment();
             }
         }
+
 
         public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
         {
@@ -223,6 +235,11 @@ namespace MWF.Mobile.Android.Views
         {
             base.OnPostCreate(savedInstanceState);
             this._drawerToggle.SyncState();
+        }
+
+        private void SetActivityTitleFromFragment()
+        {
+            this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
         }
 
     }

@@ -20,7 +20,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
     // Tests a full write and read to a sqlite database via the repository and dataservice layers
     // Note this uses a concrete ConnectionFactory targeting x86 windows
     public class RepositoryIntegrationTest
-        : MvxIoCSupportingTest, IDisposable
+        : MvxIoCSupportingTest
     {
 
         private IDataService _dataService;
@@ -28,19 +28,27 @@ namespace MWF.Mobile.Tests.RepositoryTests
         protected override void AdditionalSetup()
         {
 
-            if (File.Exists("db.sql"))
-            {
-                File.Delete("db.sql");
-            }
-
             ISQLiteConnectionFactory connectionFactory = new MvxWpfSqLiteConnectionFactory();
             _dataService = new DataService(connectionFactory);
 
-            _dataService.Connection.CreateTable<GrandParentEntity>();
-            _dataService.Connection.CreateTable<ParentEntity>();
-            _dataService.Connection.CreateTable<ChildEntity>();
-            _dataService.Connection.CreateTable<ChildEntity2>();
-            _dataService.Connection.CreateTable<SingleChildEntity>();
+            if (File.Exists("db.sql"))
+            {
+                _dataService.Connection.DeleteAll<Device>();
+                _dataService.Connection.DeleteAll<GrandParentEntity>();
+                _dataService.Connection.DeleteAll<ParentEntity>();
+                _dataService.Connection.DeleteAll<ChildEntity>();
+                _dataService.Connection.DeleteAll<ChildEntity2>();
+                _dataService.Connection.DeleteAll<SingleChildEntity>();
+            }
+            else
+            {
+                _dataService.Connection.CreateTable<Device>();
+                _dataService.Connection.CreateTable<GrandParentEntity>();
+                _dataService.Connection.CreateTable<ParentEntity>();
+                _dataService.Connection.CreateTable<ChildEntity>();
+                _dataService.Connection.CreateTable<ChildEntity2>();
+                _dataService.Connection.CreateTable<SingleChildEntity>();
+            }
 
         }
 
@@ -272,20 +280,6 @@ namespace MWF.Mobile.Tests.RepositoryTests
             Assert.Empty(_dataService.Connection.Table<ChildEntity2>());
             Assert.Empty(_dataService.Connection.Table<SingleChildEntity>());
         }
-
-        #region IDisposable (Teardown)
-
-        public void Dispose()
-        {
-            if (_dataService != null) _dataService.Dispose();
-
-            if (File.Exists("db.sql"))
-            {
-                File.Delete("db.sql");
-            }
-        }
-
-        #endregion
 
         #region helper functions
 

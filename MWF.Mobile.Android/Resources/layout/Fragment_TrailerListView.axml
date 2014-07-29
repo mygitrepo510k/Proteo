@@ -7,7 +7,7 @@
     <textView
         style="@style/Proteo.TextView.ListHeading"
         android:id="@+id/trailerText"
-        local:MvxBind="Text TrailerSelectText" />
+        local:MvxBind="Text TrailerSelectText + TrailerListCount" />
     <Button
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/ButtonNoTrailer"

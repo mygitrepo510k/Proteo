@@ -50,7 +50,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressMessage
         {
-            get { return "Please wait while we check your passcode..."; }
+            get { return "Your driver passcode is being checked. This can take up to 5 minutes."; }
         }
 
         private string _passcode = null;
@@ -78,7 +78,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (string.IsNullOrWhiteSpace(this.Passcode))
             {
                 //TODO: probably should additionally implement presentation layer required field validation so we don't even get this far.
-                await Mvx.Resolve<IUserInteraction>().AlertAsync("Passcode cannot be blank");
+                await Mvx.Resolve<IUserInteraction>().AlertAsync("To login, submit a passcode");
                 return;
             }
 

@@ -60,6 +60,10 @@
     <Reference Include="Cirrious.MvvmCross.Plugins.Messenger">
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Messenger.3.2.1-beta1\lib\net45\Cirrious.MvvmCross.Plugins.Messenger.dll</HintPath>
     </Reference>
+    <Reference Include="Cirrious.MvvmCross.Plugins.PictureChooser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MvvmCross.HotTuna.Plugin.PictureChooser.3.1.1\lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\Cirrious.MvvmCross.Plugins.PictureChooser.dll</HintPath>
+    </Reference>
     <Reference Include="Cirrious.MvvmCross.Test.Core">
       <HintPath>..\packages\MvvmCross.HotTuna.Tests.3.2.1-beta1\lib\net45\Cirrious.MvvmCross.Test.Core.dll</HintPath>
     </Reference>
@@ -129,6 +133,7 @@
     <Compile Include="ServiceTests\GatewayQueuedServiceTests.cs" />
     <Compile Include="ViewModelTests\CustomerCodeViewModelTests.cs" />
     <Compile Include="ServiceTests\GatewayServiceTests.cs" />
+    <Compile Include="ViewModelTests\SafetyCheckFaultViewModelTests.cs" />
     <Compile Include="ViewModelTests\StartupViewModelTests.cs" />
     <Compile Include="ViewModelTests\PasscodeViewModelTests.cs" />
     <Compile Include="ViewModelTests\TrailerListViewModelTests.cs" />

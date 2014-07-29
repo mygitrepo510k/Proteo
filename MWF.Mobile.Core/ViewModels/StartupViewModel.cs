@@ -17,13 +17,18 @@ namespace MWF.Mobile.Core.ViewModels
     public class StartupViewModel 
 		: BaseActivityViewModel
     {
-
-        public enum Option
-        {
-            Camera,
-            SafetyCheck,
-            History
-        }
+        private readonly IAuthenticationService _authenticationService = null; 
+        private readonly IGatewayService _gatewayService = null; 
+        private readonly IGatewayQueuedService _gatewayQueuedService = null;
+        private readonly IReachability _reachableService;
+        private readonly Portable.IReachability _reachability = null; 
+        private readonly IDataService _dataService = null; 
+        private readonly IRepositories _repositories = null; 
+        private readonly IDeviceInfo _deviceInfo = null; 
+        private readonly IStartupService _startupService = null; 
+        private readonly IUserInteraction _userInteraction = null;
+        private readonly ICurrentDriverRepository _currentDriver;
+        private readonly IGpsService _gpsService;
 
         public StartupViewModel(IAuthenticationService authenticationService, 
                                 IGatewayService gatewayService, 
@@ -36,42 +41,37 @@ namespace MWF.Mobile.Core.ViewModels
                                 IUserInteraction userInteraction, 
                                 ICurrentDriverRepository currentDriver,
                                 IGpsService gpsService)
-
         {
-//#if DEBUG
-//            userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
-//#endif
+            _authenticationService = authenticationService;
+            _gatewayService = gatewayService;
+            _gatewayQueuedService = gatewayQueuedService;
+            _reachableService = reachableService;
+            _dataService = dataService;
+            _repositories = repositories;
+            _deviceInfo = deviceInfo;
+            _startupService = startupService;
+            _userInteraction = userInteraction;
+            _currentDriver = currentDriver;
+            _gpsService = gpsService;
+            this.SetInitialViewModel();
+        }
+
+        private void SetInitialViewModel()
+        {
+            //#if DEBUG
+            //  userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
+            //#endif
             this.InitialViewModel = new ManifestViewModel();
             
-
-            _menuItems = new List<MenuViewModel>
-            {
-                new MenuViewModel
-                {
-                    Option = Option.Camera,
-                    Text = "Camera"
-                },
-                new MenuViewModel
-                {
-                    Option = Option.History,
-                    Text = "History"
-                },
-                new MenuViewModel
-                {
-                    Option = Option.SafetyCheck,
-                    Text = "SafetyCheck"
-                },
-            };
-            
-            var customerRepository = repositories.CustomerRepository;
+            var customerRepository = _repositories.CustomerRepository;
 
             if (customerRepository.GetAll().Any())
             {
-                this.InitialViewModel = new PasscodeViewModel(authenticationService, startupService,currentDriver);
+                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _startupService,_currentDriver);
             }
             else
             {
-                this.InitialViewModel = new CustomerCodeViewModel(gatewayService, reachableService, dataService, repositories, userInteraction);
+                this.InitialViewModel = new CustomerCodeViewModel(_gatewayService, _reachableService, _dataService, _repositories, _userInteraction);
             }
              
         }
@@ -88,28 +88,5 @@ namespace MWF.Mobile.Core.ViewModels
             repositories.VehicleRepository.DeleteAll();
             repositories.VerbProfileRepository.DeleteAll();
         }
-
-        private List<MenuViewModel> _menuItems;
-        public List<MenuViewModel> MenuItems
-        {
-            get { return this._menuItems; }
-            set { this._menuItems = value; this.RaisePropertyChanged(() => this.MenuItems); }
-        }
-
-        private MvxCommand<MenuViewModel> _selectMenuItemCommand;
-        public System.Windows.Input.ICommand SelectMenuItemCommand
-        {
-            get
-            {
-                return this._selectMenuItemCommand ?? (this._selectMenuItemCommand = new MvxCommand<MenuViewModel>(this.DoSelectMenuItemCommand));
-            }
-        }
-
-        private void DoSelectMenuItemCommand(MenuViewModel item)
-        {
-            
-        }
-
-
     }
 }

@@ -3,6 +3,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
@@ -11,6 +12,9 @@ namespace MWF.Mobile.Android.Views.Fragments
     public class TrailerListFragment : BaseFragment
     {
         private SearchView _searchView;
+        private IMenu optionsMenu;
+        private BindableProgress _bindableProgress;
+
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -24,6 +28,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             inflater.Inflate(Resource.Menu.vehicle_activity_actions, menu);
             base.OnCreateOptionsMenu(menu, inflater);
 
+            this.optionsMenu = menu;
             
             var searchItem = menu.FindItem(Resource.Id.action_search).ActionView;
             _searchView = searchItem.JavaCast<SearchView>();
@@ -35,7 +40,9 @@ namespace MWF.Mobile.Android.Views.Fragments
             switch (item.ItemId)
             {
                 case Android.Resource.Id.action_refresh:
+                    SetRefreshActionButtonState(true);
                   ((TrailerListViewModel)ViewModel).RefreshListCommand.Execute(null);
+                    SetRefreshActionButtonState(false);
                     return true;
             }
 
@@ -49,11 +56,35 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
+            _bindableProgress = new MWF.Mobile.Android.Views.BindableProgress(view.Context);
+
             this.Activity.ActionBar.Show();
             base.OnViewCreated(view, savedInstanceState);
+            var set = this.CreateBindingSet<TrailerListFragment, TrailerListViewModel>();
+            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsBusy);
+            set.Bind(_bindableProgress).For(p => p.Message).To(vm => vm.ProgressMessage);
+            set.Bind(_bindableProgress).For(p => p.Title).To(vm => vm.ProgressTitle);
+            set.Apply();
         }
 
-        
+        public void SetRefreshActionButtonState(bool refreshing)
+        {
+            if (optionsMenu != null)
+            {
+                var refreshItem = optionsMenu.FindItem(Resource.Id.action_refresh);
+                if (refreshItem != null)
+                {
+                    if (refreshing)
+                    {
+                        refreshItem.SetActionView(Resource.Menu.actionbar_indeterminate_progress);
+                    }
+                    else
+                    {
+                        refreshItem.SetActionView(null);
+                    }
+                }
+            }
+        }
     }
 
 }

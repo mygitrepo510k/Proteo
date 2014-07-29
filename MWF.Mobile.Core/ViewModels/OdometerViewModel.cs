@@ -35,7 +35,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string OdometerButtonLabel
         {
-            get { return "Submit"; }
+            get { return "Done"; }
         }
 
         private MvxCommand _storeCommand;

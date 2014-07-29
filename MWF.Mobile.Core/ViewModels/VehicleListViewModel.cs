@@ -32,7 +32,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string VehicleSelectText
         {
-            get { return "Select vehicle - Showing " + VehicleListCount; }
+            get { return "Select vehicle - Showing " + FilteredVehicleCount + " of " + VehicleListCount; }
         }
 
         public override string FragmentTitle
@@ -40,9 +40,16 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Vehicle"; }
         }
 
+        private int _vehicleListCount;
         public int VehicleListCount
         {
-            get { return Vehicles.ToList().Count(); }
+            get { return _vehicleListCount; }
+            set { _vehicleListCount = value; }
+        }
+
+        public int FilteredVehicleCount
+        {
+            get { return Vehicles.ToList().Count; }
         }
 
         public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,
@@ -56,6 +63,7 @@ namespace MWF.Mobile.Core.ViewModels
             _currentDriverRepository = currentDriverRepository;
             _vehicleRepository = vehicleRepository;
             Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
+            _vehicleListCount = FilteredVehicleCount;
 
             LastVehicleSelect();
         }
@@ -97,7 +105,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     ShowTrailerScreen(vehicle);
                 }
-            }, "Last used vehicle", "Select");
+            }, "Last used vehicle", "Confirm");
         }
 
         private MvxCommand<Vehicle> _showVehicleDetailCommand;
@@ -127,14 +135,14 @@ namespace MWF.Mobile.Core.ViewModels
 
                     ShowTrailerScreen(vehicle);
                 }
-            }, "Please confirm your vehicle", "Select");
+            }, "Confirm your vehicle", "Confirm");
         }
 
         private string _searchText;
         public string SearchText
         {
             get { return _searchText; }
-            set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); }
+            set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); RaisePropertyChanged(() => VehicleSelectText); }
         }
 
         private void FilterList()

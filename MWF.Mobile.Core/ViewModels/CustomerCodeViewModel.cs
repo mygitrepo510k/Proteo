@@ -83,12 +83,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressTitle
         {
-            get { return "Downloading data...";  }
+            get { return "Downloading Data...";  }
         }
 
         public string ProgressMessage
         {
-            get { return "Please wait while we setup your device...";  }
+            get { return "You customer code is being checked to set-up your device. This can take up to 5 minutes.";  }
         }
 
         private MvxCommand _enterCodeCommand;
@@ -109,13 +109,13 @@ namespace MWF.Mobile.Core.ViewModels
             if (string.IsNullOrWhiteSpace(this.CustomerCode))
             {
                 //TODO: probably should additionally implement presentation layer required field validation so we don't even get this far.
-                await _userInteraction.AlertAsync("Please enter a customer code.");
+                await _userInteraction.AlertAsync("To register this device, submit a customer code");
                 return;
             }
 
             if (!_reachability.IsConnected())
             {
-                await _userInteraction.AlertAsync("An Internet connection is required");
+                await _userInteraction.AlertAsync("To set-up this device, a connection to the internet is required");
             }
             else
             {
@@ -158,7 +158,7 @@ namespace MWF.Mobile.Core.ViewModels
             var device = await _gatewayService.GetDevice(CustomerCode);
             if (device == null)
             {
-                _errorMessage = "Invalid customer code.";
+                _errorMessage = "The customer passcode you submitted doesn't exist, confirm the passcode and try again.";
                 return false;
             }
             var config = await _gatewayService.GetConfig();

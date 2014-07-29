@@ -12,6 +12,8 @@
     <EditText
         style="@style/Proteo.EditText.NumberPasscode"
         android:id="@+id/editTextPasscode"
+        android:imeOptions="actionDone"
+        android:singleLine="true"
         local:MvxBind="Text Passcode" />
     <Button
         style="@style/Proteo.Button"

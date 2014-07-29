@@ -9,8 +9,8 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class MenuViewModel : MvxViewModel
     {
-        private StartupViewModel.Option _option;
-        public StartupViewModel.Option Option
+        private MainViewModel.Option _option;
+        public MainViewModel.Option Option
         {
             get { return this._option; }
             set

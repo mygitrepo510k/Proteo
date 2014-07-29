@@ -178,11 +178,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<TrailerListViewModel>();
-            vm.SearchText = null;
+            vm.SearchText = "";
 
             vm.RefreshListCommand.Execute(null);
 
-            Assert.Same(vm.Trailers, trailers);
+            Assert.Equal(vm.TrailerListCount, trailers.ToList().Count);
             //Its get all twice because it calls it once on setup and another on refresh
             trailerRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
 

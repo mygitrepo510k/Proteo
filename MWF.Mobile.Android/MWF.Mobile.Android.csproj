@@ -141,6 +141,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AndroidBindingResource.cs" />
     <Compile Include="Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="Bootstrap\LocationPluginBootstrap.cs" />
     <Compile Include="Bootstrap\MessengerPluginBootstrap.cs" />
@@ -161,6 +162,8 @@
     <Compile Include="Services\GatewayQueueTimerService.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="SplashScreen.cs" />
+    <Compile Include="Views\BindableGroupListAdapter.cs" />
+    <Compile Include="Views\BindableGroupListView.cs" />
     <Compile Include="Views\BindableProgress.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\BaseFragment.cs" />
@@ -237,6 +240,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Instruction.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_Section.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

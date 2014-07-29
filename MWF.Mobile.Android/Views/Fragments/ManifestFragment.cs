@@ -36,9 +36,9 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
 
             var instructionItem = (TextView)view.FindViewById(Resource.Id.instructionDate);
-            var set = this.CreateBindingSet<ManifestFragment, ManifestViewModel>();
-            set.Bind(instructionItem).For(i => i.Text).To(vm => vm.MobileApplicationData);
-            set.Apply();
+            //var set = this.CreateBindingSet<ManifestFragment, ManifestViewModel>();
+            //set.Bind(instructionItem).For(i => i.Text).To(vm => vm.MobileApplicationData);
+            //set.Apply();
 
             base.OnViewCreated(view, savedInstanceState);
         }

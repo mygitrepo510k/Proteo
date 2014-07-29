@@ -18,7 +18,17 @@ namespace MWF.Mobile.Core.ViewModels
         public ManifestViewModel()
         {
             var testOrder = new MobileApplicationData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "Proteo Test Client", VehicleRegistration = "243 234" };
-            MobileApplicationData = Enumerable.Repeat<MobileApplicationData>(testOrder, 5);
+            var section1 = new Section()
+            {
+                Header = "Active Instructions",
+                Instructions = Enumerable.Repeat<MobileApplicationData>(testOrder, 5)
+            };
+            var section2 = new Section()
+            {
+                Header = "Instruction",
+                Instructions = Enumerable.Repeat<MobileApplicationData>(testOrder, 5)
+            };
+            Sections = new List<Section>() { section1, section2 }.AsEnumerable<Section>();
         }
 
         public override string FragmentTitle
@@ -26,21 +36,28 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Manifest"; }
         }
 
-        public string ManifestHeaderText
-        {
-            get { return "Select instructions - Showing " + MobileApplicationDataCount;  }
-        }
+        //public string ManifestHeaderText
+        //{
+        //    get { return "Select instructions - Showing " + MobileApplicationDataCount;  }
+        //}
 
-        public int MobileApplicationDataCount
-        {
-            get { return MobileApplicationData.ToList().Count(); }
-        }
+        //public int MobileApplicationDataCount
+        //{
+        //    get { return MobileApplicationData.ToList().Count(); }
+        //}
 
-        private IEnumerable<MobileApplicationData> _mobileApplicationData;
-        public IEnumerable<MobileApplicationData> MobileApplicationData
+        //private IEnumerable<MobileApplicationData> _mobileApplicationData;
+        //public IEnumerable<MobileApplicationData> MobileApplicationData
+        //{
+        //    get { return _mobileApplicationData; }
+        //    set { _mobileApplicationData = value; RaisePropertyChanged(() => MobileApplicationData); }
+        //}
+
+        private IEnumerable<Section> _sections;
+        public IEnumerable<Section> Sections
         {
-            get { return _mobileApplicationData; }
-            set { _mobileApplicationData = value; RaisePropertyChanged(() => MobileApplicationData); }
+            get { return _sections; }
+            set { _sections = value; RaisePropertyChanged(() => Sections); }
         }
 
         public string _dateOutput;
@@ -49,8 +66,26 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _dateOutput; }
             set { _dateOutput = value; RaisePropertyChanged(() => DateOutput); }
         }
-
         
+        
+    }
+
+    public class Section : IEnumerable<MobileApplicationData>
+    {
+
+        public string Header { get; set; }
+        public IEnumerable<MobileApplicationData> Instructions { get; set; }
+
+        public IEnumerator<MobileApplicationData> GetEnumerator()
+        {
+            return Instructions.GetEnumerator();
+        }
+
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
 }

@@ -10,6 +10,7 @@ using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using System.Collections.Generic;
 using Android.Support;
+using Cirrious.CrossCore.IoC;
 
 namespace MWF.Mobile.Android
 {

@@ -10,6 +10,7 @@
   <declare-styleable name="MvxListView">
     <attr name="MvxItemTemplate" format="string"/>
     <attr name="MvxDropDownItemTemplate" format="string"/>
+    <attr name="GroupItemTemplate" format="string"/>  
   </declare-styleable>
   <item type="id" name="MvxBindingTagUnique"/>
   <declare-styleable name="MvxImageView">

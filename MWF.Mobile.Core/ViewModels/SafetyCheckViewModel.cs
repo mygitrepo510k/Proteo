@@ -176,7 +176,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override string FragmentTitle
         {
-            get { return "Safety Check"; }
+            get { return "Safety checklist"; }
         }
 
         public async Task<bool> OnBackButtonPressed()

@@ -182,11 +182,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<VehicleListViewModel>();
-            vm.SearchText = null;
+            vm.SearchText = "";
 
             vm.RefreshListCommand.Execute(null);
 
-            Assert.Same(vm.Vehicles, vehicles);
+            Assert.Equal(vm.VehicleListCount, vehicles.ToList().Count);
             //Its get all twice because it calls it once on setup and another on refresh
             vehicleRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
   

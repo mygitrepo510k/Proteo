@@ -106,7 +106,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string InstructionsText
         {
-            get { return "Add a comment and add pictures."; }
+            get { return "Add comment and images"; }
         }
 
         public bool HasCommentText

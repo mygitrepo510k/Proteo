@@ -7,6 +7,7 @@ using MWF.Mobile.Core.Models;
 using System.Linq;
 using System;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Repositories.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -15,20 +16,24 @@ namespace MWF.Mobile.Core.ViewModels
 		: BaseFragmentViewModel
     {
 
-        public ManifestViewModel()
+        private readonly IMobileApplicationDataRepository _mobileApplicationDataRepository;
+
+        public ManifestViewModel(IMobileApplicationDataRepository mobileApplicationDataRepository)
         {
+            _mobileApplicationDataRepository = mobileApplicationDataRepository;
+            _mobileApplicationDataRepository.GetInProgressInstructions();
             var testOrder = new MobileApplicationData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "Proteo Test Client", VehicleRegistration = "243 234" };
-            var section1 = new Section()
+            var inProgress = new Section()
             {
-                Header = "Active Instructions",
-                Instructions = Enumerable.Repeat<MobileApplicationData>(testOrder, 5)
+                Header = "In Progress",
+                Instructions = _mobileApplicationDataRepository.GetInProgressInstructions()
             };
-            var section2 = new Section()
+            var notStarted = new Section()
             {
-                Header = "Instruction",
-                Instructions = Enumerable.Repeat<MobileApplicationData>(testOrder, 5)
+                Header = "Not Started",
+                Instructions = _mobileApplicationDataRepository.GetNotStartedInstructions()
             };
-            Sections = new List<Section>() { section1, section2 }.AsEnumerable<Section>();
+            Sections = new List<Section>() { inProgress, notStarted }.AsEnumerable<Section>();
         }
 
         public override string FragmentTitle

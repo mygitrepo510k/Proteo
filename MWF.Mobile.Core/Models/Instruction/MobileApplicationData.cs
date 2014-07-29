@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using MWF.Mobile.Core.Enums;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
@@ -71,5 +72,7 @@ namespace MWF.Mobile.Core.Models.Instruction
 
         [JsonProperty("@order")]
         public Order Order { get; set; }
+
+        public InstructionProgress ProgressState { get; set; }
     }
 }

@@ -182,7 +182,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.RefreshListCommand.Execute(null);
 
-            Assert.Equal(vm.TrailerListCount, trailers.ToList().Count);
+            Assert.Equal(trailers, vm.Trailers);
             //Its get all twice because it calls it once on setup and another on refresh
             trailerRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
 

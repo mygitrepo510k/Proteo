@@ -25,6 +25,13 @@ namespace MWF.Mobile.Android.Views.Fragments
             base.OnViewCreated(view, savedInstanceState);
         }
 
+        public override void OnPause()
+        {
+            this.HideKeyboard();
+
+            base.OnPause();
+        }
+
         protected void HideKeyboard()
         {
             InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);

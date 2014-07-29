@@ -48,11 +48,5 @@ namespace MWF.Mobile.Android.Views.Fragments
             set.Bind(submitButton).For(b => b.Enabled).To(vm => vm.OdometerValue).WithConversion(new StringHasLengthConverter(), null);
             set.Apply();
         }
-
-        public override void OnPause()
-        {
-            base.OnPause();
-            this.HideKeyboard();
-        }
     }
 }

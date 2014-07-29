@@ -36,22 +36,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Manifest"; }
         }
 
-        //public string ManifestHeaderText
-        //{
-        //    get { return "Select instructions - Showing " + MobileApplicationDataCount;  }
-        //}
+        public string HeaderText
+        {
+            get { return "Select instructions - Showing " + InsructionsCount; }
+        }
 
-        //public int MobileApplicationDataCount
-        //{
-        //    get { return MobileApplicationData.ToList().Count(); }
-        //}
-
-        //private IEnumerable<MobileApplicationData> _mobileApplicationData;
-        //public IEnumerable<MobileApplicationData> MobileApplicationData
-        //{
-        //    get { return _mobileApplicationData; }
-        //    set { _mobileApplicationData = value; RaisePropertyChanged(() => MobileApplicationData); }
-        //}
 
         private IEnumerable<Section> _sections;
         public IEnumerable<Section> Sections
@@ -66,8 +55,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _dateOutput; }
             set { _dateOutput = value; RaisePropertyChanged(() => DateOutput); }
         }
-        
-        
+
+        public int InsructionsCount
+        {
+            get { return Sections.Sum(s => s.Count()); }
+        }
     }
 
     public class Section : IEnumerable<MobileApplicationData>

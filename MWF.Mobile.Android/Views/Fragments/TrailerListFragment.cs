@@ -31,6 +31,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             this.optionsMenu = menu;
             
             var searchItem = menu.FindItem(Resource.Id.action_search).ActionView;
+           
             _searchView = searchItem.JavaCast<SearchView>();
 
             _searchView.QueryTextChange += (s, e) => ((TrailerListViewModel)this.ViewModel).SearchText = e.NewText;

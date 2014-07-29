@@ -31,8 +31,13 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
-
             base.OnViewCreated(view, savedInstanceState);
+        }
+
+        public override void OnPause()
+        {
+            base.HideKeyboard();
+            base.OnPause();
         }
 
     }

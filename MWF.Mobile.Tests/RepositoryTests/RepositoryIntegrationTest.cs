@@ -29,10 +29,11 @@ namespace MWF.Mobile.Tests.RepositoryTests
         {
 
             ISQLiteConnectionFactory connectionFactory = new MvxWpfSqLiteConnectionFactory();
-            _dataService = new DataService(connectionFactory);
+
 
             if (File.Exists("db.sql"))
             {
+                _dataService = new DataService(connectionFactory);
                 _dataService.Connection.DeleteAll<Device>();
                 _dataService.Connection.DeleteAll<GrandParentEntity>();
                 _dataService.Connection.DeleteAll<ParentEntity>();
@@ -42,6 +43,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
             }
             else
             {
+                _dataService = new DataService(connectionFactory);
                 _dataService.Connection.CreateTable<Device>();
                 _dataService.Connection.CreateTable<GrandParentEntity>();
                 _dataService.Connection.CreateTable<ParentEntity>();

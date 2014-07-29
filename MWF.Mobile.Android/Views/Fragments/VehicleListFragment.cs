@@ -91,6 +91,15 @@ namespace MWF.Mobile.Android.Views.Fragments
                 }
             }
         }
+
+
+        public override void OnPause()
+        {
+            base.OnPause();
+
+            var searhMenuItem = this.optionsMenu.FindItem(Resource.Id.action_search);
+            searhMenuItem.CollapseActionView();
+        }
     }
 
 }

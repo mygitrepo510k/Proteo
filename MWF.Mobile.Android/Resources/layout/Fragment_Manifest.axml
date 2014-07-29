@@ -4,6 +4,10 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
+    <textView
+        style="@style/Proteo.TextView.ListHeading"
+        android:id="@+id/manifestHeader"
+        local:MvxBind="Text HeaderText" />
     <MWF.Mobile.Android.Views.BindableGroupListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

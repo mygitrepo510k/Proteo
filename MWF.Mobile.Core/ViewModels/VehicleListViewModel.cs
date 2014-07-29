@@ -44,7 +44,7 @@ namespace MWF.Mobile.Core.ViewModels
         public int VehicleListCount
         {
             get { return _vehicleListCount; }
-            set { _vehicleListCount = value; }
+            private set { _vehicleListCount = value; }
         }
 
         public int FilteredVehicleCount

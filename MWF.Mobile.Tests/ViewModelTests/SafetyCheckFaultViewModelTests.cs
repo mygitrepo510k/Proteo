@@ -22,6 +22,7 @@ using MWF.Mobile.Core.Repositories;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Plugins.PictureChooser;
 using MWF.Mobile.Core.Messages;
+using MWF.Mobile.Tests.Helpers;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -349,8 +350,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             int previousImageCount = safetyCheckFaultVM.Images.Count;
 
             // dialog returns true
-            _mockUserInteraction.Setup(ui => ui.Confirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>()))
-                                .Callback<string, Action<bool>, string, string, string>( (s1,a,s2,s3,s4) => a.Invoke(true));
+            _mockUserInteraction.ConfirmReturnsTrue();
 
             //delete the last image
             safetyCheckFaultVM.Images[previousImageCount - 1].DeleteCommand.Execute(null);
@@ -386,8 +386,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             int previousImageCount = safetyCheckFaultVM.Images.Count;
 
             // dialog returns false
-            _mockUserInteraction.Setup(ui => ui.Confirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>()))
-                                .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(false));
+            _mockUserInteraction.ConfirmReturnsFalse();
 
             // attempt to delete the last image
             safetyCheckFaultVM.Images[previousImageCount - 1].DeleteCommand.Execute(null);

@@ -64,7 +64,7 @@ namespace MWF.Mobile.Core.ViewModels
         public int TrailerListCount
         {
             get { return _trailersListCount; }
-            set { _trailersListCount = value; }
+            private set { _trailersListCount = value; }
         }
 
         public int FilteredtrailerCount

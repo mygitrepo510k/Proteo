@@ -73,12 +73,5 @@ namespace MWF.Mobile.Android.Views.Fragments
                 e.Handled = true;
             }
         }
-
-        public override void OnPause()
-        {
-            base.OnPause();
-            this.HideKeyboard();
-        }
     }
-
 }

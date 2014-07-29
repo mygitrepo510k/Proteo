@@ -186,7 +186,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.RefreshListCommand.Execute(null);
 
-            Assert.Equal(vm.VehicleListCount, vehicles.ToList().Count);
+            Assert.Equal(vehicles, vm.Vehicles);
             //Its get all twice because it calls it once on setup and another on refresh
             vehicleRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
   

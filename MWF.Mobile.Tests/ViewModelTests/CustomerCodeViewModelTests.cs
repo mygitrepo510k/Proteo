@@ -76,7 +76,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             ccvm.EnterCodeCommand.Execute(null);
 
             // check error message has returned
-            _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s == "Invalid customer code."), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
+            _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s == "The customer passcode you submitted doesn't exist, confirm the passcode and try again."), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
 
         }
 

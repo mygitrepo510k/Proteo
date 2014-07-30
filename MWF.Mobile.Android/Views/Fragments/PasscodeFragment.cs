@@ -16,7 +16,6 @@ using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Core.ViewModels;
 using Cirrious.MvvmCross.Droid.Views;
-using Android.Views.InputMethods;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {

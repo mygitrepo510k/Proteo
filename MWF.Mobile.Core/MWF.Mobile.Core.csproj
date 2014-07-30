@@ -87,6 +87,7 @@
     <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
     <Compile Include="Converters\StringHasLengthConverter.cs" />
+    <Compile Include="Enums\InstructionProgress.cs" />
     <Compile Include="Enums\InstructionType.cs" />
     <Compile Include="Enums\ReportReason.cs" />
     <Compile Include="Enums\SafetyCheckStatus.cs" />
@@ -156,8 +157,10 @@
     <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\Interfaces\IConfigRepository.cs" />
     <Compile Include="Repositories\Interfaces\ICurrentDriverRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IMobileApplicationDataRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepositories.cs" />
     <Compile Include="Repositories\Interfaces\ILatestSafetyCheckRepository.cs" />
+    <Compile Include="Repositories\MobileApplicationDataRepository.cs" />
     <Compile Include="Repositories\Repositories.cs" />
     <Compile Include="Repositories\GatewayQueueItemRepository.cs" />
     <Compile Include="Repositories\Interfaces\IGatewayQueueItemRepository.cs" />
@@ -196,6 +199,7 @@
     <Compile Include="Services\StartupService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
+    <Compile Include="Portable\ICloseApplication.cs" />
     <Compile Include="ViewModels\Navigation\IViewModelNavItem.cs" />
     <Compile Include="ViewModels\Navigation\SafetyCheckNavItem.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />

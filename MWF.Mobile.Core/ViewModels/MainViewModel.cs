@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Repositories.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -22,9 +23,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Constructor
 
-        public MainViewModel(Services.IGatewayQueuedService gatewayQueuedService)
+        public MainViewModel(Services.IGatewayQueuedService gatewayQueuedService, IMobileApplicationDataRepository mobileApplicationDataRepository)
         {
-            this.InitialViewModel = new ManifestViewModel();
+            this.InitialViewModel = new ManifestViewModel(mobileApplicationDataRepository);
 
             // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
             // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:

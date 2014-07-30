@@ -4,6 +4,9 @@ using System.Linq;
 using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.Presentation;
+using Android.Content;
 
 namespace MWF.Mobile.Android.Presenters
 {
@@ -17,9 +20,6 @@ namespace MWF.Mobile.Android.Presenters
         void CloseToInitialView();
     }
 
-    public interface ICustomPresenter
-    {
-    }
 
     /// <summary>
     /// Custom presenter allowing fragments to be rendered within activities using MVVMCross's ShowViewModel.
@@ -89,6 +89,14 @@ namespace MWF.Mobile.Android.Presenters
             }
 
             base.ChangePresentation(hint);
+        }
+
+        public MvxViewModel CurrentActivityViewModel
+        {
+            get
+            {
+                return (this.Activity as MvxActivity).DataContext as MvxViewModel;
+            }
         }
 
     }

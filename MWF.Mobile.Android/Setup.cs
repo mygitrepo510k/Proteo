@@ -6,6 +6,7 @@ using Cirrious.MvvmCross.Droid.Platform;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Android.Portable;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Presentation;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace MWF.Mobile.Android
         protected override Cirrious.MvvmCross.Droid.Views.IMvxAndroidViewPresenter CreateViewPresenter()
         {
             var presenter = new Presenters.CustomPresenter();
-            Mvx.RegisterSingleton<Presenters.ICustomPresenter>(presenter);
+            Mvx.RegisterSingleton<ICustomPresenter>(presenter);
             return presenter;
         }
 

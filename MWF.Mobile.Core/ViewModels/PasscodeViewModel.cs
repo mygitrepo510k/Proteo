@@ -6,25 +6,29 @@ using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.ViewModels.Interfaces;
+using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Core.ViewModels
 {
 
     public class PasscodeViewModel
-        : BaseFragmentViewModel
+        : BaseFragmentViewModel, IBackButtonHandler
     {
         private readonly ICurrentDriverRepository _currentDriverRepository = null;
         private readonly IAuthenticationService _authenticationService = null;
         private readonly IStartupService _startupService = null;
+        private readonly ICloseApplication _closeApplication;
         private bool _isBusy = false;
 
         public PasscodeViewModel(IAuthenticationService authenticationService, IStartupService startupService
-            , ICurrentDriverRepository currentDriverRepository)
+            , ICurrentDriverRepository currentDriverRepository, ICloseApplication closeApplication)
         {
             _authenticationService = authenticationService;
             _startupService = startupService;
 
             _currentDriverRepository = currentDriverRepository;
+            _closeApplication = closeApplication;
         }
 
         public bool IsBusy
@@ -129,10 +133,22 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
-
         public override string FragmentTitle
         {
             get { return "Passcode"; }
+        }
+
+        public async Task<bool> OnBackButtonPressed()
+        {
+
+            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to leave?", "Changes will be lost!");
+
+            if (continueWithBackPress)
+            {
+               _closeApplication.CloseApp();
+            }
+
+            return false;
         }
     }
 

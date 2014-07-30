@@ -42,9 +42,9 @@ namespace MWF.Mobile.Tests.RepositoryTests
             var mobileApplicationDataRepository = new Mock<IMobileApplicationDataRepository>(); //_fixture.Create<MobileApplicationDataRepository>();
             var mobileApplicationData = _fixture.CreateMany<MobileApplicationData>();
             
-            mobileApplicationDataRepository.Insert(mobileApplicationData);
+            mobileApplicationDataRepository.Object.Insert(mobileApplicationData);
 
-            foreach(var instruction in mobileApplicationDataRepository.GetInProgressInstructions())
+            foreach(var instruction in mobileApplicationDataRepository.Object.GetInProgressInstructions())
             {
                 Assert.True((instruction.ProgressState == Core.Enums.InstructionProgress.OnSite || instruction.ProgressState == Core.Enums.InstructionProgress.Driving), "An instruction has been returned that has not been started");
             }

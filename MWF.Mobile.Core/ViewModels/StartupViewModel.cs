@@ -21,7 +21,8 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IGatewayService _gatewayService = null; 
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IReachability _reachableService;
-        private readonly Portable.IReachability _reachability = null; 
+        private readonly Portable.IReachability _reachability = null;
+        private readonly Portable.ICloseApplication _closeApplication = null;
         private readonly IDataService _dataService = null; 
         private readonly IRepositories _repositories = null; 
         private readonly IDeviceInfo _deviceInfo = null; 
@@ -29,11 +30,13 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IUserInteraction _userInteraction = null;
         private readonly ICurrentDriverRepository _currentDriver;
         private readonly IGpsService _gpsService;
+        
 
         public StartupViewModel(IAuthenticationService authenticationService, 
                                 IGatewayService gatewayService, 
                                 IGatewayQueuedService gatewayQueuedService, 
                                 Portable.IReachability reachableService, 
+                                Portable.ICloseApplication closeApplication,
                                 IDataService dataService, 
                                 IRepositories repositories, 
                                 IDeviceInfo deviceInfo, 
@@ -46,6 +49,7 @@ namespace MWF.Mobile.Core.ViewModels
             _gatewayService = gatewayService;
             _gatewayQueuedService = gatewayQueuedService;
             _reachableService = reachableService;
+            _closeApplication = closeApplication;
             _dataService = dataService;
             _repositories = repositories;
             _deviceInfo = deviceInfo;
@@ -61,12 +65,13 @@ namespace MWF.Mobile.Core.ViewModels
             //#if DEBUG
             //  userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
             //#endif
+
             
             var customerRepository = _repositories.CustomerRepository;
 
             if (customerRepository.GetAll().Any())
             {
-                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _startupService,_currentDriver);
+                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _startupService,_currentDriver, _closeApplication);
             }
             else
             {

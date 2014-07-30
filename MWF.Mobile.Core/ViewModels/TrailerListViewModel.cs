@@ -124,29 +124,31 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public async void TrailerDetail(Trailer trailer, string message)
+        public void TrailerDetail(Trailer trailer, string message)
         {
 
-            this.IsBusy = true;
             Guid trailerID = Guid.Empty;
 
             if (trailer != null)
             {
                 trailerID = trailer.ID;
             }
-
-            await UpdateVehicleListAsync();
- 
-            await UpdateTrailerListAsync();
-            // Try and update safety profiles before continuing
-            await UpdateSafetyProfilesAsync();
-
-            this.IsBusy = false;
+    
             //This will take to the next view model with a trailer value of null.
-            Mvx.Resolve<IUserInteraction>().Confirm(message, isConfirmed =>
+            Mvx.Resolve<IUserInteraction>().Confirm(message, async isConfirmed =>
             {
                 if (isConfirmed)
                 {
+                    this.IsBusy = true;
+
+                    await UpdateVehicleListAsync();
+
+                    await UpdateTrailerListAsync();
+                    // Try and update safety profiles before continuing
+                    await UpdateSafetyProfilesAsync();
+
+                    this.IsBusy = false;
+
                     _startupService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
                     _startupService.CurrentTrailer = trailer;
                     ShowViewModel<SafetyCheckViewModel>();

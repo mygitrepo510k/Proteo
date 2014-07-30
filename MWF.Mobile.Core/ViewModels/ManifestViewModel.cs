@@ -8,12 +8,14 @@ using System.Linq;
 using System;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.ViewModels.Interfaces;
+
 
 namespace MWF.Mobile.Core.ViewModels
 {
 
     public class ManifestViewModel 
-		: BaseFragmentViewModel
+		: BaseFragmentViewModel , IBackButtonHandler
     {
 
         private readonly IMobileApplicationDataRepository _mobileApplicationDataRepository;
@@ -65,6 +67,20 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get { return Sections.Sum(s => s.Count()); }
         }
+
+        public async Task<bool> OnBackButtonPressed()
+        {
+
+            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to logout?", "Changes will be lost!");
+
+            if (continueWithBackPress)
+            {
+                ShowViewModel<PasscodeViewModel>();
+            }
+
+            return false;
+        }
+        
     }
 
     public class Section : IEnumerable<MobileApplicationData>

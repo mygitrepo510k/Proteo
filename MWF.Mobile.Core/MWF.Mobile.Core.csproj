@@ -197,6 +197,7 @@
     <Compile Include="Services\StartupService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
+    <Compile Include="Portable\ICloseApplication.cs" />
     <Compile Include="ViewModels\Navigation\IViewModelNavItem.cs" />
     <Compile Include="ViewModels\Navigation\SafetyCheckNavItem.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />

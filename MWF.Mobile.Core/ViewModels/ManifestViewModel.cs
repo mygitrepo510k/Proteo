@@ -3,6 +3,7 @@ using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using MWF.Mobile.Core.Models;
 using System.Linq;
 using System;
@@ -22,51 +23,70 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ManifestViewModel(IMobileDataRepository mobileDataRepository)
         {
-            _mobileDataRepository = mobileDataRepository;
-            _mobileDataRepository.GetInProgressInstructions();
-            var testOrder = new MobileData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "Proteo Test Client" };
-            var inProgress = new Section()
+
+            //_mobileDataRepository = mobileDataRepository;
+           // _mobileDataRepository.GetInProgressInstructions();
+           
+
+
+            ObservableCollection<ManifestInstructionViewModel> instructions = new ObservableCollection<ManifestInstructionViewModel>();
+            instructions.Add(new ManifestInstructionViewModel() { Title = "Test title", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
+            instructions.Add(new ManifestInstructionViewModel() { Title = "Test title2", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
+
+            Sections = new ObservableCollection<ManifestSectionViewModel>();            
+            var inProgressSection = new ManifestSectionViewModel(this)
             {
-                Header = "In Progress",
-                Instructions = _mobileDataRepository.GetInProgressInstructions()
+                //Instructions = _mobileApplicationDataRepository.GetInProgressInstructions()
+                SectionHeader = "In Progress",
+                Instructions = instructions
             };
-            var notStarted = new Section()
+            _instructionCount = _instructionCount + inProgressSection.Instructions.Count;
+            Sections.Add(inProgressSection);
+
+            instructions = new ObservableCollection<ManifestInstructionViewModel>();
+            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Collect", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
+            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Deliver", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
+            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Trunk To", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.TrunkTo });
+            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Proceed From", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.ProceedFrom });
+            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Message with point", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.MessageWithPoint });
+            
+            var notStartedSection = new ManifestSectionViewModel(this)
             {
-                Header = "Not Started",
-                Instructions = _mobileDataRepository.GetNotStartedInstructions()
+                SectionHeader = "Not Started",
+                Instructions = instructions
+
+                //Instructions = _mobileApplicationDataRepository.GetNotStartedInstructions()
             };
-            Sections = new List<Section>() { inProgress, notStarted }.AsEnumerable<Section>();
+            _instructionCount = _instructionCount + notStartedSection.Instructions.Count;
+            Sections.Add(notStartedSection);            
         }
+
+
+        private ObservableCollection<ManifestSectionViewModel> _sections;
+        public ObservableCollection<ManifestSectionViewModel> Sections
+        {
+            get { return _sections; }
+            set { _sections = value; RaisePropertyChanged(() => Sections); }
+        }
+
 
         public override string FragmentTitle
         {
             get { return "Manifest"; }
         }
 
+        private int _instructionCount;
+        public int InstructionsCount
+        {
+            get { return _instructionCount; }
+            set { _instructionCount = value; RaisePropertyChanged(() => InstructionsCount); }
+        }
+
         public string HeaderText
         {
-            get { return "Select instructions - Showing " + InsructionsCount; }
-        }
-
-
-        private IEnumerable<Section> _sections;
-        public IEnumerable<Section> Sections
-        {
-            get { return _sections; }
-            set { _sections = value; RaisePropertyChanged(() => Sections); }
-        }
-
-        public string _dateOutput;
-        public string DateOutput
-        {
-            get { return _dateOutput; }
-            set { _dateOutput = value; RaisePropertyChanged(() => DateOutput); }
-        }
-
-        public int InsructionsCount
-        {
-            get { return Sections.Sum(s => s.Count()); }
-        }
+            get { return "Select instructions - Showing " + InstructionsCount; }
+        } 
+  
 
         public async Task<bool> OnBackButtonPressed()
         {
@@ -79,26 +99,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             return false;
-        }
-        
+
+        }   
     }
-
-    public class Section : IEnumerable<MobileData>
-    {
-
-        public string Header { get; set; }
-        public IEnumerable<MobileData> Instructions { get; set; }
-
-        public IEnumerator<MobileData> GetEnumerator()
-        {
-            return Instructions.GetEnumerator();
-        }
-
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
-
 }

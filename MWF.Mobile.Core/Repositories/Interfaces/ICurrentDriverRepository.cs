@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MWF.Mobile.Core.Repositories.Interfaces
+namespace MWF.Mobile.Core.Repositories
 {
     public interface ICurrentDriverRepository : IRepository<CurrentDriver> 
     {

@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Core.Presentation
 {
     public interface ICustomPresenter
     {
-        MvxViewModel CurrentActivityViewModel { get; }
+        Base CurrentActivityViewModel { get; }
+        MvxViewModel CurrentFragmentViewModel { get; }
     }
 }

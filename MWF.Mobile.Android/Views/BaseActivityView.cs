@@ -163,10 +163,9 @@ namespace MWF.Mobile.Android.Views
         /// <remarks>
         /// If the specified view is not found then all fragments will be removed up to, but not including, the initial view.
         /// </remarks>
-        public void CloseUpToView<TViewModel>()
-            where TViewModel : IMvxViewModel
+        public void CloseUpToView(Type viewModelType)
         {
-            var targetFragmentType = _supportedFragmentViewModels[typeof(TViewModel)];
+            var targetFragmentType = _supportedFragmentViewModels[viewModelType];
             var backStackEntryCount = FragmentManager.BackStackEntryCount;
 
             for (var i = 0; i < backStackEntryCount; i++)

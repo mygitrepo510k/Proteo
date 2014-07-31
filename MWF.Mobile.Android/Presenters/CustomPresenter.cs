@@ -16,7 +16,7 @@ namespace MWF.Mobile.Android.Presenters
         bool Show(MvxViewModelRequest request);
         bool Close(IMvxViewModel viewModel);
         MvxFragment CurrentFragment { get; }
-        void CloseUpToView<TViewModel>() where TViewModel : IMvxViewModel;
+        void CloseUpToView(Type viewModelType);
         void CloseToInitialView();
     }
 
@@ -65,37 +65,59 @@ namespace MWF.Mobile.Android.Presenters
             }
             else
             {
-                var hintType = hint.GetType();
+                //var hintType = hint.GetType();
 
-                if (hintType.IsGenericType)
+                //if (hintType.IsGenericType)
+                //{
+                //    if (hintType.GetGenericTypeDefinition() == typeof(Core.Presentation.CloseUpToViewPresentationHint<>))
+                //    {
+                //        var typeParameter = hintType.GetGenericArguments().First();
+
+                //        if (typeof(IMvxViewModel).IsAssignableFrom(typeParameter))
+                //        {
+                //            var currentFragmentHost = this.Activity as IFragmentHost;
+
+                //            if (currentFragmentHost != null)
+                //            {
+                //                var method = currentFragmentHost.GetType().GetMethod("CloseUpToView");
+                //                method.MakeGenericMethod(typeParameter).Invoke(currentFragmentHost, null);
+                //                return;
+                //            }
+                //        }
+                //    }
+                //}
+
+
+                if (hint is Core.Presentation.CloseUpToViewPresentationHint)
                 {
-                    if (hintType.GetGenericTypeDefinition() == typeof(Core.Presentation.CloseUpToViewPresentationHint<>))
+                    var currentFragmentHost = this.Activity as IFragmentHost;
+
+                    if (currentFragmentHost != null)
                     {
-                        var typeParameter = hintType.GetGenericArguments().First();
+                        currentFragmentHost.CloseUpToView((hint as CloseUpToViewPresentationHint).ViewModelType);
 
-                        if (typeof(IMvxViewModel).IsAssignableFrom(typeParameter))
-                        {
-                            var currentFragmentHost = this.Activity as IFragmentHost;
-
-                            if (currentFragmentHost != null)
-                            {
-                                var method = currentFragmentHost.GetType().GetMethod("CloseUpToView");
-                                method.MakeGenericMethod(typeParameter).Invoke(currentFragmentHost, null);
-                                return;
-                            }
-                        }
+                        return;
                     }
                 }
+
             }
 
             base.ChangePresentation(hint);
         }
 
-        public MvxViewModel CurrentActivityViewModel
+        public BaseActivityViewModel CurrentActivityViewModel
         {
             get
             {
-                return (this.Activity as MvxActivity).DataContext as MvxViewModel;
+                return (this.Activity as MvxActivity).DataContext as BaseActivityViewModel;
+            }
+        }
+
+        public MvxViewModel CurrentFragmentViewModel
+        {
+            get
+            {
+                return (this.CurrentActivityViewModel as IFragmentHost).CurrentFragment.DataContext as MvxViewModel;
             }
         }
 

@@ -4,7 +4,7 @@ using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.Portable;
@@ -21,13 +21,13 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly ICloseApplication _closeApplication;
         private bool _isBusy = false;
 
-        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupService startupService
-            , ICurrentDriverRepository currentDriverRepository, ICloseApplication closeApplication)
+        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupService startupService,
+                        ICloseApplication closeApplication, IRepositories repositories)
         {
             _authenticationService = authenticationService;
             _startupService = startupService;
 
-            _currentDriverRepository = currentDriverRepository;
+            _currentDriverRepository = repositories.CurrentDriverRepository;
             _closeApplication = closeApplication;
         }
 

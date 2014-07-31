@@ -151,6 +151,7 @@
     <Compile Include="DebugTrace.cs" />
     <Compile Include="Helpers\CustomActionBarDrawerToggle.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
+    <Compile Include="Portable\CloseApplication.cs" />
     <Compile Include="Portable\CustomUserInteraction.cs" />
     <Compile Include="Portable\DeviceInfo.cs" />
     <Compile Include="Portable\Reachability.cs" />
@@ -269,7 +270,9 @@
     <AndroidResource Include="Resources\menu\main_activity_actions.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\menu\vehicle_activity_actions.xml" />
+    <AndroidResource Include="Resources\menu\vehicle_activity_actions.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
     <AndroidResource Include="Resources\drawable\proteoLogo.jpg" />
     <AndroidResource Include="Resources\drawable\mwf_logo.png" />
     <AndroidResource Include="Resources\drawable\cross.png" />

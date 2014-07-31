@@ -47,6 +47,7 @@ namespace MWF.Mobile.Android
             Mvx.RegisterSingleton<IDeviceInfo>(() => new DeviceInfo());
             Mvx.RegisterSingleton<IToast>(() => new Portable.Toast());
             Mvx.RegisterSingleton<ISound>(() => new Portable.Sound());
+            Mvx.RegisterSingleton<ICloseApplication>(() => new Portable.CloseApplication());
             Mvx.RegisterSingleton<ICustomUserInteraction>(() => new Portable.CustomUserInteraction());
         }
 

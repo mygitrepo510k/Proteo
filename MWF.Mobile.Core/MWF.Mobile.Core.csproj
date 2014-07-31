@@ -161,10 +161,10 @@
     <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\Interfaces\IConfigRepository.cs" />
     <Compile Include="Repositories\Interfaces\ICurrentDriverRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IMobileApplicationDataRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IMobileDataRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepositories.cs" />
     <Compile Include="Repositories\Interfaces\ILatestSafetyCheckRepository.cs" />
-    <Compile Include="Repositories\MobileApplicationDataRepository.cs" />
+    <Compile Include="Repositories\MobileDataRepository.cs" />
     <Compile Include="Repositories\Repositories.cs" />
     <Compile Include="Repositories\GatewayQueueItemRepository.cs" />
     <Compile Include="Repositories\Interfaces\IGatewayQueueItemRepository.cs" />

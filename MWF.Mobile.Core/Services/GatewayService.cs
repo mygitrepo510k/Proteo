@@ -111,6 +111,22 @@ namespace MWF.Mobile.Core.Services
             return data.Result;
         }
 
+        public async Task<IEnumerable<Models.Instruction.MobileData>> GetDriverInstructions(string vehicleRegistration, 
+                                                                                 Guid driverTitle,
+                                                                                 DateTime startDate,
+                                                                                 DateTime endDate)
+        {
+            var parameters = new[]
+            {
+                new Parameter { Name = "VehicleRegistration", Value = vehicleRegistration },
+                new Parameter { Name = "DriverTitle", Value = driverTitle.ToString() }, 
+                new Parameter { Name = "StartDate", Value = startDate.ToString("yyyy-MM-dd HH:mm:ss") }, 
+                new Parameter { Name = "EndDate", Value = endDate.ToString("yyyy-MM-dd HH:mm:ss") }, 
+            };
+            var data = await ServiceCallAsync<Models.GatewayServiceResponse.MobileDatum>("fwSyncFromServer", parameters);
+            return data.Result == null ? Enumerable.Empty<Models.Instruction.MobileData>() : data.Result.List;
+        }
+
         private class ServiceCallResult<T>
         {
             public T Result { get; set; }

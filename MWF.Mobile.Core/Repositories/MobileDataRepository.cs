@@ -9,26 +9,26 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.Repositories
 {
-    public class MobileApplicationDataRepository : Repository<MobileApplicationData>, IMobileApplicationDataRepository
+    public class MobileDataRepository : Repository<MobileData>, IMobileDataRepository
     {
         #region Construction
-        public MobileApplicationDataRepository(IDataService dataService)
+        public MobileDataRepository(IDataService dataService)
             : base(dataService)
         { }
 
         #endregion
 
-        public IEnumerable<MobileApplicationData> GetInProgressInstructions()
+        public IEnumerable<MobileData> GetInProgressInstructions()
         {
             return _connection
-                .Table<MobileApplicationData>()
+                .Table<MobileData>()
                 .Where(m => m.ProgressState == Enums.InstructionProgress.Driving || m.ProgressState == Enums.InstructionProgress.OnSite);
         }
 
-        public IEnumerable<MobileApplicationData> GetNotStartedInstructions()
+        public IEnumerable<MobileData> GetNotStartedInstructions()
         {
             return _connection
-                .Table<MobileApplicationData>()
+                .Table<MobileData>()
                 .Where(m => m.ProgressState == Enums.InstructionProgress.NotStarted);
         }
     }

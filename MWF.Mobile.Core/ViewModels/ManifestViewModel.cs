@@ -16,22 +16,22 @@ namespace MWF.Mobile.Core.ViewModels
 		: BaseFragmentViewModel
     {
 
-        private readonly IMobileApplicationDataRepository _mobileApplicationDataRepository;
+        private readonly IMobileDataRepository _mobileDataRepository;
 
-        public ManifestViewModel(IMobileApplicationDataRepository mobileApplicationDataRepository)
+        public ManifestViewModel(IMobileDataRepository mobileDataRepository)
         {
-            _mobileApplicationDataRepository = mobileApplicationDataRepository;
-            _mobileApplicationDataRepository.GetInProgressInstructions();
-            var testOrder = new MobileApplicationData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "Proteo Test Client", VehicleRegistration = "243 234" };
+            _mobileDataRepository = mobileDataRepository;
+            _mobileDataRepository.GetInProgressInstructions();
+            var testOrder = new MobileData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "Proteo Test Client" };
             var inProgress = new Section()
             {
                 Header = "In Progress",
-                Instructions = _mobileApplicationDataRepository.GetInProgressInstructions()
+                Instructions = _mobileDataRepository.GetInProgressInstructions()
             };
             var notStarted = new Section()
             {
                 Header = "Not Started",
-                Instructions = _mobileApplicationDataRepository.GetNotStartedInstructions()
+                Instructions = _mobileDataRepository.GetNotStartedInstructions()
             };
             Sections = new List<Section>() { inProgress, notStarted }.AsEnumerable<Section>();
         }
@@ -67,13 +67,13 @@ namespace MWF.Mobile.Core.ViewModels
         }
     }
 
-    public class Section : IEnumerable<MobileApplicationData>
+    public class Section : IEnumerable<MobileData>
     {
 
         public string Header { get; set; }
-        public IEnumerable<MobileApplicationData> Instructions { get; set; }
+        public IEnumerable<MobileData> Instructions { get; set; }
 
-        public IEnumerator<MobileApplicationData> GetEnumerator()
+        public IEnumerator<MobileData> GetEnumerator()
         {
             return Instructions.GetEnumerator();
         }

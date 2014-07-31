@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using MWF.Mobile.Core.Enums;
 using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models
@@ -65,29 +64,5 @@ namespace MWF.Mobile.Core.Models
         public bool Delivered { get; set; }
         public string OrderId { get; set; }
         public object Tag { get; set; }
-    }
-
-    public class Address
-    {
-        [JsonProperty(@"title")]
-        public string Title { get; set; }
-        [JsonProperty(@"type")]
-        public InstructionType Type { get; set; }
-        [JsonProperty(@"line")]
-        public string Line1 { get; set; }
-        [JsonProperty(@"line")]
-        public string Line2 { get; set; }
-        [JsonProperty(@"line")]
-        public string Line3 { get; set; }
-        [JsonProperty(@"line")]
-        public string Line4 { get; set; }
-        [JsonProperty(@"postcode")]
-        public string Postcode { get; set; }
-        [JsonProperty(@"country")]
-        public string Country { get; set; }
-        [JsonProperty(@"arrive")]
-        public DateTime Arrive { get; set; }
-        [JsonProperty(@"depart")]
-        public DateTime Depart { get; set; }
     }
 }

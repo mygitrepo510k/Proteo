@@ -1,17 +1,26 @@
 using System;
 using System.Collections.Generic;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using MWF.Mobile.Core.Converters;
 using MWF.Mobile.Core.Enums;
+using MWF.Mobile.Core.Models.Attributes;
 using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
-    public class Order
+    public class Order : IBlueSphereEntity
     {
+        public Order()
+        {
+            ID = new Guid();
+        }
+
         [Unique]
         [PrimaryKey]
+        public Guid ID { get; set; }
+
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public string OrderId { get; set; }
 
         [JsonProperty("routeid")]
         public string RouteId { get; set; }
@@ -43,16 +52,26 @@ namespace MWF.Mobile.Core.Models.Instruction
         [JsonProperty("depart")]
         public DateTime Depart { get; set; }
 
+        [ChildRelationship(typeof(Additional), RelationshipCardinality.OneToOne)]
         [JsonProperty("additional")]
         public Additional Additional { get; set; }
-        
+
+        [ChildRelationship(typeof(Address))]
         [JsonProperty("addresses")]
+        [JsonConverter(typeof(JsonWrappedListConverter<Address>))]
         public List<Address> Addresses { get; set; }
 
+        [ChildRelationship(typeof(Instruction))]
         [JsonProperty("instructions")]
+        [JsonConverter(typeof(JsonWrappedListConverter<Instruction>))]
         public List<Instruction> Instructions { get; set; }
 
+        [ChildRelationship(typeof(Item))]
         [JsonProperty("items")]
+        [JsonConverter(typeof(JsonWrappedListConverter<Item>))]
         public List<Item> Items { get; set; }
+
+        [ForeignKey(typeof(MobileData))]
+        public Guid MobileDataId { get; set; }
     }
 }

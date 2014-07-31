@@ -88,7 +88,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressMessage
         {
-            get { return "You customer code is being checked to set-up your device. This can take up to 5 minutes.";  }
+            get { return "Your customer code is being checked to set-up your device. This can take up to 5 minutes.";  }
         }
 
         private MvxCommand _enterCodeCommand;

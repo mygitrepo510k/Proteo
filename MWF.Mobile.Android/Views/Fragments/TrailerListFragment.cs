@@ -57,7 +57,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
-            _bindableProgress = new MWF.Mobile.Android.Views.BindableProgress(view.Context);
+            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
 
             this.Activity.ActionBar.Show();
             base.OnViewCreated(view, savedInstanceState);

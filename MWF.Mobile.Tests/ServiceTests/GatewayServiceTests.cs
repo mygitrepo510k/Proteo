@@ -133,7 +133,23 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(drivers.First().ID, testDriverID);
         }
 
+        /// <summary>
+        /// End to end test of gateway service GetDriverInstruction method 
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GatewayService_EndToEnd_GetDriverInstructions()
+        {
+            base.ClearAll();
 
+            Guid driverId = Guid.Parse("1b969806-1aba-4563-8df0-09b8beebda81");
+            _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = _fixture.Create<Core.Services.GatewayService>();
+            var driverInstructions = await service.GetDriverInstructions("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);
+
+            Assert.Equal(2, driverInstructions.Count());
+            Assert.Equal(driverId, driverInstructions.First().DriverId);
+        }
     }
 
 }

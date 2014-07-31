@@ -1,5 +1,4 @@
 ﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite.Wpf;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using MWF.Mobile.Core.Models.Instruction;
@@ -7,13 +6,7 @@ using MWF.Mobile.Core.Services;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Repositories.Interfaces;
 
 namespace MWF.Mobile.Tests.RepositoryTests
@@ -39,8 +32,8 @@ namespace MWF.Mobile.Tests.RepositoryTests
         public void Repository_Returns_Inprogress_Instructions()
         {
             base.ClearAll();
-            var mobileApplicationDataRepository = new Mock<IMobileApplicationDataRepository>(); //_fixture.Create<MobileApplicationDataRepository>();
-            var mobileApplicationData = _fixture.CreateMany<MobileApplicationData>();
+            var mobileApplicationDataRepository = new Mock<IMobileDataRepository>(); //_fixture.Create<MobileDataRepository>();
+            var mobileApplicationData = _fixture.CreateMany<MobileData>();
             
             mobileApplicationDataRepository.Object.Insert(mobileApplicationData);
 

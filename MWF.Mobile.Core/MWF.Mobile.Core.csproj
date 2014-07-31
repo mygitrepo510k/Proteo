@@ -110,6 +110,7 @@
     <Compile Include="Models\GatewayServiceResponse\ResponseAction.cs" />
     <Compile Include="Models\GatewayServiceResponse\Response.cs" />
     <Compile Include="Models\GatewayServiceResponse\SafetyProfiles.cs" />
+    <Compile Include="Models\GatewayServiceResponse\MobileDatum.cs" />
     <Compile Include="Models\GatewayServiceResponse\Vehicles.cs" />
     <Compile Include="Models\GatewayServiceResponse\VehicleViews.cs" />
     <Compile Include="Models\GatewayServiceResponse\Drivers.cs" />
@@ -123,11 +124,15 @@
     <Compile Include="Models\Image.cs" />
     <Compile Include="Models\Instruction.cs" />
     <Compile Include="Models\Instruction\Additional.cs" />
+    <Compile Include="Models\Instruction\Address.cs" />
+    <Compile Include="Models\Instruction\ConfirmQuantity.cs" />
+    <Compile Include="Models\Instruction\DeliveryDescription.cs" />
     <Compile Include="Models\Instruction\Instruction.cs" />
     <Compile Include="Models\Instruction\ItemAdditional.cs" />
-    <Compile Include="Models\Instruction\MobileApplicationData.cs" />
+    <Compile Include="Models\Instruction\MobileData.cs" />
     <Compile Include="Models\Instruction\Order.cs" />
     <Compile Include="Models\Instruction\Item.cs" />
+    <Compile Include="Models\Instruction\Trailer.cs" />
     <Compile Include="Models\LatestSafetyCheck.cs" />
     <Compile Include="Models\MWFMobileConfig.cs" />
     <Compile Include="Models\Signature.cs" />
@@ -157,10 +162,10 @@
     <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\Interfaces\IConfigRepository.cs" />
     <Compile Include="Repositories\Interfaces\ICurrentDriverRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IMobileApplicationDataRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IMobileDataRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepositories.cs" />
     <Compile Include="Repositories\Interfaces\ILatestSafetyCheckRepository.cs" />
-    <Compile Include="Repositories\MobileApplicationDataRepository.cs" />
+    <Compile Include="Repositories\MobileDataRepository.cs" />
     <Compile Include="Repositories\Repositories.cs" />
     <Compile Include="Repositories\GatewayQueueItemRepository.cs" />
     <Compile Include="Repositories\Interfaces\IGatewayQueueItemRepository.cs" />

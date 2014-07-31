@@ -40,7 +40,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             //Add the progress dialog to the view
 
 
-            _bindableProgress = new MWF.Mobile.Android.Views.BindableProgress(view.Context);
+            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
 
             //Hide the action bar
             this.Activity.ActionBar.Hide();

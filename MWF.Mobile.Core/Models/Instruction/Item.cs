@@ -1,22 +1,37 @@
+using System;
 using System.Collections.Generic;
+using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using MWF.Mobile.Core.Models.Attributes;
+using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
-    public class Item
+    public class Item : IBlueSphereEntity
     {
-        public string Id { get; set; }
-        public string Title { get; set; }
+        public Item()
+        {
+            ID = new Guid();
+        }
+
+        [Unique]
+        [PrimaryKey]
+        public Guid ID { get; set; }
+
+        [ChildRelationship(typeof(ItemAdditional), RelationshipCardinality.OneToOne)]
+        [JsonProperty("additional")]
+        public ItemAdditional Additional { get; set; }
+        [JsonProperty("Barcodes")]
+        public string Barcodes { get; set; }
+        [JsonProperty("description")]
         public string Description { get; set; }
-        public string DeliveryOrderNumber { get; set; }
-        public string CustomerOrderNumber { get; set; }
-        public string OrderId { get; set; }
-        public string Quantity { get; set; }
-        public string Weight { get; set; }
-        public string Unit { get; set; }
-        public string Price { get; set; }
-        public string DeliveryType { get; set; }
-        public string BusinessType { get; set; }
-        public Additional Additional { get; set; }
-        public List<Barcode> Barcodes { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
+        [JsonProperty("quantity")]
+        public int Quantity { get; set; }
+        [JsonProperty("title")]
+        public string Title { get; set; }
+
+        [ForeignKey(typeof(Order))]
+        public Guid OrderId { get; set; }
     }
 }

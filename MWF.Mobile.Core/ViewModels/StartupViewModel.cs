@@ -26,7 +26,8 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IDataService _dataService = null; 
         private readonly IRepositories _repositories = null; 
         private readonly IDeviceInfo _deviceInfo = null; 
-        private readonly IStartupService _startupService = null; 
+        private readonly IStartupService _startupService = null;
+        private readonly INavigationService _navigationService = null; 
         private readonly IUserInteraction _userInteraction = null;
         private readonly ICurrentDriverRepository _currentDriver;
         private readonly IGpsService _gpsService;
@@ -42,7 +43,8 @@ namespace MWF.Mobile.Core.ViewModels
                                 IDeviceInfo deviceInfo, 
                                 IStartupService startupService, 
                                 IUserInteraction userInteraction, 
-                                IGpsService gpsService)
+                                IGpsService gpsService,
+                                INavigationService navigationService)
         {
             _authenticationService = authenticationService;
             _gatewayService = gatewayService;
@@ -55,6 +57,7 @@ namespace MWF.Mobile.Core.ViewModels
             _startupService = startupService;
             _userInteraction = userInteraction;
             _gpsService = gpsService;
+            _navigationService = navigationService;
             this.SetInitialViewModel();
         }
 
@@ -69,11 +72,11 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (customerRepository.GetAll().Any())
             {
-                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _startupService, _closeApplication, _repositories);
+                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _startupService, _closeApplication, _repositories, _navigationService);
             }
             else
             {
-                this.InitialViewModel = new CustomerCodeViewModel(_gatewayService, _reachableService, _dataService, _repositories, _userInteraction);
+                this.InitialViewModel = new CustomerCodeViewModel(_gatewayService, _reachableService, _dataService, _repositories, _userInteraction, _navigationService);
             }
              
         }

@@ -18,6 +18,7 @@ namespace MWF.Mobile.Android.Presenters
         MvxFragment CurrentFragment { get; }
         void CloseUpToView(Type viewModelType);
         void CloseToInitialView();
+        int FragmentHostID { get; }
     }
 
 
@@ -65,28 +66,6 @@ namespace MWF.Mobile.Android.Presenters
             }
             else
             {
-                //var hintType = hint.GetType();
-
-                //if (hintType.IsGenericType)
-                //{
-                //    if (hintType.GetGenericTypeDefinition() == typeof(Core.Presentation.CloseUpToViewPresentationHint<>))
-                //    {
-                //        var typeParameter = hintType.GetGenericArguments().First();
-
-                //        if (typeof(IMvxViewModel).IsAssignableFrom(typeParameter))
-                //        {
-                //            var currentFragmentHost = this.Activity as IFragmentHost;
-
-                //            if (currentFragmentHost != null)
-                //            {
-                //                var method = currentFragmentHost.GetType().GetMethod("CloseUpToView");
-                //                method.MakeGenericMethod(typeParameter).Invoke(currentFragmentHost, null);
-                //                return;
-                //            }
-                //        }
-                //    }
-                //}
-
 
                 if (hint is Core.Presentation.CloseUpToViewPresentationHint)
                 {
@@ -117,7 +96,8 @@ namespace MWF.Mobile.Android.Presenters
         {
             get
             {
-                return (this.CurrentActivityViewModel as IFragmentHost).CurrentFragment.DataContext as MvxViewModel;
+                IFragmentHost host = this.Activity as IFragmentHost;
+                return host.CurrentFragment.DataContext as MvxViewModel;
             }
         }
 

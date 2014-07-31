@@ -10,7 +10,7 @@ namespace MWF.Mobile.Core.Presentation
 {
     public interface ICustomPresenter
     {
-        Base CurrentActivityViewModel { get; }
+        BaseActivityViewModel CurrentActivityViewModel { get; }
         MvxViewModel CurrentFragmentViewModel { get; }
     }
 }

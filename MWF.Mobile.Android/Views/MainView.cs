@@ -67,6 +67,8 @@ namespace MWF.Mobile.Android.Views
         {
             { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
         };
+
+        public override int FragmentHostID { get { return Resource.Id.fragment_host_main; } }
         
         #endregion Fragment host
         

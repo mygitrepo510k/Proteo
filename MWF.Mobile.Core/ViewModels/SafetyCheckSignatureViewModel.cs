@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.Services;
 using Chance.MvvmCross.Plugins.UserInteraction;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -15,14 +16,16 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly Services.IStartupService _startupService = null;
         private readonly Services.IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IUserInteraction _userInteraction = null;
+        private readonly INavigationService _navigationService;
 
         IEnumerable<Models.SafetyCheckData> _safetyCheckData;
 
-        public SafetyCheckSignatureViewModel(Services.IStartupService startupService, Services.IGatewayQueuedService gatewayQueuedService, IUserInteraction userInteraction, Repositories.IRepositories repositories)
+        public SafetyCheckSignatureViewModel(Services.IStartupService startupService, Services.IGatewayQueuedService gatewayQueuedService, IUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService)
         {
             _startupService = startupService;
             _gatewayQueuedService = gatewayQueuedService;
             _userInteraction = userInteraction;
+            _navigationService = navigationService;
 
             // Retrieve the vehicle and trailer safety check data from the startup info service
             _safetyCheckData = _startupService.GetCurrentSafetyCheckData();
@@ -119,6 +122,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             // Complete the startup process
             _startupService.Commit();
+            _navigationService.MoveToNext();
         }
 
         public override string FragmentTitle

@@ -16,15 +16,17 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class SafetyCheckViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
-        private IStartupService _startupService;
-        private IRepositories _repositories;
+        private readonly IStartupService _startupService;
+        private readonly IRepositories _repositories;
+        private readonly INavigationService _navigationService;
 
         #region Construction
 
-        public SafetyCheckViewModel(IStartupService startupService, IRepositories repositories)
+        public SafetyCheckViewModel(IStartupService startupService, INavigationService navigationService, IRepositories repositories)
         {
             _startupService = startupService;
             _repositories = repositories;
+            _navigationService = navigationService;
 
             Vehicle vehicle = null;
             Trailer trailer = null;
@@ -78,7 +80,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (SafetyProfileTrailer == null && SafetyProfileVehicle == null)
             {
-                Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found - Redirecting to Manifest Screen.", () => startupService.Commit());
+                Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found - Redirecting to Manifest Screen.", () => { startupService.Commit(); _navigationService.MoveToNext(); });
             }
 
         }
@@ -167,11 +169,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void DoChecksDoneCommand()
         {
-
-            if (SafetyProfileVehicle.OdometerRequired)
-                ShowViewModel<OdometerViewModel>();
-            else
-                ShowViewModel<SafetyCheckSignatureViewModel>();
+            _navigationService.MoveToNext();
         }
 
         public override string FragmentTitle

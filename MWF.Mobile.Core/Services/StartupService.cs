@@ -87,13 +87,6 @@ namespace MWF.Mobile.Core.Services
 
             //TODO: add the logon event to the gateway queue
 
-            // The startup process is now complete
-            if (safetyCheckFailed)
-                // The safety check failed so the user should not be logged in
-                ChangePresentation(new Presentation.CloseUpToViewPresentationHint(typeof(ViewModels.PasscodeViewModel)));
-            else
-                // Redirect to the main view
-                ShowViewModel<ViewModels.MainViewModel>();
         }
 
     }

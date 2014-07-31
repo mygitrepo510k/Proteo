@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.ViewModels;
@@ -13,7 +14,12 @@ using MWF.Mobile.Core.Presentation;
 namespace MWF.Mobile.Core.Services
 {
 
-    public class NavigationService : MvxNavigatingObject
+    /// <summary>
+    /// Class to centralise navigation logic. Stores a navigation graph as two dictionaries (forward and backward)
+    /// that map a Activity/Fragment view model graph node to the action that will navigate to the next node.
+    /// The actual mappings that define the MWF.Mobile navigation graph are in the SetMappings function.
+    /// </summary>
+    public class NavigationService : MvxNavigatingObject, INavigationService
     {
 
         #region Private Members
@@ -46,49 +52,55 @@ namespace MWF.Mobile.Core.Services
 
         #region Public Methods
 
-        public void InsertNavAction<T1,T2>(Type destinationNodeType) where T1 : MvxViewModel
-                                                               where T2 : MvxViewModel
+
+        public void InsertNavAction<T1,T2>(Type destinationNodeType)
+                where T1 : BaseActivityViewModel
+                where T2 : BaseFragmentViewModel
         {
-            //todo: catch dest type not being an mvx view model
+
+            if (!IsDestinationTypeValid(destinationNodeType)) throw new ArgumentException("destinationNodeType must derive from MvxViewModel");
+
             var key = CreateKey<T1, T2>();
             _forwardNavActionDictionary.Add(key, () => MoveTo(destinationNodeType) );
         }
 
-        public void InsertCustomNavAction<T1, T2>(Action action)
-            where T1 : MvxViewModel
-            where T2 : MvxViewModel
+
+        public void InsertCustomNavAction<T1, T2>(Action action) where T1 : BaseActivityViewModel
+                                                                 where T2 : BaseFragmentViewModel
         {
-            //todo: catch dest type not being an mvx view model
             var key = CreateKey<T1, T2>();
             _forwardNavActionDictionary.Add(key, action);
         }
 
+
         public void InsertBackNavAction<T1, T2>(Type destinationNodeType)
-            where T1 : MvxViewModel
-            where T2 : MvxViewModel
+            where T1 : BaseActivityViewModel
+            where T2 : BaseFragmentViewModel
         {
-            //todo: catch dest type not being an mvx view model
+            if (!IsDestinationTypeValid(destinationNodeType)) throw new ArgumentException("destinationNodeType must derive from MvxViewModel");
+
             var key = CreateKey<T1, T2>();
             _backwardNavActionDictionary.Add(key, () => MoveBackTo(destinationNodeType));
         }
 
+
         public void InsertCustomBackNavAction<T1, T2>(Action action)
-            where T1 : MvxViewModel
-            where T2 : MvxViewModel
+            where T1 : BaseActivityViewModel
+            where T2 : BaseFragmentViewModel
         {
-            //todo: catch dest type not being an mvx view model
             var key = CreateKey<T1, T2>();
             _backwardNavActionDictionary.Add(key, action);
         }
 
 
         public bool NavActionExists<T1, T2>()
-            where T1 : MvxViewModel
-            where T2 : MvxViewModel
+            where T1 : BaseActivityViewModel
+            where T2 : BaseFragmentViewModel
         {
             var key = CreateKey<T1, T2>();
             return _forwardNavActionDictionary.ContainsKey(key);
         }
+
 
         public bool BackNavActionExists<T1, T2>()
             where T1 : MvxViewModel
@@ -98,43 +110,56 @@ namespace MWF.Mobile.Core.Services
             return _backwardNavActionDictionary.ContainsKey(key);
         }
 
+
         public bool BackNavActionExists(Type activityType, Type fragmentType)
         {
+            if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
+
             var key = CreateKey(activityType,  fragmentType);
             return _backwardNavActionDictionary.ContainsKey(key);
         }
 
 
         public Action GetNavAction<T1, T2>()
-            where T1 : MvxViewModel
-            where T2 : MvxViewModel
+                            where T1 : BaseActivityViewModel
+                where T2 : BaseFragmentViewModel
         {
             var key = CreateKey<T1, T2>();
             return GetNavActionWithKey(_forwardNavActionDictionary, key);
         }
 
-        // todo: catch input type not being an mvx view model
+
         public Action GetNavAction(Type activityType, Type fragmentType)
         {
+            if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
+
             var key = CreateKey(activityType, fragmentType);
             return GetNavActionWithKey(_forwardNavActionDictionary, key);
         }
 
+
         public Action GetBackNavAction(Type activityType, Type fragmentType)
         {
+            if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
+
             var key = CreateKey(activityType, fragmentType);
             return GetNavActionWithKey(_backwardNavActionDictionary, key);
         }
+
+        #endregion
+
+        #region INavigationService 
 
         public void MoveToNext()
         {
 
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
-            Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
-
-            //todo: catch mapping not existing
+            Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();          
 
             Action navAction = this.GetNavAction(currentActivityType, currentFragmentType);
+
+            if (navAction == null) throw new UnknownNavigationMappingException(currentActivityType, currentFragmentType);
+
             navAction.Invoke();
 
         }
@@ -145,9 +170,10 @@ namespace MWF.Mobile.Core.Services
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            //todo: catch mapping not existing
-
             Action navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
+
+            if (navAction == null) throw new UnknownBackNavigationMappingException(currentActivityType, currentFragmentType);
+
             navAction.Invoke();
 
         }
@@ -160,7 +186,6 @@ namespace MWF.Mobile.Core.Services
 
             return BackNavActionExists(currentActivityType, currentFragmentType);
         }
-
 
         #endregion
 
@@ -187,10 +212,6 @@ namespace MWF.Mobile.Core.Services
         {
             get { return SafetyCheckData.GetOverallStatus(_startupService.GetCurrentSafetyCheckData().Select(scd => scd.GetOverallStatus())); }
         }
-
-        #endregion
-
-        #region Properties
 
         #endregion
 
@@ -225,9 +246,23 @@ namespace MWF.Mobile.Core.Services
             return action;
         }
 
+        private bool AreSourceTypesValid(Type activityType, Type fragmentType)
+        {
+            return typeof(BaseActivityViewModel).IsAssignableFrom(activityType) && typeof(BaseFragmentViewModel).IsAssignableFrom(fragmentType);
+        }
+        private bool IsDestinationTypeValid(Type destType)
+        {
+            return typeof(MvxViewModel).IsAssignableFrom(destType);
+        }
+
+
+        #endregion
+
+        #region Mappings Definitions
+
         private void SetMappings()
         {
-            // StartUp
+            // StartUp Activity
             InsertNavAction<StartupViewModel, CustomerCodeViewModel>(typeof(PasscodeViewModel));
             InsertNavAction<StartupViewModel, PasscodeViewModel>(typeof(VehicleListViewModel));
             InsertNavAction<StartupViewModel, VehicleListViewModel>(typeof(TrailerListViewModel));
@@ -238,10 +273,9 @@ namespace MWF.Mobile.Core.Services
 
             InsertCustomBackNavAction<StartupViewModel, PasscodeViewModel>(CloseApplication);               //Back from passcode closes app
 
-            // Main
-            InsertCustomBackNavAction<MainViewModel, ManifestViewModel>();
+            // Main Activity
+            InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(() => MoveTo(typeof(StartupViewModel))); // Back from manifest sends back to startup activity
         }
-
 
         #endregion
 
@@ -291,17 +325,29 @@ namespace MWF.Mobile.Core.Services
 
         }
 
-        public void Manifest_CustomBackAction()
-        {
-            _presenter.CurrentActivityViewModel.Close();
-            ChangePresentation(new Presentation.CloseUpToViewPresentationHint(typeof(PasscodeViewModel)));
-        }
 
         #endregion
 
 
-
-
     }
+
+    #region Exception Classes
+
+    public class UnknownNavigationMappingException : Exception
+    {
+        public UnknownNavigationMappingException(Type activityType, Type fragmentType) : base(string.Format("No mapping defined for {0} activity / {1} fragment", activityType, fragmentType))
+        {         
+        }
+    }
+
+    public class UnknownBackNavigationMappingException : Exception
+    {
+        public UnknownBackNavigationMappingException(Type activityType, Type fragmentType)
+            : base(string.Format("No backward mapping defined for {0} activity / {1} fragment", activityType, fragmentType))
+        {
+        }
+    }
+
+    #endregion
 
 }

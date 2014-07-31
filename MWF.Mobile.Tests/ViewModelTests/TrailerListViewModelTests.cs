@@ -69,14 +69,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
+            var navigationServiceMock = new Mock<INavigationService>();
+            navigationServiceMock.Setup(ns => ns.MoveToNext());
+            _fixture.Inject<INavigationService>(navigationServiceMock.Object);
+
             var vm = _fixture.Create<TrailerListViewModel>();
 
             vm.TrailerSelectorCommand.Execute(_trailer);
 
-            var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
-            Assert.Equal(1, mockDispatcher.Requests.Count);
-            var request = mockDispatcher.Requests.First();
-            Assert.Equal(typeof(SafetyCheckViewModel), request.ViewModelType);
+            // check that the navigation service was called
+            navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);
+
+
 
         }
 

@@ -10,10 +10,13 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class OdometerViewModel : BaseFragmentViewModel
     {
-        private IStartupService _startupService;
-        public OdometerViewModel(IStartupService startupService)
+        private readonly IStartupService _startupService;
+        private readonly INavigationService _navigationService;
+
+        public OdometerViewModel(IStartupService startupService, INavigationService navigationService)
         {
             _startupService = startupService;
+            _navigationService = navigationService;
         }
 
         public override string FragmentTitle
@@ -60,7 +63,7 @@ namespace MWF.Mobile.Core.ViewModels
             int odometerValue = int.Parse(OdometerValue);
             _startupService.Mileage = odometerValue;
 
-            ShowViewModel<SafetyCheckSignatureViewModel>();
+            _navigationService.MoveToNext();
         }
 
 

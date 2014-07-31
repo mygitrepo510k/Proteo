@@ -17,13 +17,14 @@ using MWF.Mobile.Core.Repositories.Interfaces;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class CustomerCodeViewModel : MvxViewModel
+    public class CustomerCodeViewModel : BaseFragmentViewModel
     {
 
         private readonly Services.IGatewayService _gatewayService;
         private readonly Services.IDataService _dataService;
         private readonly IReachability _reachability;
         private readonly IUserInteraction _userInteraction;
+        private readonly INavigationService _navigationService;
 
         private readonly IApplicationProfileRepository _applicationProfileRepository;
         private readonly ICustomerRepository _customerRepository; 
@@ -35,12 +36,13 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVerbProfileRepository _verbProfileRepository;
         private readonly IConfigRepository _configRepository;
 
-        public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, IUserInteraction userInteraction)
+        public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, IUserInteraction userInteraction, INavigationService navigationService)
         {
             _gatewayService = gatewayService;
             _dataService = dataService;
             _reachability = reachability;
             _userInteraction = userInteraction;
+            _navigationService = navigationService;
 
             _applicationProfileRepository = repositories.ApplicationRepository;
             _customerRepository = repositories.CustomerRepository;
@@ -56,6 +58,8 @@ namespace MWF.Mobile.Core.ViewModels
             _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", (bool ok) => { if (ok) this.CustomerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031"; });
 #endif
         }
+
+        public override string FragmentTitle { get { return "Customer Code"; } }
 
         private string _customerCode = string.Empty;
         public string CustomerCode
@@ -136,7 +140,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 this.IsBusy = false;
 
-                if (success) ShowViewModel<PasscodeViewModel>();
+                if (success) _navigationService.MoveToNext();
                 else await _userInteraction.AlertAsync(_errorMessage);
 
             }

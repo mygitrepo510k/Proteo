@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using MWF.Mobile.Core.Models;
 using System.Linq;
 using System;
+using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.ViewModels.Interfaces;
@@ -19,11 +20,14 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         private readonly IMobileDataRepository _mobileDataRepository;
+        private readonly INavigationService _navigationService;
 
-        public ManifestViewModel(IMobileDataRepository mobileDataRepository)
+        public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService)
         {
             _mobileDataRepository = mobileDataRepository;
             _mobileDataRepository.GetInProgressInstructions();
+            _navigationService = navigationService;
+
             var testOrder = new MobileData() { EffectiveDate = DateTime.Now.AddMonths(1), Title = "Proteo Test Client" };
             var inProgress = new Section()
             {
@@ -75,7 +79,14 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (continueWithBackPress)
             {
-                ShowViewModel<PasscodeViewModel>();
+                if (_navigationService.IsBackActionDefined())
+                {
+                    //todo: move this to base class
+                    _navigationService.GoBack();
+                    return false;
+                }
+
+                return true;
             }
 
             return false;

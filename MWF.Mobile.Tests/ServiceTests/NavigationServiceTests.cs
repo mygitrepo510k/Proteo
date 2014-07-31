@@ -56,10 +56,21 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
             service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
 
             Assert.True(service.NavActionExists<ActivityViewModel, FragmentViewModel1>());
+
+        }
+
+        [Fact]
+        public void NavigationService_InsertNavAction_InvalidDestType()
+        {
+            base.ClearAll();
+
+            var service = _fixture.Create<NavigationService>();
+
+            // Destination type is not an MvxModel
+            Assert.Throws<ArgumentException>(() => service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(HttpService)));
 
         }
 
@@ -208,6 +219,21 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
+        public void NavigationService_GetNavAction_DynamicOverload_InvalidTypes()
+        {
+            base.ClearAll();
+
+            var service = _fixture.Create<NavigationService>();
+
+            // first class is not a BaseActivityViewModel
+            Assert.Throws<ArgumentException>(() => service.GetNavAction(typeof(HttpService), typeof(FragmentViewModel1)));
+
+            //second class is not a BaseFragmentViewModel
+            Assert.Throws<ArgumentException>(() => service.GetNavAction(typeof(ActivityViewModel), typeof(HttpService)));
+
+        }
+
+        [Fact]
         public void NavigationService_GetNavAction_NoNavActionDefined()
         {
             base.ClearAll();
@@ -245,6 +271,25 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
+        public void NavigationService_MoveToNext_UnknownMapping()
+        {
+            base.ClearAll();
+
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => cp.CurrentActivityViewModel == _fixture.Create<ActivityViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<FragmentViewModel1>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+            var service = _fixture.Create<NavigationService>();
+
+            // Don't specify any mappings
+
+            // Attempt to move to the next view model
+            Assert.Throws<UnknownNavigationMappingException>(() => service.MoveToNext());
+
+
+        }
+
+        [Fact]
         public void NavigationService_GoBack()
         {
             base.ClearAll();
@@ -267,6 +312,25 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(1, _mockViewDispatcher.Hints.Count);
             var hint = _mockViewDispatcher.Hints.First();
             Assert.Equal(typeof(FragmentViewModel1), (hint as CloseUpToViewPresentationHint).ViewModelType);
+
+        }
+
+        [Fact]
+        public void NavigationService_GoBack_UnknownMapping()
+        {
+            base.ClearAll();
+
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => cp.CurrentActivityViewModel == _fixture.Create<ActivityViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<FragmentViewModel1>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+            var service = _fixture.Create<NavigationService>();
+
+            // Don't specify any mappings
+
+            // Attempt to go back
+            Assert.Throws<UnknownBackNavigationMappingException>(() => service.GoBack());
+
 
         }
 
@@ -453,7 +517,6 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         }
 
-
         [Fact]
         public void NavigationService_Mappings_Odometer()
         {
@@ -559,9 +622,36 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         }
 
+        [Fact]
+        public void NavigationService_BackMappings_Manifest()
+        {
+            base.ClearAll();
+
+            var closeApplicationMock = new Mock<ICloseApplication>();
+            _fixture.Inject<ICloseApplication>(closeApplicationMock.Object);
+
+            // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<ManifestViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var service = _fixture.Create<NavigationService>();
+
+            // Go back
+            service.GoBack();
+
+            //Check that the startup activity view model was navigated to (passcode
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(StartupViewModel), request.ViewModelType);
+
+
+        }
+
 
         #endregion
-
 
         #region Helper Functions
 

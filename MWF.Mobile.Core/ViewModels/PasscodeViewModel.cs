@@ -19,13 +19,15 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IAuthenticationService _authenticationService = null;
         private readonly IStartupService _startupService = null;
         private readonly ICloseApplication _closeApplication;
+        private readonly INavigationService _navigationService;
         private bool _isBusy = false;
 
         public PasscodeViewModel(IAuthenticationService authenticationService, IStartupService startupService,
-                        ICloseApplication closeApplication, IRepositories repositories)
+                        ICloseApplication closeApplication, IRepositories repositories, INavigationService navigationService)
         {
             _authenticationService = authenticationService;
             _startupService = startupService;
+            _navigationService = navigationService;
 
             _currentDriverRepository = repositories.CurrentDriverRepository;
             _closeApplication = closeApplication;
@@ -111,7 +113,7 @@ namespace MWF.Mobile.Core.ViewModels
                         _currentDriverRepository.Insert(newDriver);
                     }
 
-                    ShowViewModel<VehicleListViewModel>();
+                    _navigationService.MoveToNext();
                 }
 
             }

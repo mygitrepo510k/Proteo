@@ -18,6 +18,12 @@ namespace MWF.Mobile.Core.Repositories
 
         #endregion
 
+        public bool InstructionExists(Guid id)
+        {
+            var instruction = _connection.Table<MobileData>().Where(m => m.ID == id);
+            return (instruction != null);
+        }
+
         public IEnumerable<MobileData> GetInProgressInstructions()
         {
             return _connection

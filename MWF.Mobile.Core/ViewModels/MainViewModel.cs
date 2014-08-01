@@ -23,13 +23,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Constructor
 
-        public MainViewModel(Services.IGatewayQueuedService gatewayQueuedService, IMobileDataRepository mobileDataRepository)
+        public MainViewModel(Services.IGatewayQueuedService gatewayQueuedService, Services.IGatewayPollingService gatewayPollingService, IMobileDataRepository mobileDataRepository)
         {
             this.InitialViewModel = new ManifestViewModel(mobileDataRepository);
 
             // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
             // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:
             //gatewayQueuedService.StartQueueTimer();
+
+            // Start the gateway poll timer which will check for new instructions from BlueSphere on a repeat basis
+            // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:
+            //gatewayPollingService.StartPollingTimer();
 
             this.InitializeMenu();
         }

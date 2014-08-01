@@ -91,11 +91,14 @@
     <Compile Include="Enums\InstructionType.cs" />
     <Compile Include="Enums\ReportReason.cs" />
     <Compile Include="Enums\SafetyCheckStatus.cs" />
+    <Compile Include="Enums\SyncState.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Helpers\SMP.cs" />
     <Compile Include="Messages\GatewayQueueTimerCommandMessage.cs" />
+    <Compile Include="Messages\GatewayPollTimerCommandMessage.cs" />
     <Compile Include="Messages\GatewayQueueTimerElapsedMessage.cs" />
+    <Compile Include="Messages\GatewayPollTimerElapsedMessage.cs" />
     <Compile Include="Messages\ModalNavigationResultMessage.cs" />
     <Compile Include="Models\Attributes\ChildRelationshipAttribute.cs" />
     <Compile Include="Models\Attributes\ForeignKeyAttribute.cs" />
@@ -188,6 +191,7 @@
     <Compile Include="Services\AuthenticationService.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\GatewayQueuedService.cs" />
+    <Compile Include="Services\GatewayPollingService.cs" />
     <Compile Include="Services\GatewayService.cs" />
     <Compile Include="Services\GpsService.cs" />
     <Compile Include="Services\HttpService.cs" />
@@ -195,6 +199,7 @@
     <Compile Include="Services\IDataService.cs" />
     <Compile Include="Services\IGatewayQueuedService.cs" />
     <Compile Include="Portable\IDeviceInfo.cs" />
+    <Compile Include="Services\IGatewayPollingService.cs" />
     <Compile Include="Services\IGatewayService.cs" />
     <Compile Include="Services\IGpsService.cs" />
     <Compile Include="Services\IHttpService.cs" />

@@ -161,6 +161,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Services\GatewayQueueTimerService.cs" />
+    <Compile Include="Services\GatewayPollTimerService.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="SplashScreen.cs" />
     <Compile Include="Views\BindableGroupListAdapter.cs" />

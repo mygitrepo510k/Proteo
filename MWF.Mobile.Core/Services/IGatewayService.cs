@@ -17,6 +17,10 @@ namespace MWF.Mobile.Core.Services
         Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle);
         Task<IEnumerable<Models.VehicleView>> GetVehicleViews();
         Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle);
+        Task<IEnumerable<Models.Instruction.MobileData>> GetDriverInstructions(string vehicleRegistration,
+                                                                               Guid driverTitle, 
+                                                                               DateTime startDate,
+                                                                               DateTime endDate);
         Task<Models.MWFMobileConfig> GetConfig();
         Task<bool> CreateDevice();
     }

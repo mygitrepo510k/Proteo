@@ -59,6 +59,8 @@ namespace MWF.Mobile.Android.Views
 			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
             { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) },
         };
+
+        public override int FragmentHostID { get { return Resource.Id.fragment_host_startup; } }
         
  		#endregion
         

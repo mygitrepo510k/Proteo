@@ -111,6 +111,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Device dev = new Device();
 
+
+
             var gateWayService = Mock.Of<IGatewayService>(gs =>
                                                              gs.GetDevice("123") == Task.FromResult<Device>(dev) &&
                                                              gs.CreateDevice() == Task.FromResult<bool>(true));
@@ -120,6 +122,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var customerRepository = new Mock<ICustomerRepository>();
             _fixture.Inject<ICustomerRepository>(customerRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+
+            var navigationServiceMock = new Mock<INavigationService>();
+            navigationServiceMock.Setup(ns => ns.MoveToNext());
+            _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var ccvm = _fixture.Create<CustomerCodeViewModel>();
             ccvm.CustomerCode = "123";
@@ -131,11 +137,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             //check that the customer repository was written to
             customerRepository.Verify(cr => cr.Insert(It.IsAny<Customer>()), Times.Once);
 
-            // check that the passcode screen was navigated to
-            var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
-            Assert.Equal(1, mockDispatcher.Requests.Count);
-            var request = mockDispatcher.Requests.First();
-            Assert.Equal(typeof(PasscodeViewModel), request.ViewModelType);
+            // check that the navigation service was called
+            navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);
 
 
         }

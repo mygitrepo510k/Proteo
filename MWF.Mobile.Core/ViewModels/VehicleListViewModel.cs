@@ -29,6 +29,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IToast _toast;
         private readonly IReachability _reachability;
         private readonly IStartupService _startupService;
+        private readonly INavigationService _navigationService;
 
         public string VehicleSelectText
         {
@@ -53,12 +54,13 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,
-            IToast toast, IStartupService startupService, ICurrentDriverRepository currentDriverRepository)
+            IToast toast, IStartupService startupService, INavigationService navigationService, ICurrentDriverRepository currentDriverRepository)
         {
             _gatewayService = gatewayService;
             _toast = toast;
             _reachability = reachabibilty;
             _startupService = startupService;
+            _navigationService = navigationService;
 
             _currentDriverRepository = currentDriverRepository;
             _vehicleRepository = vehicleRepository;
@@ -79,7 +81,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _startupService.LoggedInDriver.LastVehicleID = vehicle.ID;
             _startupService.CurrentVehicle = vehicle;
-            ShowViewModel<TrailerListViewModel>();
+            _navigationService.MoveToNext();
         }
 
         public void LastVehicleSelect()
@@ -105,7 +107,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     ShowTrailerScreen(vehicle);
                 }
-            }, "Last used vehicle", "Confirm");
+            }, "Last Used Vehicle", "Confirm");
         }
 
         private MvxCommand<Vehicle> _showVehicleDetailCommand;

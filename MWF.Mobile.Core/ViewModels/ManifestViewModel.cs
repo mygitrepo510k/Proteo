@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using MWF.Mobile.Core.Models;
 using System.Linq;
 using System;
+using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.ViewModels.Interfaces;
@@ -20,18 +21,22 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         private readonly IMobileDataRepository _mobileDataRepository;
+        private readonly INavigationService _navigationService;
 
-        public ManifestViewModel(IMobileDataRepository mobileDataRepository)
+        public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService)
         {
 
-            //_mobileDataRepository = mobileDataRepository;
-           // _mobileDataRepository.GetInProgressInstructions();
            
-
 
             ObservableCollection<ManifestInstructionViewModel> instructions = new ObservableCollection<ManifestInstructionViewModel>();
             instructions.Add(new ManifestInstructionViewModel() { Title = "Test title", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
             instructions.Add(new ManifestInstructionViewModel() { Title = "Test title2", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
+
+            
+
+            _mobileDataRepository = mobileDataRepository;
+            _mobileDataRepository.GetInProgressInstructions();
+            _navigationService = navigationService;
 
             Sections = new ObservableCollection<ManifestSectionViewModel>();            
             var inProgressSection = new ManifestSectionViewModel(this)
@@ -95,7 +100,14 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (continueWithBackPress)
             {
-                ShowViewModel<PasscodeViewModel>();
+                if (_navigationService.IsBackActionDefined())
+                {
+                    //todo: move this to base class
+                    _navigationService.GoBack();
+                    return false;
+                }
+
+                return true;
             }
 
             return false;

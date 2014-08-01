@@ -12,6 +12,7 @@ using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
+using MWF.Mobile.Tests.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,16 +31,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Vehicle _vehicle;
         private IStartupService _startupService;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
+        private Mock<IUserInteraction> _mockUserInteraction;
 
         protected override void AdditionalSetup()
         {
-            var mockDispatcher = new MockDispatcher();
-            Ioc.RegisterSingleton<IMvxViewDispatcher>(mockDispatcher);
-            Ioc.RegisterSingleton<IMvxMainThreadDispatcher>(mockDispatcher);
 
-            var mockUserInteraction = new Mock<IUserInteraction>();
-            mockUserInteraction.Setup(ui => ui.Confirm(It.IsAny<string>(), It.IsAny<Action<bool>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
-            Ioc.RegisterSingleton<IUserInteraction>(mockUserInteraction.Object);
+            _mockUserInteraction = new Mock<IUserInteraction>();
+            _mockUserInteraction.ConfirmReturnsFalseIfTitleStartsWith("Last Used Vehicle");
+            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
 
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -57,42 +56,40 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _currentDriverRepository.Setup(cdr => cdr.GetByID(It.IsAny<Guid>())).Returns(new CurrentDriver());
             _fixture.Inject<ICurrentDriverRepository>(_currentDriverRepository.Object);
 
-            var mockAuthenticationService = new Mock<IAuthenticationService>();
-            mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.IsAny<string>())).ReturnsAsync(new AuthenticationResult { Success = false });
-            mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.Is<string>(s => s == "9999"))).ReturnsAsync(new AuthenticationResult { Success = true, Driver = _driver });
-            _fixture.Inject<IAuthenticationService>(mockAuthenticationService.Object);
-
         }
 
         /// <summary>
-        /// Tests that on successful authentication the TrailerListViewModel is navigated to
+        /// Tests that when a vehicle is selected and the confirm message is shown then the navigation service is called 
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulAuthenticationRedirectsToTrailerListView()
+        public void VehicleListVM_SelectVehicle_Navigation()
         {
             base.ClearAll();
+
+            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+
+            var navigationServiceMock = new Mock<INavigationService>();
+            navigationServiceMock.Setup(ns => ns.MoveToNext());
+            _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var vm = _fixture.Create<VehicleListViewModel>();
 
-
             vm.ShowVehicleDetailCommand.Execute(_vehicle);
 
-            var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
-            //Its two because the showViewModel is called twice once on the Setup,
-            //and again in the show vehicle detail command.
-            Assert.Equal(2, mockDispatcher.Requests.Count);
-            var request = mockDispatcher.Requests.First();
-            Assert.Equal(typeof(TrailerListViewModel), request.ViewModelType);
+            // check that the navigation service was called
+            navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);
 
         }
 
         /// <summary>
-        /// Tests that on successful authentication a drivers vehicle ID 
+        /// Tests that vehicle is selected and the confirm message the vehicle is stored
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulAuthenticationStoresDriverVehicleID()
+        public void VehicleListVM_SelectVehicle_VehicleStored()
         {
             base.ClearAll();
+
+            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var vm = _fixture.Create<VehicleListViewModel>();
 
@@ -110,6 +107,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         public void VehicleListVM_SuccessfulAuthenticationStoresCurrentDriverVehicleID()
         {
             base.ClearAll();
+
+            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var vm = _fixture.Create<VehicleListViewModel>();
 

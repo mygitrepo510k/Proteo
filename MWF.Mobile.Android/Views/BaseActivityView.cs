@@ -43,8 +43,10 @@ namespace MWF.Mobile.Android.Views
             fragment.ViewModel = initialViewModel;
 
             var transaction = FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.fragment_host, fragment);
+            transaction.Replace(this.FragmentHostID, fragment);
             transaction.Commit();
+
+            this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
 
         }
 
@@ -89,6 +91,8 @@ namespace MWF.Mobile.Android.Views
             { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) },
         };
 
+        public abstract int FragmentHostID { get; }
+
         public bool Show(MvxViewModelRequest request)
         {
             // At this point simply display any supported fragment in the FrameLayout.
@@ -113,7 +117,7 @@ namespace MWF.Mobile.Android.Views
             var transaction = FragmentManager.BeginTransaction();
             // Note: this *replaces* the actual fragment host specified in Page_StartUp.axml
             // but keeps the same id
-            transaction.Replace(Resource.Id.fragment_host, fragment);
+            transaction.Replace(this.FragmentHostID, fragment);
             transaction.AddToBackStack(null);
             transaction.Commit();
 
@@ -163,10 +167,9 @@ namespace MWF.Mobile.Android.Views
         /// <remarks>
         /// If the specified view is not found then all fragments will be removed up to, but not including, the initial view.
         /// </remarks>
-        public void CloseUpToView<TViewModel>()
-            where TViewModel : IMvxViewModel
+        public void CloseUpToView(Type viewModelType)
         {
-            var targetFragmentType = _supportedFragmentViewModels[typeof(TViewModel)];
+            var targetFragmentType = _supportedFragmentViewModels[viewModelType];
             var backStackEntryCount = FragmentManager.BackStackEntryCount;
 
             for (var i = 0; i < backStackEntryCount; i++)
@@ -184,7 +187,7 @@ namespace MWF.Mobile.Android.Views
         // original container, it gets replaced during a show by the new fragment *but* keeps its old id.
         public MvxFragment CurrentFragment
         {
-            get { return FragmentManager.FindFragmentById(Resource.Id.fragment_host) as MvxFragment; }
+            get { return FragmentManager.FindFragmentById(this.FragmentHostID) as MvxFragment; }
         }
 
         #endregion

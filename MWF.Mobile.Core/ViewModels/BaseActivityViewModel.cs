@@ -22,7 +22,12 @@ namespace MWF.Mobile.Core.ViewModels
         protected void CloseUpToView<TViewModel>()
             where TViewModel : IMvxViewModel
         {
-            this.ChangePresentation(new Presentation.CloseUpToViewPresentationHint<TViewModel>());
+            this.ChangePresentation(new Presentation.CloseUpToViewPresentationHint(typeof(TViewModel)));
+        }
+
+        public bool Close()
+        {
+            return base.Close(this);
         }
 
     }

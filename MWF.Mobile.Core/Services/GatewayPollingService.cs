@@ -66,7 +66,13 @@ namespace MWF.Mobile.Core.Services
             PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand.Stop);
         }
 
-        public async Task PollForInstructionsAsync()
+        public void PollForInstructions()
+        {
+            // Always attempt to sync with the MWF Mobile Gateway service whenever items are added to the queue (providing the GatewayQueueTimerService has been started)
+            PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand.Trigger);
+        }
+
+        private async Task PollForInstructionsAsync()
         {
             Mvx.Trace("Begin Polling For Instructions");
 

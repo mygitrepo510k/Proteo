@@ -22,6 +22,7 @@ namespace MWF.Mobile.Tests.ServiceTests
     {
         private IFixture _fixture;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
+        private MvxSubscriptionToken _pollTimerToken;
 
         protected override void AdditionalSetup()
         {
@@ -42,7 +43,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Register<IMvxMessenger>(() => messenger);
 
             // We don't have the GatewayQueueTimerService so replicate the trigger -> publish elapsed message functionality
-            var token = messenger.Subscribe<Core.Messages.GatewayPollTimerCommandMessage>(m =>
+            _pollTimerToken = messenger.Subscribe<Core.Messages.GatewayPollTimerCommandMessage>(m =>
             {
                 if (m.Command == Core.Messages.GatewayPollTimerCommandMessage.TimerCommand.Trigger)
                     messenger.Publish(new Core.Messages.GatewayPollTimerElapsedMessage(this));
@@ -50,7 +51,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public async Task GatewayPollingService_AddsInstruction()
+        public async Task GatewayPollingService_AddsSingleInstruction()
         {
             base.ClearAll();
             var id = new Guid();
@@ -60,19 +61,18 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
             var service = _fixture.Create<GatewayPollingService>();
 
-
-            //service.StartPollingTimer();
-            service.PollForInstructionsAsync();
+            service.StartPollingTimer();
+            service.PollForInstructions();
 
             // Allow the timer to process the queue
-            await Task.Delay(100);
+            await Task.Delay(2000);
 
             // Check that we insert the instruction
             _mockMobileDataRepo.Verify(mdr => mdr.Insert(It.Is<MobileData>(md => md.ID == id)), Times.Once);
         }
 
         [Fact]
-        public async Task GatewayPollingService_UpdatesInstruction()
+        public async Task GatewayPollingService_UpdatesSingleInstruction()
         {
             base.ClearAll();
             var id = new Guid();
@@ -82,9 +82,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
             var service = _fixture.Create<GatewayPollingService>();
 
-
-            //service.StartPollingTimer();
-            service.PollForInstructionsAsync();
+            service.StartPollingTimer();
+            service.PollForInstructions();
 
             // Allow the timer to process the queue
             await Task.Delay(100);
@@ -98,7 +97,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public async Task GatewayPollingService_DeletesInstruction()
+        public async Task GatewayPollingService_DeletesSingleInstruction()
         {
             base.ClearAll();
             var id = new Guid();
@@ -108,9 +107,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
             var service = _fixture.Create<GatewayPollingService>();
 
-
-            //service.StartPollingTimer();
-            service.PollForInstructionsAsync();
+            service.StartPollingTimer();
+            service.PollForInstructions();
 
             // Allow the timer to process the queue
             await Task.Delay(100);
@@ -119,6 +117,147 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(g => g.ToString() == id.ToString())), Times.Once);
             // Check we delete the instruction
             _mockMobileDataRepo.Verify(mdr => mdr.Delete(It.Is<MobileData>(md => md.ID == id)), Times.Once);
+        }
+
+        [Fact]
+        public async Task GatewayPollingService_AddsMultipleInstructions()
+        {
+            base.ClearAll();
+            
+            var id1 = new Guid();
+            var id2 = new Guid();
+            var id3 = new Guid();
+            Guid[] ids = {id1, id2, id3};
+            CreateMultipleMobileDatas(SyncState.Add, ids);
+
+            List<MobileData> insertList = new List<MobileData>();
+
+            _mockMobileDataRepo.Setup(mdr => mdr.Insert(It.IsAny<MobileData>()))
+                               .Callback<MobileData>((md) => { insertList.Add(md); });
+
+            _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            var service = _fixture.Create<GatewayPollingService>();
+
+            service.StartPollingTimer();
+            service.PollForInstructions();
+
+            // Allow the timer to process the queue
+            await Task.Delay(100);
+
+            // Check that we insert the instructions
+            var counter = 0;
+            foreach (var item in insertList)
+            {
+                Assert.Equal(item.ID, ids[counter]);
+                counter++;
+            }
+        }
+
+        [Fact]
+        public async Task GatewayPollingService_UpdatesMultipleInstructions()
+        {
+            base.ClearAll();
+
+            var id1 = new Guid();
+            var id2 = new Guid();
+            var id3 = new Guid();
+            Guid[] ids = { id1, id2, id3 };
+            CreateMultipleMobileDatas(SyncState.Add, ids);
+
+            List<Guid> getList = new List<Guid>();
+            List<MobileData> deleteList = new List<MobileData>();
+            List<MobileData> insertList = new List<MobileData>();
+
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.IsAny<Guid>()))
+                               .Callback<Guid>((md) => { getList.Add(md); });
+
+            _mockMobileDataRepo.Setup(mdr => mdr.Delete(It.IsAny<MobileData>()))
+                               .Callback<MobileData>((md) => { deleteList.Add(md); });
+
+            _mockMobileDataRepo.Setup(mdr => mdr.Insert(It.IsAny<MobileData>()))
+                               .Callback<MobileData>((md) => { insertList.Add(md); });
+
+            _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            var service = _fixture.Create<GatewayPollingService>();
+
+            service.StartPollingTimer();
+            service.PollForInstructions();
+
+            // Allow the timer to process the queue
+            await Task.Delay(100);
+
+            // Check that we get the instructions
+            var getCounter = 0;
+            foreach (var item in getList)
+            {
+                Assert.Equal(item, ids[getCounter]);
+                getCounter++;
+            }
+
+            // Check that we delete the instructions
+            var deleteCounter = 0;
+            foreach (var item in deleteList)
+            {
+                Assert.Equal(item.ID, ids[deleteCounter]);
+                deleteCounter++;
+            }
+
+            // Check that we insert the instructions
+            var insertCounter = 0;
+            foreach (var item in insertList)
+            {
+                Assert.Equal(item.ID, ids[insertCounter]);
+                insertCounter++;
+            }
+        }
+
+        [Fact]
+        public async Task GatewayPollingService_DeletesMultipleInstructions()
+        {
+            base.ClearAll();
+
+            var id1 = new Guid();
+            var id2 = new Guid();
+            var id3 = new Guid();
+            Guid[] ids = { id1, id2, id3 };
+            CreateMultipleMobileDatas(SyncState.Add, ids);
+
+            List<Guid> getList = new List<Guid>();
+            List<MobileData> deleteList = new List<MobileData>();
+
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.IsAny<Guid>()))
+                               .Callback<Guid>((md) => { getList.Add(md); });
+
+            _mockMobileDataRepo.Setup(mdr => mdr.Delete(It.IsAny<MobileData>()))
+                               .Callback<MobileData>((md) => { deleteList.Add(md); });
+
+            _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            var service = _fixture.Create<GatewayPollingService>();
+
+            service.StartPollingTimer();
+            service.PollForInstructions();
+
+            // Allow the timer to process the queue
+            await Task.Delay(100);
+
+            // Check that we get the instructions
+            var getCounter = 0;
+            foreach (var item in getList)
+            {
+                Assert.Equal(item, ids[getCounter]);
+                getCounter++;
+            }
+
+            // Check that we delete the instructions
+            var deleteCounter = 0;
+            foreach (var item in deleteList)
+            {
+                Assert.Equal(item.ID, ids[deleteCounter]);
+                deleteCounter++;
+            }
         }
 
         #region Helpers
@@ -156,7 +295,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             {
                 mobileData.ID = ids[counter];
                 mobileData.SyncState = syncState;
-                counter ++;
+                counter++;
             }
 
             var gatewayMock = new Mock<IGatewayService>();

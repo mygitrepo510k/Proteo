@@ -113,9 +113,11 @@ namespace MWF.Mobile.Core.ViewModels
                         _currentDriverRepository.Insert(newDriver);
                     }
 
+                    // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
+                    _startupService.StartGatewayQueueTimer();
+                    
                     _navigationService.MoveToNext();
                 }
-
             }
             catch
             {

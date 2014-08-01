@@ -67,7 +67,6 @@ namespace MWF.Mobile.Core.ViewModels
             //  userInteraction.Confirm("DEBUGGING: clear all device setup data from the local database?", () => DEBUGGING_ClearAllData(repositories));
             //#endif
 
-            
             var customerRepository = _repositories.CustomerRepository;
 
             if (customerRepository.GetAll().Any())
@@ -78,7 +77,11 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 this.InitialViewModel = new CustomerCodeViewModel(_gatewayService, _reachableService, _dataService, _repositories, _userInteraction, _navigationService);
             }
-             
+
+#if DEBUG
+            // Temporary code to stop queued items being submitted across sessions
+            _repositories.GatewayQueueItemRepository.DeleteAll();
+#endif
         }
 
         private void DEBUGGING_ClearAllData(IRepositories repositories)

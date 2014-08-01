@@ -618,8 +618,6 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             //Check that the application was closed
             closeApplicationMock.Verify(ca => ca.CloseApp(), Times.Once);
-        
-
         }
 
         [Fact]
@@ -646,8 +644,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(StartupViewModel), request.ViewModelType);
-
-
         }
 
 

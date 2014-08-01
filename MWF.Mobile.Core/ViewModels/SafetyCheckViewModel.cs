@@ -41,48 +41,65 @@ namespace MWF.Mobile.Core.ViewModels
             if (trailer != null)
                 SafetyProfileTrailer = _repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
 
-            var allSafetyChecks = new List<SafetyCheckItemViewModel>();
+            this.SafetyCheckItemViewModels = new List<SafetyCheckItemViewModel>();
+
+            _startupService.CurrentVehicleSafetyCheckData = null;
+            _startupService.CurrentTrailerSafetyCheckData = null;
 
             if (SafetyProfileVehicle != null)
             {
-                foreach (var child in SafetyProfileVehicle.Children.OrderBy(spv => spv.Order))
-                {
-                    var vehicleSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this)
-                    {
-                        ID = child.ID,
-                        Title = "VEH: " + child.Title,
-                        IsDiscreationaryQuestion = child.IsDiscretionaryQuestion
-                    };
-
-                    allSafetyChecks.Add(vehicleSafetyCheckFaultTypeView);
-                }
+                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileVehicle, _startupService.LoggedInDriver, _startupService.CurrentVehicle, false);
+                _startupService.CurrentVehicleSafetyCheckData = safetyCheckData;
             }
 
             if (SafetyProfileTrailer != null)
             {
-                foreach (var child in SafetyProfileTrailer.Children.OrderBy(spt => spt.Order))
-                {
-                    var trailerSafetyCheckFaultTypeView = new SafetyCheckItemViewModel(this)
-                    {
-                        ID = child.ID,
-                        Title = "TRL: " + child.Title,
-                        IsDiscreationaryQuestion = child.IsDiscretionaryQuestion
-                    };
-
-                    allSafetyChecks.Add(trailerSafetyCheckFaultTypeView);
-                }
+                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileTrailer, _startupService.LoggedInDriver, _startupService.CurrentTrailer, true);
+                _startupService.CurrentTrailerSafetyCheckData = safetyCheckData;
             }
-
-
-            SafetyCheckItemViewModels = allSafetyChecks;
-
-            SetUpSafetyCheckData();
 
             if (SafetyProfileTrailer == null && SafetyProfileVehicle == null)
             {
                 Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found - Redirecting to Manifest Screen.", () => { startupService.Commit(); _navigationService.MoveToNext(); });
             }
+        }
 
+        private SafetyCheckData GenerateSafetyCheckData(SafetyProfile safetyProfile, Driver driver, BaseVehicle vehicle, bool isTrailer)
+        {
+            var faults = safetyProfile.Children
+                .OrderBy(scft => scft.Order)
+                .Select(scft => new Models.SafetyCheckFault
+                {
+                    SafetyCheckDataID = safetyProfile.ID,
+                    Title = scft.Title,
+                    FaultTypeID = scft.ID,
+                })
+                .ToList();
+
+            // Set up the safety check data to be set in the startup service.
+            // This is the result of the safety check which will be sent to bluesphere
+            // and persisted locally in case the safety check needs to be shown by the driver.
+            var safetyCheckData = new SafetyCheckData
+            {
+                ProfileIntLink = safetyProfile.IntLink,
+                DriverID = driver.ID,
+                DriverTitle = driver.Title,
+                VehicleID = vehicle.ID,
+                VehicleRegistration = vehicle.Registration,
+                Faults = faults,
+            };
+
+            // Add the safety check item view models
+            this.SafetyCheckItemViewModels.AddRange(faults.Select(scf => new SafetyCheckItemViewModel(this)
+            {
+                ID = scf.ID,
+                SafetyCheckFault = scf,
+                IsVehicle = !isTrailer,
+                Title = (isTrailer ? "TRL: " : "VEH: ") + scf.Title,
+                IsDiscretionaryQuestion = scf.IsDiscretionaryQuestion,
+            }));
+
+            return safetyCheckData;
         }
 
         #endregion
@@ -103,8 +120,8 @@ namespace MWF.Mobile.Core.ViewModels
             set { _safetyProfileTrailer = value; }
         }
 
-        private IList<SafetyCheckItemViewModel> _safetyCheckItemViewModels;
-        public IList<SafetyCheckItemViewModel> SafetyCheckItemViewModels
+        private List<SafetyCheckItemViewModel> _safetyCheckItemViewModels;
+        public List<SafetyCheckItemViewModel> SafetyCheckItemViewModels
         {
             get { return _safetyCheckItemViewModels; }
             set { _safetyCheckItemViewModels = value; RaisePropertyChanged(() => SafetyCheckItemViewModels); }
@@ -122,16 +139,6 @@ namespace MWF.Mobile.Core.ViewModels
             { 
                 _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(DoChecksDoneCommand); 
                 return _checksDoneCommand;
-            }
-        }
-
-        private MvxCommand _logFaultCommand;
-        public System.Windows.Input.ICommand LogFaultCommand
-        {
-            get
-            {
-                _logFaultCommand = _logFaultCommand ?? new MvxCommand(DoLogFaultCommand);
-                return _logFaultCommand;
             }
         }
 
@@ -161,11 +168,9 @@ namespace MWF.Mobile.Core.ViewModels
             RaisePropertyChanged(() => AllSafetyChecksCompleted);
         }
 
-
         #endregion
 
         #region Private Methods
-
 
         private void DoChecksDoneCommand()
         {
@@ -180,48 +185,6 @@ namespace MWF.Mobile.Core.ViewModels
         public async Task<bool> OnBackButtonPressed()
         {
             return await Mvx.Resolve<IUserInteraction>().ConfirmAsync("All changes will be lost, do you wish to continue?", "Changes will be lost!");
-        }
-
-        private void DoLogFaultCommand()
-        {
-
-        }
-
-        
-        //Sets up the safety check data in the startup info service
-        //This is the result of the safety check which will be sent to bluesphere
-        //and persisted locally in case the safety check needs to be shown by the driver
-        private void SetUpSafetyCheckData()
-        {
-            //TODO: make sure all of the safety check data fields are populated
-            SafetyCheckData vehicleSafetyCheckData = new SafetyCheckData() { ID = Guid.NewGuid(), Faults = new List<SafetyCheckFault>()};
-            SafetyCheckData trailerSafetyCheckData = new SafetyCheckData() { ID = Guid.NewGuid(), Faults = new List<SafetyCheckFault>() };
-
-
-            //create a safety fault for every item in the visual list (we'll remove the passes later)
-            foreach (var item in SafetyCheckItemViewModels)
-            {
-                SafetyCheckFault safetyCheckFault = new SafetyCheckFault() { ID = Guid.NewGuid(), Title = item.Title, FaultTypeID = item.ID };
-
-
-                if (item.Title.StartsWith("VEH"))
-                {
-                    safetyCheckFault.SafetyCheckDataID = SafetyProfileVehicle.ID;
-                    vehicleSafetyCheckData.Faults.Add(safetyCheckFault);
-                }
-                else
-                {
-                    safetyCheckFault.SafetyCheckDataID = SafetyProfileTrailer.ID;
-                    trailerSafetyCheckData.Faults.Add(safetyCheckFault);
-                }
-
-                item.SafetyCheckFault = safetyCheckFault;
-
-            }
-
-            _startupService.CurrentVehicleSafetyCheckData = vehicleSafetyCheckData;
-            _startupService.CurrentTrailerSafetyCheckData = trailerSafetyCheckData;
-
         }
 
         #endregion

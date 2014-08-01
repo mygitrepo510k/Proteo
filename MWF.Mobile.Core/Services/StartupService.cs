@@ -45,6 +45,12 @@ namespace MWF.Mobile.Core.Services
             return retVal;
         }
 
+        public void StartGatewayQueueTimer()
+        {
+            // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis.
+            _gatewayQueuedService.StartQueueTimer();
+        }
+
         public void Commit()
         {
             // Add the safety checks to the gateway queue
@@ -69,16 +75,21 @@ namespace MWF.Mobile.Core.Services
                 _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
 
                 // Submit the safety checks to the gateway service
-                var smp = _gpsService.GetSmpData(Enums.ReportReason.SMPREASON_SAFETYCHECKREPORT);
+                var smp = _gpsService.GetSmpData(Enums.ReportReason.SafetyReport);
+
+                // Don't include milliseconds in the EffectiveDate submitted to BlueSphere
+                var effectiveDateTime = DateTime.Now;
+                effectiveDateTime = effectiveDateTime.AddMilliseconds(-effectiveDateTime.Millisecond);
 
                 foreach (var safetyCheck in safetyCheckData)
                 {
-                    // Passed safety check items shouldn't be submitted to the gateway service
+                    // Passed safety check items shouldn't be submitted to the gateway service, only Fails and Discretionary Passes.
                     safetyCheck.Faults.RemoveAll(scf => scf.Status == Enums.SafetyCheckStatus.Passed);
 
-                    // Add the SMP and odometer reading to the safety check
+                    // Add the SMP, mileage and effective-date to the safety check
                     safetyCheck.SMP = smp;
                     safetyCheck.Mileage = this.Mileage;
+                    safetyCheck.EffectiveDate = effectiveDateTime;
                 }
 
                 var actions = safetyCheckData.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });

@@ -14,6 +14,7 @@ namespace MWF.Mobile.Core.Services
         int Mileage { get; set; }
 
         IEnumerable<SafetyCheckData> GetCurrentSafetyCheckData();
+        void StartGatewayQueueTimer();
         void Commit();
     }
 }

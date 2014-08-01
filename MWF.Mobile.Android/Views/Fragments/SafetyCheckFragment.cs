@@ -66,7 +66,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             menu.SetHeaderTitle(safetyCheckItem.Title);
             menu.Add(0, (int)MenuOption.Passed, 0, "Pass");
-            if (safetyCheckItem.IsDiscreationaryQuestion)
+            if (safetyCheckItem.IsDiscretionaryQuestion)
                 menu.Add(0, (int)MenuOption.DiscretionaryPass, 0, "Discretionary Pass");
             menu.Add(0, (int)MenuOption.Failed, 0, "Fail");
         }

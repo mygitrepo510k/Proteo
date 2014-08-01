@@ -12,6 +12,7 @@ namespace MWF.Mobile.Core.Models
 {
 
     // Model class which holds represents the results of a safety check performed by a driver on a vehicle
+    [XmlRoot("safetycheckdata")]
     public class SafetyCheckData: IBlueSphereEntity
     {
 

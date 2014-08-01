@@ -4,7 +4,7 @@ using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.Portable;
@@ -19,15 +19,17 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IAuthenticationService _authenticationService = null;
         private readonly IStartupService _startupService = null;
         private readonly ICloseApplication _closeApplication;
+        private readonly INavigationService _navigationService;
         private bool _isBusy = false;
 
-        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupService startupService
-            , ICurrentDriverRepository currentDriverRepository, ICloseApplication closeApplication)
+        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupService startupService,
+                        ICloseApplication closeApplication, IRepositories repositories, INavigationService navigationService)
         {
             _authenticationService = authenticationService;
             _startupService = startupService;
+            _navigationService = navigationService;
 
-            _currentDriverRepository = currentDriverRepository;
+            _currentDriverRepository = repositories.CurrentDriverRepository;
             _closeApplication = closeApplication;
         }
 
@@ -111,9 +113,11 @@ namespace MWF.Mobile.Core.ViewModels
                         _currentDriverRepository.Insert(newDriver);
                     }
 
-                    ShowViewModel<VehicleListViewModel>();
+                    // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
+                    _startupService.StartGatewayQueueTimer();
+                    
+                    _navigationService.MoveToNext();
                 }
-
             }
             catch
             {

@@ -52,7 +52,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             };
 
             var mockHttpService = new Mock<Core.Services.IHttpService>();
-            mockHttpService.Setup(m => m.PostAsync<Core.Models.GatewayServiceResponse.Response>(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
+            mockHttpService.Setup(m => m.PostJsonAsync<Core.Models.GatewayServiceResponse.Response>(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(response);
             _fixture.Register<Core.Services.IHttpService>(() => mockHttpService.Object);
 
             _fixture.Register<Core.Services.IDeviceInfo>(() => Mock.Of<Core.Services.IDeviceInfo>());

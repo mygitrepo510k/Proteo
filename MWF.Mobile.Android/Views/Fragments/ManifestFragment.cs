@@ -35,7 +35,7 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
 
-            var instructionItem = (TextView)view.FindViewById(Resource.Id.instructionDate);
+           // var instructionItem = (TextView)view.FindViewById(Resource.Id.instructionDate);
             //var set = this.CreateBindingSet<ManifestFragment, ManifestViewModel>();
             //set.Bind(instructionItem).For(i => i.Text).To(vm => vm.MobileApplicationData);
             //set.Apply();

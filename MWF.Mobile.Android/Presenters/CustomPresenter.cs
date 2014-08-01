@@ -4,6 +4,9 @@ using System.Linq;
 using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.Presentation;
+using Android.Content;
 
 namespace MWF.Mobile.Android.Presenters
 {
@@ -13,13 +16,11 @@ namespace MWF.Mobile.Android.Presenters
         bool Show(MvxViewModelRequest request);
         bool Close(IMvxViewModel viewModel);
         MvxFragment CurrentFragment { get; }
-        void CloseUpToView<TViewModel>() where TViewModel : IMvxViewModel;
+        void CloseUpToView(Type viewModelType);
         void CloseToInitialView();
+        int FragmentHostID { get; }
     }
 
-    public interface ICustomPresenter
-    {
-    }
 
     /// <summary>
     /// Custom presenter allowing fragments to be rendered within activities using MVVMCross's ShowViewModel.
@@ -65,30 +66,39 @@ namespace MWF.Mobile.Android.Presenters
             }
             else
             {
-                var hintType = hint.GetType();
 
-                if (hintType.IsGenericType)
+                if (hint is Core.Presentation.CloseUpToViewPresentationHint)
                 {
-                    if (hintType.GetGenericTypeDefinition() == typeof(Core.Presentation.CloseUpToViewPresentationHint<>))
+                    var currentFragmentHost = this.Activity as IFragmentHost;
+
+                    if (currentFragmentHost != null)
                     {
-                        var typeParameter = hintType.GetGenericArguments().First();
+                        currentFragmentHost.CloseUpToView((hint as CloseUpToViewPresentationHint).ViewModelType);
 
-                        if (typeof(IMvxViewModel).IsAssignableFrom(typeParameter))
-                        {
-                            var currentFragmentHost = this.Activity as IFragmentHost;
-
-                            if (currentFragmentHost != null)
-                            {
-                                var method = currentFragmentHost.GetType().GetMethod("CloseUpToView");
-                                method.MakeGenericMethod(typeParameter).Invoke(currentFragmentHost, null);
-                                return;
-                            }
-                        }
+                        return;
                     }
                 }
+
             }
 
             base.ChangePresentation(hint);
+        }
+
+        public BaseActivityViewModel CurrentActivityViewModel
+        {
+            get
+            {
+                return (this.Activity as MvxActivity).DataContext as BaseActivityViewModel;
+            }
+        }
+
+        public MvxViewModel CurrentFragmentViewModel
+        {
+            get
+            {
+                IFragmentHost host = this.Activity as IFragmentHost;
+                return host.CurrentFragment.DataContext as MvxViewModel;
+            }
         }
 
     }

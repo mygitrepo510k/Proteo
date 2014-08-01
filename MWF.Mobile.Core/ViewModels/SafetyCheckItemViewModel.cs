@@ -27,6 +27,8 @@ namespace MWF.Mobile.Core.ViewModels
             set { _id = value; }
         }
 
+        public bool IsVehicle { get; set; }
+
         private string _title;
         public string Title
         {
@@ -35,7 +37,7 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         private bool _isDiscretionaryQuestion;
-        public bool IsDiscreationaryQuestion
+        public bool IsDiscretionaryQuestion
         {
             get { return _isDiscretionaryQuestion; }
             set { _isDiscretionaryQuestion = value; }
@@ -71,7 +73,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (value == Enums.SafetyCheckStatus.DiscretionaryPass || value == Enums.SafetyCheckStatus.Failed)
                     {
                         string faultTypeText = (value == Enums.SafetyCheckStatus.DiscretionaryPass) ? "Discretionary Pass" : "Failure";
-                        var navItem = new SafetyCheckNavItem() { FaultID = this.SafetyCheckFault.ID, IsVehicle = this.SafetyCheckFault.Title.StartsWith("VEH"), FaultTypeText = faultTypeText };
+                        var navItem = new SafetyCheckNavItem() { FaultID = this.SafetyCheckFault.ID, IsVehicle = this.IsVehicle, FaultTypeText = faultTypeText };
                         _safetyCheckViewModel.ShowModalViewModel<SafetyCheckFaultViewModel, bool>(navItem, (faultLogged) =>
                         {
                             if (faultLogged)

@@ -83,13 +83,7 @@ namespace MWF.Mobile.Core.Services
             this.AddToQueue(CreateRequestContent(command, data, parameters));
         }
 
-        /// <summary>
-        /// Add a multiple-action command to the queue and trigger submission to the MWF Mobile gateway web service
-        /// </summary>
-        /// <remarks>
-        /// Note that submission will only occur if the GatewayQueueTimerService has been started (i.e. by first calling StartQueueTimer())
-        /// </remarks>
-        public void AddToQueue(IEnumerable<Models.GatewayServiceRequest.Action> actions)
+        public void AddToQueue<TData>(IEnumerable<Models.GatewayServiceRequest.Action<TData>> actions) where TData : class
         {
             this.AddToQueue(CreateRequestContent(actions));
         }
@@ -166,22 +160,7 @@ namespace MWF.Mobile.Core.Services
 
         private Task<HttpResult<Models.GatewayServiceResponse.Response>> PostAsync(string jsonSerializedRequestContent)
         {
-            return _httpService.PostAsync<Models.GatewayServiceResponse.Response>(jsonSerializedRequestContent, _gatewayDeviceRequestUrl);
-        }
-
-        /// <summary>
-        /// Create a single-action request's content without data
-        /// </summary>
-        private Models.GatewayServiceRequest.Content CreateRequestContent(string command, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
-        {
-            return this.CreateRequestContent(new[]
-            {
-                new Core.Models.GatewayServiceRequest.Action
-                {
-                    Command = command,
-                    Parameters = parameters,
-                }
-            });
+            return _httpService.PostJsonAsync<Models.GatewayServiceResponse.Response>(jsonSerializedRequestContent, _gatewayDeviceRequestUrl);
         }
 
         /// <summary>
@@ -190,17 +169,31 @@ namespace MWF.Mobile.Core.Services
         private Models.GatewayServiceRequest.Content CreateRequestContent<TData>(string command, TData data, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
             where TData: class
         {
-            string xmlSerializedData = XmlSerialize(data);
-
             return this.CreateRequestContent(new[]
             {
-                new Core.Models.GatewayServiceRequest.Action<string>
+                new Core.Models.GatewayServiceRequest.Action<TData>
                 {
                     Command = command,
-                    Data = xmlSerializedData,
+                    Data = data,
                     Parameters = parameters,
                 }
             });
+        }
+
+        /// <summary>
+        /// Create the request content, allowing multiple actions per request and serializing the data
+        /// </summary>
+        private Models.GatewayServiceRequest.Content CreateRequestContent<TData>(IEnumerable<Models.GatewayServiceRequest.Action<TData>> actions)
+            where TData : class
+        {
+            var xmlSerializedActions = actions.Select(a => new Models.GatewayServiceRequest.Action
+            {
+                Command = a.Command,
+                ContentXml = XmlSerialize(a.Data),
+                Parameters = a.Parameters,
+            });
+
+            return CreateRequestContent(xmlSerializedActions);
         }
 
         /// <summary>

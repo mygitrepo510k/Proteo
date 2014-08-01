@@ -14,11 +14,11 @@ namespace MWF.Mobile.Core.Services
         : IHttpService
     {
 
-        public async Task<HttpResult<TResponse>> PostAsync<TResponse>(string content, string url)
+        public async Task<HttpResult<TResponse>> PostJsonAsync<TResponse>(string jsonContent, string url)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Post, url))
             {
-                request.Content = new StringContent(content);
+                request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
                 return await SendAsync<TResponse>(request);
             }
         }

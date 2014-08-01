@@ -9,6 +9,7 @@ using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.ViewModels;
 using Android.Content.PM;
 using MWF.Mobile.Android.Helpers;
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -67,6 +68,8 @@ namespace MWF.Mobile.Android.Views
         {
             { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
         };
+
+        public override int FragmentHostID { get { return Resource.Id.fragment_host_main; } }
         
         #endregion Fragment host
         
@@ -92,6 +95,11 @@ namespace MWF.Mobile.Android.Views
         {
             base.OnPostCreate(savedInstanceState);
             this._drawerToggle.SyncState();
+        }
+
+        private void SetActivityTitleFromFragment()
+        {
+            this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
         }
     }
 

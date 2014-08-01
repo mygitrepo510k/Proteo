@@ -1,44 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:paddingRight="16dp"
+    android:weightSum="1.0">
     <imageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_toLeftOf="@+id/clientTitle"
-        android:src="@drawable/Icon" />
-    <TextView
-        android:id="@+id/clientTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="right"
-        android:layout_alignParentLeft="true"
-        local:MvxBind="Text Title" />
-    <TextView
-        android:id="@+id/row2"
-        android:layout_width="wrap_content"
+        android:layout_weight=".2"
+        android:src="@drawable/Collect"
+        local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=Collect" />
+    <imageView
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/clientTitle"
-        android:layout_alignParentLeft="true"
-        local:MvxBind="Text VehicleRegistration" />
-    <TextView
-        android:layout_width="60dp"
+        android:layout_weight=".2"
+        android:src="@drawable/Deliver"
+        local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=Deliver" />
+    <imageView
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/clientTitle"
-        android:layout_alignParentRight="true"
-        android:id="@+id/instructionDate"
-        android:gravity="right"
-        local:MvxBind="Text EffectiveDate,Converter=DateToTextMessage" />
-    <TextView
-        android:id="@+id/instructionTime"
-        android:layout_width="60dp"
+        android:layout_weight=".2"
+        android:src="@drawable/TrunkTo"
+        local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=TrunkTo" />
+    <imageView
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/instructionDate"
-        android:layout_toRightOf="@+id/row2"
-        android:layout_alignParentRight="true"
-        android:gravity="right"
-        local:MvxBind="Text EffectiveDate,Converter=DateToTextTime" />
-</RelativeLayout>
+        android:layout_weight=".2"
+        android:src="@drawable/ProceedFrom"
+        local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=ProceedFrom" />
+    <imageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".2"
+        android:src="@drawable/MessageWithPoint"
+        local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=MessageWithPoint" />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".5"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/clientTitle"
+            local:MvxBind="Text Title" />
+        <TextView
+            android:id="@+id/clientRegistration"
+            local:MvxBind="Text VehicleRegistration" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".3"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/instructionDate"
+            local:MvxBind="Text EffectiveDate,Converter=DateToTextMessage" />
+        <TextView
+            android:id="@+id/instructionTime"
+            local:MvxBind="Text EffectiveDate,Converter=DateToTextTime" />
+    </LinearLayout>
+</LinearLayout>

@@ -4,18 +4,19 @@ using System.Linq;
 using System.Text;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Converters;
-using Newtonsoft.Json;
 using MWF.Mobile.Core.Models.Attributes;
 using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models
 {
-    // Model class which represents a fault for a specific safety check item 9SafetyCheckFaultType)
+    // Model class which represents a fault for a specific safety check item (SafetyCheckFaultType)
+    [XmlType("fault")]
     public class SafetyCheckFault: IBlueSphereEntity
     {
 
         public SafetyCheckFault()
         {
+            ID = Guid.NewGuid();
             Images = new List<Image>();
         }
 
@@ -36,7 +37,10 @@ namespace MWF.Mobile.Core.Models
         [XmlAttribute("comment")]
         public string Comment { get; set; }
 
-        [JsonProperty("@discrete")]
+        [XmlIgnore]
+        public bool IsDiscretionaryQuestion { get; set; }
+
+        [XmlAttribute("discrete")]
         public bool IsDiscretionaryPass { get; set; }
 
         [ChildRelationship(typeof(Image))]

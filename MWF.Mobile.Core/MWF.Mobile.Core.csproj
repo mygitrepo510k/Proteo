@@ -82,6 +82,7 @@
     <Compile Include="App.cs" />
     <Compile Include="Converters\DateToTextTimeValueConverter.cs" />
     <Compile Include="Converters\DateToTextMessageValueConverter.cs" />
+    <Compile Include="Converters\InstructionTypeEnumValueConverter.cs" />
     <Compile Include="Converters\JsonDigitToBooleanConverter.cs" />
     <Compile Include="Converters\JsonWrappedItemConverter.cs" />
     <Compile Include="Converters\JsonWrappedListConverter.cs" />
@@ -157,6 +158,7 @@
     <Compile Include="Portable\IToast.cs" />
     <Compile Include="Presentation\CloseUpToViewPresentationHint.cs" />
     <Compile Include="Presentation\CloseToInitialViewPresentationHint.cs" />
+    <Compile Include="Presentation\ICustomPresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\ApplicationProfileRepository.cs" />
     <Compile Include="Repositories\ConfigRepository.cs" />
@@ -189,6 +191,8 @@
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\VerbProfileRepository.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Services\INavigationService.cs" />
+    <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\GatewayQueuedService.cs" />
     <Compile Include="Services\GatewayPollingService.cs" />
@@ -208,6 +212,8 @@
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />
+    <Compile Include="ViewModels\ManifestInstructionViewModel.cs" />
+    <Compile Include="ViewModels\ManifestSectionViewModel.cs" />
     <Compile Include="ViewModels\Navigation\IViewModelNavItem.cs" />
     <Compile Include="ViewModels\Navigation\SafetyCheckNavItem.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />

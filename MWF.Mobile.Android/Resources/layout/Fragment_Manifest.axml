@@ -9,9 +9,10 @@
         android:id="@+id/manifestHeader"
         local:MvxBind="Text HeaderText" />
     <MWF.Mobile.Android.Views.BindableGroupListView
+        android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        local:MvxBind="ItemsSource Sections"
         local:MvxItemTemplate="@layout/item_instruction"
-        local:GroupItemTemplate="@layout/item_section"
-        local:MvxBind="ItemsSource Sections" />
+        local:GroupItemTemplate="@layout/item_section" />
 </LinearLayout>

@@ -6,5 +6,5 @@
     android:layout_height="fill_parent">
     <TextView
         style="@style/Proteo.TextView.ItemText"
-        local:MvxBind="Text Header" />
+        local:MvxBind="Text SectionHeader" />
 </LinearLayout>

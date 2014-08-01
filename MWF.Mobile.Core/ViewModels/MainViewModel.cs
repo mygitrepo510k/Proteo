@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -11,6 +12,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private List<MenuViewModel> _menuItems;
         private MvxCommand<MenuViewModel> _selectMenuItemCommand;
+        private INavigationService _navigationService;
 
         #endregion
 
@@ -23,9 +25,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Constructor
 
-        public MainViewModel(Services.IGatewayQueuedService gatewayQueuedService, Services.IGatewayPollingService gatewayPollingService, IMobileDataRepository mobileDataRepository)
+        public MainViewModel(Services.IGatewayQueuedService gatewayQueuedService, Services.IGatewayPollingService gatewayPollingService, IMobileDataRepository mobileDataRepository, INavigationService navigationService)
         {
-            this.InitialViewModel = new ManifestViewModel(mobileDataRepository);
+            this.InitialViewModel = new ManifestViewModel(mobileDataRepository, navigationService);
 
             // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
             // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:

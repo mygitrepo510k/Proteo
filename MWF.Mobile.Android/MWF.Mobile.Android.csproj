@@ -198,9 +198,6 @@
     <AndroidResource Include="Resources\layout\Fragment_Passcode.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\Fragment_Manifest.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_CustomerCode.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
@@ -245,6 +242,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Section.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_Manifest.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -311,6 +311,11 @@
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\small_cross.png" />
     <AndroidResource Include="Resources\menu\actionbar_indeterminate_progress.xml" />
+    <AndroidResource Include="Resources\drawable\TrunkTo.png" />
+    <AndroidResource Include="Resources\drawable\ProceedFrom.png" />
+    <AndroidResource Include="Resources\drawable\MessageWithPoint.png" />
+    <AndroidResource Include="Resources\drawable\Collect.png" />
+    <AndroidResource Include="Resources\drawable\Deliver.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

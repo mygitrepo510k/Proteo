@@ -628,10 +628,12 @@ namespace MWF.Mobile.Tests.ServiceTests
             var closeApplicationMock = new Mock<ICloseApplication>();
             _fixture.Inject<ICloseApplication>(closeApplicationMock.Object);
 
+            var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+
             // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => 
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<ManifestViewModel>());
+                                                                cp.CurrentFragmentViewModel == manifestViewModel);
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 

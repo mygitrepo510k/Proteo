@@ -35,7 +35,7 @@ namespace MWF.Mobile.Core.Models.Instruction
         public string Reference { get; set; }
 
         [JsonProperty("@SyncState")]
-        public int SyncState { get; set; }
+        public SyncState SyncState { get; set; }
 
         [JsonProperty("@sequence")]
         public int Sequence { get; set; }

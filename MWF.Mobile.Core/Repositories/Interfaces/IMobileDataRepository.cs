@@ -9,6 +9,7 @@ namespace MWF.Mobile.Core.Repositories.Interfaces
 {
     public interface IMobileDataRepository : IRepository<MobileData>
     {
+        bool InstructionExists(Guid id);
         IEnumerable<MobileData> GetInProgressInstructions();
         IEnumerable<MobileData> GetNotStartedInstructions();
     }

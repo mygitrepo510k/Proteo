@@ -132,6 +132,7 @@
     <Compile Include="ServiceTests\NavigationServiceTests.cs" />
     <Compile Include="ServiceTests\DataServiceTests.cs" />
     <Compile Include="ServiceTests\AuthenticationServiceTests.cs" />
+    <Compile Include="ServiceTests\GatewayPollingServiceTests.cs" />
     <Compile Include="ServiceTests\GatewayQueuedServiceTests.cs" />
     <Compile Include="ViewModelTests\CustomerCodeViewModelTests.cs" />
     <Compile Include="ServiceTests\GatewayServiceTests.cs" />

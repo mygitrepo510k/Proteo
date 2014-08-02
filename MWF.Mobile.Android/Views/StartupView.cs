@@ -39,6 +39,11 @@ namespace MWF.Mobile.Android.Views
             var queueTimerServiceIntent = new Intent(this, typeof(Services.GatewayQueueTimerService));
             StartService(queueTimerServiceIntent);
 
+            // Create the gateway poll service which will be available as a background service from here, regardless of activity.
+            // Note: this does not actually start the timer, this is currently done in the MainViewModel once the user is fully logged in.
+            var pollTimerServiceIntent = new Intent(this, typeof(Services.GatewayPollTimerService));
+            StartService(pollTimerServiceIntent);
+
         }
 
         #endregion

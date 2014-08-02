@@ -19,6 +19,8 @@ namespace MWF.Mobile.Android.Presenters
         void CloseUpToView(Type viewModelType);
         void CloseToInitialView();
         int FragmentHostID { get; }
+        IDictionary<Type, Type> SupportedFragmentViewModels { get; }
+
     }
 
 

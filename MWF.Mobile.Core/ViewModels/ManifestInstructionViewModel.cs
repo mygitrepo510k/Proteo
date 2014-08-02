@@ -5,14 +5,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
 {
     public class ManifestInstructionViewModel : MvxViewModel
     {
 
-        public ManifestInstructionViewModel()
-        {          
+        private readonly INavigationService _navigationService;
+
+        public ManifestInstructionViewModel(INavigationService navigationService)
+        {
+            _navigationService = navigationService;
         }
 
         private ManifestSectionViewModel _manifestSectionViewModel;
@@ -52,6 +57,24 @@ namespace MWF.Mobile.Core.ViewModels
                 _instructionType = value;
                 RaisePropertyChanged(() => InstructionType);
             }
-        }    
+        }
+
+
+        private MvxCommand _selectInstructionCommand;
+        public ICommand SelectInstructionCommand
+        {
+            get
+            {
+                      
+                return (_selectInstructionCommand = _selectInstructionCommand ?? new MvxCommand(SelectInstruction));
+            }
+        }
+
+        private void SelectInstruction()
+        {
+            // Todo: guid passed here should be the guid of the mobile instruction data model this 
+            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = Guid.NewGuid() };
+            _navigationService.MoveToNext(navItem);
+        }
     }
 }

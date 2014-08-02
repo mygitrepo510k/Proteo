@@ -24,7 +24,15 @@ namespace MWF.Mobile.Android.Views
         : MvxActivity, Presenters.IFragmentHost
     {
 
-        protected abstract Type GetFragmentTypeForViewModel(Type viewModelType);     
+
+        #region Protected/Private Fields
+
+        protected IDictionary<Type, Type> _supportedFragmentViewModels;
+
+        #endregion
+
+        #region Construction
+
 
         protected BaseActivityViewModel BaseActivityViewModel
         {
@@ -50,6 +58,10 @@ namespace MWF.Mobile.Android.Views
 
         }
 
+        #endregion
+
+        #region Public Methods
+
         public async override void OnBackPressed()
         {
             if (CurrentFragment.DataContext is IBackButtonHandler)
@@ -69,27 +81,11 @@ namespace MWF.Mobile.Android.Views
             }
         }
 
-        private void SetActivityTitleFromFragment()
-        {
-            this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
-        }
+        #endregion
 
+        #region Fragment Host
 
-        #region Fragment host
-
-        private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
-        {
-            { typeof(Core.ViewModels.PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
-            { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
-            { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
-            { typeof(Core.ViewModels.TrailerListViewModel), typeof(Fragments.TrailerListFragment)},
-            { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
-            { typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
-            { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment)},
-            { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
-			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
-            { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) },
-        };
+        public abstract IDictionary<Type, Type> SupportedFragmentViewModels { get; }
 
         public abstract int FragmentHostID { get; }
 
@@ -101,9 +97,9 @@ namespace MWF.Mobile.Android.Views
             // to a base class, since we may wish to handle fragements differently in each at some point.
             MvxFragment fragment = null;
 
-            if (_supportedFragmentViewModels.ContainsKey(request.ViewModelType))
+            if (SupportedFragmentViewModels.ContainsKey(request.ViewModelType))
             {
-                var fragmentType = _supportedFragmentViewModels[request.ViewModelType];
+                var fragmentType = SupportedFragmentViewModels[request.ViewModelType];
                 fragment = (MvxFragment)Activator.CreateInstance(fragmentType);
                 fragment.LoadViewModelFrom(request, null);
             }
@@ -133,7 +129,7 @@ namespace MWF.Mobile.Android.Views
         /// <returns></returns>
         public bool Close(IMvxViewModel viewModel)
         {
-            var fragmentTypeToClose = _supportedFragmentViewModels[viewModel.GetType()];
+            var fragmentTypeToClose = SupportedFragmentViewModels[viewModel.GetType()];
 
             if (CurrentFragment != null && CurrentFragment.GetType() == fragmentTypeToClose)
             {
@@ -169,7 +165,7 @@ namespace MWF.Mobile.Android.Views
         /// </remarks>
         public void CloseUpToView(Type viewModelType)
         {
-            var targetFragmentType = _supportedFragmentViewModels[viewModelType];
+            var targetFragmentType = SupportedFragmentViewModels[viewModelType];
             var backStackEntryCount = FragmentManager.BackStackEntryCount;
 
             for (var i = 0; i < backStackEntryCount; i++)
@@ -191,6 +187,27 @@ namespace MWF.Mobile.Android.Views
         }
 
         #endregion
+
+        #region Private/Protected Methods
+
+        public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
+        {
+            this.MenuInflater.Inflate(Resource.Menu.main_activity_actions, menu);
+            return base.OnCreateOptionsMenu(menu);
+        }
+
+        private Type GetFragmentTypeForViewModel(Type viewModelType)
+        {
+            return SupportedFragmentViewModels[viewModelType];
+        }
+
+        protected void SetActivityTitleFromFragment()
+        {
+            this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
+        }
+
+        #endregion
+
     }
 
 }

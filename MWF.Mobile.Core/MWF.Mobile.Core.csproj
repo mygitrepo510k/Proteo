@@ -207,6 +207,8 @@
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />
+    <Compile Include="ViewModels\InstructionViewModel.cs" />
+    <Compile Include="ViewModels\Navigation\NavItem.cs" />
     <Compile Include="ViewModels\ManifestInstructionViewModel.cs" />
     <Compile Include="ViewModels\ManifestSectionViewModel.cs" />
     <Compile Include="ViewModels\Navigation\IViewModelNavItem.cs" />

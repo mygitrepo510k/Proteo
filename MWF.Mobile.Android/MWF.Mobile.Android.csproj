@@ -169,6 +169,7 @@
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\BaseFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
+    <Compile Include="Views\Fragments\Instruction_Fragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFaultFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
@@ -244,6 +245,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_Manifest.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_Instruction.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

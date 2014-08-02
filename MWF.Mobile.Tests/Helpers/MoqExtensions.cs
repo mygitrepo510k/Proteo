@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 using Moq.Language.Flow;
 using Moq;
 using Chance.MvvmCross.Plugins.UserInteraction;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using Cirrious.CrossCore.IoC;
 
 namespace MWF.Mobile.Tests.Helpers
 {
-    public static class MoqExtensions
+    public static class TextHelperExtensions
     {
         // Allows specification of different return values from a mock on subsequent calls of a method
         public static void ReturnsInOrder<T, TResult>(this ISetup<T, TResult> setup,  params object[] results) where T : class
@@ -27,6 +30,22 @@ namespace MWF.Mobile.Tests.Helpers
             });
         }
 
+        public static Mock<T> InjectNewMock<T>(this IFixture fixture) where T : class
+        {
+            Mock<T> newMock = new Mock<T>();
+            fixture.Inject<T>(newMock.Object);
+            return newMock;
+        }
+
+        public static Mock<T> RegisterNewMock<T>(this IMvxIoCProvider ioc) where T : class
+        {
+            Mock<T> newMock = new Mock<T>();
+            ioc.RegisterSingleton<T>(newMock.Object);
+            return newMock;
+        }
+
+
+        #region IUserInteraction Helpers
 
         // shortcut way of setting up a Mock UserInteraction to execute the "OK" logic of a Confirm call 
         public static Mock<IUserInteraction> ConfirmReturnsTrueIfTitleStartsWith(this Mock<IUserInteraction> userInteractionMock, string messageStartsWith)
@@ -66,7 +85,7 @@ namespace MWF.Mobile.Tests.Helpers
             return userInteractionMock;
         }
 
-
+        #endregion
 
     }
 }

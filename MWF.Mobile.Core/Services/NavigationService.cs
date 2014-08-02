@@ -5,8 +5,9 @@ using System.Reflection;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.ViewModels;
-using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Presentation;
 
@@ -24,8 +25,8 @@ namespace MWF.Mobile.Core.Services
 
         #region Private Members
 
-        private Dictionary<Tuple<Type, Type>, Action> _forwardNavActionDictionary;
-        private Dictionary<Tuple<Type, Type>, Action> _backwardNavActionDictionary;
+        private Dictionary<Tuple<Type, Type>, Action<Object>> _forwardNavActionDictionary;
+        private Dictionary<Tuple<Type, Type>, Action<Object>> _backwardNavActionDictionary;
         private ICustomPresenter _presenter;
         IStartupService _startupService;
         IRepositories _repositories;
@@ -37,8 +38,8 @@ namespace MWF.Mobile.Core.Services
 
         public NavigationService(ICustomPresenter presenter, IStartupService startupService, ICloseApplication closeApplication, IRepositories repositories)
         {
-            _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action>();
-            _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action>();
+            _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
+            _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
             _presenter = presenter;
 
             _repositories = repositories;
@@ -53,20 +54,21 @@ namespace MWF.Mobile.Core.Services
         #region Public Methods
 
 
-        public void InsertNavAction<T1,T2>(Type destinationNodeType)
-                where T1 : BaseActivityViewModel
-                where T2 : BaseFragmentViewModel
+        public void InsertNavAction<T1, T2>(Type destinationNodeType)
+            where T1 : BaseActivityViewModel
+            where T2 : BaseFragmentViewModel
         {
 
             if (!IsDestinationTypeValid(destinationNodeType)) throw new ArgumentException("destinationNodeType must derive from MvxViewModel");
 
             var key = CreateKey<T1, T2>();
-            _forwardNavActionDictionary.Add(key, () => MoveTo(destinationNodeType) );
+            _forwardNavActionDictionary.Add(key, (parameters) => MoveTo(destinationNodeType, parameters));
         }
 
 
-        public void InsertCustomNavAction<T1, T2>(Action action) where T1 : BaseActivityViewModel
-                                                                 where T2 : BaseFragmentViewModel
+        public void InsertCustomNavAction<T1, T2>(Action<Object> action)
+            where T1 : BaseActivityViewModel
+            where T2 : BaseFragmentViewModel
         {
             var key = CreateKey<T1, T2>();
             _forwardNavActionDictionary.Add(key, action);
@@ -80,11 +82,11 @@ namespace MWF.Mobile.Core.Services
             if (!IsDestinationTypeValid(destinationNodeType)) throw new ArgumentException("destinationNodeType must derive from MvxViewModel");
 
             var key = CreateKey<T1, T2>();
-            _backwardNavActionDictionary.Add(key, () => MoveBackTo(destinationNodeType));
+            _backwardNavActionDictionary.Add(key, (noParam) => MoveBackTo(destinationNodeType));
         }
 
 
-        public void InsertCustomBackNavAction<T1, T2>(Action action)
+        public void InsertCustomBackNavAction<T1, T2>(Action<Object> action)
             where T1 : BaseActivityViewModel
             where T2 : BaseFragmentViewModel
         {
@@ -115,21 +117,21 @@ namespace MWF.Mobile.Core.Services
         {
             if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
 
-            var key = CreateKey(activityType,  fragmentType);
+            var key = CreateKey(activityType, fragmentType);
             return _backwardNavActionDictionary.ContainsKey(key);
         }
 
 
-        public Action GetNavAction<T1, T2>()
-                            where T1 : BaseActivityViewModel
-                where T2 : BaseFragmentViewModel
+        public Action<Object> GetNavAction<T1, T2>()
+            where T1 : BaseActivityViewModel
+            where T2 : BaseFragmentViewModel
         {
             var key = CreateKey<T1, T2>();
             return GetNavActionWithKey(_forwardNavActionDictionary, key);
         }
 
 
-        public Action GetNavAction(Type activityType, Type fragmentType)
+        public Action<Object> GetNavAction(Type activityType, Type fragmentType)
         {
             if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
 
@@ -138,7 +140,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public Action GetBackNavAction(Type activityType, Type fragmentType)
+        public Action<Object> GetBackNavAction(Type activityType, Type fragmentType)
         {
             if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
 
@@ -148,19 +150,33 @@ namespace MWF.Mobile.Core.Services
 
         #endregion
 
-        #region INavigationService 
+        #region INavigationService
 
         public void MoveToNext()
         {
 
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
-            Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();          
+            Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action navAction = this.GetNavAction(currentActivityType, currentFragmentType);
+            Action<Object> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownNavigationMappingException(currentActivityType, currentFragmentType);
 
-            navAction.Invoke();
+            navAction.Invoke(null);
+
+        }
+
+        public void MoveToNext(Object parameters)
+        {
+
+            Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
+            Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
+
+            Action<Object> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
+
+            if (navAction == null) throw new UnknownNavigationMappingException(currentActivityType, currentFragmentType);
+
+            navAction.Invoke(parameters);
 
         }
 
@@ -170,11 +186,11 @@ namespace MWF.Mobile.Core.Services
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
+            Action<Object> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownBackNavigationMappingException(currentActivityType, currentFragmentType);
 
-            navAction.Invoke();
+            navAction.Invoke(null);
 
         }
 
@@ -217,9 +233,9 @@ namespace MWF.Mobile.Core.Services
 
         #region Private Methods
 
-        private void MoveTo(Type type)
+        private void MoveTo(Type type, Object parameters)
         {
-            this.ShowViewModel(type);
+            this.ShowViewModel(type, parameters);
         }
 
         private void MoveBackTo(Type type)
@@ -227,7 +243,7 @@ namespace MWF.Mobile.Core.Services
             ChangePresentation(new Presentation.CloseUpToViewPresentationHint(type));
         }
 
-        private Tuple<Type,Type> CreateKey<T1, T2>()
+        private Tuple<Type, Type> CreateKey<T1, T2>()
             where T1 : MvxViewModel
             where T2 : MvxViewModel
         {
@@ -239,9 +255,11 @@ namespace MWF.Mobile.Core.Services
             return Tuple.Create<Type, Type>(activityType, fragmentType);
         }
 
-        private Action GetNavActionWithKey(Dictionary<Tuple<Type, Type>, Action> dictionary, Tuple<Type, Type> key)
+
+
+        private Action<Object> GetNavActionWithKey(Dictionary<Tuple<Type, Type>, Action<Object>> dictionary, Tuple<Type, Type> key)
         {
-            Action action = null;
+            Action<Object> action = null;
             dictionary.TryGetValue(key, out action);
             return action;
         }
@@ -274,14 +292,15 @@ namespace MWF.Mobile.Core.Services
             InsertCustomBackNavAction<StartupViewModel, PasscodeViewModel>(CloseApplication);               //Back from passcode closes app
 
             // Main Activity
-            InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(() => MoveTo(typeof(StartupViewModel))); // Back from manifest sends back to startup activity
+            InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomBackAction); // Back from manifest sends back to startup activity
+            InsertCustomNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomAction);
         }
 
         #endregion
 
         #region Custom Mapping Actions
 
-        private void CloseApplication()
+        private void CloseApplication(Object parameters)
         {
             _closeApplication.CloseApp();
         }
@@ -290,7 +309,7 @@ namespace MWF.Mobile.Core.Services
         /// Safety Check screen goes to main activity (manifest) if there are no profiles
         /// or odometer screen if odometer reading is required, safety check signature screen otherwise
         /// </summary>
-        public void SafetyCheck_CustomAction()
+        public void SafetyCheck_CustomAction(Object parameters)
         {
 
             if (VehicleSafetyProfile == null && TrailerSafetyProfile == null)
@@ -304,14 +323,14 @@ namespace MWF.Mobile.Core.Services
                 else
                     this.ShowViewModel<SafetyCheckSignatureViewModel>();
             }
-            
+
         }
 
         /// <summary>
         /// Signature screen goes back to driver pass code screen if we have any safety check failures
         /// and to main acticity (manifest) otherwise
         /// </summary>
-        public void Signature_CustomAction()
+        public void Signature_CustomAction(Object parameters)
         {
 
             if (SafetyCheckStatus == Enums.SafetyCheckStatus.Failed)
@@ -323,6 +342,26 @@ namespace MWF.Mobile.Core.Services
                 this.ShowViewModel<MainViewModel>();
             }
 
+        }
+
+        /// <summary>
+        /// Manifest screen goes back to to instruction screen if we get a mobile data nav item
+        /// and to main acticity (manifest) otherwise
+        /// </summary>
+        public void Manifest_CustomAction(Object parameters)
+        {
+
+            if (parameters is NavItem<MobileData>)
+            {
+                this.ShowViewModel<InstructionViewModel>(parameters as NavItem<MobileData>);
+            }
+            // else ??
+
+        }
+
+        public void Manifest_CustomBackAction(Object parameters)
+        {
+            MoveTo(typeof(StartupViewModel), parameters);
         }
 
 

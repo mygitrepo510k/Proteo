@@ -18,11 +18,20 @@ namespace MWF.Mobile.Android.Views
     public class MainView
         : BaseActivityView, Presenters.IFragmentHost
     {
+        #region Private/Protected Fields
 
         private DrawerLayout _drawer;
         private MvxListView _drawerList;
         private global::Android.Support.V4.App.ActionBarDrawerToggle _drawerToggle;
+        protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
+            {
+                { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
+                { typeof(Core.ViewModels.InstructionViewModel), typeof(Fragments.InstructionFragment) }
+            };
 
+        #endregion
+
+        #region Construction
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -51,28 +60,27 @@ namespace MWF.Mobile.Android.Views
             this._drawer.SetDrawerListener(this._drawerToggle);
         }
 
-        protected override Type GetFragmentTypeForViewModel(Type viewModelType)
+        protected override void OnPostCreate(Bundle savedInstanceState)
         {
-            return _supportedFragmentViewModels[viewModelType];
+            base.OnPostCreate(savedInstanceState);
+            this._drawerToggle.SyncState();
         }
 
-        public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
-        {
-            this.MenuInflater.Inflate(Resource.Menu.main_activity_actions, menu);
-            return base.OnCreateOptionsMenu(menu);
-        }
+        #endregion
 
-		#region Fragment host
-        
-        private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
+		#region Fragment Host
+
+        public override IDictionary<Type, Type> SupportedFragmentViewModels
         {
-            { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
-        };
+            get { return _supportedViewModels; }
+        }
 
         public override int FragmentHostID { get { return Resource.Id.fragment_host_main; } }
         
         #endregion Fragment host
-        
+
+        #region Options Menu
+
         public override bool OnPrepareOptionsMenu(global::Android.Views.IMenu menu)
         {
             var drawerOpen = this._drawer.IsDrawerOpen(this._drawerList);
@@ -91,16 +99,8 @@ namespace MWF.Mobile.Android.Views
             return base.OnOptionsItemSelected(item);
         }
 
-        protected override void OnPostCreate(Bundle savedInstanceState)
-        {
-            base.OnPostCreate(savedInstanceState);
-            this._drawerToggle.SyncState();
-        }
+        #endregion
 
-        private void SetActivityTitleFromFragment()
-        {
-            this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
-        }
     }
 
 }

@@ -27,6 +27,8 @@ namespace MWF.Mobile.Android.Views
         : BaseActivityView, Presenters.IFragmentHost
     {
 
+        #region Construction
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -39,41 +41,33 @@ namespace MWF.Mobile.Android.Views
 
         }
 
-        protected override Type GetFragmentTypeForViewModel(Type viewModelType)
+        #endregion
+
+        #region Fragment Host
+
+        public override IDictionary<Type, Type> SupportedFragmentViewModels
         {
-            return _supportedFragmentViewModels[viewModelType];
+            get { return _supportedViewModels; }
         }
-        
-		#region Fragment host
-        
-        private static IDictionary<Type, Type> _supportedFragmentViewModels = new Dictionary<Type, Type>
-        {
-            { typeof(Core.ViewModels.PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
-            { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
-            { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
-            { typeof(Core.ViewModels.TrailerListViewModel), typeof(Fragments.TrailerListFragment)},
-            { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
-            { typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
-            { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment)},
-            { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
-			{ typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
-            { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) },
-        };
+
+        protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
+            {            
+                { typeof(Core.ViewModels.PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
+                { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
+                { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
+                { typeof(Core.ViewModels.TrailerListViewModel), typeof(Fragments.TrailerListFragment)},
+                { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
+                { typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
+                { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
+			    { typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
+                { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) },
+            };
+
 
         public override int FragmentHostID { get { return Resource.Id.fragment_host_startup; } }
         
  		#endregion
         
-        public override bool OnCreateOptionsMenu(global::Android.Views.IMenu menu)
-        {
-            this.MenuInflater.Inflate(Resource.Menu.main_activity_actions, menu);
-            return base.OnCreateOptionsMenu(menu);
-        }
-
-        private void SetActivityTitleFromFragment()
-        {
-            this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
-        }
 
     }
 

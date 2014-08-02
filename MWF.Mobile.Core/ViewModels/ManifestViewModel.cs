@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using MWF.Mobile.Core.Models;
 using System.Linq;
 using System;
+using System.Windows.Input;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories.Interfaces;
@@ -26,17 +27,15 @@ namespace MWF.Mobile.Core.ViewModels
         public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService)
         {
 
-           
+            _navigationService = navigationService;
 
             ObservableCollection<ManifestInstructionViewModel> instructions = new ObservableCollection<ManifestInstructionViewModel>();
-            instructions.Add(new ManifestInstructionViewModel() { Title = "Test title", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
-            instructions.Add(new ManifestInstructionViewModel() { Title = "Test title2", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
-
-            
+            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test title", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
+            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test title2", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });           
 
             _mobileDataRepository = mobileDataRepository;
             _mobileDataRepository.GetInProgressInstructions();
-            _navigationService = navigationService;
+            
 
             Sections = new ObservableCollection<ManifestSectionViewModel>();            
             var inProgressSection = new ManifestSectionViewModel(this)
@@ -49,11 +48,11 @@ namespace MWF.Mobile.Core.ViewModels
             Sections.Add(inProgressSection);
 
             instructions = new ObservableCollection<ManifestInstructionViewModel>();
-            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Collect", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
-            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Deliver", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
-            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Trunk To", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.TrunkTo });
-            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Proceed From", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.ProceedFrom });
-            instructions.Add(new ManifestInstructionViewModel() { Title = "Test Message with point", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.MessageWithPoint });
+            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Collect", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
+            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Deliver", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
+            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Trunk To", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.TrunkTo });
+            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Proceed From", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.ProceedFrom });
+            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Message with point", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.MessageWithPoint });
             
             var notStartedSection = new ManifestSectionViewModel(this)
             {
@@ -90,8 +89,9 @@ namespace MWF.Mobile.Core.ViewModels
         public string HeaderText
         {
             get { return "Select instructions - Showing " + InstructionsCount; }
-        } 
-  
+        }
+
+        #region IBackButtonHandler Implementation
 
         public async Task<bool> OnBackButtonPressed()
         {
@@ -113,5 +113,7 @@ namespace MWF.Mobile.Core.ViewModels
             return false;
 
         }   
+
+        #endregion
     }
 }

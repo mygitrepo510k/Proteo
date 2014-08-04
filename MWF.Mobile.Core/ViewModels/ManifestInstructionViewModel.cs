@@ -20,20 +20,25 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
         }
 
-        private ManifestSectionViewModel _manifestSectionViewModel;
-
-        private string _title;
-        public string Title
+        private Guid _instructionID;
+        public Guid InstructionID
         {
-            get { return _title; }
-            set { _title = value; RaisePropertyChanged(() => Title);}
+            get { return _instructionID; }
+            set { _instructionID = value; RaisePropertyChanged(() => InstructionID); }
         }
 
-        private string _vehicleRegistration;
-        public string VehicleRegistration
+        private string _instructionTitle;
+        public string InstructionTitle
         {
-            get { return _vehicleRegistration; }
-            set { _vehicleRegistration = value; RaisePropertyChanged(() => VehicleRegistration); }
+            get { return _instructionTitle; }
+            set { _instructionTitle = value; RaisePropertyChanged(() => InstructionTitle);}
+        }
+
+        private string _orderID;
+        public string OrderID
+        {
+            get { return _orderID; }
+            set { _orderID = value; RaisePropertyChanged(() => OrderID); }
         }
 
         private DateTime _effectiveDate;
@@ -42,8 +47,6 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _effectiveDate; }
             set { _effectiveDate = value; RaisePropertyChanged(() => EffectiveDate); }
         }
-        
-
 
         private Enums.InstructionType _instructionType;
         public Enums.InstructionType InstructionType

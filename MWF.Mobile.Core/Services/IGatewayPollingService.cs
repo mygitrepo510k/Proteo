@@ -18,6 +18,7 @@ namespace MWF.Mobile.Core.Services
     public interface IGatewayPollingService
     {
         void StartPollingTimer();
+        void StopPollingTimer();
     }
 
 }

@@ -30,19 +30,21 @@ namespace MWF.Mobile.Core.Services
         private ICustomPresenter _presenter;
         IStartupService _startupService;
         IRepositories _repositories;
+        private readonly IGatewayPollingService _gatewayPollingService;
         ICloseApplication _closeApplication;
 
         #endregion
 
         #region Construction
 
-        public NavigationService(ICustomPresenter presenter, IStartupService startupService, ICloseApplication closeApplication, IRepositories repositories)
+        public NavigationService(ICustomPresenter presenter, IStartupService startupService, ICloseApplication closeApplication, IRepositories repositories, IGatewayPollingService gatewayPollingService)
         {
             _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
             _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
             _presenter = presenter;
 
             _repositories = repositories;
+            _gatewayPollingService = gatewayPollingService;
             _startupService = startupService;
             _closeApplication = closeApplication;
 
@@ -361,6 +363,8 @@ namespace MWF.Mobile.Core.Services
 
         public void Manifest_CustomBackAction(Object parameters)
         {
+            // Stop the gateway polling service before we "logout" the user.
+            _gatewayPollingService.StopPollingTimer();
             MoveTo(typeof(StartupViewModel), parameters);
         }
 

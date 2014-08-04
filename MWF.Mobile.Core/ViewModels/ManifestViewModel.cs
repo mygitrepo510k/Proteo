@@ -26,49 +26,56 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService)
         {
-
-            _navigationService = navigationService;
-
-            ObservableCollection<ManifestInstructionViewModel> instructions = new ObservableCollection<ManifestInstructionViewModel>();
-            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test title", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
-            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test title2", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });           
-
-            /*
-             * TODO: Implement repository once they can get data from the database.
-             * 
             _mobileDataRepository = mobileDataRepository;
             var all = _mobileDataRepository.GetAll();
-            var inProgressRepository = _mobileDataRepository.GetInProgressInstructions();
-            var sectionRepository = _mobileDataRepository.GetNotStartedInstructions();
-            foreach (var child in inProgressRepository.ToList())
-            {
-                
-            }
-             */
+            var inProgressRepository = _mobileDataRepository.GetInProgressInstructions().ToList();
+            var notStartedRepository = _mobileDataRepository.GetNotStartedInstructions().ToList();
 
-            Sections = new ObservableCollection<ManifestSectionViewModel>();            
+            _navigationService = navigationService;
+            Sections = new ObservableCollection<ManifestSectionViewModel>();
+            ObservableCollection<ManifestInstructionViewModel> inProgressInstructions = new ObservableCollection<ManifestInstructionViewModel>();
+            ObservableCollection<ManifestInstructionViewModel> notStartedInstructions = new ObservableCollection<ManifestInstructionViewModel>();
+
+
+            //Test data
+            inProgressInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test title", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
+            inProgressInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test title2", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });           
+
+
+            foreach (var child in inProgressRepository)
+            {
+                inProgressInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionID = child.ID ,EffectiveDate = child.EffectiveDate, InstructionType = child.Order.Type, OrderID = child.Order.OrderId, InstructionTitle = child.GroupTitle });
+            }
+
+            inProgressInstructions = new ObservableCollection<ManifestInstructionViewModel>(inProgressInstructions.ToList().OrderBy(x => x.EffectiveDate));
             var inProgressSection = new ManifestSectionViewModel(this)
             {
-                //Instructions = _mobileApplicationDataRepository.GetInProgressInstructions()
                 SectionHeader = "In Progress",
-                Instructions = instructions
+                Instructions = inProgressInstructions
             };
             _instructionCount = _instructionCount + inProgressSection.Instructions.Count;
             Sections.Add(inProgressSection);
 
-            instructions = new ObservableCollection<ManifestInstructionViewModel>();
-            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Collect", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
-            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Deliver", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
-            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Trunk To", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.TrunkTo });
-            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Proceed From", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.ProceedFrom });
-            instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test Message with point", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.MessageWithPoint });
-            
+
+            //Test data
+            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Collect", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
+            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Deliver", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
+            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 1 day", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(1), InstructionType = Enums.InstructionType.TrunkTo });
+            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Proceed From", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.ProceedFrom });
+            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 2 days", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(2), InstructionType = Enums.InstructionType.MessageWithPoint });
+
+            foreach (var child in notStartedRepository)
+            {
+                notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionID = child.ID, EffectiveDate = child.EffectiveDate, InstructionType = child.Order.Type, OrderID = child.Order.OrderId, InstructionTitle = child.GroupTitle });
+            }
+
+            //Sorts the list into ascending order.
+            notStartedInstructions = new ObservableCollection<ManifestInstructionViewModel>(notStartedInstructions.ToList().OrderBy(x => x.EffectiveDate));
+
             var notStartedSection = new ManifestSectionViewModel(this)
             {
                 SectionHeader = "Not Started",
-                Instructions = instructions
-
-                //Instructions = _mobileApplicationDataRepository.GetNotStartedInstructions()
+                Instructions = notStartedInstructions
             };
             _instructionCount = _instructionCount + notStartedSection.Instructions.Count;
             Sections.Add(notStartedSection);            

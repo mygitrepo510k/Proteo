@@ -18,7 +18,7 @@ namespace MWF.Mobile.Core.Models.Instruction
         [PrimaryKey]
         public Guid ID { get; set; }
 
-        [ChildRelationship(typeof(Trailer), RelationshipCardinality.OneToOne)]
+        [ChildRelationship(typeof(Trailer), RelationshipCardinality.OneToZeroOrOne)]
         [JsonProperty("trailerid")]
         public Trailer Trailer { get; set; }
 

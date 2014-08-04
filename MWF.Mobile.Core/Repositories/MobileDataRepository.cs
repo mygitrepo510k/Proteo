@@ -26,16 +26,24 @@ namespace MWF.Mobile.Core.Repositories
 
         public IEnumerable<MobileData> GetInProgressInstructions()
         {
-            return _connection
-                .Table<MobileData>()
-                .Where(m => m.ProgressState == Enums.InstructionProgress.Driving || m.ProgressState == Enums.InstructionProgress.OnSite);
+            var parentItems = _connection
+               .Table<MobileData>()
+               .Where(m => m.ProgressState == Enums.InstructionProgress.Driving || m.ProgressState == Enums.InstructionProgress.OnSite).ToList();
+
+            PopulateChildrenRecursive(parentItems);
+
+            return parentItems;
         }
 
         public IEnumerable<MobileData> GetNotStartedInstructions()
         {
-            return _connection
+            var parentItems = _connection
                 .Table<MobileData>()
-                .Where(m => m.ProgressState == Enums.InstructionProgress.NotStarted);
+                .Where(m => m.ProgressState == Enums.InstructionProgress.NotStarted).ToList();
+
+            PopulateChildrenRecursive(parentItems);
+
+            return parentItems;
         }
     }
 }

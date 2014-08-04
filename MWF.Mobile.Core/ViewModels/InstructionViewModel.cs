@@ -69,18 +69,18 @@ namespace MWF.Mobile.Core.ViewModels
             Address address = new Address()
             {
                 Country =  "United Kingdom",
-                Lines = new string[] { "21 Mornington Road", "Norwich", "Norfolk"},
+                Lines = "21 Mornington Road/nNorwich.nNorfolk",
                 Postcode = "NR2 3NA"
             };
 
             Item item1 = new Item()
             {
-                Id = "Order10241"
+               ItemId = "Order10241"
             };
 
             Item item2 = new Item()
             {
-                Id = "Order10242"
+                ItemId = "Order10242"
             };
 
 

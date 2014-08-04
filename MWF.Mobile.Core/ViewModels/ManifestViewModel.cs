@@ -10,6 +10,7 @@ using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using MWF.Mobile.Core.Models.Instruction;
 
 
 namespace MWF.Mobile.Core.ViewModels
@@ -27,8 +28,9 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IGatewayQueuedService _gatewayQueuedService;
 
         private ObservableCollection<ManifestSectionViewModel> _sections;
-        private int _instructionCount;
         private MvxCommand _refreshListCommand;
+        private ManifestSectionViewModel _notStartedSection;
+        private ManifestSectionViewModel _inProgressSection;
 
         #endregion
 
@@ -36,61 +38,39 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService, IReachability reachability, IToast toast, IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService)
         {
-            _mobileDataRepository = mobileDataRepository;
-            var all = _mobileDataRepository.GetAll();
-            var inProgressRepository = _mobileDataRepository.GetInProgressInstructions().ToList();
-            var notStartedRepository = _mobileDataRepository.GetNotStartedInstructions().ToList();
 
+            _mobileDataRepository = mobileDataRepository;
+
+ 
             _navigationService = navigationService;
             _reachability = reachability;
             _toast = toast;
             _gatewayPollingService = gatewayPollingService;
             _gatewayQueuedService = gatewayQueuedService;
 
-            var Sections = new ObservableCollection<ManifestSectionViewModel>();
-            ObservableCollection<ManifestInstructionViewModel> inProgressInstructions = new ObservableCollection<ManifestInstructionViewModel>();
-            ObservableCollection<ManifestInstructionViewModel> notStartedInstructions = new ObservableCollection<ManifestInstructionViewModel>();
-
-            //Test data
-            inProgressInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test title", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
-            inProgressInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test title2", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });           
+            CreateSections();
+            UpdateInstructions();
+            
+        }
 
 
-            foreach (var child in inProgressRepository)
-            {
-                inProgressInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionID = child.ID ,EffectiveDate = child.EffectiveDate, InstructionType = child.Order.Type, OrderID = child.Order.OrderId, InstructionTitle = child.GroupTitle });
-            }
+        private void CreateSections()
+        {
+            Sections = new ObservableCollection<ManifestSectionViewModel>();
 
-            inProgressInstructions = new ObservableCollection<ManifestInstructionViewModel>(inProgressInstructions.ToList().OrderBy(x => x.EffectiveDate));
-            var inProgressSection = new ManifestSectionViewModel(this)
+            _inProgressSection = new ManifestSectionViewModel(this)
             {
                 SectionHeader = "In Progress",
-                Instructions = inProgressInstructions
             };
 
-            Sections.Add(inProgressSection);
+            Sections.Add(_inProgressSection);
 
-            //Test data
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Collect", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Deliver", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 1 day", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(1), InstructionType = Enums.InstructionType.TrunkTo });
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Proceed From", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.ProceedFrom });
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 2 days", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(2), InstructionType = Enums.InstructionType.MessageWithPoint });
-
-            foreach (var child in notStartedRepository)
-            {
-                notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionID = child.ID, EffectiveDate = child.EffectiveDate, InstructionType = child.Order.Type, OrderID = child.Order.OrderId, InstructionTitle = child.GroupTitle });
-            }
-
-            //Sorts the list into ascending order.
-            notStartedInstructions = new ObservableCollection<ManifestInstructionViewModel>(notStartedInstructions.ToList().OrderBy(x => x.EffectiveDate));
-            var notStartedSection = new ManifestSectionViewModel(this)
+            _notStartedSection = new ManifestSectionViewModel(this)
             {
                 SectionHeader = "Not Started",
-                Instructions = notStartedInstructions
             };
 
-            Sections.Add(notStartedSection);
+            Sections.Add(_notStartedSection);
         }
 
         #endregion
@@ -110,8 +90,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public int InstructionsCount
         {
-            get { return _instructionCount; }
-            set { _instructionCount = value; RaisePropertyChanged(() => InstructionsCount); }
+            get { return Sections.Sum(s => s.Instructions.Count); }
         }
 
         public ICommand RefreshListCommand
@@ -129,7 +108,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
-        public async Task UpdateInstructionsListAsync()
+        #region Private Methods
+
+        private async Task UpdateInstructionsListAsync()
         {
 
             if (!_reachability.IsConnected())
@@ -141,10 +122,35 @@ namespace MWF.Mobile.Core.ViewModels
                 // Force a poll for instructions             
                 await _gatewayPollingService.PollForInstructions();
 
+                UpdateInstructions();
+
                 // Force a upload of the queue
                 //await _gatewayQueuedService.UploadQueue();
             }
         }
+
+        private void UpdateInstructions()
+        {
+            // get instruction data models from repository and order them
+            var inProgressDataModels = _mobileDataRepository.GetInProgressInstructions().OrderBy(x => x.EffectiveDate);
+            var notStartedDataModels = _mobileDataRepository.GetNotStartedInstructions().OrderBy(x => x.EffectiveDate);
+
+            // Create the view models
+            var inProgressViewModels = inProgressDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
+            var notStartedViewModels = notStartedDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
+
+            // Update the obsercable collections in each section
+            _inProgressSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(inProgressViewModels);
+            _notStartedSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(notStartedViewModels);
+
+            // Let the UI know the number of instructions has changed
+            RaisePropertyChanged(() => InstructionsCount);
+            RaisePropertyChanged(() => HeaderText);
+        }
+
+
+
+        #endregion
 
         #region IBackButtonHandler Implementation
 

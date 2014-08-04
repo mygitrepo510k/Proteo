@@ -14,51 +14,40 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         private readonly INavigationService _navigationService;
+        private readonly MobileData _mobileData;
 
-        public ManifestInstructionViewModel(INavigationService navigationService)
+        public ManifestInstructionViewModel(INavigationService navigationService, MobileData mobileData)
         {
             _navigationService = navigationService;
+            _mobileData = mobileData;
         }
 
-        private Guid _instructionID;
+
         public Guid InstructionID
         {
-            get { return _instructionID; }
-            set { _instructionID = value; RaisePropertyChanged(() => InstructionID); }
+            get { return _mobileData.ID; }
         }
 
-        private string _instructionTitle;
         public string InstructionTitle
         {
-            get { return _instructionTitle; }
-            set { _instructionTitle = value; RaisePropertyChanged(() => InstructionTitle);}
+            get { return _mobileData.GroupTitle; }        
         }
 
-        private string _orderID;
         public string OrderID
         {
-            get { return _orderID; }
-            set { _orderID = value; RaisePropertyChanged(() => OrderID); }
+            get { return _mobileData.Order.OrderId; }
         }
 
-        private DateTime _effectiveDate;
         public DateTime EffectiveDate
         {
-            get { return _effectiveDate; }
-            set { _effectiveDate = value; RaisePropertyChanged(() => EffectiveDate); }
+            get { return _mobileData.EffectiveDate; }
         }
 
-        private Enums.InstructionType _instructionType;
         public Enums.InstructionType InstructionType
         {
             get
             {
-                return _instructionType;
-            }
-            set
-            {
-                _instructionType = value;
-                RaisePropertyChanged(() => InstructionType);
+                return _mobileData.Order.Type;
             }
         }
 

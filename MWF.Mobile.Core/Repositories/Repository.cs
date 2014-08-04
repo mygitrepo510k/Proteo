@@ -164,7 +164,7 @@ namespace MWF.Mobile.Core.Repositories
             /// as labelled with the ChildRelationship. 
             /// </summary>
             /// <param name="parent"></param>
-            private void PopulateChildrenRecursive(IBlueSphereEntity parent)
+            protected void PopulateChildrenRecursive(IBlueSphereEntity parent)
             {
 
                 foreach (var relationshipProperty in parent.GetType().GetChildRelationProperties())
@@ -174,6 +174,7 @@ namespace MWF.Mobile.Core.Repositories
 
                     if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
                     {
+
                         Debug.Assert(children.Count == 1);
                         relationshipProperty.SetValue(parent, children[0]);
                     }
@@ -199,7 +200,7 @@ namespace MWF.Mobile.Core.Repositories
             /// a collection of parents
             /// </summary>
             /// <param name="parents"></param>
-            private void PopulateChildrenRecursive(IEnumerable parents)
+            protected void PopulateChildrenRecursive(IEnumerable parents)
             {
                 foreach (var parent in parents)
                 {

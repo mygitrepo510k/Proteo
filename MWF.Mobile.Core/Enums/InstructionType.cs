@@ -2,11 +2,11 @@ namespace MWF.Mobile.Core.Enums
 {
     public enum InstructionType
     {
-        Collect,
-        Deliver,
-        TrunkTo,
-        ProceedFrom,
-        MessageWithPoint
+        Collect = 1,
+        Deliver = 2,
+        TrunkTo = 3,
+        ProceedFrom = 4,
+        MessageWithPoint = 5
 
     }
 }

@@ -33,9 +33,18 @@ namespace MWF.Mobile.Core.ViewModels
             instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test title", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
             instructions.Add(new ManifestInstructionViewModel(_navigationService) { Title = "Test title2", VehicleRegistration = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });           
 
+            /*
+             * TODO: Implement repository once they can get data from the database.
+             * 
             _mobileDataRepository = mobileDataRepository;
-            _mobileDataRepository.GetInProgressInstructions();
-            
+            var all = _mobileDataRepository.GetAll();
+            var inProgressRepository = _mobileDataRepository.GetInProgressInstructions();
+            var sectionRepository = _mobileDataRepository.GetNotStartedInstructions();
+            foreach (var child in inProgressRepository.ToList())
+            {
+                
+            }
+             */
 
             Sections = new ObservableCollection<ManifestSectionViewModel>();            
             var inProgressSection = new ManifestSectionViewModel(this)

@@ -8,6 +8,9 @@ namespace MWF.Mobile.Core.Models.Instruction
 {
     public class Address : IBlueSphereEntity
     {
+
+        private string[] _linesArray;
+
         public Address()
         {
             ID = new Guid();
@@ -22,7 +25,9 @@ namespace MWF.Mobile.Core.Models.Instruction
         [JsonProperty("type")]
         public InstructionType Type { get; set; }
         [JsonProperty("line")]
-        public string[] Lines { get; set; }
+        [Ignore]
+        public string[] LinesArray { get { return _linesArray; } set { _linesArray = value; Lines = string.Join("|", _linesArray); } }
+        public string Lines { get; set; }
         [JsonProperty("postcode")]
         public string Postcode { get; set; }
         [JsonProperty("country")]

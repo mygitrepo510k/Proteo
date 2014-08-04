@@ -6,8 +6,14 @@ using MWF.Mobile.Core.Services;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using System;
+using System.Linq;
 using Xunit;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Repositories.Interfaces;
+using System.Collections.Generic;
+using System.Collections;
+using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using MWF.Mobile.Tests.Helpers;
 
 namespace MWF.Mobile.Tests.RepositoryTests
 {
@@ -32,15 +38,48 @@ namespace MWF.Mobile.Tests.RepositoryTests
         public void Repository_Returns_Inprogress_Instructions()
         {
             base.ClearAll();
-            var mobileApplicationDataRepository = new Mock<IMobileDataRepository>(); //_fixture.Create<MobileDataRepository>();
-            var mobileApplicationData = _fixture.CreateMany<MobileData>();
-            
-            mobileApplicationDataRepository.Object.Insert(mobileApplicationData);
 
-            foreach(var instruction in mobileApplicationDataRepository.Object.GetInProgressInstructions())
+            List<MobileData> mobileDataList = new List<MobileData>();
+            mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.NotStarted });
+
+            MockITableQuery<MobileData> mockTableQuery = new MockITableQuery<MobileData>();
+            mockTableQuery.Items = mobileDataList;
+
+            _connectionMock.Setup(c => c.Table<MobileData>()).Returns(mockTableQuery);
+
+            var mdr = _fixture.Create<MobileDataRepository>();
+
+            var inProgressInstructions = mdr.GetInProgressInstructions().ToList();
+
+            foreach (var instruction in inProgressInstructions)
             {
-                Assert.True((instruction.ProgressState == Core.Enums.InstructionProgress.OnSite || instruction.ProgressState == Core.Enums.InstructionProgress.Driving), "An instruction has been returned that has not been started");
+                Assert.True((instruction.ProgressState == Core.Enums.InstructionProgress.Driving || instruction.ProgressState == Core.Enums.InstructionProgress.OnSite), "An instruction has been returned that has already started");
+            }            
+        }
+
+        [Fact]
+        public void Repository_Returns_NotStarted_Instructions()
+        {
+            base.ClearAll();
+
+            List<MobileData> mobileDataList = new List<MobileData>();
+            mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.NotStarted });
+
+            MockITableQuery<MobileData> mockTableQuery = new MockITableQuery<MobileData>();
+            mockTableQuery.Items = mobileDataList;
+
+            _connectionMock.Setup(c => c.Table<MobileData>()).Returns(mockTableQuery);
+
+            var mdr = _fixture.Create<MobileDataRepository>();
+
+            var notStartedInstructions = mdr.GetNotStartedInstructions().ToList();
+
+            foreach (var instruction in notStartedInstructions)
+            {
+                Assert.True((instruction.ProgressState == Core.Enums.InstructionProgress.NotStarted ), "An instruction has been returned that has already started");
             }
         }
-    }
+    } 
 }

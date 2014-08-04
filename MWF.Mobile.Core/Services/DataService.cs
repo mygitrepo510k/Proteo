@@ -1,5 +1,6 @@
 ﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
 using System;
 
 
@@ -56,22 +57,32 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         private void CreateTablesIfRequired()
         {
+            _connection.CreateTable<Additional>();
+            _connection.CreateTable<Models.Instruction.Address>();
             _connection.CreateTable<ApplicationProfile>();
+            _connection.CreateTable<ConfirmQuantity>();
             _connection.CreateTable<CurrentDriver>();
             _connection.CreateTable<Customer>();
+            _connection.CreateTable<DeliveryDescription>();
             _connection.CreateTable<Device>();
             _connection.CreateTable<Driver>();
             _connection.CreateTable<GatewayQueueItem>();
+            _connection.CreateTable<Instruction>();
             _connection.CreateTable<Image>();
+            _connection.CreateTable<ItemAdditional>();
+            _connection.CreateTable<Item>();
             _connection.CreateTable<LatestSafetyCheck>();
             _connection.CreateTable<MWFMobileConfig>();
+            _connection.CreateTable<MobileData>();
+            _connection.CreateTable<Order>();
             _connection.CreateTable<SafetyCheckData>();
             _connection.CreateTable<SafetyCheckFault>();
             _connection.CreateTable<SafetyCheckFaultType>();
             _connection.CreateTable<SafetyProfile>();
             _connection.CreateTable<Signature>();
             _connection.CreateTable<Vehicle>();
-            _connection.CreateTable<Trailer>();
+            _connection.CreateTable<Models.Trailer>();
+            _connection.CreateTable<Models.Instruction.Trailer>();
             _connection.CreateTable<VehicleView>();
             _connection.CreateTable<VerbProfile>();
             _connection.CreateTable<VerbProfileItem>();

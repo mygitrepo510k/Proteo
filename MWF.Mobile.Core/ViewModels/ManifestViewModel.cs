@@ -53,16 +53,15 @@ namespace MWF.Mobile.Core.ViewModels
                 SectionHeader = "In Progress",
                 Instructions = inProgressInstructions
             };
-            _instructionCount = _instructionCount + inProgressSection.Instructions.Count;
             Sections.Add(inProgressSection);
 
 
             //Test data
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Collect", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Deliver", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 1 day", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(1), InstructionType = Enums.InstructionType.TrunkTo });
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Proceed From", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.ProceedFrom });
-            notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 2 days", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(2), InstructionType = Enums.InstructionType.MessageWithPoint });
+           notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Collect", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Collect });
+           notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Deliver", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.Deliver });
+           notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 1 day", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(1), InstructionType = Enums.InstructionType.TrunkTo });
+           notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test Proceed From", OrderID = "Test reg", EffectiveDate = DateTime.Now, InstructionType = Enums.InstructionType.ProceedFrom });
+           notStartedInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 2 days", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(2), InstructionType = Enums.InstructionType.MessageWithPoint });
 
             foreach (var child in notStartedRepository)
             {
@@ -77,8 +76,8 @@ namespace MWF.Mobile.Core.ViewModels
                 SectionHeader = "Not Started",
                 Instructions = notStartedInstructions
             };
-            _instructionCount = _instructionCount + notStartedSection.Instructions.Count;
-            Sections.Add(notStartedSection);            
+            Sections.Add(notStartedSection);
+           
         }
 
 
@@ -95,11 +94,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Manifest"; }
         }
 
-        private int _instructionCount;
+
         public int InstructionsCount
         {
-            get { return _instructionCount; }
-            set { _instructionCount = value; RaisePropertyChanged(() => InstructionsCount); }
+            get { return Sections.Sum(s => s.Instructions.Count); }
+
         }
 
         public string HeaderText

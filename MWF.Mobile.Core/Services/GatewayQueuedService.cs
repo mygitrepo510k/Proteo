@@ -12,8 +12,7 @@ using System.Xml.Serialization;
 namespace MWF.Mobile.Core.Services
 {
     
-    public class GatewayQueuedService
-        : IGatewayQueuedService
+    public class GatewayQueuedService : IGatewayQueuedService
     {
 
         private readonly IDeviceInfo _deviceInfo = null;
@@ -96,6 +95,12 @@ namespace MWF.Mobile.Core.Services
 
             // Always attempt to sync with the MWF Mobile Gateway service whenever items are added to the queue (providing the GatewayQueueTimerService has been started)
             PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Trigger);
+        }
+
+        public async Task UploadQueue()
+        {
+            PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Reset);
+            await SubmitQueueAsync();
         }
 
         private async Task SubmitQueueAsync()

@@ -120,8 +120,8 @@ namespace MWF.Mobile.Core.Services
             {
                 new Parameter { Name = "VehicleRegistration", Value = vehicleRegistration },
                 new Parameter { Name = "DriverTitle", Value = driverTitle.ToString() }, 
-                new Parameter { Name = "StartDate", Value = startDate.ToString("yyyy-MM-dd HH:mm:ss") }, 
-                new Parameter { Name = "EndDate", Value = endDate.ToString("yyyy-MM-dd HH:mm:ss") }, 
+                new Parameter { Name = "StartDate", Value = startDate.Date.ToString("yyyy-MM-dd HH:mm:ss") }, 
+                new Parameter { Name = "EndDate", Value = endDate.Date.ToString("yyyy-MM-dd HH:mm:ss") }, 
             };
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.MobileDatum>("fwSyncFromServer", parameters);
             return data.Result == null ? Enumerable.Empty<Models.Instruction.MobileData>() : data.Result.List;
@@ -133,7 +133,7 @@ namespace MWF.Mobile.Core.Services
             public IEnumerable<string> Errors { get; set; }
         }
 
-        private async Task<ServiceCallResult<T>> ServiceCallAsync<T>(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
+        private async Task<ServiceCallResult<T>> ServiceCallAsync<T>(string command, Parameter[] parameters = null)
             where T: class
         {
             var requestContent = CreateRequestContent(command, parameters);

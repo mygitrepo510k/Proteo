@@ -12,7 +12,7 @@ namespace MWF.Mobile.Core.Messages
         : MvxMessage
     {
 
-        public enum TimerCommand { Start, Stop, Trigger };
+        public enum TimerCommand { Start, Stop, Reset, Trigger };
 
         public GatewayQueueTimerCommandMessage(object sender, TimerCommand command)
             : base(sender)

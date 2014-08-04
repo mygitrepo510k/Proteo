@@ -13,6 +13,7 @@ namespace MWF.Mobile.Core.Models.GatewayServiceResponse
     public class MobileDatum
     {
         [JsonProperty("mobiledata")]
+        [JsonConverter(typeof(SingleObjectToListConverter<MobileData>))]
         public List<MobileData> List { get; set; }
     }
 

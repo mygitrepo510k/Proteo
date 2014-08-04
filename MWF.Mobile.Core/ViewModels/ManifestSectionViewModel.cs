@@ -17,8 +17,6 @@ namespace MWF.Mobile.Core.ViewModels
             _manifestViewModel = manifestViewModel;
             _instructions = new ObservableCollection
                         <ManifestInstructionViewModel>();
-
-
         }
 
         private ManifestViewModel _manifestViewModel;

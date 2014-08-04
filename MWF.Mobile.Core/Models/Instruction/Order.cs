@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
+    [Table("InstructionOrder")]
     public class Order : IBlueSphereEntity
     {
         public Order()

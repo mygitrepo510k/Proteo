@@ -25,7 +25,7 @@ namespace MWF.Mobile.Core.Models.Instruction
         [JsonProperty("description")]
         public string Description { get; set; }
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public string ItemId { get; set; }
         [JsonProperty("quantity")]
         public int Quantity { get; set; }
         [JsonProperty("title")]

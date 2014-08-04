@@ -320,6 +320,9 @@
     <AndroidResource Include="Resources\drawable\MessageWithPoint.png" />
     <AndroidResource Include="Resources\drawable\Collect.png" />
     <AndroidResource Include="Resources\drawable\Deliver.png" />
+    <AndroidResource Include="Resources\menu\manifest_activity_actions.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

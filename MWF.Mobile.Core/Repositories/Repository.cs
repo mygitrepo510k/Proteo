@@ -92,10 +92,10 @@ namespace MWF.Mobile.Core.Repositories
             {
                 T entity = _connection.Table<T>().SingleOrDefault(e => e.ID == ID);
 
-                if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity);
+                if (entity != null)
+                    if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity);
 
                 return entity;
-
             }
 
             #endregion
@@ -214,8 +214,21 @@ namespace MWF.Mobile.Core.Repositories
 
                 string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
                                                                                 childType.GetForeignKeyName(parent.GetType()));
-                   
-                List<object> queryResults = _connection.Query(tableMapping, query, parent.ID);
+
+
+                List<object> queryResults;
+
+                try
+                {
+                    queryResults = _connection.Query(tableMapping, query, parent.ID);
+                }
+                catch (Exception ex)
+                {
+                    
+                    throw;
+                }
+
+                
 
                 // Create a typed generic list we can assign back to parent element
                 IList genericList = (IList) Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));

@@ -87,6 +87,7 @@
     <Compile Include="Converters\JsonWrappedItemConverter.cs" />
     <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
+    <Compile Include="Converters\SingleObjectToListConverter.cs" />
     <Compile Include="Converters\StringHasLengthConverter.cs" />
     <Compile Include="Enums\InstructionProgress.cs" />
     <Compile Include="Enums\InstructionType.cs" />

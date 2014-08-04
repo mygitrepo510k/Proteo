@@ -43,6 +43,15 @@ namespace MWF.Mobile.Android.Services
             _timer.Start();
         }
 
+        public void Reset()
+        {
+            if (!_timer.Enabled)
+                return;
+
+            this.Stop();
+            this.Start();
+        }
+
         public void Trigger()
         {
             if (!_timer.Enabled)
@@ -91,6 +100,9 @@ namespace MWF.Mobile.Android.Services
                     break;
                 case Core.Messages.GatewayQueueTimerCommandMessage.TimerCommand.Start:
                     this.Start();
+                    break;
+                case Core.Messages.GatewayQueueTimerCommandMessage.TimerCommand.Reset:
+                    this.Reset();
                     break;
                 case Core.Messages.GatewayQueueTimerCommandMessage.TimerCommand.Trigger:
                     this.Trigger();

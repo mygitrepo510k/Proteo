@@ -1,14 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.Plugins.Messenger;
 
@@ -43,6 +36,15 @@ namespace MWF.Mobile.Android.Services
             _timer.Start();
         }
 
+        public void Reset()
+        {
+            if (!_timer.Enabled)
+                return;
+
+            this.Stop();
+            this.Start();
+        }
+
         public void Trigger()
         {
             if (!_timer.Enabled)
@@ -59,10 +61,10 @@ namespace MWF.Mobile.Android.Services
             base.OnStart(intent, startId);
 
             _messenger = Mvx.Resolve<IMvxMessenger>();
-            _commandMessageToken = _messenger.Subscribe<Core.Messages.GatewayQueueTimerCommandMessage>(m => HandleCommandMessage(m));
+            _commandMessageToken = _messenger.Subscribe<Core.Messages.GatewayPollTimerCommandMessage>(m => HandleCommandMessage(m));
 
             _timer.Interval = _timerIntervalMilliseconds;
-            _timer.AutoReset = false;
+            _timer.AutoReset = true;
 
             _timer.Elapsed += (s, e) =>
                 {
@@ -82,17 +84,20 @@ namespace MWF.Mobile.Android.Services
                 };
         }
 
-        private void HandleCommandMessage(Core.Messages.GatewayQueueTimerCommandMessage message)
+        private void HandleCommandMessage(Core.Messages.GatewayPollTimerCommandMessage message)
         {
             switch (message.Command)
             {
-                case Core.Messages.GatewayQueueTimerCommandMessage.TimerCommand.Stop:
+                case Core.Messages.GatewayPollTimerCommandMessage.TimerCommand.Stop:
                     this.Stop();
                     break;
-                case Core.Messages.GatewayQueueTimerCommandMessage.TimerCommand.Start:
+                case Core.Messages.GatewayPollTimerCommandMessage.TimerCommand.Start:
                     this.Start();
                     break;
-                case Core.Messages.GatewayQueueTimerCommandMessage.TimerCommand.Trigger:
+                case Core.Messages.GatewayPollTimerCommandMessage.TimerCommand.Reset:
+                    this.Reset();
+                    break;
+                case Core.Messages.GatewayPollTimerCommandMessage.TimerCommand.Trigger:
                     this.Trigger();
                     break;
             }
@@ -100,7 +105,7 @@ namespace MWF.Mobile.Android.Services
 
         private void PublishTimerMessage()
         {
-            _messenger.Publish(new Core.Messages.GatewayQueueTimerElapsedMessage(this));
+            _messenger.Publish(new Core.Messages.GatewayPollTimerElapsedMessage(this));
         }
 
         public override IBinder OnBind(Intent intent)

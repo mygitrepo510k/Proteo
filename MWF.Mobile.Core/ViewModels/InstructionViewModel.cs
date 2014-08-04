@@ -18,6 +18,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
+        private MobileData _mobileData;
 
         #endregion
 
@@ -31,8 +32,24 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void Init(NavItem<MobileData> item)
         {
-            Guid guid = item.ID;
+          
+            //_mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
+            _mobileData = BuildMobileData();
         }
+
+        #endregion
+
+        #region Public Properties
+
+        public string RunID { get { return _mobileData.Order.RouteId; } }
+
+        public string OrderID { get { return _mobileData.Order.OrderId; } }
+
+        public string Address { get { return string.Join("/n", _mobileData.Order.Addresses[0].Lines) + "\n" + _mobileData.Order.Addresses[0].Postcode; } }
+
+        public string Notes { get { return string.Empty; } }
+
+        public IList<Item> Orders { get { return _mobileData.Order.Items; } }
 
         #endregion
 
@@ -44,6 +61,62 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion
+
+
+        private MobileData BuildMobileData()
+        {
+
+            Address address = new Address()
+            {
+                Country =  "United Kingdom",
+                Lines = new string[] { "21 Mornington Road", "Norwich", "Norfolk"},
+                Postcode = "NR2 3NA"
+            };
+
+            Item item1 = new Item()
+            {
+                Id = "Order10241"
+            };
+
+            Item item2 = new Item()
+            {
+                Id = "Order10242"
+            };
+
+
+            Trailer trailer = new Trailer(){
+                DisplayName= "Trailer"
+            };
+
+            Additional additional = new Additional()
+            {
+                Trailer = trailer
+            };
+
+            Order order = new Order()
+            {
+                Type = Enums.InstructionType.Collect,                   //instruction type
+                RouteId = "Run10226",
+                OrderId = "10241",
+                Arrive = DateTime.Now,
+                Depart = DateTime.Now.AddMinutes(15),
+                Addresses = new List<Address>() { address },
+                Items = new List<Item> { item1, item2},
+                Additional =  additional
+
+            };
+    
+
+            MobileData data = new MobileData() {
+                       CustomerId= Guid.Parse("c697166b-2e1b-45b0-8f77-270c4eadc031"),
+                       Order = order,
+                       ProgressState = Enums.InstructionProgress.NotStarted
+
+            };
+
+            return data;
+
+        }
 
 
     }

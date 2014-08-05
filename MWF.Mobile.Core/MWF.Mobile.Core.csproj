@@ -94,6 +94,7 @@
     <Compile Include="Enums\ReportReason.cs" />
     <Compile Include="Enums\SafetyCheckStatus.cs" />
     <Compile Include="Enums\SyncState.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Helpers\SMP.cs" />

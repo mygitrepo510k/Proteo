@@ -375,9 +375,38 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public void Instruction_CustionAction(Object parameters)
         {
-            this.ShowViewModel<InstructionSignatureViewModel>();
+           if(parameters is NavItem<MobileData>)
+           {
+               var navItem = (parameters as NavItem<MobileData>);
+               var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
+               var additionalContent = mobileDataContent.Order.Additional;
 
-            //More logic needed e.g. comment screen, confirmtrailerscreen.
+               //Collection
+               if(mobileDataContent.Order.Type == Enums.InstructionType.Collect)
+               {
+                   if (!additionalContent.IsTrailerConfirmationEnabled && 
+                       (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)) // && bypass comment screen is enabled
+                   {
+                       this.ShowViewModel<InstructionSignatureViewModel>();
+                   }
+
+                   else if (!additionalContent.IsTrailerConfirmationEnabled)// && bypass comment screen is not enabled
+                   {
+                       //Go to comment screen
+                   }
+                   else if (additionalContent.IsTrailerConfirmationEnabled)
+                   {
+                       //Go to trailer confirmation screen
+                   }
+               }
+                   //
+               else if(mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
+               {
+                   //TODO: Deliver Logic
+               }   
+           }
+
+           this.ShowViewModel<InstructionSignatureViewModel>();
         }
 
 

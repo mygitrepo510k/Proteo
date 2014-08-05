@@ -80,7 +80,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void AdvanceInstruction()
         {
-            _navigationService.MoveToNext();
+            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            _navigationService.MoveToNext(navItem);
         }
 
 

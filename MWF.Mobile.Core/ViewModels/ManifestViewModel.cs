@@ -54,6 +54,7 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
 
+
         private void CreateSections()
         {
             Sections = new ObservableCollection<ManifestSectionViewModel>();
@@ -65,12 +66,30 @@ namespace MWF.Mobile.Core.ViewModels
 
             Sections.Add(_inProgressSection);
 
+
             _notStartedSection = new ManifestSectionViewModel(this)
             {
                 SectionHeader = "Not Started",
             };
 
+
             Sections.Add(_notStartedSection);
+
+            /**
+            messageInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 2 days", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(2), InstructionType = Enums.InstructionType.MessageWithPoint });
+
+            //Sorts the list into ascending order.
+            messageInstructions = new ObservableCollection<ManifestInstructionViewModel>(messageInstructions.ToList().OrderBy(x => x.EffectiveDate));
+            var messageSection = new ManifestSectionViewModel(this)
+            {
+                SectionHeader = "Messages",
+                Instructions = messageInstructions
+            };
+
+            Sections.Add(messageSection);
+             */ 
+
+
         }
 
         #endregion

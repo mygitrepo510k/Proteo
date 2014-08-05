@@ -4,8 +4,8 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <textView
-        style="@style/Proteo.TextView.ListHeading"
+    <TextView
+        style="@style/Proteo.TextView.ListHeadingNoSections"
         local:MvxBind="Text VehicleSelectText" />
     <Mvx.MvxListView
         local:MvxBind="ItemsSource Vehicles; ItemClick ShowVehicleDetailCommand"

@@ -4,8 +4,8 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <textView
-        style="@style/Proteo.TextView.ListHeading"
+    <TextView
+        style="@style/Proteo.TextView.ListHeadingNoSections"
         android:id="@+id/trailerText"
         local:MvxBind="Text TrailerSelectText" />
     <Button

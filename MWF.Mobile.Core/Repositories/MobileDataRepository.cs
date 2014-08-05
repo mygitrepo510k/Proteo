@@ -45,5 +45,19 @@ namespace MWF.Mobile.Core.Repositories
 
             return parentItems;
         }
+
+        /**
+         * TODO: Implement GetMessageWithPointInstructions
+        public IEnumerable<MobileData> GetMessageWithPointInstructions()
+        {
+            var parentItems = _connection
+                .Table<MobileData>()
+                .Where(m => m.Order.Type == Enums.InstructionType.MessageWithPoint).ToList();
+
+            PopulateChildrenRecursive(parentItems);
+
+            return parentItems;
+        }
+         */ 
     }
 }

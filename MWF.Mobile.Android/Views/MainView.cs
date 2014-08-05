@@ -26,7 +26,8 @@ namespace MWF.Mobile.Android.Views
         protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
             {
                 { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
-                { typeof(Core.ViewModels.InstructionViewModel), typeof(Fragments.InstructionFragment) }
+                { typeof(Core.ViewModels.InstructionViewModel), typeof(Fragments.InstructionFragment) },
+                { typeof(Core.ViewModels.InstructionSignatureViewModel), typeof(Fragments.InstructionSignatureFragment) }
             };
 
         #endregion

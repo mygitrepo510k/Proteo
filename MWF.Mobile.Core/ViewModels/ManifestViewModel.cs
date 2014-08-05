@@ -30,8 +30,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         private ObservableCollection<ManifestSectionViewModel> _sections;
         private MvxCommand _refreshListCommand;
-        private ManifestSectionViewModel _notStartedSection;
-        private ManifestSectionViewModel _inProgressSection;
+        private ManifestSectionViewModel _nonActiveInstructionsSection;
+        private ManifestSectionViewModel _activeInstructionsSection;
+        private ManifestSectionViewModel _messageSection;
 
         #endregion
 
@@ -60,35 +61,30 @@ namespace MWF.Mobile.Core.ViewModels
         {
             Sections = new ObservableCollection<ManifestSectionViewModel>();
 
-            _inProgressSection = new ManifestSectionViewModel(this)
+            _activeInstructionsSection = new ManifestSectionViewModel(this)
             {
-                SectionHeader = "In Progress",
+                SectionHeader = "Active Instructions",
             };
 
-            Sections.Add(_inProgressSection);
+            Sections.Add(_activeInstructionsSection);
 
 
-            _notStartedSection = new ManifestSectionViewModel(this)
+            _nonActiveInstructionsSection = new ManifestSectionViewModel(this)
             {
-                SectionHeader = "Not Started",
+                SectionHeader = "Instructions",
             };
 
 
-            Sections.Add(_notStartedSection);
+            Sections.Add(_nonActiveInstructionsSection);
 
-            /**
-            messageInstructions.Add(new ManifestInstructionViewModel(_navigationService) { InstructionTitle = "Test 2 days", OrderID = "Test reg", EffectiveDate = DateTime.Now.AddDays(2), InstructionType = Enums.InstructionType.MessageWithPoint });
-
-            //Sorts the list into ascending order.
-            messageInstructions = new ObservableCollection<ManifestInstructionViewModel>(messageInstructions.ToList().OrderBy(x => x.EffectiveDate));
-            var messageSection = new ManifestSectionViewModel(this)
+            
+            _messageSection = new ManifestSectionViewModel(this)
             {
                 SectionHeader = "Messages",
-                Instructions = messageInstructions
             };
 
-            Sections.Add(messageSection);
-             */ 
+            Sections.Add(_messageSection);
+             
 
 
         }
@@ -151,17 +147,24 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void UpdateInstructions()
         {
+
+            //TODO: Implement update message section
+
             // get instruction data models from repository and order them
-            var inProgressDataModels = _mobileDataRepository.GetInProgressInstructions().OrderBy(x => x.EffectiveDate);
-            var notStartedDataModels = _mobileDataRepository.GetNotStartedInstructions().OrderBy(x => x.EffectiveDate);
+            var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions().OrderBy(x => x.EffectiveDate);
+            var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions().OrderBy(x => x.EffectiveDate);
 
             // Create the view models
-            var inProgressViewModels = inProgressDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
-            var notStartedViewModels = notStartedDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
+            var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
+            var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
 
             // Update the observable collections in each section
-            _inProgressSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(inProgressViewModels);
-            _notStartedSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(notStartedViewModels);
+            _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels);
+            _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels);
+
+            // Update the obsercable collections in each section
+            _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels);
+            _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels);
 
 
             // Let the UI know the number of instructions has changed

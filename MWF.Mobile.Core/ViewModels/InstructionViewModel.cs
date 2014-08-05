@@ -63,6 +63,26 @@ namespace MWF.Mobile.Core.ViewModels
         public string NotesLabelText { get { return "Notes"; } }
 
         public string OrdersLabelText { get { return "Orders"; } }
+        public string InstructionButtonLabel { get { return "Move on"; } }
+
+        #endregion
+
+        #region Private Properties
+
+        private MvxCommand _advanceInstructionCommand;
+        public ICommand AdvanceInstructionCommand
+        {
+            get
+            {
+                return (_advanceInstructionCommand = _advanceInstructionCommand ?? new MvxCommand(() => AdvanceInstruction()));
+            }
+        }
+
+        public void AdvanceInstruction()
+        {
+            _navigationService.MoveToNext();
+        }
+
 
         #endregion
 

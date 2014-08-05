@@ -63,4 +63,9 @@
                 local:MvxItemTemplate="@layout/item_instruction_order" />
         </LinearLayout>
     </ScrollView>
+    <button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ButtonAdvanceInstruction"
+        local:MvxBind="Text InstructionButtonLabel; Click AdvanceInstructionCommand" />
 </LinearLayout>

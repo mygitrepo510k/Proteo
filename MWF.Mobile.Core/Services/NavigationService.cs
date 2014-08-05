@@ -296,6 +296,7 @@ namespace MWF.Mobile.Core.Services
             // Main Activity
             InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomBackAction); // Back from manifest sends back to startup activity
             InsertCustomNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomAction);
+            InsertCustomNavAction<MainViewModel, InstructionViewModel>(Instruction_CustionAction);
         }
 
         #endregion
@@ -366,6 +367,17 @@ namespace MWF.Mobile.Core.Services
             // Stop the gateway polling service before we "logout" the user.
             _gatewayPollingService.StopPollingTimer();
             MoveTo(typeof(StartupViewModel), parameters);
+        }
+
+
+        /// <summary>
+        /// Instruction screen... (Need to fill out)
+        /// </summary>
+        public void Instruction_CustionAction(Object parameters)
+        {
+            this.ShowViewModel<InstructionSignatureViewModel>();
+
+            //More logic needed e.g. comment screen, confirmtrailerscreen.
         }
 
 

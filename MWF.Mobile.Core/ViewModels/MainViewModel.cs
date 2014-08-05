@@ -34,9 +34,7 @@ namespace MWF.Mobile.Core.ViewModels
             // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:
             //gatewayQueuedService.StartQueueTimer();
 
-            // Start the gateway poll timer which will check for new instructions from BlueSphere on a repeat basis
-            // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:
-            //gatewayPollingService.StartPollingTimer();
+            gatewayPollingService.StartPollingTimer();
 
             this.InitializeMenu();
         }

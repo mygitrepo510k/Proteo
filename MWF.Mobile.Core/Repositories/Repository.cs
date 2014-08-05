@@ -109,6 +109,7 @@ namespace MWF.Mobile.Core.Repositories
             /// <param name="entity"></param>
             private void InsertRecursive(IBlueSphereEntity entity)
             {
+
                 _connection.Insert(entity);
 
                 foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())

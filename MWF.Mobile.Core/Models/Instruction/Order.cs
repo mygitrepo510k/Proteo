@@ -13,12 +13,18 @@ namespace MWF.Mobile.Core.Models.Instruction
     {
         public Order()
         {
-            ID = new Guid();
+            ID = Guid.NewGuid();
         }
+
+        private Guid _ID;
 
         [Unique]
         [PrimaryKey]
-        public Guid ID { get; set; }
+        public Guid ID 
+        {
+            get { return _ID; }
+            set { _ID = value; }
+        }
 
         [JsonProperty("id")]
         public string OrderId { get; set; }

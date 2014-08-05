@@ -3,6 +3,31 @@
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="match_parent">
-    <editText
-        android:text="Hello" />
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent">
+        <TextView
+            style="@style/Proteo.TextView.MainHeading"
+            local:MvxBind="Text RunID" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:orientation="horizontal">
+            <TextView
+                style="@style/Proteo.TextView.SubInformation"
+                local:MvxBind="Text ArriveLabelText" />
+            <TextView
+                style="@style/Proteo.TextView.SubInformation"
+                local:MvxBind="Text ArriveDate" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:orientation="horizontal">
+            <TextView
+                style="@style/Proteo.TextView.SubInformation"
+                local:MvxBind="Text DepartLabelText" />
+            <TextView
+                style="@style/Proteo.TextView.SubInformation"
+                local:MvxBind="Text DepartDate" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

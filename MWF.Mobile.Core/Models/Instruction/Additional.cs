@@ -11,7 +11,7 @@ namespace MWF.Mobile.Core.Models.Instruction
     {
         public Additional()
         {
-            ID = new Guid();
+            ID = Guid.NewGuid();
         }
 
         [Unique]

@@ -31,25 +31,30 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         public void Init(NavItem<MobileData> item)
-        {
-          
-            //_mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
-            _mobileData = BuildMobileData();
+        {        
+            _mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
         }
 
         #endregion
 
         #region Public Properties
 
-        public string RunID { get { return _mobileData.Order.RouteId; } }
+        public string RunID { get { return _mobileData.GroupTitleFormatted; } }
 
         public string OrderID { get { return _mobileData.Order.OrderId; } }
 
-        public string Address { get { return string.Join("/n", _mobileData.Order.Addresses[0].Lines) + "\n" + _mobileData.Order.Addresses[0].Postcode; } }
+        public string Address { get { return _mobileData.Order.Addresses[0].Lines + "\n" + _mobileData.Order.Addresses[0].Postcode; } }
 
         public string Notes { get { return string.Empty; } }
 
         public IList<Item> Orders { get { return _mobileData.Order.Items; } }
+
+        public string Trailer { get { return (_mobileData.Order.Additional.Trailer == null) ? string.Empty : _mobileData.Order.Additional.Trailer.DisplayName; } }
+
+        public string DepartLabelText { get { return "Depart"; } }
+        
+        //public string DepartLabelText { get { return "Depart"; } }
+
 
         #endregion
 

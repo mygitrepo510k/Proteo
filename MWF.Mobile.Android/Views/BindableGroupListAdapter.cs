@@ -48,8 +48,8 @@ namespace MWF.Mobile.Android.Views
 
 		protected override void SetItemsSource (System.Collections.IEnumerable value)
 		{
-			if (_itemsSource == value)
-				return;
+            //if (_itemsSource == value)
+            //    return;
 			var existingObservable = _itemsSource as INotifyCollectionChanged;
 			if (existingObservable != null)
 				existingObservable.CollectionChanged -= OnItemsSourceCollectionChanged;

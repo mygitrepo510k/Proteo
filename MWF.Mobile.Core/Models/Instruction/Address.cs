@@ -13,7 +13,7 @@ namespace MWF.Mobile.Core.Models.Instruction
 
         public Address()
         {
-            ID = new Guid();
+            ID = Guid.NewGuid();
         }
 
         [Unique]

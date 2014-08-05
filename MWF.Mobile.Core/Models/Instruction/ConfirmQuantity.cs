@@ -9,7 +9,7 @@ namespace MWF.Mobile.Core.Models.Instruction
     {
         public ConfirmQuantity()
         {
-            ID = new Guid();
+            ID = Guid.NewGuid();
         }
 
         [Unique]

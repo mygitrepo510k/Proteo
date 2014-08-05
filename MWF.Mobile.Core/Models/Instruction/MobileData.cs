@@ -24,6 +24,12 @@ namespace MWF.Mobile.Core.Models.Instruction
         
         [JsonProperty("@group_title")]
         public string GroupTitle { get; set; }
+
+        [Ignore]
+        public string GroupTitleFormatted
+        {
+            get { return (GroupTitle.StartsWith("Run")) ?  "Run - " + GroupTitle.Remove(0,3) : GroupTitle; }
+        }
         
         [JsonProperty("@EffectiveDate")]
         public DateTime EffectiveDate { get; set; }

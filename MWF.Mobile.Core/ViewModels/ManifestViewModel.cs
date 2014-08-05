@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System;
 using System.Windows.Input;
@@ -139,12 +140,14 @@ namespace MWF.Mobile.Core.ViewModels
             var inProgressViewModels = inProgressDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
             var notStartedViewModels = notStartedDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
 
-            // Update the obsercable collections in each section
+            // Update the observable collections in each section
             _inProgressSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(inProgressViewModels);
             _notStartedSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(notStartedViewModels);
 
+
             // Let the UI know the number of instructions has changed
             RaisePropertyChanged(() => InstructionsCount);
+            RaisePropertyChanged(() => Sections);
             RaisePropertyChanged(() => HeaderText);
         }
 

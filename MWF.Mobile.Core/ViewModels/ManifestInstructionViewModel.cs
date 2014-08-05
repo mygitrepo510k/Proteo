@@ -64,8 +64,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void SelectInstruction()
         {
-            // Todo: guid passed here should be the guid of the mobile instruction data model this 
-            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = Guid.NewGuid() };
+            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
             _navigationService.MoveToNext(navItem);
         }
     }

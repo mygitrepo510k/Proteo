@@ -171,6 +171,7 @@
     <Compile Include="Views\Fragments\BaseFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\InstructionCommentFragment.cs" />
+    <Compile Include="Views\Fragments\OrderFragment.cs" />
     <Compile Include="Views\Fragments\InstructionTrailerFragment.cs" />
     <Compile Include="Views\Fragments\InstructionSignatureFragment.cs" />
     <Compile Include="Views\Fragments\InstructionFragment.cs" />
@@ -264,6 +265,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_InstructionComment.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_Order.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

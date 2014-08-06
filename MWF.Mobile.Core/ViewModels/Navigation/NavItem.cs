@@ -10,6 +10,7 @@ namespace MWF.Mobile.Core.ViewModels
     public class NavItem<T> where T: IBlueSphereEntity
     {
         public Guid ID { get; set; }
+        public Guid ParentID { get; set; }
         public Type ModelType { get { return typeof(T); } }
     }
 }

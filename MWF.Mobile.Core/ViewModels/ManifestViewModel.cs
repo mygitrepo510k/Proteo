@@ -30,9 +30,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         private ObservableCollection<ManifestSectionViewModel> _sections;
         private MvxCommand _refreshListCommand;
+        private MvxCommand _refreshStatusesCommand;
         private ManifestSectionViewModel _nonActiveInstructionsSection;
         private ManifestSectionViewModel _activeInstructionsSection;
         private ManifestSectionViewModel _messageSection;
+        private bool _initialised;
 
         #endregion
 
@@ -51,7 +53,9 @@ namespace MWF.Mobile.Core.ViewModels
             _gatewayQueuedService = gatewayQueuedService;
 
             CreateSections();
-            UpdateInstructions();
+            RefreshInstructions();
+
+            _initialised = true;
             
         }
 
@@ -117,6 +121,14 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        public ICommand RefreshStatusesCommand
+        {
+            get
+            {
+                return (_refreshStatusesCommand = _refreshStatusesCommand ?? new MvxCommand(() => RefreshInstructions()));
+            }
+        }
+
         public string HeaderText
         {
             get { return "Select instructions - Showing " + InstructionsCount; }
@@ -138,15 +150,16 @@ namespace MWF.Mobile.Core.ViewModels
                 // Force a poll for instructions             
                 await _gatewayPollingService.PollForInstructions();
 
-                UpdateInstructions();
+                RefreshInstructions();
 
                 // Force a upload of the queue
                 //await _gatewayQueuedService.UploadQueue();
             }
         }
 
-        private void UpdateInstructions()
+        private void RefreshInstructions()
         {
+            if (!_initialised) return;
 
             //TODO: Implement update message section
 
@@ -162,7 +175,7 @@ namespace MWF.Mobile.Core.ViewModels
             _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels);
             _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels);
 
-            // Update the obsercable collections in each section
+            // Update the observable collections in each section
             _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels);
             _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels);
 

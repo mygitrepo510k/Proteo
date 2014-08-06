@@ -64,6 +64,19 @@ namespace MWF.Mobile.Android.Views.Fragments
             SetHasOptionsMenu(true);
         }
 
+        public override void OnResume()
+        {
+            base.OnResume();
+
+            // Refresh the view to ensure that any instructions that have changed status (e.g. not-started to in-progress)
+            // are shown in the correct section
+            ManifestViewModel viewModel = this.DataContext as ManifestViewModel;
+            if (viewModel!=null)
+            {
+                viewModel.RefreshStatusesCommand.Execute(null);
+            }
+        }
+
         public void SetRefreshActionButtonState(bool refreshing)
         {
             if (optionsMenu != null)

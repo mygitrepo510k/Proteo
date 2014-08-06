@@ -297,13 +297,13 @@ namespace MWF.Mobile.Core.Services
             InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomBackAction); // Back from manifest sends back to startup activity
             InsertCustomNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomAction);
             //TODO: Implement back button
-            InsertCustomNavAction<MainViewModel, InstructionViewModel>(Instruction_CustionAction);
+            InsertCustomNavAction<MainViewModel, InstructionViewModel>(Instruction_CustomAction);
 
             //TODO: Implement back button
-            InsertCustomNavAction<MainViewModel, InstructionTrailerViewModel>(InstructionTrailer_CustionAction);
+            InsertCustomNavAction<MainViewModel, InstructionTrailerViewModel>(InstructionTrailer_CustomAction);
 
             //TODO: Implement back button
-            InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustionAction);
+            InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomAction);
 
         }
 
@@ -384,9 +384,14 @@ namespace MWF.Mobile.Core.Services
         /// else if trailer selection is not enabled and the bypass comment screen is enabled 
         /// and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public void Instruction_CustionAction(Object parameters)
+        public void Instruction_CustomAction(Object parameters)
         {
-           if(parameters is NavItem<MobileData>)
+
+           if (parameters is NavItem<Item>)
+           {
+               ShowViewModel<OrderViewModel>(parameters);
+           }
+           else if(parameters is NavItem<MobileData>)
            {
                var navItem = (parameters as NavItem<MobileData>);
                var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
@@ -401,20 +406,25 @@ namespace MWF.Mobile.Core.Services
                //Collection
                if(mobileDataContent.Order.Type == Enums.InstructionType.Collect)
                {
-                   if (!additionalContent.IsTrailerConfirmationEnabled && itemAdditionalContent.BypassCommentsScreen && 
-                       (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)) 
-                   {
-                       this.ShowViewModel<InstructionSignatureViewModel>(navItem);
-                   }
 
-                   else if (!additionalContent.IsTrailerConfirmationEnabled && !itemAdditionalContent.BypassCommentsScreen)
-                   {
-                       this.ShowViewModel<InstructionCommentViewModel>(navItem);
-                   }
-                   else if (additionalContent.IsTrailerConfirmationEnabled)
+                   if (additionalContent.IsTrailerConfirmationEnabled)
                    {
                        this.ShowViewModel<InstructionTrailerViewModel>(navItem);
+                       return;
                    }
+
+                   if (!itemAdditionalContent.BypassCommentsScreen)
+                   {
+                       this.ShowViewModel<InstructionCommentViewModel>(navItem);
+                       return;
+                   }
+
+                   if  (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) 
+                   {
+                       this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                       return;
+                   }
+
                }
                    
                else if(mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
@@ -429,7 +439,7 @@ namespace MWF.Mobile.Core.Services
         /// Instruction trailer screen, if the bypass comment screen is not then enabled then will it redirect to comment screen.
         /// else if the bypass comment screen is enabled and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public void InstructionTrailer_CustionAction(Object parameters)
+        public void InstructionTrailer_CustomAction(Object parameters)
         {
             if (parameters is NavItem<MobileData>)
             {
@@ -468,7 +478,7 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Instruction comment screen, if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public void InstructionComment_CustionAction(Object parameters)
+        public void InstructionComment_CustomAction(Object parameters)
         {
             if (parameters is NavItem<MobileData>)
             {

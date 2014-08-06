@@ -63,7 +63,7 @@
             <Mvx.MvxListView
                 android:id="@+id/orderListView"
                 android:layout_width="fill_parent"
-                local:MvxBind="ItemsSource Orders"
+                local:MvxBind="ItemsSource Orders; ItemClick ShowOrderCommand"
                 local:MvxItemTemplate="@layout/item_instruction_order" />
             <TextView
                 style="@style/Proteo.TextView.SectionHeading"

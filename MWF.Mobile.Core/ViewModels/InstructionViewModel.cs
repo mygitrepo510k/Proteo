@@ -22,6 +22,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
         private MvxCommand _progressInstructionCommand;
+        private MvxCommand<Item> _showOrderCommand;
 
         #endregion
 
@@ -50,7 +51,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string Address { get { return _mobileData.Order.Addresses[0].Lines.Replace("|","\n") + "\n" + _mobileData.Order.Addresses[0].Postcode; } }
 
-        public string Notes { get { return string.Empty; } }
+        public string Notes 
+        { 
+            get 
+            {
+                if (_mobileData.Order.Instructions == null || !_mobileData.Order.Instructions.Any()) return string.Empty;
+                else return string.Join("\n", _mobileData.Order.Instructions.Select(i => i.Lines));
+            }
+        }
 
         public IList<Item> Orders { get { return _mobileData.Order.Items; } }
 
@@ -70,7 +78,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string TrailersLabelText { get { return "Trailer"; } }
 
-        public string TrailerChangeButtonText { get { return "Change Trailer"; } }
+        public string TrailerChangeButtonText { get { return "Change Trailer";  } }
 
         public string ProgressButtonText 
         { 
@@ -110,6 +118,14 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        public ICommand ShowOrderCommand
+        {
+            get
+            {
+                return (_showOrderCommand = _showOrderCommand ?? new MvxCommand<Item>(v => ShowOrder(v)));
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -117,8 +133,12 @@ namespace MWF.Mobile.Core.ViewModels
         private void ProgressInstruction()
         {
             UpdateProgress();
-            var navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
-            _navigationService.MoveToNext(navItem);
+
+            if (_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
+            {
+                var navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+                _navigationService.MoveToNext(navItem);
+            }
         }
 
         private void UpdateProgress()
@@ -130,11 +150,18 @@ namespace MWF.Mobile.Core.ViewModels
             else if (_mobileData.ProgressState == Enums.InstructionProgress.Driving)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.OnSite;
-            }
+            }           
 
             _repositories.MobileDataRepository.Update(_mobileData);
+
+            RaisePropertyChanged(() => ProgressButtonText);
         }
 
+        private void ShowOrder(Item order)
+        {
+            NavItem<Item> navItem = new NavItem<Item>() { ID = order.ID, ParentID = _mobileData.ID };
+            _navigationService.MoveToNext(navItem);
+        }
 
         #endregion
 

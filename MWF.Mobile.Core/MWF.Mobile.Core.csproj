@@ -215,6 +215,8 @@
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />
     <Compile Include="ViewModels\InstructionSignatureViewModel.cs" />
+    <Compile Include="ViewModels\InstructionCommentViewModel.cs" />
+    <Compile Include="ViewModels\InstructionTrailerViewModel.cs" />
     <Compile Include="ViewModels\InstructionViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavItem.cs" />
     <Compile Include="ViewModels\ManifestInstructionViewModel.cs" />

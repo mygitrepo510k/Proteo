@@ -170,8 +170,10 @@
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\BaseFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
+    <Compile Include="Views\Fragments\InstructionCommentFragment.cs" />
+    <Compile Include="Views\Fragments\InstructionTrailerFragment.cs" />
     <Compile Include="Views\Fragments\InstructionSignatureFragment.cs" />
-    <Compile Include="Views\Fragments\Instruction_Fragment.cs" />
+    <Compile Include="Views\Fragments\InstructionFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFaultFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
@@ -253,9 +255,15 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Instruction_Order.axml">
-	 <SubType>AndroidResource</SubType>
+      <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_InstructionSignature.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_InstructionTrailer.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_InstructionComment.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

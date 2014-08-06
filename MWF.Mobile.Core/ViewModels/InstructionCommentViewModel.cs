@@ -11,9 +11,9 @@ using System.Windows.Input;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class InstructionSignatureViewModel : BaseFragmentViewModel
+    public class InstructionCommentViewModel
+        : BaseFragmentViewModel
     {
-
         #region Private Fields
 
         private readonly INavigationService _navigationService;
@@ -25,7 +25,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public InstructionSignatureViewModel(INavigationService navigationService, IRepositories repositories)
+        public InstructionCommentViewModel(INavigationService navigationService, IRepositories repositories)
         {
             _navigationService = navigationService;
             _repositories = repositories;
@@ -41,16 +41,37 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
-        public string InstructionTrailerButtonLabel { get { return "Move on"; } }
+        private MvxCommand _advanceInstructionCommentCommand;
+        public ICommand AdvanceInstructionCommentCommand
+        {
+            get
+            {
+                return (_advanceInstructionCommentCommand = _advanceInstructionCommentCommand ?? new MvxCommand(() => AdvanceInstructionComment()));
+            }
+        }
+
+        public string InstructionCommentButtonLabel { get { return "Move on"; } }
+
+
+        #endregion
+
+        #region Private Methods
+
+        private void AdvanceInstructionComment()
+        {
+            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            _navigationService.MoveToNext(navItem);
+        }
 
         #endregion
 
         #region BaseFragmentViewModel Overrides
         public override string FragmentTitle
         {
-            get { return "Sign for Collection"; }
+            get { return "Comment"; }
         }
 
         #endregion
+
     }
 }

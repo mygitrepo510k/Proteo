@@ -58,6 +58,23 @@ namespace MWF.Mobile.Core.Repositories
 
             }
 
+            public virtual void Update(T entity)
+            {
+                //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
+
+                _connection.RunInTransaction(() =>
+                {
+                    var existingEntity = GetByID(entity.ID);
+                    if (existingEntity!=null)
+                    {
+                        Delete(existingEntity);
+                    }
+
+                    InsertRecursive(entity);
+                });
+            }
+
+
             public virtual void DeleteAll()
             {
                 //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");

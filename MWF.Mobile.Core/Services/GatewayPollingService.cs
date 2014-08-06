@@ -100,6 +100,12 @@ namespace MWF.Mobile.Core.Services
                     switch (instruction.SyncState)
                     {
                         case SyncState.Add:
+                             var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                             if (instructionToAdd == null)
+                             {
+                                 _repositories.MobileDataRepository.Insert(instruction);
+                             }
+                             break;
                         case SyncState.Update:
                             var instructionToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
                             if (instructionToUpdate != null)

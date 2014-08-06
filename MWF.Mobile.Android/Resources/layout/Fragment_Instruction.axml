@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="match_parent">
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp">
         <LinearLayout
             android:layout_width="fill_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp">
             <TextView
                 style="@style/Proteo.TextView.MainHeading"
                 local:MvxBind="Text RunID" />
@@ -61,11 +65,30 @@
                 android:layout_width="fill_parent"
                 local:MvxBind="ItemsSource Orders"
                 local:MvxItemTemplate="@layout/item_instruction_order" />
+            <TextView
+                style="@style/Proteo.TextView.SectionHeading"
+                local:MvxBind="Text TrailersLabelText; Visibility ChangeTrailerAllowed, Converter=Visibility" />
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_marginTop="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_gravity="left"
+                local:MvxBind="Visibility ChangeTrailerAllowed, Converter=Visibility">
+                <TextView
+                    style="@style/Proteo.TextView.SectionContent"
+                    android:layout_alignParentLeft="true"
+                    local:MvxBind="Text TrailerReg" />
+                <Button
+                    style="@style/Proteo.Button.InSection"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    local:MvxBind="Text TrailerChangeButtonText" />
+            </RelativeLayout>
         </LinearLayout>
     </ScrollView>
-    <button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ButtonAdvanceInstruction"
-        local:MvxBind="Text InstructionButtonLabel; Click AdvanceInstructionCommand" />
-</LinearLayout>
+    <Button
+        style="@style/Proteo.Button.Bottom"
+        android:id="@+id/doneButton"
+        android:layout_weight="0"
+        local:MvxBind="Text ProgressButtonText; Click ProgressInstructionCommand;" />
+</RelativeLayout>

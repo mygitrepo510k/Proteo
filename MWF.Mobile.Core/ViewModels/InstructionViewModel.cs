@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Repositories;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -20,6 +21,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
+        private MvxCommand _progressInstructionCommand;
 
         #endregion
 
@@ -52,7 +54,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         public IList<Item> Orders { get { return _mobileData.Order.Items; } }
 
-        public string Trailer { get { return (_mobileData.Order.Additional.Trailer == null) ? string.Empty : _mobileData.Order.Additional.Trailer.DisplayName; } }
+        public string TrailerReg { get { return (_mobileData.Order.Additional.Trailer == null) ? string.Empty : _mobileData.Order.Additional.Trailer.DisplayName; } }
+
+        public bool ChangeTrailerAllowed { get { return _mobileData.Order.Additional.IsTrailerConfirmationEnabled; } }
 
         public string ArriveLabelText { get { return "Arrive"; } }
 
@@ -63,24 +67,72 @@ namespace MWF.Mobile.Core.ViewModels
         public string NotesLabelText { get { return "Notes"; } }
 
         public string OrdersLabelText { get { return "Orders"; } }
-        public string InstructionButtonLabel { get { return "Move on"; } }
 
-        #endregion
+        public string TrailersLabelText { get { return "Trailer"; } }
 
-        #region Private Properties
+        public string TrailerChangeButtonText { get { return "Change Trailer"; } }
 
-        private MvxCommand _advanceInstructionCommand;
-        public ICommand AdvanceInstructionCommand
+        public string ProgressButtonText 
+        { 
+            get 
+            {
+
+                string retVal;
+
+                switch (_mobileData.ProgressState)
+                {
+                    case MWF.Mobile.Core.Enums.InstructionProgress.NotStarted:
+                        retVal = "Drive";
+                        break;
+                    case MWF.Mobile.Core.Enums.InstructionProgress.Driving:
+                        retVal = "On Site";
+                        break;
+                    case MWF.Mobile.Core.Enums.InstructionProgress.OnSite:
+                        retVal = "On Site";
+                        break;
+                    case MWF.Mobile.Core.Enums.InstructionProgress.Complete:
+                        retVal = string.Empty;
+                        break;
+                    default:
+                        retVal = string.Empty;
+                        break;
+                }
+
+                return retVal;
+            } 
+        }
+
+        public ICommand ProgressInstructionCommand
         {
             get
             {
-                return (_advanceInstructionCommand = _advanceInstructionCommand ?? new MvxCommand(() => AdvanceInstruction()));
+                return (_progressInstructionCommand = _progressInstructionCommand ?? new MvxCommand(() => ProgressInstruction()));
             }
         }
 
-        public void AdvanceInstruction()
+        #endregion
+
+        #region Private Methods
+
+        private void ProgressInstruction()
         {
-            _navigationService.MoveToNext();
+            UpdateProgress();
+            var navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            _navigationService.MoveToNext(navItem);
+        }
+
+        private void UpdateProgress()
+        {
+            if (_mobileData.ProgressState == Enums.InstructionProgress.NotStarted)
+            {
+                _mobileData.ProgressState = Enums.InstructionProgress.Driving;
+            }
+            else if (_mobileData.ProgressState == Enums.InstructionProgress.Driving)
+            {
+                _mobileData.ProgressState = Enums.InstructionProgress.OnSite;
+            }
+
+            _repositories.MobileDataRepository.Update(_mobileData);
         }
 
 
@@ -90,7 +142,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override string FragmentTitle
         {
-            get { return "Collect"; }
+            get { return _mobileData.Order.Type.ToString(); }
         }
 
         #endregion

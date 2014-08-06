@@ -26,6 +26,10 @@ namespace MWF.Mobile.Core.Models.Instruction
         public string Description { get; set; }
         [JsonProperty("id")]
         public string ItemId { get; set; }
+
+        [Ignore]
+        public string ItemIdFormatted { get { return ItemId.Replace("Order", ""); } }
+
         [JsonProperty("quantity")]
         public int Quantity { get; set; }
         [JsonProperty("title")]
@@ -33,5 +37,6 @@ namespace MWF.Mobile.Core.Models.Instruction
 
         [ForeignKey(typeof(Order))]
         public Guid OrderId { get; set; }
+
     }
 }

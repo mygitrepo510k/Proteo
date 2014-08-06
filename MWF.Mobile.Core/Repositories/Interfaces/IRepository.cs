@@ -14,5 +14,6 @@ namespace MWF.Mobile.Core.Repositories
         T GetByID(Guid ID);
         void Insert(T entity);
         void Insert(IEnumerable<T> entities);
+        void Update(T entity);
     }
 }

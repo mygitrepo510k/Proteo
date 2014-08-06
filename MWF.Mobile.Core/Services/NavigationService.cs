@@ -396,7 +396,6 @@ namespace MWF.Mobile.Core.Services
                var navItem = (parameters as NavItem<MobileData>);
                var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
                var additionalContent = mobileDataContent.Order.Additional;
-               //Assuming all items in order have the same properties
                var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
                //additionalContent.IsTrailerConfirmationEnabled = true;
@@ -406,7 +405,6 @@ namespace MWF.Mobile.Core.Services
                //Collection
                if(mobileDataContent.Order.Type == Enums.InstructionType.Collect)
                {
-
                    if (additionalContent.IsTrailerConfirmationEnabled)
                    {
                        this.ShowViewModel<InstructionTrailerViewModel>(navItem);
@@ -420,10 +418,13 @@ namespace MWF.Mobile.Core.Services
                    }
 
                    if  (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) 
+
                    {
                        this.ShowViewModel<InstructionSignatureViewModel>(navItem);
                        return;
                    }
+
+                       this.ShowViewModel<MainViewModel>();                  
 
                }
                    
@@ -446,7 +447,6 @@ namespace MWF.Mobile.Core.Services
                 var navItem = (parameters as NavItem<MobileData>);
                 var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
                 var additionalContent = mobileDataContent.Order.Additional;
-                //Assuming all items in order have the same properties
                 var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
                 //additionalContent.CustomerSignatureRequiredForCollection = true;
@@ -455,16 +455,19 @@ namespace MWF.Mobile.Core.Services
                 //Collection
                 if (mobileDataContent.Order.Type == Enums.InstructionType.Collect)
                 {
-                    if (itemAdditionalContent.BypassCommentsScreen &&
-                        (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection))
-                    {
-                        this.ShowViewModel<InstructionSignatureViewModel>(navItem);
-                    }
-
-                    else if (!itemAdditionalContent.BypassCommentsScreen)
+                    
+                    if (!itemAdditionalContent.BypassCommentsScreen)
                     {
                         this.ShowViewModel<InstructionCommentViewModel>(navItem);
+                        return;
                     }
+                    if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
+                    {
+                        this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                        return;
+                    }
+
+                    this.ShowViewModel<MainViewModel>();
                 }
 
                 else if (mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
@@ -485,7 +488,6 @@ namespace MWF.Mobile.Core.Services
                 var navItem = (parameters as NavItem<MobileData>);
                 var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
                 var additionalContent = mobileDataContent.Order.Additional;
-                //Assuming all items in order have the same properties
                 var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
                 //additionalContent.CustomerSignatureRequiredForCollection = true;
@@ -493,17 +495,20 @@ namespace MWF.Mobile.Core.Services
                 //Collection
                 if (mobileDataContent.Order.Type == Enums.InstructionType.Collect)
                 {
+                    
                     if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
                     {
                         this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                        return;
                     }
+
+                    this.ShowViewModel<MainViewModel>();
                 }
 
                 else if (mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
                 {
                     //TODO: Deliver Logic
                 }
-
             }
         }
 

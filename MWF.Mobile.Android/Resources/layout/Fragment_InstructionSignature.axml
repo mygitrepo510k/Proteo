@@ -12,14 +12,15 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText1" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText2" />
+        android:id="@+id/InstructionCustomerName"
+        local:MvxBind="Text CustomerName" />
+    <signaturepad.SignaturePadView
+        android:id="@+id/signature_instructionView"
+        style="@style/Proteo.SignaturePad" />
     <Button
         android:text="Complete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ButtonAdvanceSignatureInstruction" />
+        android:id="@+id/ButtonAdvanceSignatureInstruction"
+        local:MvxBind="Text InstructionSignatureButtonLabel" />
 </LinearLayout>

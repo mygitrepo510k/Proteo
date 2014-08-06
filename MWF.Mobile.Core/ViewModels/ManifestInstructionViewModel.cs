@@ -28,19 +28,19 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _mobileData.ID; }
         }
 
-        public string InstructionTitle
+        public string RunID
         {
-            get { return _mobileData.GroupTitle; }        
+            get { return _mobileData.GroupTitleFormatted; }        
         }
 
-        public string OrderID
+        public string PointDescripion
         {
-            get { return _mobileData.Order.OrderId; }
+            get { return _mobileData.Order.Description; }
         }
 
-        public DateTime EffectiveDate
+        public DateTime ArrivalDate
         {
-            get { return _mobileData.EffectiveDate; }
+            get { return _mobileData.Order.Arrive; }
         }
 
         public Enums.InstructionType InstructionType

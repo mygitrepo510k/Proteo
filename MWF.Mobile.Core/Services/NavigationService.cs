@@ -305,6 +305,8 @@ namespace MWF.Mobile.Core.Services
             //TODO: Implement back button
             InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomAction);
 
+            InsertNavAction<MainViewModel, InstructionSignatureViewModel>(typeof(MainViewModel));
+
         }
 
         #endregion
@@ -399,8 +401,8 @@ namespace MWF.Mobile.Core.Services
                var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
                //additionalContent.IsTrailerConfirmationEnabled = true;
-               //additionalContent.CustomerSignatureRequiredForCollection = true;
-               //itemAdditionalContent.BypassCommentsScreen = false;
+               additionalContent.CustomerSignatureRequiredForCollection = true;
+               itemAdditionalContent.BypassCommentsScreen = true;
 
                //Collection
                if(mobileDataContent.Order.Type == Enums.InstructionType.Collect)

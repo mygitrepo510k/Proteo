@@ -296,7 +296,15 @@ namespace MWF.Mobile.Core.Services
             // Main Activity
             InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomBackAction); // Back from manifest sends back to startup activity
             InsertCustomNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomAction);
+            //TODO: Implement back button
             InsertCustomNavAction<MainViewModel, InstructionViewModel>(Instruction_CustionAction);
+
+            //TODO: Implement back button
+            InsertCustomNavAction<MainViewModel, InstructionTrailerViewModel>(InstructionTrailer_CustionAction);
+
+            //TODO: Implement back button
+            InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustionAction);
+
         }
 
         #endregion
@@ -371,15 +379,126 @@ namespace MWF.Mobile.Core.Services
 
 
         /// <summary>
-        /// Instruction screen... (Need to fill out)
+        /// Instruction screen, if the trailer selection is enabled then it will redirect to the trailer selection screen
+        /// else if trailer selection is not enabled and the bypass comment screen is not then enabled then will it redirect to comment screen.
+        /// else if trailer selection is not enabled and the bypass comment screen is enabled 
+        /// and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
         public void Instruction_CustionAction(Object parameters)
         {
-            this.ShowViewModel<InstructionSignatureViewModel>();
+           if(parameters is NavItem<MobileData>)
+           {
+               var navItem = (parameters as NavItem<MobileData>);
+               var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
+               var additionalContent = mobileDataContent.Order.Additional;
+               //Assuming all items in order have the same properties
+               var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
-            //More logic needed e.g. comment screen, confirmtrailerscreen.
+               //additionalContent.IsTrailerConfirmationEnabled = true;
+               //additionalContent.CustomerSignatureRequiredForCollection = true;
+               //itemAdditionalContent.BypassCommentsScreen = false;
+
+               //Collection
+               if(mobileDataContent.Order.Type == Enums.InstructionType.Collect)
+               {
+                   if (!additionalContent.IsTrailerConfirmationEnabled && itemAdditionalContent.BypassCommentsScreen && 
+                       (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)) 
+                   {
+                       this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                   }
+
+                   else if (!additionalContent.IsTrailerConfirmationEnabled && !itemAdditionalContent.BypassCommentsScreen)
+                   {
+                       this.ShowViewModel<InstructionCommentViewModel>(navItem);
+                   }
+                   else if (additionalContent.IsTrailerConfirmationEnabled)
+                   {
+                       this.ShowViewModel<InstructionTrailerViewModel>(navItem);
+                   }
+               }
+                   
+               else if(mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
+               {
+                   //TODO: Deliver Logic
+               }
+               
+           }
         }
 
+        /// <summary>
+        /// Instruction trailer screen, if the bypass comment screen is not then enabled then will it redirect to comment screen.
+        /// else if the bypass comment screen is enabled and if either either name required or signature required are enabled then redirect to signature screen.
+        /// </summary>
+        public void InstructionTrailer_CustionAction(Object parameters)
+        {
+            if (parameters is NavItem<MobileData>)
+            {
+                var navItem = (parameters as NavItem<MobileData>);
+                var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
+                var additionalContent = mobileDataContent.Order.Additional;
+                //Assuming all items in order have the same properties
+                var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
+
+                //additionalContent.CustomerSignatureRequiredForCollection = true;
+                //itemAdditionalContent.BypassCommentsScreen = false;
+
+                //Collection
+                if (mobileDataContent.Order.Type == Enums.InstructionType.Collect)
+                {
+                    if (itemAdditionalContent.BypassCommentsScreen &&
+                        (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection))
+                    {
+                        this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                    }
+
+                    else if (!itemAdditionalContent.BypassCommentsScreen)
+                    {
+                        this.ShowViewModel<InstructionCommentViewModel>(navItem);
+                    }
+                }
+
+                else if (mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
+                {
+                    //TODO: Deliver Logic
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// Instruction comment screen, if either either name required or signature required are enabled then redirect to signature screen.
+        /// </summary>
+        public void InstructionComment_CustionAction(Object parameters)
+        {
+            if (parameters is NavItem<MobileData>)
+            {
+                var navItem = (parameters as NavItem<MobileData>);
+                var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
+                var additionalContent = mobileDataContent.Order.Additional;
+                //Assuming all items in order have the same properties
+                var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
+
+                //additionalContent.CustomerSignatureRequiredForCollection = true;
+
+                //Collection
+                if (mobileDataContent.Order.Type == Enums.InstructionType.Collect)
+                {
+                    if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
+                    {
+                        this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                    }
+                }
+
+                else if (mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
+                {
+                    //TODO: Deliver Logic
+                }
+
+            }
+        }
+
+
+        
 
         #endregion
 

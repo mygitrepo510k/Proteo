@@ -5,21 +5,15 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <TextView
-        android:text="Signature Screen"
+        android:text="Comment Screen"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView1" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText1" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/editText2" />
     <Button
-        android:text="Complete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ButtonAdvanceSignatureInstruction" />
+        android:id="@+id/ButtonAdvanceInstructionComment"
+        local:MvxBind="Text InstructionCommentButtonLabel; Click AdvanceInstructionCommentCommand"
+        style="@style/Proteo.Button" />
 </LinearLayout>

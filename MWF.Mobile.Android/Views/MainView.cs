@@ -27,7 +27,9 @@ namespace MWF.Mobile.Android.Views
             {
                 { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
                 { typeof(Core.ViewModels.InstructionViewModel), typeof(Fragments.InstructionFragment) },
-                { typeof(Core.ViewModels.InstructionSignatureViewModel), typeof(Fragments.InstructionSignatureFragment) }
+                { typeof(Core.ViewModels.InstructionCommentViewModel), typeof(Fragments.InstructionCommentFragment)},
+                { typeof(Core.ViewModels.InstructionSignatureViewModel), typeof(Fragments.InstructionSignatureFragment) },
+                { typeof(Core.ViewModels.InstructionTrailerViewModel), typeof(Fragments.InstructionTrailerFragment)}
             };
 
         #endregion

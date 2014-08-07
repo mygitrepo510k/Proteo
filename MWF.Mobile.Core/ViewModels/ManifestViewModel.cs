@@ -112,12 +112,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         public int InstructionsCount
         {
-            get { 
-                int baseCount = Sections.Sum(s => s.Instructions.Count);
-                if (!isShowingActiveInstructions) { baseCount--; }
-                if (!isShowingInstructions) { baseCount--; }
-                return baseCount;
-            }
+            get {
+                return Sections.Sum(s => s.Instructions.Where(i => !(i is DummyMobileData)).Count());
+
+                }
         }
 
         public ICommand RefreshListCommand
@@ -140,10 +138,6 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get { return "Select instruction - Showing " + InstructionsCount; }
         }
-
-        public bool isShowingActiveInstructions { get; set; }
-
-        public bool isShowingInstructions { get; set; }
 
         #endregion
 
@@ -180,23 +174,20 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (activeInstructionsDataModels.ToList().Count == 0)
             {
-                List<MobileData> noneShowingList = new List<MobileData>();
-                noneShowingList.Add(new MobileData() { Order = new Order(){ Description="No Active Instructions"} });
-                IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
+                List<DummyMobileData> noneShowingList = new List<DummyMobileData>();
+                noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Active Instructions" } });
+                IEnumerable<DummyMobileData> noneShowingEnumerable = noneShowingList;
                 activeInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
-                isShowingActiveInstructions = false;
             }
-            else { isShowingActiveInstructions = true; }
 
             if (nonActiveInstructionsDataModels.ToList().Count == 0)
             {
-                List<MobileData> noneShowingList = new List<MobileData>();
-                noneShowingList.Add(new MobileData() { Order = new Order() { Description = "No Instructions" } });
-                IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
+                List<DummyMobileData> noneShowingList = new List<DummyMobileData>();
+                noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Instructions" } });
+                IEnumerable<DummyMobileData> noneShowingEnumerable = noneShowingList;
                 nonActiveInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
-                isShowingInstructions = false;
             }
-            else { isShowingInstructions = true; }
+
 
             // Create the view models
             var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
@@ -215,6 +206,15 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
+
+        #endregion
+
+        #region DummyMobileData
+
+        public class DummyMobileData : MobileData 
+        {
+        
+        }
 
         #endregion
 

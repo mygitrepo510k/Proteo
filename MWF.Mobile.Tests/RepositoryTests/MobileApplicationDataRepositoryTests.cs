@@ -50,7 +50,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
 
             var mdr = _fixture.Create<MobileDataRepository>();
 
-            var inProgressInstructions = mdr.GetInProgressInstructions().ToList();
+            var inProgressInstructions = mdr.GetInProgressInstructions(Guid.NewGuid()).ToList();
 
             foreach (var instruction in inProgressInstructions)
             {
@@ -74,7 +74,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
 
             var mdr = _fixture.Create<MobileDataRepository>();
 
-            var notStartedInstructions = mdr.GetNotStartedInstructions().ToList();
+            var notStartedInstructions = mdr.GetNotStartedInstructions(Guid.NewGuid()).ToList();
 
             foreach (var instruction in notStartedInstructions)
             {

@@ -30,6 +30,8 @@ namespace MWF.Mobile.Core.Services
         private MvxSubscriptionToken _pollTimerMessageToken = null;
         private bool _isSubmitting = false;
         private bool _submitAgainOnCompletion = false;
+        private int _dataSpan = - 1;
+        
 
         public GatewayPollingService(IDeviceInfo deviceInfo, IHttpService httpService, Portable.IReachability reachability, IRepositories repositories, IMvxMessenger messenger, IGatewayService gatewayService, IStartupService startupService)
         {
@@ -45,6 +47,7 @@ namespace MWF.Mobile.Core.Services
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
 
             _deviceRepository = repositories.DeviceRepository;
+
         }
 
         public void StartPollingTimer()
@@ -84,7 +87,7 @@ namespace MWF.Mobile.Core.Services
                 instructions = await _gatewayService.GetDriverInstructions(_startupService.CurrentVehicle.Registration, 
                                                                            _startupService.LoggedInDriver.ID, 
                                                                            DateTime.Now, 
-                                                                           DateTime.Now);
+                                                                           DateTime.Now.AddDays(DataSpan));
             }
             catch (Exception ex)
             {
@@ -124,6 +127,16 @@ namespace MWF.Mobile.Core.Services
                     }
                 }
             }
+        }
+
+        public int DataSpan
+        {
+
+            get
+            {
+                return (_dataSpan < 0) ? _dataSpan = _repositories.ApplicationRepository.GetAll().First().DataSpan : _dataSpan;
+            }
+
         }
 
         private void PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand timerCommand)

@@ -24,22 +24,26 @@ namespace MWF.Mobile.Core.Repositories
             return (instruction != null);
         }
 
-        public IEnumerable<MobileData> GetInProgressInstructions()
+        public IEnumerable<MobileData> GetInProgressInstructions(Guid driverID)
         {
             var parentItems = _connection
                .Table<MobileData>()
-               .Where(m => m.ProgressState == Enums.InstructionProgress.Driving || m.ProgressState == Enums.InstructionProgress.OnSite).ToList();
+               .Where(m => 
+                      m.DriverId == driverID &&
+                     (m.ProgressState == Enums.InstructionProgress.Driving || m.ProgressState == Enums.InstructionProgress.OnSite)).ToList();
 
             PopulateChildrenRecursive(parentItems);
 
             return parentItems;
         }
 
-        public IEnumerable<MobileData> GetNotStartedInstructions()
+        public IEnumerable<MobileData> GetNotStartedInstructions(Guid driverID)
         {
             var parentItems = _connection
                 .Table<MobileData>()
-                .Where(m => m.ProgressState == Enums.InstructionProgress.NotStarted).ToList();
+                .Where(m => 
+                       m.DriverId == driverID &&
+                       (m.ProgressState == Enums.InstructionProgress.NotStarted)).ToList();
 
             PopulateChildrenRecursive(parentItems);
 

@@ -12,6 +12,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
@@ -23,6 +24,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         private IFixture _fixture;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private MvxSubscriptionToken _pollTimerToken;
+        private ApplicationProfile _applicationProfile;
+        private Mock<IGatewayService> _gatewayMock;
 
         protected override void AdditionalSetup()
         {
@@ -31,6 +34,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             IDeviceRepository deviceRepo = Mock.Of<IDeviceRepository>(dr => dr.GetAll() == _fixture.CreateMany<Device>());
             _mockMobileDataRepo = new Mock<IMobileDataRepository>();
             _fixture.Inject<IMobileDataRepository>(_mockMobileDataRepo.Object);
+
+            _applicationProfile = new ApplicationProfile();
+            var applicationRepo = _fixture.InjectNewMock<IApplicationProfileRepository>();
+            applicationRepo.Setup(ar => ar.GetAll()).Returns(new List<ApplicationProfile>() { _applicationProfile});
+
 
             var mockStartupService = Mock.Of<IStartupService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
                                                     && ssr.LoggedInDriver == _fixture.Create<Driver>());
@@ -69,6 +77,43 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             // Check that we insert the instruction
             _mockMobileDataRepo.Verify(mdr => mdr.Insert(It.Is<MobileData>(md => md.ID == id)), Times.Once);
+        }
+
+        [Fact]
+        public async Task GatewayPollingService_RespectsApplicationProfile_DataSpan()
+        {
+            base.ClearAll();
+
+            _applicationProfile.DataSpan = 5;
+
+            DateTime startDate = DateTime.Now;
+            DateTime endDate = DateTime.Now;
+
+            IEnumerable<MobileData> mobileDatas = new List<MobileData>();
+
+            _gatewayMock = _fixture.InjectNewMock<IGatewayService>();
+            _gatewayMock.Setup(g => g.GetDriverInstructions(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                        .Returns(Task.FromResult(mobileDatas))
+                        .Callback<string, Guid, DateTime, DateTime>((s1, g, dt1, dt2) => { startDate = dt1; endDate = dt2; });
+
+            _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            var service = _fixture.Create<GatewayPollingService>();
+
+
+
+
+            service.StartPollingTimer();
+            service.PollForInstructions();
+
+            // Allow the timer to process the queue
+            await Task.Delay(2000);
+
+            //Check that the start and end date of driver instructions requested from gateway service matches up with the the span 
+            //specified int he application profile
+            Assert.Equal(_applicationProfile.DataSpan, (endDate - startDate).Days);
+
+
         }
 
         [Fact]
@@ -278,13 +323,13 @@ namespace MWF.Mobile.Tests.ServiceTests
                     mobileData
                 };
 
-            var gatewayMock = new Mock<IGatewayService>();
-            gatewayMock.Setup(
+            _gatewayMock = new Mock<IGatewayService>();
+            _gatewayMock.Setup(
                 gm =>
                 gm.GetDriverInstructions(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(),
                     It.IsAny<DateTime>())).Returns(Task.FromResult(mobileDatas));
 
-            _fixture.Inject(gatewayMock.Object);
+            _fixture.Inject(_gatewayMock.Object);
         }
 
         private void CreateMultipleMobileDatas(SyncState syncState, Guid[] ids)
@@ -298,13 +343,13 @@ namespace MWF.Mobile.Tests.ServiceTests
                 counter++;
             }
 
-            var gatewayMock = new Mock<IGatewayService>();
-            gatewayMock.Setup(
+            _gatewayMock = new Mock<IGatewayService>();
+            _gatewayMock.Setup(
                 gm =>
                 gm.GetDriverInstructions(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(),
                     It.IsAny<DateTime>())).Returns(Task.FromResult(mobileDatas));
 
-            _fixture.Inject(gatewayMock.Object);
+            _fixture.Inject(_gatewayMock.Object);
         }
 
         #endregion

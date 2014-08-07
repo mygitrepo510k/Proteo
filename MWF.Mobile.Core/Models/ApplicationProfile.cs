@@ -14,98 +14,98 @@ namespace MWF.Mobile.Core.Models
     {
 
         [Unique]
-        [JsonProperty("id")]
+        [JsonProperty("@id")]
         [PrimaryKey]
         public Guid ID { get; set; }
 
-        [JsonProperty("title")]
+        [JsonProperty("@title")]
         public string Title { get; set; }
 
-        [JsonProperty("intlink")]
+        [JsonProperty("@intlink")]
         public int IntLink { get; set; }
 
-        [JsonProperty("poll")]
+        [JsonProperty("@poll")]
         public int PollingTime { get; set; }
 
-        [JsonProperty("poll2")]
+        [JsonProperty("@poll2")]
         public int PollingTime2 { get; set; }
 
-        [JsonProperty("pollstart")]
+        [JsonProperty("@pollstart")]
         public int PollingStart { get; set; }
 
-        [JsonProperty("pollstop")]
+        [JsonProperty("@pollstop")]
         public int PollingStop { get; set; }
 
-        [JsonProperty("pollgprs")]
+        [JsonProperty("@pollgprs")]
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool PollOnGPRS { get; set; }
 
-        [JsonProperty("pollquantity")]
+        [JsonProperty("@pollquantity")]
         public int PollingQuantity { get; set; }
 
-        [JsonProperty("upload")]
+        [JsonProperty("@upload")]
         public int UploadTime { get; set; }
 
-        [JsonProperty("upload2")]
+        [JsonProperty("@upload2")]
         public int UploadTime2 { get; set; }
 
-        [JsonProperty("uploadstart")]
+        [JsonProperty("@uploadstart")]
         public int UploadStart { get; set; }
 
-        [JsonProperty("uploadstop")]
+        [JsonProperty("@uploadstop")]
         public int UploadStop { get; set; }
 
-        [JsonProperty("uploadgprs")]
+        [JsonProperty("@uploadgprs")]
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool UploadGPRS { get; set; }
 
-        [JsonProperty("uploadquantity")]
+        [JsonProperty("@uploadquantity")]
         public int UploadQuantity { get; set; }
 
-        [JsonProperty("download")]
+        [JsonProperty("@download")]
         public int DownloadTime { get; set; }
 
-        [JsonProperty("download2")]
+        [JsonProperty("@download2")]
         public int DownloadTime2 { get; set; }
 
-        [JsonProperty("downloadstart")]
+        [JsonProperty("@downloadstart")]
         public int DownloadStart { get; set; }
 
-        [JsonProperty("downloadstop")]
+        [JsonProperty("@downloadstop")]
         public int DownloadStop { get; set; }
 
-        [JsonProperty("downloadgprs")]
+        [JsonProperty("@downloadgprs")]
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool DownloadGPRS { get; set; }
 
-        [JsonProperty("downloadquantity")]
+        [JsonProperty("@downloadquantity")]
         public int DownloadQuantity { get; set; }
 
-        [JsonProperty("events")]
+        [JsonProperty("@events")]
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool OnEvents { get; set; }
 
-        [JsonProperty("events_delay")]
+        [JsonProperty("@events_delay")]
         public int OnEventsDelay { get; set; }
 
-        [JsonProperty("retention")]
+        [JsonProperty("@retention")]
         public int DataRetention { get; set; }
 
-        [JsonProperty("span")]
+        [JsonProperty("@span")]
         public int DataSpan { get; set; }
 
-        [JsonProperty("weekends")]
+        [JsonProperty("@weekends")]
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IncludeWeekends { get; set; }
 
-        [JsonProperty("timeout")]
+        [JsonProperty("@timeout")]
         public int Timeout { get; set; }
 
-        [JsonProperty("instantmsg")]
+        [JsonProperty("@instantmsg")]
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool UseInstantMessaging { get; set; }
 
-        [JsonProperty("transactions")]
+        [JsonProperty("@transactions")]
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool UseTransactions { get; set; }
 

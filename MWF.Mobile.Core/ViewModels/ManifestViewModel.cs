@@ -27,6 +27,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IToast _toast;
         private readonly IGatewayPollingService _gatewayPollingService;
         private readonly IGatewayQueuedService _gatewayQueuedService;
+        private readonly IStartupService _startupService;
 
         private ObservableCollection<ManifestSectionViewModel> _sections;
         private MvxCommand _refreshListCommand;
@@ -40,7 +41,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Constructor
 
-        public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService, IReachability reachability, IToast toast, IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService)
+        public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService, IReachability reachability, IToast toast, 
+                                 IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService)
         {
 
             _mobileDataRepository = mobileDataRepository;
@@ -51,11 +53,12 @@ namespace MWF.Mobile.Core.ViewModels
             _toast = toast;
             _gatewayPollingService = gatewayPollingService;
             _gatewayQueuedService = gatewayQueuedService;
-
-            CreateSections();
-            RefreshInstructions();
+            _startupService = startupService;
 
             _initialised = true;
+
+            CreateSections();
+            RefreshInstructions();        
             
         }
 
@@ -164,8 +167,8 @@ namespace MWF.Mobile.Core.ViewModels
             //TODO: Implement update message section
 
             // get instruction data models from repository and order them
-            var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions().OrderBy(x => x.EffectiveDate);
-            var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions().OrderBy(x => x.EffectiveDate);
+            var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
+            var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
 
             // Create the view models
             var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));

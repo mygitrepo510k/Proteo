@@ -6,7 +6,8 @@ namespace MWF.Mobile.Core.Enums
         Deliver = 2,
         TrunkTo = 3,
         ProceedFrom = 4,
-        MessageWithPoint = 5
+        MessageWithPoint = 5,
+        OrderMessage = 6
 
     }
 }

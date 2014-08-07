@@ -64,7 +64,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string TrailerReg { get { return (_mobileData.Order.Additional.Trailer == null) ? string.Empty : _mobileData.Order.Additional.Trailer.DisplayName; } }
 
-        public bool ChangeTrailerAllowed { get { return _mobileData.Order.Additional.IsTrailerConfirmationEnabled; } }
+        public bool ChangeTrailerAllowed 
+        { 
+            get 
+            {
+                return _mobileData.Order.Additional.IsTrailerConfirmationEnabled &&
+                       _mobileData.Order.Type == Enums.InstructionType.Collect;
+            } 
+        }
 
         public string ArriveLabelText { get { return "Arrive"; } }
 

@@ -403,7 +403,7 @@ namespace MWF.Mobile.Core.Services
                //itemAdditionalContent.BypassCommentsScreen = false;
 
                //Collection
-               if(mobileDataContent.Order.Type == Enums.InstructionType.Collect)
+               if (mobileDataContent.Order.Type == Enums.InstructionType.Collect)
                {
                    if (additionalContent.IsTrailerConfirmationEnabled)
                    {
@@ -411,27 +411,24 @@ namespace MWF.Mobile.Core.Services
                        return;
                    }
 
-                   if (!itemAdditionalContent.BypassCommentsScreen)
-                   {
-                       this.ShowViewModel<InstructionCommentViewModel>(navItem);
-                       return;
-                   }
+               }   
 
-                   if  (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) 
+                if (!itemAdditionalContent.BypassCommentsScreen)
+                {
+                    this.ShowViewModel<InstructionCommentViewModel>(navItem);
+                    return;
+                }
 
-                   {
-                       this.ShowViewModel<InstructionSignatureViewModel>(navItem);
-                       return;
-                   }
+                if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
+                {
+                    this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                    return;
+                }
 
-                       this.ShowViewModel<MainViewModel>();                  
+                //delete the message here
 
-               }
-                   
-               else if(mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
-               {
-                   //TODO: Deliver Logic
-               }
+                this.ShowViewModel<MainViewModel>();   
+
                
            }
         }
@@ -449,31 +446,19 @@ namespace MWF.Mobile.Core.Services
                 var additionalContent = mobileDataContent.Order.Additional;
                 var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
-                //additionalContent.CustomerSignatureRequiredForCollection = true;
-                //itemAdditionalContent.BypassCommentsScreen = false;
-
-                //Collection
-                if (mobileDataContent.Order.Type == Enums.InstructionType.Collect)
+                if (!itemAdditionalContent.BypassCommentsScreen)
                 {
-                    
-                    if (!itemAdditionalContent.BypassCommentsScreen)
-                    {
-                        this.ShowViewModel<InstructionCommentViewModel>(navItem);
-                        return;
-                    }
-                    if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
-                    {
-                        this.ShowViewModel<InstructionSignatureViewModel>(navItem);
-                        return;
-                    }
-
-                    this.ShowViewModel<MainViewModel>();
+                    this.ShowViewModel<InstructionCommentViewModel>(navItem);
+                    return;
+                }
+                if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
+                {
+                    this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                    return;
                 }
 
-                else if (mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
-                {
-                    //TODO: Deliver Logic
-                }
+                this.ShowViewModel<MainViewModel>();
+
 
             }
         }
@@ -490,25 +475,16 @@ namespace MWF.Mobile.Core.Services
                 var additionalContent = mobileDataContent.Order.Additional;
                 var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
-                //additionalContent.CustomerSignatureRequiredForCollection = true;
 
-                //Collection
-                if (mobileDataContent.Order.Type == Enums.InstructionType.Collect)
+                if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
                 {
-                    
-                    if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
-                    {
-                        this.ShowViewModel<InstructionSignatureViewModel>(navItem);
-                        return;
-                    }
-
-                    this.ShowViewModel<MainViewModel>();
+                    this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                    return;
                 }
 
-                else if (mobileDataContent.Order.Type == Enums.InstructionType.Deliver)
-                {
-                    //TODO: Deliver Logic
-                }
+                this.ShowViewModel<MainViewModel>();
+               
+
             }
         }
 

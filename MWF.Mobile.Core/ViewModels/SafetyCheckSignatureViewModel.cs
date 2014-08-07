@@ -110,7 +110,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             if (string.IsNullOrWhiteSpace(SignatureEncodedImage))
             {
-                _userInteraction.Alert("Signature is required");
+                _userInteraction.Alert("A signature is required to complete a safety check");
                 return;
             }
 

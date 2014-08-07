@@ -57,7 +57,8 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                      
+                if (InstructionType == default(Enums.InstructionType))
+                    return _selectInstructionCommand;
                 return (_selectInstructionCommand = _selectInstructionCommand ?? new MvxCommand(SelectInstruction));
             }
         }

@@ -12,6 +12,10 @@ namespace MWF.Mobile.Core.Converters
     {
         protected override string Convert(DateTime value, Type targetType, object parameter, CultureInfo culture)
         {
+            if(value == default(DateTime))
+            {
+                return "";
+            }
             return value.ToString("HH:mm");
         }
 

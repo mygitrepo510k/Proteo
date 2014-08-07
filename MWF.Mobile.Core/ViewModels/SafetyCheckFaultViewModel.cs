@@ -213,7 +213,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task<bool> OnBackButtonPressed()
         {
-            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("All changes will be lost, do you wish to continue?", "Changes will be lost!");
+            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("The changes you have made will be lost, do you wish to continue?", "Changes will be lost!", "Continue");
 
             // since we are modal, we need to let the calling viewmodel know that we cancelled (it will handle the back press)
             if (continueWithBackPress)

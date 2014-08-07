@@ -9,7 +9,7 @@
         android:orientation="vertical"
         android:layout_weight="1">
         <TextView
-            style="@style/Proteo.TextView.Instructions"
+            style="@style/Proteo.TextView.ListHeadingNoSections"
             local:MvxBind="Text InstructionsText" />
         <TextView
             style="@style/Proteo.TextView.MainHeading"

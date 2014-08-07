@@ -96,7 +96,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressMessage
         {
-            get { return "Please wait while we setup your safety checks..."; }
+            get { return "Setting up safety check profile..."; }
         }
   
 
@@ -112,7 +112,8 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_trailerSelectorCommand = _trailerSelectorCommand ?? new MvxCommand<Trailer>(t => TrailerDetail(t, t.Registration)));
+                var title = "Confirm your trailer";
+                return (_trailerSelectorCommand = _trailerSelectorCommand ?? new MvxCommand<Trailer>(t => TrailerDetail(t, title, t.Registration)));
             }
         }
 
@@ -121,12 +122,13 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
+                var title = "No trailer";
                 var message = "Confirm you don't have a trailer";
-                return (_notrailerSelectorCommand = _notrailerSelectorCommand ?? new MvxCommand<Trailer>(t => TrailerDetail(null, message)));
+                return (_notrailerSelectorCommand = _notrailerSelectorCommand ?? new MvxCommand<Trailer>(t => TrailerDetail(null, title ,message)));
             }
         }
 
-        public void TrailerDetail(Trailer trailer, string message)
+        public void TrailerDetail(Trailer trailer, string title ,string message)
         {
 
             Guid trailerID = Guid.Empty;
@@ -156,7 +158,7 @@ namespace MWF.Mobile.Core.ViewModels
                     _navigationService.MoveToNext();
                     
                 }
-            }, "Confirm your trailer", "Confirm");
+            }, title, "Confirm");
         }
 
         //This is method associated with the search button in the action bar.

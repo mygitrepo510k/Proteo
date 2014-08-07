@@ -142,17 +142,10 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Passcode"; }
         }
 
-        public async Task<bool> OnBackButtonPressed()
+        public Task<bool> OnBackButtonPressed()
         {
-
-            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to leave?", "Changes will be lost!");
-
-            if (continueWithBackPress)
-            {
-               _closeApplication.CloseApp();
-            }
-
-            return false;
+            _closeApplication.CloseApp();
+            return new Task<bool>(() => false);
         }
     }
 

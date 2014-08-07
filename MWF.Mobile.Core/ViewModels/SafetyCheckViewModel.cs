@@ -60,7 +60,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (SafetyProfileTrailer == null && SafetyProfileVehicle == null)
             {
-                Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found - Redirecting to Manifest Screen.", () => { startupService.Commit(); _navigationService.MoveToNext(); });
+                Mvx.Resolve<IUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { startupService.Commit(); _navigationService.MoveToNext(); });
             }
         }
 
@@ -184,7 +184,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task<bool> OnBackButtonPressed()
         {
-            return await Mvx.Resolve<IUserInteraction>().ConfirmAsync("All changes will be lost, do you wish to continue?", "Changes will be lost!");
+            return await Mvx.Resolve<IUserInteraction>().ConfirmAsync("All information you have entered will be lost, do you wish to continue?", "Abandon safety check!", "Continue");
         }
 
         #endregion

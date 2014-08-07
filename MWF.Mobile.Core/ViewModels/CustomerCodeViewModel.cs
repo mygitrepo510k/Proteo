@@ -107,7 +107,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private string _errorMessage;
 
-        private string _unexpectedErrorMessage = "Unfortunately, there was a problem setting up your device.";
+        private string _unexpectedErrorMessage = "Unfortunately, there was a problem setting up your device, try restarting the device and try again.";
         private async Task EnterCodeAsync()
         {
             if (string.IsNullOrWhiteSpace(this.CustomerCode))
@@ -162,7 +162,7 @@ namespace MWF.Mobile.Core.ViewModels
             var device = await _gatewayService.GetDevice(CustomerCode);
             if (device == null)
             {
-                _errorMessage = "The customer passcode you submitted doesn't exist, confirm the passcode and try again.";
+                _errorMessage = "The customer passcode you submitted doesn't exist, check the passcode and try again.";
                 return false;
             }
             var config = await _gatewayService.GetConfig();

@@ -49,7 +49,7 @@ namespace MWF.Mobile.Core.Services
             if (driver != null)
                 return new AuthenticationResult { Success = true, AuthenticationFailedMessage = null,  Driver = driver };
             else
-                return new AuthenticationResult { Success = false, AuthenticationFailedMessage = "The login has failed because the passcode you have entered does not exist." };
+                return new AuthenticationResult { Success = false, AuthenticationFailedMessage = "The driver passcode you submitted doesn't exist, check the passcode and try again." };
         }
 
         #region Private Methods

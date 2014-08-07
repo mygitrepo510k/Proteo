@@ -55,7 +55,7 @@ namespace MWF.Mobile.Core.ViewModels
                 if ((_checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass ||
                     _checkStatus == Enums.SafetyCheckStatus.Failed) && value == Enums.SafetyCheckStatus.Passed)
                 {
-                    Mvx.Resolve<IUserInteraction>().Confirm(("Change this item to passed?"), isConfirmed =>
+                    Mvx.Resolve<IUserInteraction>().Confirm(("Change '"+ Title +"' to passed?"), isConfirmed =>
                     {
                         if (isConfirmed)
                         {
@@ -65,7 +65,7 @@ namespace MWF.Mobile.Core.ViewModels
                             this.SafetyCheckFault.IsDiscretionaryPass = false;
                             RaisePropertyChanged(() => CheckStatus);
                         }
-                    }, "Change Status");
+                    }, "Change Status", "Change");
                 }
                 else
                 {

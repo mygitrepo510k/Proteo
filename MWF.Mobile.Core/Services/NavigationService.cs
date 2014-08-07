@@ -401,8 +401,8 @@ namespace MWF.Mobile.Core.Services
                var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
                //additionalContent.IsTrailerConfirmationEnabled = true;
-               additionalContent.CustomerSignatureRequiredForCollection = true;
-               itemAdditionalContent.BypassCommentsScreen = true;
+               //additionalContent.CustomerSignatureRequiredForCollection = true;
+               //itemAdditionalContent.BypassCommentsScreen = true;
 
                //Collection
                if (mobileDataContent.Order.Type == Enums.InstructionType.Collect)
@@ -448,6 +448,7 @@ namespace MWF.Mobile.Core.Services
                 var additionalContent = mobileDataContent.Order.Additional;
                 var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
+
                 if (!itemAdditionalContent.BypassCommentsScreen)
                 {
                     this.ShowViewModel<InstructionCommentViewModel>(navItem);
@@ -476,6 +477,7 @@ namespace MWF.Mobile.Core.Services
                 var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
                 var additionalContent = mobileDataContent.Order.Additional;
                 var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
+
 
 
                 if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)

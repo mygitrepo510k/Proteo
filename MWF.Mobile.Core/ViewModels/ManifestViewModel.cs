@@ -12,6 +12,7 @@ using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.Models.Instruction;
+using System.Collections.Specialized;
 
 
 namespace MWF.Mobile.Core.ViewModels
@@ -70,7 +71,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             _activeInstructionsSection = new ManifestSectionViewModel(this)
             {
-                SectionHeader = "Active Instructions",
+                SectionHeader = "Active Instruction",
             };
 
             Sections.Add(_activeInstructionsSection);
@@ -91,8 +92,6 @@ namespace MWF.Mobile.Core.ViewModels
             };
 
             Sections.Add(_messageSection);
-             
-
 
         }
 
@@ -113,7 +112,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public int InstructionsCount
         {
-            get { return Sections.Sum(s => s.Instructions.Count); }
+            get { 
+                int baseCount = Sections.Sum(s => s.Instructions.Count);
+                if (!isShowingActiveInstructions) { baseCount--; }
+                if (!isShowingInstructions) { baseCount--; }
+                return baseCount;
+            }
         }
 
         public ICommand RefreshListCommand
@@ -134,8 +138,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string HeaderText
         {
-            get { return "Select instructions - Showing " + InstructionsCount; }
+            get { return "Select instruction - Showing " + InstructionsCount; }
         }
+
+        public bool isShowingActiveInstructions { get; set; }
+
+        public bool isShowingInstructions { get; set; }
 
         #endregion
 
@@ -170,25 +178,42 @@ namespace MWF.Mobile.Core.ViewModels
             var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
             var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
 
+            if (activeInstructionsDataModels.ToList().Count == 0)
+            {
+                List<MobileData> noneShowingList = new List<MobileData>();
+                noneShowingList.Add(new MobileData() { Order = new Order(){ Description="No Active Instructions"} });
+                IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
+                activeInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
+                isShowingActiveInstructions = false;
+            }
+            else { isShowingActiveInstructions = true; }
+
+            if (nonActiveInstructionsDataModels.ToList().Count == 0)
+            {
+                List<MobileData> noneShowingList = new List<MobileData>();
+                noneShowingList.Add(new MobileData() { Order = new Order() { Description = "No Instructions" } });
+                IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
+                nonActiveInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
+                isShowingInstructions = false;
+            }
+            else { isShowingInstructions = true; }
+
             // Create the view models
             var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
             var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
 
-            // Update the observable collections in each section
-            _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels);
-            _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels);
+           
 
             // Update the observable collections in each section
             _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels);
             _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels);
-
-
+            
             // Let the UI know the number of instructions has changed
             RaisePropertyChanged(() => InstructionsCount);
             RaisePropertyChanged(() => Sections);
             RaisePropertyChanged(() => HeaderText);
-        }
 
+        }
 
 
         #endregion
@@ -198,7 +223,7 @@ namespace MWF.Mobile.Core.ViewModels
         public async Task<bool> OnBackButtonPressed()
         {
 
-            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to logout?", "Changes will be lost!");
+            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to logout?","","Logout");
 
             if (continueWithBackPress)
             {

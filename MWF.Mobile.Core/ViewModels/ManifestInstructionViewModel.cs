@@ -23,6 +23,11 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
 
+        public MobileData MobileData
+        {
+            get { return _mobileData; }
+        }
+
         public Guid InstructionID
         {
             get { return _mobileData.ID; }

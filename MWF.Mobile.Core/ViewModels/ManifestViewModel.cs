@@ -113,8 +113,8 @@ namespace MWF.Mobile.Core.ViewModels
         public int InstructionsCount
         {
             get {
-                return Sections.Sum(s => s.Instructions.Where(i => !(i is DummyMobileData)).Count());
-
+                return Sections.Sum(s => s.Instructions.
+                    Where(i => !(i.MobileData is DummyMobileData)).Count());
                 }
         }
 
@@ -176,15 +176,15 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 List<DummyMobileData> noneShowingList = new List<DummyMobileData>();
                 noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Active Instructions" } });
-                IEnumerable<DummyMobileData> noneShowingEnumerable = noneShowingList;
+                IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
                 activeInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
             }
 
             if (nonActiveInstructionsDataModels.ToList().Count == 0)
             {
-                List<DummyMobileData> noneShowingList = new List<DummyMobileData>();
+                List<MobileData> noneShowingList = new List<MobileData>();
                 noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Instructions" } });
-                IEnumerable<DummyMobileData> noneShowingEnumerable = noneShowingList;
+                IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
                 nonActiveInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
             }
 
@@ -209,14 +209,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
-        #region DummyMobileData
-
-        public class DummyMobileData : MobileData 
-        {
-        
-        }
-
-        #endregion
 
         #region IBackButtonHandler Implementation
 
@@ -242,5 +234,10 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion
+    }
+
+    public class DummyMobileData : MobileData
+    {
+
     }
 }

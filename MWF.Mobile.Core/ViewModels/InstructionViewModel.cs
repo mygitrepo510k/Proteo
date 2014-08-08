@@ -125,13 +125,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public ICommand ShowOrderCommand
-        {
-            get
-            {
-                return (_showOrderCommand = _showOrderCommand ?? new MvxCommand<Item>(v => ShowOrder(v)));
-            }
-        }
+        
 
         #endregion
 

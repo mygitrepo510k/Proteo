@@ -34,7 +34,7 @@ namespace MWF.Mobile.Core.ViewModels
             // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:
             //gatewayQueuedService.StartQueueTimer();
 
-            gatewayPollingService.StartPollingTimer();
+            //gatewayPollingService.StartPollingTimer();
 
             this.InitializeMenu();
         }

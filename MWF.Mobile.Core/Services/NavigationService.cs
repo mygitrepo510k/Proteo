@@ -296,8 +296,11 @@ namespace MWF.Mobile.Core.Services
             // Main Activity
             InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomBackAction); // Back from manifest sends back to startup activity
             InsertCustomNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomAction);
-            //TODO: Implement back button
+
             InsertCustomNavAction<MainViewModel, InstructionViewModel>(Instruction_CustomAction);
+
+            //TODO: Implement back button
+            InsertCustomNavAction<MainViewModel, InstructionOnSiteViewModel>(InstructionOnSite_CustomAction);
 
             //TODO: Implement back button
             InsertCustomNavAction<MainViewModel, InstructionTrailerViewModel>(InstructionTrailer_CustomAction);
@@ -380,20 +383,25 @@ namespace MWF.Mobile.Core.Services
         }
 
 
+        public void Instruction_CustomAction(Object parameters)
+        {
+            if (parameters is NavItem<MobileData>)
+            {
+                ShowViewModel<InstructionOnSiteViewModel>(parameters);
+            }
+        }
+
         /// <summary>
         /// Instruction screen, if the trailer selection is enabled then it will redirect to the trailer selection screen
         /// else if trailer selection is not enabled and the bypass comment screen is not then enabled then will it redirect to comment screen.
         /// else if trailer selection is not enabled and the bypass comment screen is enabled 
         /// and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public void Instruction_CustomAction(Object parameters)
+        public void InstructionOnSite_CustomAction(Object parameters)
         {
 
-           if (parameters is NavItem<Item>)
-           {
-               ShowViewModel<OrderViewModel>(parameters);
-           }
-           else if(parameters is NavItem<MobileData>)
+           
+           if(parameters is NavItem<MobileData>)
            {
                var navItem = (parameters as NavItem<MobileData>);
                var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);

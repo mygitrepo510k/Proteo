@@ -85,7 +85,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             Sections.Add(_nonActiveInstructionsSection);
 
-            
+
             _messageSection = new ManifestSectionViewModel(this)
             {
                 SectionHeader = "Messages",
@@ -236,8 +236,5 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion
     }
 
-    public class DummyMobileData : MobileData
-    {
-
-    }
+    public class DummyMobileData : MobileData { }
 }

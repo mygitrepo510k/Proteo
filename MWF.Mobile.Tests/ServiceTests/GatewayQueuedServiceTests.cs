@@ -24,6 +24,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private IFixture _fixture;
 
         private Mock<IGatewayQueueItemRepository> _mockQueueItemRepository;
+        private MvxSubscriptionToken _token;
 
         protected override void AdditionalSetup()
         {
@@ -61,7 +62,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Register<IMvxMessenger>(() => messenger);
 
             // We don't have the GatewayQueueTimerService so replicate the trigger -> publish elapsed message functionality
-            var token = messenger.Subscribe<Core.Messages.GatewayQueueTimerCommandMessage>(m =>
+            _token = messenger.Subscribe<Core.Messages.GatewayQueueTimerCommandMessage>(m =>
             {
                 if (m.Command == Core.Messages.GatewayQueueTimerCommandMessage.TimerCommand.Trigger)
                     messenger.Publish(new Core.Messages.GatewayQueueTimerElapsedMessage(this));

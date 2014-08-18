@@ -120,7 +120,7 @@
     <item name = "android:layout_width">wrap_content</item>
     <item name = "android:paddingLeft">15dp</item>
     <item name = "android:paddingRight">15dp</item>
-    <item name = "android:textSize">15dp</item>
+    <item name = "android:textSize">14dp</item>
   </style>
 
   <style name="Proteo.Button.Bottom" parent="style/Proteo.Button">
@@ -134,6 +134,10 @@
     <item name = "android:paddingLeft">10dp</item>
     <item name = "android:paddingRight">10dp</item>
     <item name = "android:textSize">14dp</item>  
+  </style>
+
+  <style name="Proteo.Button.NonBottom" parent="style/Proteo.Button">
+    <item name = "android:layout_marginBottom">10dp</item>
   </style>
 
 

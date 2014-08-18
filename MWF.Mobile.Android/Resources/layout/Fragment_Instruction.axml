@@ -84,11 +84,10 @@
                     android:layout_marginRight="10dp"
                     local:MvxBind="Text TrailerChangeButtonText" />
             </RelativeLayout>
+            <Button
+                style="@style/Proteo.Button.NonBottom"
+                android:id="@+id/doneButton"
+                local:MvxBind="Text ProgressButtonText; Click ProgressInstructionCommand;" />
         </LinearLayout>
     </ScrollView>
-    <Button
-        style="@style/Proteo.Button.Bottom"
-        android:id="@+id/doneButton"
-        android:layout_weight="0"
-        local:MvxBind="Text ProgressButtonText; Click ProgressInstructionCommand;" />
 </RelativeLayout>

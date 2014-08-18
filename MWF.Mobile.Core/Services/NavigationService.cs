@@ -394,6 +394,10 @@ namespace MWF.Mobile.Core.Services
            {
                 ShowViewModel<OrderViewModel>(parameters);
            }
+           else if(parameters is NavItem<Models.Instruction.Trailer>)
+           {
+               ShowViewModel<InstructionTrailerViewModel>(parameters);
+           }
            else if (parameters is NavItem<MobileData>)
            {
                 ShowViewModel<InstructionOnSiteViewModel>(parameters);
@@ -408,8 +412,6 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public void InstructionOnSite_CustomAction(Object parameters)
         {
-
-
             if (parameters is NavItem<Item>)
             {
                 ShowViewModel<OrderViewModel>(parameters);
@@ -482,8 +484,10 @@ namespace MWF.Mobile.Core.Services
                 }
 
                 this.ShowViewModel<MainViewModel>();
-
-
+            }
+            else if(parameters is NavItem<Models.Instruction.Trailer>)
+            {
+                ShowViewModel<InstructionViewModel>(parameters);
             }
         }
 

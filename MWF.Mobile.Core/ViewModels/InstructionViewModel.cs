@@ -23,6 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MobileData _mobileData;
         private MvxCommand _progressInstructionCommand;
         private MvxCommand<Item> _showOrderCommand;
+        private MvxCommand _editTrailerCommand;
 
         #endregion
 
@@ -62,14 +63,15 @@ namespace MWF.Mobile.Core.ViewModels
 
         public IList<Item> Orders { get { return _mobileData.Order.Items; } }
 
-        public string TrailerReg { get { return (_mobileData.Order.Additional.Trailer == null) ? string.Empty : _mobileData.Order.Additional.Trailer.DisplayName; } }
+        public string TrailerReg { get { return (_mobileData.Order.Additional.Trailer == null) ? "No Trailer" : _mobileData.Order.Additional.Trailer.DisplayName; } }
+
 
         public bool ChangeTrailerAllowed 
         { 
             get 
             {
                 return _mobileData.Order.Additional.IsTrailerConfirmationEnabled &&
-                       _mobileData.Order.Type == Enums.InstructionType.Collect;
+                      _mobileData.Order.Type == Enums.InstructionType.Collect;
             } 
         }
 
@@ -133,11 +135,25 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        public ICommand EditTrailerCommand
+        {
+            get
+            {
+                return(_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(() => EditTrailer()));
+            }
+        }
+
         
 
         #endregion
 
         #region Private Methods
+
+        private void EditTrailer()
+        {
+            NavItem<Trailer> navItem = new NavItem<Trailer>() { ID = _mobileData.ID };
+            _navigationService.MoveToNext(navItem);
+        }
 
         private void ProgressInstruction()
         {

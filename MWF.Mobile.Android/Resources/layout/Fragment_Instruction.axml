@@ -82,7 +82,7 @@
                     style="@style/Proteo.Button.InSection"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="10dp"
-                    local:MvxBind="Text TrailerChangeButtonText" />
+                    local:MvxBind="Text TrailerChangeButtonText; Click EditTrailerCommand" />
             </RelativeLayout>
             <Button
                 style="@style/Proteo.Button.NonBottom"

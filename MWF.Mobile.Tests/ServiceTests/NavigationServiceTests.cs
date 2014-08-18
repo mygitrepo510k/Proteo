@@ -740,7 +740,32 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_InstructionToInstructionOnSite()
+        public void NavigationService_Mappings_Instructions_Collection_Trailer()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navItemMock = Mock.Of<NavItem<MWF.Mobile.Core.Models.Instruction.Trailer>>();
+
+            // Move to the next view model
+            service.MoveToNext(navItemMock);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(InstructionTrailerViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSite()
         {
             base.ClearAll();
 
@@ -762,6 +787,32 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(InstructionOnSiteViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToOrder()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var service = _fixture.Create<NavigationService>();
+
+            // nav item is an item (i.e. an order) indicating user has clicked on an order from the order list
+            var navItemMock = Mock.Of<NavItem<Item>>();
+
+            // Move to the next view model
+            service.MoveToNext(navItemMock);
+
+            //Check that the order view  model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(OrderViewModel), request.ViewModelType);
         }
 
         [Fact]
@@ -868,6 +919,33 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(MainViewModel), request.ViewModelType);
         }
 
+        [Fact]
+        public void NavigationService_Mappings_Instructions_Collection_TrailerToInstruction()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+            SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false);
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navItemMock = Mock.Of<NavItem<MWF.Mobile.Core.Models.Instruction.Trailer>>();
+
+            // Move to the next view model
+            service.MoveToNext(navItemMock);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(InstructionViewModel), request.ViewModelType);
+        }
+
+        [Fact]
         public void NavigationService_Mappings_Instructions_Collection_TrailerToCommentScreen()
         {
             base.ClearAll();

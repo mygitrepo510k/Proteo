@@ -8,8 +8,8 @@
         local:MvxBind="Text Title" />
     <TextView
         style="@style/Proteo.TextView.ItemText"
-        local:MvxBind="Text Quantity" />
+        local:MvxBind="Text Description" />
     <TextView
         style="@style/Proteo.TextView.ItemText"
-        local:MvxBind="Text Description" />
+        local:MvxBind="Text Quantity" />
 </LinearLayout>

@@ -4,14 +4,28 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <TextView
-        android:text="On Site Screen"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
+    <textView
+        style="@style/Proteo.TextView.ListHeadingSections"
+        android:id="@+id/instructionOnSiteHeader"
+        local:MvxBind="Text HeaderText" />
+    <LinearLayout
+        android:background="@drawable/border"
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="Order"
+            style="@style/Proteo.TextView.ItemText"
+            android:gravity="left" />
+        <TextView
+            android:text="Details"
+            style="@style/Proteo.TextView.ItemText" />
+        <TextView
+            android:text="Qty"
+            style="@style/Proteo.TextView.ItemText" />
+    </LinearLayout>
     <Mvx.MvxListView
-        local:MvxBind="ItemsSource OrderList"
+        local:MvxBind="ItemsSource OrderList; ItemClick ShowInstructionOrderCommand"
         local:MvxItemTemplate="@layout/item_instructiononsite_order" />
     <Button
         android:layout_width="match_parent"

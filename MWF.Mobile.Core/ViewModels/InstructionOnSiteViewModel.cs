@@ -1,4 +1,6 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
@@ -52,6 +54,15 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private MvxCommand<Item> _showInstructionOrderCommand;
+        public ICommand ShowInstructionOrderCommand
+        {
+            get
+            {
+                return(_showInstructionOrderCommand = _showInstructionOrderCommand ?? new MvxCommand<Item>(o => ShowInstructionOrder(o)));
+            }
+        }
+
         private ObservableCollection<Item> _orderList;
         public ObservableCollection<Item> OrderList
         {
@@ -61,6 +72,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string InstructionCommentButtonLabel { get { return "Move on"; } }
 
+        public string HeaderText { get { return "Select an order for further details"; } }
+
         #endregion
 
         #region Private Methods
@@ -69,6 +82,11 @@ namespace MWF.Mobile.Core.ViewModels
         {
             NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
             _navigationService.MoveToNext(navItem);
+        }
+
+        private void ShowInstructionOrder(Item order)
+        {
+            Mvx.Resolve<IUserInteraction>().Alert(order.ItemIdFormatted, null, "Order Details");
         }
 
         #endregion

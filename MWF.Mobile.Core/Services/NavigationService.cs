@@ -383,16 +383,25 @@ namespace MWF.Mobile.Core.Services
         }
 
 
+        /// <summary>
+        /// Instruction screen. If we're getting an "item" (order) then show the order in question
+        /// If we're getting a mobile data then move on to InstructionOnSiteViewModel
+        /// </summary>
+        /// <param name="parameters"></param>
         public void Instruction_CustomAction(Object parameters)
         {
-            if (parameters is NavItem<MobileData>)
-            {
+           if (parameters is NavItem<Item>)
+           {
+                ShowViewModel<OrderViewModel>(parameters);
+           }
+           else if (parameters is NavItem<MobileData>)
+           {
                 ShowViewModel<InstructionOnSiteViewModel>(parameters);
-            }
+           }
         }
 
         /// <summary>
-        /// Instruction screen, if the trailer selection is enabled then it will redirect to the trailer selection screen
+        /// Instruction on site screen, if the trailer selection is enabled then it will redirect to the trailer selection screen
         /// else if trailer selection is not enabled and the bypass comment screen is not then enabled then will it redirect to comment screen.
         /// else if trailer selection is not enabled and the bypass comment screen is enabled 
         /// and if either either name required or signature required are enabled then redirect to signature screen.

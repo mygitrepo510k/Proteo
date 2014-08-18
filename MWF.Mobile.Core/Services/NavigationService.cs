@@ -409,9 +409,13 @@ namespace MWF.Mobile.Core.Services
         public void InstructionOnSite_CustomAction(Object parameters)
         {
 
-           
-           if(parameters is NavItem<MobileData>)
-           {
+
+            if (parameters is NavItem<Item>)
+            {
+                ShowViewModel<OrderViewModel>(parameters);
+            }
+            else if (parameters is NavItem<MobileData>)
+            {
                var navItem = (parameters as NavItem<MobileData>);
                var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
                var additionalContent = mobileDataContent.Order.Additional;

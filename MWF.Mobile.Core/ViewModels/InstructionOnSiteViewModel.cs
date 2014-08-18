@@ -59,7 +59,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return(_showInstructionOrderCommand = _showInstructionOrderCommand ?? new MvxCommand<Item>(o => ShowInstructionOrder(o)));
+                return(_showInstructionOrderCommand = _showInstructionOrderCommand ?? new MvxCommand<Item>(o => ShowOrder(o)));
             }
         }
 
@@ -84,9 +84,10 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService.MoveToNext(navItem);
         }
 
-        private void ShowInstructionOrder(Item order)
+        private void ShowOrder(Item order)
         {
-            Mvx.Resolve<IUserInteraction>().Alert(order.ItemIdFormatted, null, "Order Details");
+            NavItem<Item> navItem = new NavItem<Item>() { ID = order.ID, ParentID = _mobileData.ID };
+            _navigationService.MoveToNext(navItem);
         }
 
         #endregion

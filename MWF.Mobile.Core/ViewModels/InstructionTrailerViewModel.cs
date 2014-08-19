@@ -39,13 +39,11 @@ namespace MWF.Mobile.Core.ViewModels
         public void Init(NavItem<MobileData> item)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
-            isTrailerSelection = true;
         }
 
         public void Init(NavItem<Models.Instruction.Trailer> item)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
-            isTrailerEdit = true;
         }
 
 
@@ -70,23 +68,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string InstructionTrailerButtonLabel { get { return "Move on"; } }
 
-        public bool isTrailerEdit { get; set; }
-
-        public bool isTrailerSelection { get; set; }
-
-
         #endregion
 
         #region Private Methods
 
         private void SelectTrailer()
         {
-            if(isTrailerEdit)
+            if(_mobileData.ProgressState == Enums.InstructionProgress.NotStarted)
             {
                 NavItem<Models.Instruction.Trailer> navItem = new NavItem<Models.Instruction.Trailer>() { ID = _mobileData.ID };
                 _navigationService.MoveToNext(navItem);
             }
-            else if(isTrailerSelection)
+            else if(_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
             {
                 NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
                 _navigationService.MoveToNext(navItem);

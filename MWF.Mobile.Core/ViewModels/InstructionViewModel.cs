@@ -71,7 +71,8 @@ namespace MWF.Mobile.Core.ViewModels
             get 
             {
                 return _mobileData.Order.Additional.IsTrailerConfirmationEnabled &&
-                      _mobileData.Order.Type == Enums.InstructionType.Collect;
+                      _mobileData.Order.Type == Enums.InstructionType.Collect &&
+                      _mobileData.ProgressState == Enums.InstructionProgress.NotStarted;
             } 
         }
 

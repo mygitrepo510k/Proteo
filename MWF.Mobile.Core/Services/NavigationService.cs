@@ -297,9 +297,10 @@ namespace MWF.Mobile.Core.Services
             InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomBackAction); // Back from manifest sends back to startup activity
             InsertCustomNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomAction);
 
+            InsertBackNavAction<MainViewModel, InstructionViewModel>(typeof(MainViewModel));
             InsertCustomNavAction<MainViewModel, InstructionViewModel>(Instruction_CustomAction);
 
-            //TODO: Implement back button
+            InsertBackNavAction<MainViewModel, InstructionOnSiteViewModel>(typeof(MainViewModel));
             InsertCustomNavAction<MainViewModel, InstructionOnSiteViewModel>(InstructionOnSite_CustomAction);
 
             //TODO: Implement back button
@@ -487,7 +488,7 @@ namespace MWF.Mobile.Core.Services
             }
             else if(parameters is NavItem<Models.Instruction.Trailer>)
             {
-                ShowViewModel<InstructionViewModel>(parameters);
+                this.ShowViewModel<InstructionViewModel>(parameters);
             }
         }
 

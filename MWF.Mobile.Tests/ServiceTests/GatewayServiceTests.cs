@@ -142,12 +142,12 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            Guid driverId = Guid.Parse("1b969806-1aba-4563-8df0-09b8beebda81");
+            Guid driverId = Guid.Parse("e73a3136-6aa4-4935-8da2-1729b59f0205");
             _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
             var service = _fixture.Create<Core.Services.GatewayService>();
             var driverInstructions = await service.GetDriverInstructions("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);
 
-            Assert.Equal(2, driverInstructions.Count());
+            Assert.Equal(4, driverInstructions.Count());
             Assert.Equal(driverId, driverInstructions.First().DriverId);
         }
     }

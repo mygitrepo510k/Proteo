@@ -2,92 +2,99 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent">
+    android:layout_height="fill_parent">
+
+  <Button
+      android:id="@+id/button"
+      style="@style/Proteo.Button.Bottom"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      local:MvxBind="Text ProgressButtonText; Click ProgressInstructionCommand;" />
+  
     <ScrollView
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp">
+        android:layout_marginRight="0dp"
+        android:layout_above="@id/button"
+        android:id="@+id/scrollLayout">
+      <LinearLayout
+          android:layout_width="fill_parent"
+          android:orientation="vertical"
+          android:layout_marginLeft="0dp"
+          android:layout_marginRight="0dp">
+        <TextView
+            style="@style/Proteo.TextView.MainHeading"
+            local:MvxBind="Text RunID" />
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="5dp"
             android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp">
-            <TextView
-                style="@style/Proteo.TextView.MainHeading"
-                local:MvxBind="Text RunID" />
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="0dp"
-                android:layout_gravity="left"
-                android:orientation="horizontal">
-                <TextView
-                    style="@style/Proteo.TextView.SectionContent"
-                    android:layout_width="50dp"
-                    local:MvxBind="Text ArriveLabelText" />
-                <TextView
-                    style="@style/Proteo.TextView.SectionContent"
-                    android:layout_width="wrap_content"
-                    local:MvxBind="Text ArriveDateTime" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_gravity="left"
-                android:layout_marginLeft="0dp"
-                android:orientation="horizontal">
-                <TextView
-                    style="@style/Proteo.TextView.SectionContent"
-                    android:layout_width="50dp"
-                    local:MvxBind="Text DepartLabelText" />
-                <TextView
-                    style="@style/Proteo.TextView.SectionContent"
-                    android:layout_width="wrap_content"
-                    local:MvxBind="Text DepartDateTime" />
-            </LinearLayout>
-            <TextView
-                style="@style/Proteo.TextView.SectionHeading"
-                local:MvxBind="Text AddressLabelText" />
-            <TextView
-                style="@style/Proteo.TextView.SectionContent"
-                local:MvxBind="Text Address" />
-            <TextView
-                style="@style/Proteo.TextView.SectionHeading"
-                local:MvxBind="Text NotesLabelText" />
-            <TextView
-                style="@style/Proteo.TextView.SectionContent"
-                local:MvxBind="Text Notes" />
-            <TextView
-                style="@style/Proteo.TextView.SectionHeading"
-                local:MvxBind="Text OrdersLabelText" />
-            <Mvx.MvxListView
-                android:id="@+id/orderListView"
-                android:layout_width="fill_parent"
-                local:MvxBind="ItemsSource Orders; ItemClick ShowOrderCommand"
-                local:MvxItemTemplate="@layout/item_instruction_order" />
-            <TextView
-                style="@style/Proteo.TextView.SectionHeading"
-                local:MvxBind="Text TrailersLabelText; Visibility ChangeTrailerAllowed, Converter=Visibility" />
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_marginTop="0dp"
-                android:layout_marginLeft="0dp"
-                android:layout_gravity="left"
-                local:MvxBind="Visibility ChangeTrailerAllowed, Converter=Visibility">
-                <TextView
-                    style="@style/Proteo.TextView.SectionContent"
-                    android:layout_alignParentLeft="true"
-                    local:MvxBind="Text TrailerReg" />
-                <Button
-                    style="@style/Proteo.Button.InSection"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="10dp"
-                    local:MvxBind="Text TrailerChangeButtonText; Click EditTrailerCommand" />
-            </RelativeLayout>
-            <Button
-                style="@style/Proteo.Button.NonBottom"
-                android:id="@+id/doneButton"
-                local:MvxBind="Text ProgressButtonText; Click ProgressInstructionCommand;" />
+            android:layout_gravity="left"
+            android:orientation="horizontal">
+          <TextView
+              style="@style/Proteo.TextView.SectionContent"
+              android:layout_width="50dp"
+              local:MvxBind="Text ArriveLabelText" />
+          <TextView
+              style="@style/Proteo.TextView.SectionContent"
+              android:layout_width="wrap_content"
+              local:MvxBind="Text ArriveDateTime" />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginLeft="0dp"
+            android:orientation="horizontal">
+          <TextView
+              style="@style/Proteo.TextView.SectionContent"
+              android:layout_width="50dp"
+              local:MvxBind="Text DepartLabelText" />
+          <TextView
+              style="@style/Proteo.TextView.SectionContent"
+              android:layout_width="wrap_content"
+              local:MvxBind="Text DepartDateTime" />
+        </LinearLayout>
+        <TextView
+            style="@style/Proteo.TextView.SectionHeading"
+            local:MvxBind="Text AddressLabelText" />
+        <TextView
+            style="@style/Proteo.TextView.SectionContent"
+            local:MvxBind="Text Address" />
+        <TextView
+            style="@style/Proteo.TextView.SectionHeading"
+            local:MvxBind="Text NotesLabelText" />
+        <TextView
+            style="@style/Proteo.TextView.SectionContent"
+            local:MvxBind="Text Notes" />
+        <TextView
+            style="@style/Proteo.TextView.SectionHeading"
+            local:MvxBind="Text OrdersLabelText" />
+        <Mvx.MvxListView
+            android:id="@+id/orderListView"
+            android:layout_width="fill_parent"
+            local:MvxBind="ItemsSource Orders; ItemClick ShowOrderCommand"
+            local:MvxItemTemplate="@layout/item_instruction_order" />
+        <TextView
+            style="@style/Proteo.TextView.SectionHeading"
+            local:MvxBind="Text TrailersLabelText" />
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_gravity="left">
+          <TextView
+              style="@style/Proteo.TextView.SectionContent"
+              android:layout_alignParentLeft="true"
+              local:MvxBind="Text TrailerReg" />
+          <Button
+              style="@style/Proteo.Button.InSection"
+              android:layout_alignParentRight="true"
+              android:layout_marginRight="10dp"
+              local:MvxBind="Text TrailerChangeButtonText; Click EditTrailerCommand; Visibility ChangeTrailerAllowed, Converter=Visibility" />
+        </RelativeLayout>
+      </LinearLayout>
     </ScrollView>
+ 
 </RelativeLayout>

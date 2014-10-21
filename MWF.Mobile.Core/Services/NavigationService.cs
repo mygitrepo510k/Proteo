@@ -297,10 +297,10 @@ namespace MWF.Mobile.Core.Services
             InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomBackAction); // Back from manifest sends back to startup activity
             InsertCustomNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomAction);
 
-            InsertBackNavAction<MainViewModel, InstructionViewModel>(typeof(MainViewModel));
+            InsertBackNavAction<MainViewModel, InstructionViewModel>(typeof(ManifestViewModel));
             InsertCustomNavAction<MainViewModel, InstructionViewModel>(Instruction_CustomAction);
 
-            InsertBackNavAction<MainViewModel, InstructionOnSiteViewModel>(typeof(MainViewModel));
+            InsertBackNavAction<MainViewModel, InstructionOnSiteViewModel>(typeof(ManifestViewModel));
             InsertCustomNavAction<MainViewModel, InstructionOnSiteViewModel>(InstructionOnSite_CustomAction);
 
             //TODO: Implement back button
@@ -379,7 +379,8 @@ namespace MWF.Mobile.Core.Services
         public void Manifest_CustomBackAction(Object parameters)
         {
             // Stop the gateway polling service before we "logout" the user.
-            _gatewayPollingService.StopPollingTimer();
+            //TODO: Stop Polling service breaks code
+            //_gatewayPollingService.StopPollingTimer();
             MoveTo(typeof(StartupViewModel), parameters);
         }
 

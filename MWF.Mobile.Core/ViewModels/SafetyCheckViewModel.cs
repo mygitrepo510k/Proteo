@@ -73,6 +73,7 @@ namespace MWF.Mobile.Core.ViewModels
                     SafetyCheckDataID = safetyProfile.ID,
                     Title = scft.Title,
                     FaultTypeID = scft.ID,
+                    IsDiscretionaryQuestion = scft.IsDiscretionaryQuestion,
                 })
                 .ToList();
 

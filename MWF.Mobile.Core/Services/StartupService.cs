@@ -97,8 +97,10 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        //TODO: add the logon event to the gateway queue
-        public void Logon()
+        /// <summary>
+        /// Method that sends a call to bluesphere saying the driver has logged in
+        /// </summary>
+        public void DriverLogIn()
         {
             DriverActivity currentDriver = new DriverActivity(LoggedInDriver, CurrentVehicle, Enums.DriverActivity.LogOn);
             currentDriver.Smp = _gpsService.GetSmpData(Enums.ReportReason.DriverLogOn);

@@ -356,6 +356,7 @@ namespace MWF.Mobile.Core.Services
 
             if (VehicleSafetyProfile == null && TrailerSafetyProfile == null)
             {
+                _startupService.DriverLogIn();
                 this.ShowViewModel<MainViewModel>();
             }
             else
@@ -381,6 +382,7 @@ namespace MWF.Mobile.Core.Services
             }
             else
             {
+                _startupService.DriverLogIn();
                 this.ShowViewModel<MainViewModel>();
             }
 

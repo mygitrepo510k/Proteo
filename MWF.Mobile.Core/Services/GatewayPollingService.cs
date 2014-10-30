@@ -8,6 +8,11 @@ using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Enums;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Models.GatewayServiceRequest;
+using System.Xml;
+using System.Xml.Serialization;
+using System.IO;
+using System.Xml.Linq;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -23,6 +28,7 @@ namespace MWF.Mobile.Core.Services
 
         private readonly IMvxMessenger _messenger = null;
         private readonly IGatewayService _gatewayService = null;
+        private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IStartupService _startupService;
 
         private readonly string _gatewayDeviceRequestUrl = null;
@@ -30,10 +36,11 @@ namespace MWF.Mobile.Core.Services
         private MvxSubscriptionToken _pollTimerMessageToken = null;
         private bool _isSubmitting = false;
         private bool _submitAgainOnCompletion = false;
-        private int _dataSpan = - 1;
-        
+        private int _dataSpan = -1;
 
-        public GatewayPollingService(IDeviceInfo deviceInfo, IHttpService httpService, Portable.IReachability reachability, IRepositories repositories, IMvxMessenger messenger, IGatewayService gatewayService, IStartupService startupService)
+
+        public GatewayPollingService(IDeviceInfo deviceInfo, IHttpService httpService, Portable.IReachability reachability, IRepositories repositories, IMvxMessenger messenger,
+            IGatewayService gatewayService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService)
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
@@ -41,6 +48,7 @@ namespace MWF.Mobile.Core.Services
             _repositories = repositories;
             _messenger = messenger;
             _gatewayService = gatewayService;
+            _gatewayQueuedService = gatewayQueuedService;
             _startupService = startupService;
 
             //TODO: read this from config or somewhere?
@@ -84,10 +92,88 @@ namespace MWF.Mobile.Core.Services
             try
             {
                 // Call to BlueSphere to check for instructions
-                instructions = await _gatewayService.GetDriverInstructions(_startupService.CurrentVehicle.Registration, 
-                                                                           _startupService.LoggedInDriver.ID, 
-                                                                           DateTime.Now, 
+                instructions = await _gatewayService.GetDriverInstructions(_startupService.CurrentVehicle.Registration,
+                                                                           _startupService.LoggedInDriver.ID,
+                                                                           DateTime.Now,
                                                                            DateTime.Now.AddDays(DataSpan));
+
+                if (instructions != Enumerable.Empty<Models.Instruction.MobileData>())
+                {
+
+                foreach (var instruct in instructions)
+                {
+                    instruct.VehicleId = _startupService.CurrentVehicle.ID;
+                    instruct.SyncState = Enums.SyncState.Update;
+                }
+
+                //  MobileDataCollection mobileDataCollection = new MobileDataCollection
+                //   {
+                //      MobileDataCollectionObject = instructions.ToList<MobileData>()
+                //   };
+
+                ////var syncFromServer = instructions.Select(i => new Models.GatewayServiceRequest.Action<MobileData>
+                ////{
+                ////    Command = "fwSyncToServer",
+                ////    Parameters = new[]
+                ////        {
+                ////            new Parameter { Name = "EffectiveDate", Value = DateTime.Now.ToString("s")},
+                ////            new Parameter { Name = "StartDate", Value = DateTime.Now.ToString("s")},
+                ////            new Parameter { Name = "EndDate", Value = DateTime.Now.AddDays(DataSpan).ToString("s")},
+                ////        },
+                ////    Data = i,
+                ////}
+                ////);
+
+                //_gatewayQueuedService.AddToQueue("fwSyncToServer", mobileDataCollection);
+
+
+
+                   //_gatewayQueuedService.AddToQueue("fwSetMobileData", mobileDataCollection);
+                    /*
+                   XDocument doc = new XDocument();
+
+                   XmlSerializer serializer = new XmlSerializer(typeof(MobileData));
+                   XmlWriterSettings settings = new XmlWriterSettings();
+                   // settings.Encoding = new UnicodeEncoding(false, false); // no BOM in a .NET string
+                   settings.Indent = false;
+                   settings.OmitXmlDeclaration = true;
+
+                   using (StringWriter textWriter = new StringWriter())
+                   {
+                       using (XmlWriter xmlWriter = XmlWriter.Create(textWriter, settings))
+                       {
+
+                           XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+                           namespaces.Add("", "");
+
+                           xmlWriter.WriteStartElement("mobiledatum");
+
+                           foreach (var instruct in instructions)
+                           {
+                               serializer.Serialize(xmlWriter, instruct, namespaces);
+                           }
+                           xmlWriter.WriteEndElement();
+                           
+                       }
+                       string mobileDataXML = textWriter.ToString();
+ 
+                   }
+                     * */
+               
+                    var syncAckActions = instructions.Select(i => new Models.GatewayServiceRequest.Action<Models.SyncAck>
+                    {
+                        Command = "fwSyncAck",
+                        Parameters = new[]
+                        {
+                            new Parameter { Name = "MobileApplicationDataID", Value = i.ID.ToString() },
+                            new Parameter { Name = "SyncAck", Value = "1" },
+                        }
+                    });
+
+                    _gatewayQueuedService.AddToQueue(syncAckActions);
+                    
+
+                }
             }
             catch (Exception ex)
             {
@@ -103,12 +189,12 @@ namespace MWF.Mobile.Core.Services
                     switch (instruction.SyncState)
                     {
                         case SyncState.Add:
-                             var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
-                             if (instructionToAdd == null)
-                             {
-                                 _repositories.MobileDataRepository.Insert(instruction);
-                             }
-                             break;
+                            var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                            if (instructionToAdd == null)
+                            {
+                                _repositories.MobileDataRepository.Insert(instruction);
+                            }
+                            break;
                         case SyncState.Update:
                             var instructionToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
                             if (instructionToUpdate != null)

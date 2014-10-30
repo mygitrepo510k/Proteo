@@ -122,6 +122,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             // Complete the startup process
             _startupService.Commit();
+            _startupService.Logon();
             _navigationService.MoveToNext();
         }
 

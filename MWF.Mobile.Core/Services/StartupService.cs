@@ -95,10 +95,17 @@ namespace MWF.Mobile.Core.Services
                 var actions = safetyCheckData.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
                 _gatewayQueuedService.AddToQueue(actions);
             }
-
-            //TODO: add the logon event to the gateway queue
-
         }
+
+        //TODO: add the logon event to the gateway queue
+        public void Logon()
+        {
+            DriverActivity currentDriver = new DriverActivity(LoggedInDriver, CurrentVehicle, Enums.DriverActivity.LogOn);
+            currentDriver.Smp = _gpsService.GetSmpData(Enums.ReportReason.DriverLogOn);
+
+            _gatewayQueuedService.AddToQueue("fwSetDriverActivity", currentDriver);
+        }
+
 
     }
 

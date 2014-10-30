@@ -16,5 +16,6 @@ namespace MWF.Mobile.Core.Services
         IEnumerable<SafetyCheckData> GetCurrentSafetyCheckData();
         void StartGatewayQueueTimer();
         void Commit();
+        void Logon();
     }
 }

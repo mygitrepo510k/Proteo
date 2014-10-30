@@ -89,6 +89,7 @@
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
     <Compile Include="Converters\SingleObjectToListConverter.cs" />
     <Compile Include="Converters\StringHasLengthConverter.cs" />
+    <Compile Include="Enums\DriverActivity.cs" />
     <Compile Include="Enums\InstructionProgress.cs" />
     <Compile Include="Enums\InstructionType.cs" />
     <Compile Include="Enums\ReportReason.cs" />
@@ -135,7 +136,13 @@
     <Compile Include="Models\Instruction\DeliveryDescription.cs" />
     <Compile Include="Models\Instruction\Instruction.cs" />
     <Compile Include="Models\Instruction\ItemAdditional.cs" />
+    <Compile Include="Models\Instruction\MobileApplicationDataChunk.cs" />
+    <Compile Include="Models\Instruction\MobileApplicationDataChunkCollection.cs" />
+    <Compile Include="Models\Instruction\MobileApplicationDataChunkContentActivities.cs" />
+    <Compile Include="Models\Instruction\MobileApplicationDataChunkContentActivity.cs" />
+    <Compile Include="Models\Instruction\MobileApplicationDataChunkContentOrder.cs" />
     <Compile Include="Models\Instruction\MobileData.cs" />
+    <Compile Include="Models\Instruction\MobileDataCollection.cs" />
     <Compile Include="Models\Instruction\Order.cs" />
     <Compile Include="Models\Instruction\Item.cs" />
     <Compile Include="Models\Instruction\Trailer.cs" />
@@ -146,6 +153,7 @@
     <Compile Include="Models\SafetyCheckFaultType.cs" />
     <Compile Include="Models\SafetyCheckData.cs" />
     <Compile Include="Models\SafetyProfile.cs" />
+    <Compile Include="Models\SyncAck.cs" />
     <Compile Include="Models\Vehicle.cs" />
     <Compile Include="Models\Trailer.cs" />
     <Compile Include="Models\BaseVehicle.cs" />
@@ -193,7 +201,9 @@
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\VerbProfileRepository.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Services\IMobileApplicationDataChunkService.cs" />
     <Compile Include="Services\INavigationService.cs" />
+    <Compile Include="Services\MobileApplicationDataChunkService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\GatewayQueuedService.cs" />
@@ -288,7 +298,9 @@
       <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

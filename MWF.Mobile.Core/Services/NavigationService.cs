@@ -10,6 +10,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Presentation;
+using Chance.MvvmCross.Plugins.UserInteraction;
 
 
 namespace MWF.Mobile.Core.Services
@@ -31,18 +32,22 @@ namespace MWF.Mobile.Core.Services
         IStartupService _startupService;
         IRepositories _repositories;
         private readonly IGatewayPollingService _gatewayPollingService;
+        private readonly IMobileApplicationDataChunkService _mobileApplicationDataChunkService;
         ICloseApplication _closeApplication;
+        private NavItem<MobileData> _mobileDataNavItem;
+        private MobileData _mobileData;
 
         #endregion
 
         #region Construction
 
-        public NavigationService(ICustomPresenter presenter, IStartupService startupService, ICloseApplication closeApplication, IRepositories repositories, IGatewayPollingService gatewayPollingService)
+        public NavigationService(ICustomPresenter presenter, IStartupService startupService, ICloseApplication closeApplication, IRepositories repositories, IGatewayPollingService gatewayPollingService, IMobileApplicationDataChunkService mobileApplicationDataChunkService)
         {
             _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
             _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
             _presenter = presenter;
 
+            _mobileApplicationDataChunkService = mobileApplicationDataChunkService;
             _repositories = repositories;
             _gatewayPollingService = gatewayPollingService;
             _startupService = startupService;
@@ -275,6 +280,26 @@ namespace MWF.Mobile.Core.Services
             return typeof(MvxViewModel).IsAssignableFrom(destType);
         }
 
+        private void CompleteInstruction(MobileData mobileDataContent)
+        {
+            Mvx.Resolve<IUserInteraction>().Confirm("Do you wish to complete?", isConfirmed =>
+            {
+                if (isConfirmed)
+                {
+                    mobileDataContent.ProgressState = Enums.InstructionProgress.Complete;
+                    _mobileApplicationDataChunkService.CurrentMobileData = mobileDataContent;
+                    _mobileApplicationDataChunkService.Commit();
+                    this.ShowViewModel<MainViewModel>();
+                }
+            }, "Complete Instruction", "Confirm", "Cancel");
+        }
+
+        private void GetMobileDataContent(Object parameters, out NavItem<MobileData> navItem, out MobileData mobileDataContent)
+        {
+            navItem = (parameters as NavItem<MobileData>);
+            mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
+        }
+
 
         #endregion
 
@@ -392,18 +417,23 @@ namespace MWF.Mobile.Core.Services
         /// <param name="parameters"></param>
         public void Instruction_CustomAction(Object parameters)
         {
-           if (parameters is NavItem<Item>)
-           {
+            if (parameters is NavItem<Item>)
+            {
                 ShowViewModel<OrderViewModel>(parameters);
-           }
-           else if(parameters is NavItem<Models.Instruction.Trailer>)
-           {
-               ShowViewModel<InstructionTrailerViewModel>(parameters);
-           }
-           else if (parameters is NavItem<MobileData>)
-           {
+            }
+            else if (parameters is NavItem<Models.Instruction.Trailer>)
+            {
+                ShowViewModel<InstructionTrailerViewModel>(parameters);
+            }
+            else if (parameters is NavItem<MobileData>)
+            {
+                var mobileDataNav = (NavItem<MobileData>)parameters;
+                var mobileData = _repositories.MobileDataRepository.GetByID(mobileDataNav.ID);
+                _mobileApplicationDataChunkService.CurrentMobileData = mobileData;
+                _mobileApplicationDataChunkService.Commit();
+
                 ShowViewModel<InstructionOnSiteViewModel>(parameters);
-           }
+            }
         }
 
         /// <summary>
@@ -420,45 +450,46 @@ namespace MWF.Mobile.Core.Services
             }
             else if (parameters is NavItem<MobileData>)
             {
-               var navItem = (parameters as NavItem<MobileData>);
-               var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
-               var additionalContent = mobileDataContent.Order.Additional;
-               var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
 
-               //additionalContent.IsTrailerConfirmationEnabled = true;
-               //additionalContent.CustomerSignatureRequiredForCollection = true;
-               //itemAdditionalContent.BypassCommentsScreen = true;
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
 
-               //Collection
-               if (mobileDataContent.Order.Type == Enums.InstructionType.Collect)
-               {
-                   if (additionalContent.IsTrailerConfirmationEnabled)
-                   {
-                       this.ShowViewModel<InstructionTrailerViewModel>(navItem);
-                       return;
-                   }
+                var additionalContent = _mobileData.Order.Additional;
+                var itemAdditionalContent = _mobileData.Order.Items.First().Additional;
 
-               }   
+                //additionalContent.IsTrailerConfirmationEnabled = false;
+                //additionalContent.CustomerSignatureRequiredForCollection = false;
+                //itemAdditionalContent.BypassCommentsScreen = true;
+
+                //Collection
+                if (_mobileData.Order.Type == Enums.InstructionType.Collect)
+                {
+                    if (additionalContent.IsTrailerConfirmationEnabled)
+                    {
+                        this.ShowViewModel<InstructionTrailerViewModel>(_mobileDataNavItem);
+                        return;
+                    }
+
+                }
 
                 if (!itemAdditionalContent.BypassCommentsScreen)
                 {
-                    this.ShowViewModel<InstructionCommentViewModel>(navItem);
+                    this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
                     return;
                 }
 
                 if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
                 {
-                    this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                    this.ShowViewModel<InstructionSignatureViewModel>(_mobileDataNavItem);
                     return;
                 }
 
                 //delete the message here
 
-                this.ShowViewModel<MainViewModel>();   
+                CompleteInstruction(_mobileData);
 
-               
-           }
+            }
         }
+  
 
         /// <summary>
         /// Instruction trailer screen, if the bypass comment screen is not then enabled then will it redirect to comment screen.
@@ -468,26 +499,26 @@ namespace MWF.Mobile.Core.Services
         {
             if (parameters is NavItem<MobileData>)
             {
-                var navItem = (parameters as NavItem<MobileData>);
-                var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
-                var additionalContent = mobileDataContent.Order.Additional;
-                var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+
+                var additionalContent = _mobileData.Order.Additional;
+                var itemAdditionalContent = _mobileData.Order.Items.First().Additional;
 
 
                 if (!itemAdditionalContent.BypassCommentsScreen)
                 {
-                    this.ShowViewModel<InstructionCommentViewModel>(navItem);
+                    this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
                     return;
                 }
                 if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
                 {
-                    this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                    this.ShowViewModel<InstructionSignatureViewModel>(_mobileDataNavItem);
                     return;
                 }
 
                 this.ShowViewModel<MainViewModel>();
             }
-            else if(parameters is NavItem<Models.Instruction.Trailer>)
+            else if (parameters is NavItem<Models.Instruction.Trailer>)
             {
                 this.ShowViewModel<InstructionViewModel>(parameters);
             }
@@ -514,13 +545,13 @@ namespace MWF.Mobile.Core.Services
                 }
 
                 this.ShowViewModel<MainViewModel>();
-               
+
 
             }
         }
 
 
-        
+
 
         #endregion
 
@@ -531,8 +562,9 @@ namespace MWF.Mobile.Core.Services
 
     public class UnknownNavigationMappingException : Exception
     {
-        public UnknownNavigationMappingException(Type activityType, Type fragmentType) : base(string.Format("No mapping defined for {0} activity / {1} fragment", activityType, fragmentType))
-        {         
+        public UnknownNavigationMappingException(Type activityType, Type fragmentType)
+            : base(string.Format("No mapping defined for {0} activity / {1} fragment", activityType, fragmentType))
+        {
         }
     }
 

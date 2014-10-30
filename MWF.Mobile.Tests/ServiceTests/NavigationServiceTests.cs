@@ -898,6 +898,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
+            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Complete Instruction");
+
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&

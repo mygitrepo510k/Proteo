@@ -1,32 +1,93 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models
 {
+    [XmlRoot("activity")]
     public class DriverActivity
     {
-        public Guid DeviceId { get; set; }
-        public string DeviceTitle { get; set; }
+
+        public DriverActivity()
+        {
+            Id = Guid.NewGuid();
+        }
+
+        public DriverActivity(Driver currentDriver, Vehicle currentVehicle, Enums.DriverActivity currentActivity)
+        {
+            Id = Guid.NewGuid();
+            DriverId = currentDriver.ID;
+            VehicleId = currentVehicle.ID;
+            Activity = (byte)currentActivity;
+            var EffectiveDateTime = DateTime.Now;
+            EffectiveDate = EffectiveDateTime.AddMilliseconds(-EffectiveDateTime.Millisecond);
+        }
+
+        [XmlAttribute("id")]
+        public Guid Id { get; set; }
+
+        [XmlAttribute("driverid")]
         public Guid DriverId { get; set; }
+
+        [XmlIgnore]
         public string DriverTitle { get; set; }
+
+        [XmlAttribute("vehicleid")]
         public Guid VehicleId { get; set; }
+
+        [XmlIgnore]
         public string VehicleRegistration { get; set; }
+
+        [XmlAttribute("vv_id")]
         public Guid VehicleViewId { get; set; }
+
+        [XmlIgnore]
         public string VehicleViewTitle { get; set; }
+
+        [XmlAttribute("v2_id")]
         public Guid SecondaryVehicleId { get; set; }
+
+        [XmlIgnore]
         public string SecondaryVehicleTitle { get; set; }
+
+        [XmlIgnore]
         public string Code { get; set; }
+
+        [XmlIgnore]
         public string SubTitle { get; set; }
+
+        [XmlIgnore]
         public string Category { get; set; }
+
+        [XmlAttribute("effectivedate")]
         public DateTime EffectiveDate { get; set; }
+
+        [XmlAttribute("activity")]
         public byte Activity { get; set; }
+
+        [XmlAttribute("title")]
+        public string Title { get; set; }
+
+        [XmlAttribute("comment")]
         public string Comment { get; set; }
+
+        [XmlAttribute("smp")]
         public string Smp { get; set; }
+
+        [XmlAttribute("data")]
         public string Data { get; set; }
+
+        [XmlIgnore]
         public List<Signature> Signatures { get; set; }
+
+        [XmlIgnore]
         public int Sequence { get; set; }
+        
+        [XmlIgnore]
         public ScannedDelivery ScannedDelivery { get; set; }
+
+        [XmlIgnore]
         public List<Picture> Pictures { get; set; }
     }
 

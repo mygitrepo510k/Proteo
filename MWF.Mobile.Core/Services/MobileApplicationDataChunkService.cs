@@ -13,9 +13,15 @@ namespace MWF.Mobile.Core.Services
     public class MobileApplicationDataChunkService : IMobileApplicationDataChunkService
     {
 
+        #region Private Members
+
         private readonly Repositories.IRepositories _repositories = null;
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IGpsService _gpsService = null;
+
+        #endregion Private Members
+
+        #region Constructors 
 
         public MobileApplicationDataChunkService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService)
         {
@@ -24,7 +30,15 @@ namespace MWF.Mobile.Core.Services
             _gpsService = gpsService;
         }
 
+        #endregion Constructors 
+
+        #region Public Members
+
         public MobileData CurrentMobileData { get; set; }
+
+        #endregion Public Members
+
+        #region Public Methods
 
         public void Commit()
         {
@@ -57,31 +71,24 @@ namespace MWF.Mobile.Core.Services
             switch (mobileData.ProgressState)
             {
                 case Enums.InstructionProgress.Driving:
-
                     smp = _gpsService.GetSmpData(Enums.ReportReason.Drive);
-                    dataChunkActivity.Sequence = mobileData.LatestDataChunkSequence;
                     dataChunkActivity.Title = "DRIVE";
                     
-                    dataChunk.Sequence = mobileData.Sequence;
                     dataChunk.Title = "DRIVE";
                     break;
 
                 case Enums.InstructionProgress.OnSite:
                     smp = _gpsService.GetSmpData(Enums.ReportReason.OnSite);
-                    dataChunkActivity.Sequence = mobileData.LatestDataChunkSequence;
                     dataChunkActivity.Title = "ONSITE";
                     
-                    dataChunk.Sequence = mobileData.Sequence;
                     dataChunk.Title = "ONSITE";
 
                     break;
 
                 case Enums.InstructionProgress.Complete:
                     smp = _gpsService.GetSmpData(Enums.ReportReason.Complete);
-                    dataChunkActivity.Sequence = mobileData.LatestDataChunkSequence;
                     dataChunkActivity.Title = "COMPLETE";
-
-                    dataChunk.Sequence = mobileData.Sequence;
+           
                     dataChunk.Title = "COMPLETE";
 
                     break;
@@ -89,12 +96,14 @@ namespace MWF.Mobile.Core.Services
             } 
 
             dataChunkActivity.Smp = smp;
+            dataChunkActivity.Sequence = mobileData.LatestDataChunkSequence;
             dataChunkActivities.MobileApplicationDataChunkContentActivitiesObject.Add(dataChunkActivity);
             dataChunkOrder.MobileApplicationDataChunkContentOrderActivities.Add(dataChunkActivities);
 
             dataChunk.Data = dataChunkOrder;
 
             dataChunkCollection.MobileApplicationDataChunkCollectionObject.Add(dataChunk);
+            dataChunk.Sequence = mobileData.Sequence;
 
             _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
 
@@ -106,5 +115,7 @@ namespace MWF.Mobile.Core.Services
             _repositories.MobileDataRepository.Insert(mobileData);
 
         }
+
+        #endregion Public Methods
     }
 }

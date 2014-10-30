@@ -97,83 +97,6 @@ namespace MWF.Mobile.Core.Services
                                                                            DateTime.Now,
                                                                            DateTime.Now.AddDays(DataSpan));
 
-                if (instructions != Enumerable.Empty<Models.Instruction.MobileData>())
-                {
-
-                foreach (var instruct in instructions)
-                {
-                    instruct.VehicleId = _startupService.CurrentVehicle.ID;
-                    instruct.SyncState = Enums.SyncState.Update;
-                }
-
-                //  MobileDataCollection mobileDataCollection = new MobileDataCollection
-                //   {
-                //      MobileDataCollectionObject = instructions.ToList<MobileData>()
-                //   };
-
-                ////var syncFromServer = instructions.Select(i => new Models.GatewayServiceRequest.Action<MobileData>
-                ////{
-                ////    Command = "fwSyncToServer",
-                ////    Parameters = new[]
-                ////        {
-                ////            new Parameter { Name = "EffectiveDate", Value = DateTime.Now.ToString("s")},
-                ////            new Parameter { Name = "StartDate", Value = DateTime.Now.ToString("s")},
-                ////            new Parameter { Name = "EndDate", Value = DateTime.Now.AddDays(DataSpan).ToString("s")},
-                ////        },
-                ////    Data = i,
-                ////}
-                ////);
-
-                //_gatewayQueuedService.AddToQueue("fwSyncToServer", mobileDataCollection);
-
-
-
-                   //_gatewayQueuedService.AddToQueue("fwSetMobileData", mobileDataCollection);
-                    /*
-                   XDocument doc = new XDocument();
-
-                   XmlSerializer serializer = new XmlSerializer(typeof(MobileData));
-                   XmlWriterSettings settings = new XmlWriterSettings();
-                   // settings.Encoding = new UnicodeEncoding(false, false); // no BOM in a .NET string
-                   settings.Indent = false;
-                   settings.OmitXmlDeclaration = true;
-
-                   using (StringWriter textWriter = new StringWriter())
-                   {
-                       using (XmlWriter xmlWriter = XmlWriter.Create(textWriter, settings))
-                       {
-
-                           XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
-                           namespaces.Add("", "");
-
-                           xmlWriter.WriteStartElement("mobiledatum");
-
-                           foreach (var instruct in instructions)
-                           {
-                               serializer.Serialize(xmlWriter, instruct, namespaces);
-                           }
-                           xmlWriter.WriteEndElement();
-                           
-                       }
-                       string mobileDataXML = textWriter.ToString();
- 
-                   }
-                     * */
-               
-                    var syncAckActions = instructions.Select(i => new Models.GatewayServiceRequest.Action<Models.SyncAck>
-                    {
-                        Command = "fwSyncAck",
-                        Parameters = new[]
-                        {
-                            new Parameter { Name = "MobileApplicationDataID", Value = i.ID.ToString() },
-                            new Parameter { Name = "SyncAck", Value = "1" },
-                        }
-                    });
-
-                    _gatewayQueuedService.AddToQueue(syncAckActions);
-                    
-
-                }
             }
             catch (Exception ex)
             {
@@ -186,6 +109,21 @@ namespace MWF.Mobile.Core.Services
                 // We have a response so check what we need to do (Save/Update/Delete)
                 foreach (var instruction in instructions)
                 {
+
+                    instruction.VehicleId = _startupService.CurrentVehicle.ID;
+
+                    //Sends acknowledgement to bluesphere that the device has received the new instructions
+                    var syncAckActions = instructions.Select(i => new Models.GatewayServiceRequest.Action<Models.SyncAck>
+                    {
+                        Command = "fwSyncAck",
+                        Parameters = new[]
+                        {
+                            new Parameter { Name = "MobileApplicationDataID", Value = i.ID.ToString() },
+                            new Parameter { Name = "SyncAck", Value = "1" },
+                        }
+                    });
+
+                    _gatewayQueuedService.AddToQueue(syncAckActions);
                     switch (instruction.SyncState)
                     {
                         case SyncState.Add:

@@ -23,6 +23,7 @@ namespace MWF.Mobile.Tests.ServiceTests
     {
         private IFixture _fixture;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
+        private Mock<IGatewayQueuedService> _mockGatewayQueuedService;
         private MvxSubscriptionToken _pollTimerToken;
         private ApplicationProfile _applicationProfile;
         private Mock<IGatewayService> _gatewayMock;
@@ -34,6 +35,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             IDeviceRepository deviceRepo = Mock.Of<IDeviceRepository>(dr => dr.GetAll() == _fixture.CreateMany<Device>());
             _mockMobileDataRepo = new Mock<IMobileDataRepository>();
             _fixture.Inject<IMobileDataRepository>(_mockMobileDataRepo.Object);
+
+            _mockGatewayQueuedService = new Mock<IGatewayQueuedService>();
+            _fixture.Inject<IGatewayQueuedService>(_mockGatewayQueuedService.Object);
 
             _applicationProfile = new ApplicationProfile();
             var applicationRepo = _fixture.InjectNewMock<IApplicationProfileRepository>();
@@ -303,6 +307,30 @@ namespace MWF.Mobile.Tests.ServiceTests
                 Assert.Equal(item.ID, ids[deleteCounter]);
                 deleteCounter++;
             }
+        }
+
+        /// <summary>
+        /// This tests is to make sure when a instruction is polled then an acknowledgement is sent off.
+        /// </summary>
+        [Fact]
+        public async Task GatewayPollingService_AcknowledgeInstruction()
+        {
+            base.ClearAll();
+            var id = new Guid();
+            CreateSingleMobileData(SyncState.Add, id);
+
+            _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            var service = _fixture.Create<GatewayPollingService>();
+
+            service.StartPollingTimer();
+            service.PollForInstructions();
+
+            // Allow the timer to process the queue
+            await Task.Delay(2000);
+
+            _mockGatewayQueuedService.Verify(mgqs => 
+                mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
         }
 
         #region Helpers

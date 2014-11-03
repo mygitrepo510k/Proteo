@@ -458,9 +458,10 @@ namespace MWF.Mobile.Core.Services
                 var additionalContent = _mobileData.Order.Additional;
                 var itemAdditionalContent = _mobileData.Order.Items.First().Additional;
 
-                //additionalContent.IsTrailerConfirmationEnabled = false;
-                //additionalContent.CustomerSignatureRequiredForCollection = false;
-                //itemAdditionalContent.BypassCommentsScreen = true;
+                // Debug Code
+                //additionalContent.IsTrailerConfirmationEnabled = true;
+                //additionalContent.CustomerSignatureRequiredForCollection = true;
+                //itemAdditionalContent.BypassCommentsScreen = false;
 
                 //Collection
                 if (_mobileData.Order.Type == Enums.InstructionType.Collect)
@@ -470,7 +471,6 @@ namespace MWF.Mobile.Core.Services
                         this.ShowViewModel<InstructionTrailerViewModel>(_mobileDataNavItem);
                         return;
                     }
-
                 }
 
                 if (!itemAdditionalContent.BypassCommentsScreen)
@@ -479,19 +479,18 @@ namespace MWF.Mobile.Core.Services
                     return;
                 }
 
-                if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
+                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && _mobileData.Order.Type == Enums.InstructionType.Deliver) || 
+                    ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && _mobileData.Order.Type == Enums.InstructionType.Collect))
                 {
                     this.ShowViewModel<InstructionSignatureViewModel>(_mobileDataNavItem);
                     return;
                 }
 
-                //delete the message here
-
                 CompleteInstruction(_mobileData);
 
             }
         }
-  
+
 
         /// <summary>
         /// Instruction trailer screen, if the bypass comment screen is not then enabled then will it redirect to comment screen.
@@ -512,13 +511,14 @@ namespace MWF.Mobile.Core.Services
                     this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
                     return;
                 }
+
                 if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
                 {
                     this.ShowViewModel<InstructionSignatureViewModel>(_mobileDataNavItem);
                     return;
                 }
 
-                this.ShowViewModel<MainViewModel>();
+                CompleteInstruction(_mobileData);
             }
             else if (parameters is NavItem<Models.Instruction.Trailer>)
             {
@@ -533,20 +533,19 @@ namespace MWF.Mobile.Core.Services
         {
             if (parameters is NavItem<MobileData>)
             {
-                var navItem = (parameters as NavItem<MobileData>);
-                var mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
-                var additionalContent = mobileDataContent.Order.Additional;
-                var itemAdditionalContent = mobileDataContent.Order.Items.First().Additional;
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
 
+                var additionalContent = _mobileData.Order.Additional;
+                var itemAdditionalContent = _mobileData.Order.Items.First().Additional;
 
-
-                if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
+                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && _mobileData.Order.Type == Enums.InstructionType.Deliver) ||
+                   ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && _mobileData.Order.Type == Enums.InstructionType.Collect))
                 {
-                    this.ShowViewModel<InstructionSignatureViewModel>(navItem);
+                    this.ShowViewModel<InstructionSignatureViewModel>(_mobileDataNavItem);
                     return;
                 }
 
-                this.ShowViewModel<MainViewModel>();
+                CompleteInstruction(_mobileData);
 
 
             }

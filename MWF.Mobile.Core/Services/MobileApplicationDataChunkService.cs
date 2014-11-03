@@ -48,6 +48,7 @@ namespace MWF.Mobile.Core.Services
             var currentDriver = _repositories.DriverRepository.GetByID(mobileData.DriverId);
             var currentVehicle = _repositories.VehicleRepository.GetByID(mobileData.VehicleId);
 
+            bool deleteMobileData = false;
             string smp = "";
             MobileApplicationDataChunk dataChunk = new MobileApplicationDataChunk();
             MobileApplicationDataChunkContentActivity dataChunkActivity = new MobileApplicationDataChunkContentActivity();
@@ -91,8 +92,9 @@ namespace MWF.Mobile.Core.Services
            
                     dataChunk.Title = "COMPLETE";
 
-                    break;
+                    deleteMobileData = true;
 
+                    break;
             } 
 
             dataChunkActivity.Smp = smp;
@@ -107,13 +109,21 @@ namespace MWF.Mobile.Core.Services
 
             _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
 
-            var instructionToUpdate = _repositories.MobileDataRepository.GetByID(mobileData.ID);
-            if (instructionToUpdate != null)
+            if (deleteMobileData)
             {
-                _repositories.MobileDataRepository.Delete(instructionToUpdate);
+                var oldMobileData = _repositories.MobileDataRepository.GetByID(mobileData.ID);
+                if (oldMobileData != null)
+                    _repositories.MobileDataRepository.Delete(oldMobileData);
             }
-            _repositories.MobileDataRepository.Insert(mobileData);
-
+            else
+            {
+                var mobileDataToUpdate = _repositories.MobileDataRepository.GetByID(mobileData.ID);
+                if (mobileDataToUpdate != null)
+                {
+                    _repositories.MobileDataRepository.Delete(mobileDataToUpdate);
+                }
+                _repositories.MobileDataRepository.Insert(mobileData);
+            }
         }
 
         #endregion Public Methods

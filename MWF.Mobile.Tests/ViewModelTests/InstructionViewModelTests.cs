@@ -22,6 +22,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
     public class InstructionViewModelTests
         : MvxIoCSupportingTest
     {
+        #region Setup
+
         private IFixture _fixture;
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mobileDataRepo;
@@ -40,10 +42,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
-;
+
         }
 
+        #endregion Setup
 
+        #region Test
 
         [Fact]
         public void InstructionVM_FragmentTitle()
@@ -276,6 +280,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.False(instructionVM.ChangeTrailerAllowed);
 
         }
-
+        #endregion Test
     }
 }

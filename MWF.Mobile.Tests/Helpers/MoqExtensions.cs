@@ -10,6 +10,9 @@ using Chance.MvvmCross.Plugins.UserInteraction;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Cirrious.CrossCore.IoC;
+using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Repositories;
 
 namespace MWF.Mobile.Tests.Helpers
 {
@@ -44,6 +47,30 @@ namespace MWF.Mobile.Tests.Helpers
             return newMock;
         }
 
+        public static void SetUpInstruction(this IFixture fixture, MWF.Mobile.Core.Enums.InstructionType instructionType,
+            bool isBypassCommentScreen, bool isTrailerConfirmationRequired, bool isCustomerNameRequired, bool isCustomerSignatureRequired)
+        {
+            var mobileData = fixture.Create<MobileData>();
+            mobileData.Order.Type = instructionType;
+            mobileData.Order.Additional.IsTrailerConfirmationEnabled = isTrailerConfirmationRequired;
+            mobileData.Order.Items.First().Additional.BypassCommentsScreen = isBypassCommentScreen;
+
+            if (instructionType == Core.Enums.InstructionType.Collect)
+            {
+                mobileData.Order.Additional.CustomerNameRequiredForCollection = isCustomerNameRequired;
+                mobileData.Order.Additional.CustomerSignatureRequiredForCollection = isCustomerSignatureRequired;
+            }
+            else
+            {
+                mobileData.Order.Additional.CustomerNameRequiredForDelivery = isCustomerNameRequired;
+                mobileData.Order.Additional.CustomerSignatureRequiredForDelivery = isCustomerSignatureRequired;
+            }
+
+            var mobileDataRepositoryMock = fixture.InjectNewMock<IMobileDataRepository>();
+            mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns(mobileData);
+
+            fixture.Inject<IRepositories>(fixture.Create<Repositories>());
+        }
 
         #region IUserInteraction Helpers
 

@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
     <TextView
         style="@style/Proteo.TextView.ItemText"
-        local:MvxBind="Text Title" />
+        local:MvxBind="Text ItemIdFormatted" />
     <TextView
         style="@style/Proteo.TextView.ItemText"
         local:MvxBind="Text Description" />

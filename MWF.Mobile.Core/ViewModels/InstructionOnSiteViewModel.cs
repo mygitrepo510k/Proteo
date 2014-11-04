@@ -70,13 +70,19 @@ namespace MWF.Mobile.Core.ViewModels
             set { _orderList = value; RaisePropertyChanged(() => OrderList); }
         }
 
-        public string InstructionCommentButtonLabel { get { return ((_mobileData.Order.Type == Enums.InstructionType.Collect 
-            && !_mobileData.Order.Additional.CustomerNameRequiredForCollection 
-            && !_mobileData.Order.Additional.CustomerSignatureRequiredForCollection)
-            || (_mobileData.Order.Type == Enums.InstructionType.Deliver
-            && !_mobileData.Order.Additional.CustomerNameRequiredForDelivery
-            && !_mobileData.Order.Additional.CustomerSignatureRequiredForDelivery)
-            && _mobileData.Order.Items.First().Additional.BypassCommentsScreen) ? "Complete" : "Continue"; } }
+        public string InstructionCommentButtonLabel
+        {
+            get
+            {
+                return ((_mobileData.Order.Type == Enums.InstructionType.Collect
+                    && (_mobileData.Order.Additional.CustomerNameRequiredForCollection
+                    || _mobileData.Order.Additional.CustomerSignatureRequiredForCollection))
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver
+                    && (_mobileData.Order.Additional.CustomerNameRequiredForDelivery
+                    || _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))
+                    && !_mobileData.Order.Items.First().Additional.BypassCommentsScreen) ? "Continue" : "Complete";
+            }
+        }
 
         public string HeaderText { get { return "Select an order for further details"; } }
 

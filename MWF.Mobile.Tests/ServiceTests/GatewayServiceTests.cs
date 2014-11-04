@@ -147,7 +147,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<Core.Services.GatewayService>();
             var driverInstructions = await service.GetDriverInstructions("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);
 
-            Assert.Equal(16, driverInstructions.Count());
+            Assert.Equal(20, driverInstructions.Count());
             Assert.Equal(driverId, driverInstructions.First().DriverId);
         }
     }

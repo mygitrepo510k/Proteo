@@ -3,6 +3,7 @@ using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Enums;
 using MWF.Mobile.Core.Models.Attributes;
 using Newtonsoft.Json;
+using MWF.Mobile.Core.Converters;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
@@ -33,8 +34,10 @@ namespace MWF.Mobile.Core.Models.Instruction
         [JsonProperty("country")]
         public string Country { get; set; }
         [JsonProperty("arrive")]
+        [JsonConverter(typeof(JsonUkDateTimeConverter))]
         public DateTime Arrive { get; set; }
         [JsonProperty("depart")]
+        [JsonConverter(typeof(JsonUkDateTimeConverter))]
         public DateTime Depart { get; set; }
 
         [ForeignKey(typeof(Order))]

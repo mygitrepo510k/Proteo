@@ -84,6 +84,7 @@
     <Compile Include="Converters\DateToTextMessageValueConverter.cs" />
     <Compile Include="Converters\InstructionTypeEnumValueConverter.cs" />
     <Compile Include="Converters\JsonDigitToBooleanConverter.cs" />
+    <Compile Include="Converters\JsonUkDateTimeConverter.cs" />
     <Compile Include="Converters\JsonWrappedItemConverter.cs" />
     <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />

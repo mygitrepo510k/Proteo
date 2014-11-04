@@ -42,7 +42,28 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
-        public string OrderName { get { return _order.ItemId; } }
+        public string OrderName { get { return "Order " + _order.ItemIdFormatted; } }
+
+        public string OrderID { get { return _order.ItemIdFormatted; } }
+
+        public string OrderLoadNo { get { return _order.Title; } }
+
+        public string OrderDeliveryNo { get { return _order.DeliveryOrderNumber; } }
+
+        public string OrderQuantity { get { return _order.Quantity; } }
+
+        public string OrderWeight { get { return _order.Weight; } }
+
+        public string OrderBusinessType { get { return _order.BusinessType; } }
+
+        public string OrderGoodsType { get { return _order.GoodsType; } }
+
+        public string ChangeOrderQuantityButtonLabel { get { return "Change Quantity"; } }
+
+        //TODO: Find the variable to allow user to alter order quantity
+        public bool ChangeOrderQuantity { get { return true; } }
+
+
 
         #endregion
 

@@ -20,8 +20,7 @@ namespace MWF.Mobile.Core.Models.Instruction
         [ChildRelationship(typeof(ItemAdditional), RelationshipCardinality.OneToOne)]
         [JsonProperty("additional")]
         public ItemAdditional Additional { get; set; }
-        [JsonProperty("Barcodes")]
-        public string Barcodes { get; set; }
+        
         [JsonProperty("description")]
         public string Description { get; set; }
         [JsonProperty("id")]
@@ -31,12 +30,28 @@ namespace MWF.Mobile.Core.Models.Instruction
         public string ItemIdFormatted { get { return ItemId.Replace("Order", ""); } }
 
         [JsonProperty("quantity")]
-        public int Quantity { get; set; }
+        public string Quantity { get; set; }
+
+        [JsonProperty("weight")]
+        public string Weight { get; set; }
+
         [JsonProperty("title")]
         public string Title { get; set; }
 
+        [JsonProperty("deliveryordernumber")]
+        public string DeliveryOrderNumber { get; set; }
+
+        [JsonProperty("businesstype")]
+        public string BusinessType { get; set; }
+
+        [JsonProperty("deliverytype")]
+        public string GoodsType { get; set; }
+
         [ForeignKey(typeof(Order))]
         public Guid OrderId { get; set; }
+
+        [JsonProperty("Barcode")]
+        public string Barcodes { get; set; }
 
     }
 }

@@ -80,7 +80,7 @@ namespace MWF.Mobile.Core.ViewModels
                     || (_mobileData.Order.Type == Enums.InstructionType.Deliver
                     && (_mobileData.Order.Additional.CustomerNameRequiredForDelivery
                     || _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))
-                    && !_mobileData.Order.Items.First().Additional.BypassCommentsScreen) ? "Continue" : "Complete";
+                    || !_mobileData.Order.Items.FirstOrDefault().Additional.BypassCommentsScreen) ? "Continue" : "Complete";
             }
         }
 

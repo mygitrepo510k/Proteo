@@ -35,6 +35,7 @@ namespace MWF.Mobile.Core.Services
         #region Public Members
 
         public MobileData CurrentMobileData { get; set; }
+        public MobileApplicationDataChunkContentActivity CurrentDataChunkActivity { get; set; }
 
         #endregion Public Members
 
@@ -51,23 +52,28 @@ namespace MWF.Mobile.Core.Services
             bool deleteMobileData = false;
             string smp = "";
             MobileApplicationDataChunk dataChunk = new MobileApplicationDataChunk();
-            MobileApplicationDataChunkContentActivity dataChunkActivity = new MobileApplicationDataChunkContentActivity();
+            MobileApplicationDataChunkContentActivity dataChunkActivity = CurrentDataChunkActivity;
             MobileApplicationDataChunkContentActivities dataChunkActivities = new MobileApplicationDataChunkContentActivities { MobileApplicationDataChunkContentActivitiesObject = new List<MobileApplicationDataChunkContentActivity>() };
             MobileApplicationDataChunkContentOrder dataChunkOrder = new MobileApplicationDataChunkContentOrder { MobileApplicationDataChunkContentOrderActivities = new List<MobileApplicationDataChunkContentActivities>() };
             MobileApplicationDataChunkCollection dataChunkCollection = new MobileApplicationDataChunkCollection { MobileApplicationDataChunkCollectionObject = new List<MobileApplicationDataChunk>() };
 
+            if (dataChunkActivity == null)
+            {
+                dataChunkActivity = new MobileApplicationDataChunkContentActivity();
+                CurrentDataChunkActivity = dataChunkActivity;
+            }
+                dataChunkActivity.Activity = 10;
+                dataChunkActivity.DriverId = currentDriver.ID;
+                dataChunkActivity.EffectiveDate = DateTime.Now;
+                dataChunkActivity.EffectiveDate = dataChunkActivity.EffectiveDate.AddMilliseconds(-dataChunkActivity.EffectiveDate.Millisecond);
+                dataChunkActivity.MwfVersion = "";
+                dataChunkActivity.VehicleRegistration = currentVehicle.Registration;
 
-            dataChunkActivity.Activity = 10;
-            dataChunkActivity.DriverId = currentDriver.ID;
-            dataChunkActivity.EffectiveDate = DateTime.Now;
-            dataChunkActivity.EffectiveDate = dataChunkActivity.EffectiveDate.AddMilliseconds(-dataChunkActivity.EffectiveDate.Millisecond);
-            dataChunkActivity.MwfVersion = "";
-            dataChunkActivity.VehicleRegistration = currentVehicle.Registration;
-
-            dataChunk.EffectiveDate = dataChunkActivity.EffectiveDate;
-            dataChunk.ID = Guid.NewGuid();
-            dataChunk.MobileApplicationDataID = mobileData.ID;
-            dataChunk.SyncState = Enums.SyncState.Add;
+                dataChunk.EffectiveDate = dataChunkActivity.EffectiveDate;
+                dataChunk.ID = Guid.NewGuid();
+                dataChunk.MobileApplicationDataID = mobileData.ID;
+                dataChunk.SyncState = Enums.SyncState.Add;
+              
 
             switch (mobileData.ProgressState)
             {
@@ -106,6 +112,8 @@ namespace MWF.Mobile.Core.Services
 
             dataChunkCollection.MobileApplicationDataChunkCollectionObject.Add(dataChunk);
             dataChunk.Sequence = mobileData.Sequence;
+
+            CurrentDataChunkActivity = dataChunkActivity;
 
             _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
 

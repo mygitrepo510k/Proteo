@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <TextView
-        android:text="Signature Screen"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/InstructionCustomerName"
-        local:MvxBind="Text CustomerName" />
-    <signaturepad.SignaturePadView
-        android:id="@+id/signature_instructionView"
-        style="@style/Proteo.SignaturePad" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <TextView
+            android:text="Signature Screen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView1" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/InstructionCustomerName"
+            local:MvxBind="Text CustomerName" />
+        <signaturepad.SignaturePadView
+            android:id="@+id/signature_instructionView"
+            style="@style/Proteo.SignaturePad" />
+    </LinearLayout>
     <Button
-        android:text="Complete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ButtonAdvanceSignatureInstruction"
+        style="@style/Proteo.Button.Bottom"
         local:MvxBind="Text InstructionSignatureButtonLabel" />
-</LinearLayout>
+</RelativeLayout>

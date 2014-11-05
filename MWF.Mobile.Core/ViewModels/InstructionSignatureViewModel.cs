@@ -20,17 +20,19 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private readonly IUserInteraction _userInteraction;
+        private readonly IMobileApplicationDataChunkService _mobileApplicationDataChunkService;
         private MobileData _mobileData;
 
         #endregion
 
         #region Construction
 
-        public InstructionSignatureViewModel(INavigationService navigationService, IRepositories repositories, IUserInteraction userInteraction)
+        public InstructionSignatureViewModel(INavigationService navigationService, IRepositories repositories, IUserInteraction userInteraction, IMobileApplicationDataChunkService mobileApplicationDataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
             _userInteraction = userInteraction;
+            _mobileApplicationDataChunkService = mobileApplicationDataChunkService;
 
         }
 
@@ -44,7 +46,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
-        public string InstructionSignatureButtonLabel { get { return "Move on"; } }
+        public string InstructionSignatureButtonLabel { get { return "Complete"; } }
 
         private string _customerName;
         public string CustomerName
@@ -75,32 +77,28 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void InstructionDone()
         {
-            _mobileData.Order.Additional.CustomerSignatureRequiredForCollection = true;
 
-            if(_mobileData.Order.Additional.CustomerSignatureRequiredForCollection && string.IsNullOrWhiteSpace(CustomerSignatureEncodedImage))
+            if ((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerSignatureRequiredForCollection)
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery)
+                    && string.IsNullOrWhiteSpace(CustomerSignatureEncodedImage))
             {
-                    _userInteraction.Alert("Signature is required");
-                    return;   
-            }
-
-            if (_mobileData.Order.Additional.CustomerNameRequiredForCollection && string.IsNullOrWhiteSpace(CustomerName))
-            {
-                _userInteraction.Alert("Your name is required");
+                _userInteraction.Alert("Signature is required");
                 return;
             }
 
-            /*
-            // Set the signature on the vehicle and trailer safety checks
-            foreach (var safetyCheckData in _safetyCheckData)
+            if ((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerNameRequiredForCollection)
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerNameRequiredForDelivery)
+                    && string.IsNullOrWhiteSpace(CustomerName))
             {
-                safetyCheckData.Signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
+                _userInteraction.Alert("The signers name is required");
+                return;
             }
 
-            // Complete the startup process
-            _startupService.Commit();
-             */
-            _navigationService.MoveToNext();
-           
+            _mobileApplicationDataChunkService.CurrentDataChunkActivity.Signature = new Models.Signature { Title = CustomerName, EncodedImage = CustomerSignatureEncodedImage };
+
+            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            _navigationService.MoveToNext(navItem);
+
         }
 
 
@@ -109,7 +107,7 @@ namespace MWF.Mobile.Core.ViewModels
         #region BaseFragmentViewModel Overrides
         public override string FragmentTitle
         {
-            get { return "Sign for Collection"; }
+            get { return "Sign for " + ((_mobileData.Order.Type == Enums.InstructionType.Collect) ? "Collection" : "Delivery"); }
         }
 
         #endregion

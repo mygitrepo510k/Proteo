@@ -142,12 +142,17 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            Guid driverId = Guid.Parse("e73a3136-6aa4-4935-8da2-1729b59f0205");
+            /*
+             * This test works with the BlueSphere database so adding vehicles to this Driver (Test, Test) 
+             * will affect the test and cause it to fail.
+             */
+
+            Guid driverId = Guid.Parse("ABE51028-5AB2-4753-8E34-67F5C86F9E77");
             _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
             var service = _fixture.Create<Core.Services.GatewayService>();
             var driverInstructions = await service.GetDriverInstructions("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);
 
-            Assert.Equal(20, driverInstructions.Count());
+            Assert.Equal(2, driverInstructions.Count());
             Assert.Equal(driverId, driverInstructions.First().DriverId);
         }
     }

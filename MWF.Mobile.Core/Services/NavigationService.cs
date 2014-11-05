@@ -334,7 +334,7 @@ namespace MWF.Mobile.Core.Services
             //TODO: Implement back button
             InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomAction);
 
-            InsertNavAction<MainViewModel, InstructionSignatureViewModel>(typeof(MainViewModel));
+            InsertCustomNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomAction);
 
         }
 
@@ -461,7 +461,8 @@ namespace MWF.Mobile.Core.Services
                 // Debug Code
                 //additionalContent.IsTrailerConfirmationEnabled = true;
                 //additionalContent.CustomerSignatureRequiredForCollection = true;
-                //itemAdditionalContent.BypassCommentsScreen = false;
+                //additionalContent.CustomerSignatureRequiredForDelivery = true;
+                //itemAdditionalContent.BypassCommentsScreen = true;
 
                 //Collection
                 if (_mobileData.Order.Type == Enums.InstructionType.Collect)
@@ -551,12 +552,23 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
+        /// <summary>
+        /// Instruction signature screen, complete instruction and go back to manifest screen
+        /// </summary>
+        public void InstructionSignature_CustomAction(Object parameters)
+        {
+            if (parameters is NavItem<MobileData>)
+            {
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                CompleteInstruction(_mobileData);
+            }
+        }
+
 
 
 
         #endregion
-
-
+        
     }
 
     #region Exception Classes

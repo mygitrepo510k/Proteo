@@ -33,5 +33,11 @@ namespace MWF.Mobile.Core.Models.Instruction
 
         [XmlAttribute("MWFVersion")]
         public string MwfVersion { get; set; }
+
+        [XmlAttribute("comment")]
+        public string Comment { get; set; }
+
+        [XmlElement("signature")]
+        public Signature Signature { get; set; }
     }
 }

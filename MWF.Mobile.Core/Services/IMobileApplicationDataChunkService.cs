@@ -10,6 +10,7 @@ namespace MWF.Mobile.Core.Services
     public interface IMobileApplicationDataChunkService
     {
         MobileData CurrentMobileData { get; set; }
+        MobileApplicationDataChunkContentActivity CurrentDataChunkActivity { get; set; }
         void Commit();
     }
 }

@@ -17,10 +17,10 @@
         android:textSize="24.0dp"
         local:MvxBind="Text Registration" />
     <EditText
-        style="@style/Proteo.EditText"
+        style="@style/Proteo.EditText.NumberPasscode"
         android:id="@+id/odometerText"
-        android:inputType="number"
-        android:numeric="integer"
+        android:imeOptions="actionDone"
+        android:singleLine="true"
         android:gravity="center"
         android:background="#cccfd1"
         android:maxLength="6"

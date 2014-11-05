@@ -255,6 +255,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
+            _mobileData.ProgressState = Core.Enums.InstructionProgress.Driving;
             _mobileData.Order.Additional.IsTrailerConfirmationEnabled = true;
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
@@ -271,6 +272,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
+            _mobileData.ProgressState = Core.Enums.InstructionProgress.OnSite;
             _mobileData.Order.Additional.IsTrailerConfirmationEnabled = false;
 
             var instructionVM = _fixture.Create<InstructionViewModel>();

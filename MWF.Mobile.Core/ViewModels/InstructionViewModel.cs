@@ -74,7 +74,8 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 return _mobileData.Order.Additional.IsTrailerConfirmationEnabled &&
                       _mobileData.Order.Type == Enums.InstructionType.Collect &&
-                      _mobileData.ProgressState == Enums.InstructionProgress.NotStarted;
+                      (_mobileData.ProgressState == Enums.InstructionProgress.NotStarted
+                      || _mobileData.ProgressState == Enums.InstructionProgress.Driving);
             } 
         }
 

@@ -46,19 +46,19 @@ namespace MWF.Mobile.Core.ViewModels
             _startupService.CurrentVehicleSafetyCheckData = null;
             _startupService.CurrentTrailerSafetyCheckData = null;
 
-            if (SafetyProfileVehicle != null)
+            if (SafetyProfileVehicle != null && SafetyProfileVehicle.DisplayAtLogon)
             {
                 var safetyCheckData = GenerateSafetyCheckData(SafetyProfileVehicle, _startupService.LoggedInDriver, _startupService.CurrentVehicle, false);
                 _startupService.CurrentVehicleSafetyCheckData = safetyCheckData;
             }
 
-            if (SafetyProfileTrailer != null)
+            if (SafetyProfileTrailer != null && SafetyProfileTrailer.DisplayAtLogon)
             {
                 var safetyCheckData = GenerateSafetyCheckData(SafetyProfileTrailer, _startupService.LoggedInDriver, _startupService.CurrentTrailer, true);
                 _startupService.CurrentTrailerSafetyCheckData = safetyCheckData;
             }
 
-            if (SafetyProfileTrailer == null && SafetyProfileVehicle == null)
+            if (_startupService.CurrentTrailerSafetyCheckData == null && _startupService.CurrentVehicleSafetyCheckData == null)
             {
                 Mvx.Resolve<IUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { startupService.Commit(); _navigationService.MoveToNext(); });
             }

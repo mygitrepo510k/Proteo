@@ -68,8 +68,11 @@ namespace MWF.Mobile.Core.Services
 
         public void StopPollingTimer()
         {
-            _pollTimerMessageToken.Dispose();
-            _pollTimerMessageToken = null;
+            if (_pollTimerMessageToken != null)
+            {
+                _pollTimerMessageToken.Dispose();
+                _pollTimerMessageToken = null;
+            }
 
             PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand.Stop);
         }

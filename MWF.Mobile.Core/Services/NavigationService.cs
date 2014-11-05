@@ -300,6 +300,11 @@ namespace MWF.Mobile.Core.Services
             mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
         }
 
+        private void DriverLogIn()
+        {
+            _startupService.DriverLogIn();
+            _gatewayPollingService.StartPollingTimer();
+        }
 
         #endregion
 
@@ -356,7 +361,7 @@ namespace MWF.Mobile.Core.Services
 
             if (VehicleSafetyProfile == null && TrailerSafetyProfile == null)
             {
-                _startupService.DriverLogIn();
+                this.DriverLogIn();
                 this.ShowViewModel<MainViewModel>();
             }
             else
@@ -382,7 +387,7 @@ namespace MWF.Mobile.Core.Services
             }
             else
             {
-                _startupService.DriverLogIn();
+                this.DriverLogIn();
                 this.ShowViewModel<MainViewModel>();
             }
 
@@ -406,8 +411,7 @@ namespace MWF.Mobile.Core.Services
         public void Manifest_CustomBackAction(Object parameters)
         {
             // Stop the gateway polling service before we "logout" the user.
-            //TODO: Stop Polling service breaks code
-            //_gatewayPollingService.StopPollingTimer();
+            _gatewayPollingService.StopPollingTimer();
             MoveTo(typeof(StartupViewModel), parameters);
         }
 

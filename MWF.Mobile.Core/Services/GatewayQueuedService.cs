@@ -53,8 +53,11 @@ namespace MWF.Mobile.Core.Services
 
         public void StopQueueTimer()
         {
-            _queueTimerMessageToken.Dispose();
-            _queueTimerMessageToken = null;
+            if (_queueTimerMessageToken != null)
+            {
+                _queueTimerMessageToken.Dispose();
+                _queueTimerMessageToken = null;
+            }
 
             PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Stop);
         }

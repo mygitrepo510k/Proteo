@@ -35,7 +35,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public StartupViewModel(IAuthenticationService authenticationService, 
                                 IGatewayService gatewayService, 
-                                IGatewayQueuedService gatewayQueuedService, 
+                                IGatewayQueuedService gatewayQueuedService,
                                 Portable.IReachability reachableService, 
                                 Portable.ICloseApplication closeApplication,
                                 IDataService dataService, 

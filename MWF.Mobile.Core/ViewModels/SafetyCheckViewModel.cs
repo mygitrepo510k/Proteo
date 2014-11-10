@@ -32,9 +32,13 @@ namespace MWF.Mobile.Core.ViewModels
             Trailer trailer = null;
 
             vehicle = _repositories.VehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID);
+            _startupService.CurrentVehicle = vehicle;
 
             if (_startupService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
+            {
                 trailer = _repositories.TrailerRepository.GetByID(_startupService.LoggedInDriver.LastSecondaryVehicleID);
+                _startupService.CurrentTrailer = trailer;
+            }
 
             SafetyProfileVehicle = _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink).SingleOrDefault();
 

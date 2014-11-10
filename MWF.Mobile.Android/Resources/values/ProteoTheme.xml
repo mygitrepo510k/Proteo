@@ -109,6 +109,7 @@
 
   <style name="Proteo.TextView.Order" parent="style/Proteo.TextView.Instructions">
     <item name="android:layout_width">0dp</item>
+    <item name ="android:layout_height">fill_parent</item>
     <item name="android:textSize">20dp</item>
     <item name="android:layout_marginBottom">0dp</item>
     <item name="android:paddingTop">4dp</item>

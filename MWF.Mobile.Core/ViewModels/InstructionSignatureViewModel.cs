@@ -50,6 +50,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         public bool IsSignaturePadEnabled { get; set; }
 
+        /// <summary>
+        ///  If signature is required, the signature box stays active and you cannot press the 'Signature toggle' button.
+        ///
+        ///  If signature is NOT required, then the signature box is disabled by default, but can be turned on with the 'Signature toggle' button
+        /// </summary>
         public bool IsSignatureToggleButtonEnabled
         {
             get

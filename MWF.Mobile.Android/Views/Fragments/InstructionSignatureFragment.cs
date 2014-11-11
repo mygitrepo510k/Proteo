@@ -32,21 +32,12 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             signaturePad = view.FindViewById<SignaturePadView>(Resource.Id.signature_instructionView);
 
-            //var viewModel = (InstructionSignatureViewModel)ViewModel;
-            //signaturePad.Clear();
-
-            //SetStrokeColor(viewModel);
-
-            //signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209); // Match the color of an EditText
-            //signaturePad.SignaturePrompt.Text = string.Empty;
-
             var doneButton = view.FindViewById<Button>(Resource.Id.ButtonAdvanceSignatureInstruction);
             doneButton.Click += this.DoneButton_Click;
 
-            var enableDisableButton = view.FindViewById<Button>(Resource.Id.ButtonSignatureToggle);
-            enableDisableButton.Click += this.EnableDisableButton_Click;
+            var signatureToggleButton = view.FindViewById<Button>(Resource.Id.ButtonSignatureToggle);
+            signatureToggleButton.Click += this.SignatureToggleButton_Click;
 
-            var signatureToggleButton = (Button)view.FindViewById(Resource.Id.ButtonSignatureToggle);
             var set = this.CreateBindingSet<InstructionSignatureFragment, InstructionSignatureViewModel>();
             set.Bind(signatureToggleButton).For(b => b.Enabled).To(vm => vm.IsSignatureToggleButtonEnabled);
             set.Apply();
@@ -67,13 +58,12 @@ namespace MWF.Mobile.Android.Views.Fragments
             signaturePad.SignaturePrompt.Text = string.Empty;
         }
 
-        void EnableDisableButton_Click(object sender, EventArgs e)
+        void SignatureToggleButton_Click(object sender, EventArgs e)
         {
             var viewModel = (InstructionSignatureViewModel)ViewModel;
             signaturePad.Clear();
 
             viewModel.IsSignaturePadEnabled = !viewModel.IsSignaturePadEnabled;
-
             SetStrokeColor(viewModel);
             
             viewModel.RaisePropertyChanged(() => viewModel.SignatureToggleButtonLabel);
@@ -99,6 +89,10 @@ namespace MWF.Mobile.Android.Views.Fragments
             viewModel.InstructionDoneCommand.Execute(null);
         }
 
+        /// <summary>
+        /// This method changes the stroke color to the same as the background to make it seem
+        /// like the signature pad is deactivated. (I was unable to disable the signature pad)
+        /// </summary>
         private void SetStrokeColor(InstructionSignatureViewModel viewModel)
         {
             if (viewModel.IsSignaturePadEnabled)

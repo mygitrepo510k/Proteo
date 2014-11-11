@@ -34,7 +34,7 @@ namespace MWF.Mobile.Core.ViewModels
         public void Init(NavItem<Item> item)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(item.ParentID);
-            _order = _mobileData.Order.Items.FirstOrDefault(i => i.ID == item.ID);
+            _order = _mobileData.Order.Items.First(i => i.ID == item.ID);
         }
 
 

@@ -169,6 +169,11 @@
     <item name = "android:password">true</item>
   </style>
 
+  <style name="Proteo.EditText.Number" parent="style/Proteo.EditText">
+    <item name = "android:textSize">30dp</item>
+    <item name = "android:inputType">number</item>
+  </style>
+
   <style name = "Proteo.Multiline" parent="style/Proteo">
     <item name = "android:gravity">left</item>
     <item name = "android:singleLine">false</item>

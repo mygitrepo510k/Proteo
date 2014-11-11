@@ -17,14 +17,13 @@
         android:textSize="24.0dp"
         local:MvxBind="Text Registration" />
     <EditText
-        style="@style/Proteo.EditText.NumberPasscode"
+        style="@style/Proteo.EditText.Number"
         android:id="@+id/odometerText"
+        android:maxLength="6"
+        local:MvxBind="Text OdometerValue"
         android:imeOptions="actionDone"
         android:singleLine="true"
-        android:gravity="center"
-        android:background="#cccfd1"
-        android:maxLength="6"
-        local:MvxBind="Text OdometerValue" />
+        android:password="false" />
     <Button
         style="@style/Proteo.Button"
         android:id="@+id/submit"

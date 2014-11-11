@@ -48,6 +48,36 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string InstructionSignatureButtonLabel { get { return "Complete"; } }
 
+        public bool IsSignaturePadEnabled { get; set; }
+
+        public bool IsSignatureToggleButtonEnabled
+        {
+            get
+            {
+
+                if ((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerSignatureRequiredForCollection)
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))
+                {
+                    IsSignaturePadEnabled = true;
+                    RaisePropertyChanged(() => SignatureToggleButtonLabel);
+                    return false;
+                }
+                else
+                {
+                    IsSignaturePadEnabled = false;
+                    RaisePropertyChanged(() => SignatureToggleButtonLabel);
+                    return true;
+                }
+            }
+        }
+
+        public string SignatureToggleButtonLabel
+        {
+            get { return (IsSignaturePadEnabled) ? "Signature unavailable" : "Signature available"; }
+        }
+
+        public string InstructionSignaturePageHeader { get { return "I confirm this transaction"; } }
+
         private string _customerName;
         public string CustomerName
         {

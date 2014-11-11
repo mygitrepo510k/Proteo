@@ -116,7 +116,9 @@
     <item name="android:paddingBottom">4dp</item>
   </style>
 
-  
+  <style name="Proteo.TextView.InfoAndInput" parent="Proteo.TextView.Order">
+    <item name = "android:background">@android:color/transparent</item>
+  </style>
 
   <!-- ===================== Buttons ========================= -->
 
@@ -193,6 +195,8 @@
   
   <style name="Proteo.SignaturePad" parent="style/Proteo">
     <item name="android:layout_height">200dp</item>
+    <item name = "android:layout_marginLeft">8dp</item>
+    <item name = "android:layout_marginRight">8dp</item>
   </style>
   
 </resources>

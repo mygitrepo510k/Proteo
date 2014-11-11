@@ -158,7 +158,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionVM_Collect_FragmentTitle()
+        public void InstructionSignatureVM__Collect_FragmentTitle()
         {
             base.ClearAll();
 
@@ -173,7 +173,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionVM_Deliver_FragmentTitle()
+        public void InstructionSignatureVM_Deliver_FragmentTitle()
         {
             base.ClearAll();
 
@@ -186,6 +186,116 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.Equal("Sign for Delivery", instructionSignatureVM.FragmentTitle);
 
         }
+
+        [Fact]
+        public void InstructionSignatureVM_SignatureUnavailableToggleButtonText()
+        {
+            base.ClearAll();
+
+            var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
+
+            instructionSignatureVM.IsSignaturePadEnabled = false;
+
+            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+
+            Assert.Equal("Signature available", instructionSignatureVM.SignatureToggleButtonLabel);
+
+        }
+
+        [Fact]
+        public void InstructionSignatureVM_SignatureAvailableToggleButtonText()
+        {
+            base.ClearAll();
+
+            var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
+
+            instructionSignatureVM.IsSignaturePadEnabled = true;
+
+            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+
+            Assert.Equal("Signature unavailable", instructionSignatureVM.SignatureToggleButtonLabel);
+
+        }
+
+        [Fact]
+        public void InstructionSignatureVM_Collect_SignatureToggleButtonDisabled()
+        {
+            base.ClearAll();
+
+            _mobileData.Order.Additional.CustomerSignatureRequiredForCollection = true;
+            _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
+
+            var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
+
+            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+         
+            Assert.Equal(false, instructionSignatureVM.IsSignatureToggleButtonEnabled);
+            Assert.Equal(true, instructionSignatureVM.IsSignaturePadEnabled);
+
+            Assert.Equal("Signature unavailable", instructionSignatureVM.SignatureToggleButtonLabel);
+
+        }
+
+        [Fact]
+        public void InstructionSignatureVM_Delivery_SignatureToggleButtonDisabled()
+        {
+            base.ClearAll();
+
+            _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery = true;
+            _mobileData.Order.Type = Core.Enums.InstructionType.Deliver;
+
+            var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
+
+            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+
+            Assert.Equal(false, instructionSignatureVM.IsSignatureToggleButtonEnabled);
+            Assert.Equal(true, instructionSignatureVM.IsSignaturePadEnabled);
+
+            Assert.Equal("Signature unavailable", instructionSignatureVM.SignatureToggleButtonLabel);
+            
+
+        }
+
+        [Fact]
+        public void InstructionSignatureVM_Collect_SignatureToggleButtonEnabled()
+        {
+            base.ClearAll();
+
+            _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
+            _mobileData.Order.Additional.CustomerSignatureRequiredForCollection = false;
+
+            var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
+
+            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+
+
+            Assert.Equal(true, instructionSignatureVM.IsSignatureToggleButtonEnabled);
+            Assert.Equal(false, instructionSignatureVM.IsSignaturePadEnabled);
+
+            Assert.Equal("Signature available", instructionSignatureVM.SignatureToggleButtonLabel);
+        }
+
+        [Fact]
+        public void InstructionSignatureVM_Delivery_SignatureToggleButtonEnabled()
+        {
+            base.ClearAll();
+
+            _mobileData.Order.Type = Core.Enums.InstructionType.Deliver;
+            _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery = false;
+
+            var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
+
+            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+
+
+            
+            Assert.Equal(false, instructionSignatureVM.IsSignaturePadEnabled);
+            Assert.Equal(true, instructionSignatureVM.IsSignatureToggleButtonEnabled);
+
+            Assert.Equal("Signature available", instructionSignatureVM.SignatureToggleButtonLabel);
+
+        }
+
 
         #endregion Test
     }

@@ -31,21 +31,59 @@ namespace MWF.Mobile.Android.Views.Fragments
             var view = this.BindingInflate(Resource.Layout.Fragment_InstructionSignature, null);
 
             signaturePad = view.FindViewById<SignaturePadView>(Resource.Id.signature_instructionView);
-            signaturePad.StrokeColor = AndroidGraphics.Color.Black;
-            signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209); // Match the color of an EditText
-            signaturePad.SignaturePrompt.Text = string.Empty;
+
+            //var viewModel = (InstructionSignatureViewModel)ViewModel;
+            //signaturePad.Clear();
+
+            //SetStrokeColor(viewModel);
+
+            //signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209); // Match the color of an EditText
+            //signaturePad.SignaturePrompt.Text = string.Empty;
 
             var doneButton = view.FindViewById<Button>(Resource.Id.ButtonAdvanceSignatureInstruction);
             doneButton.Click += this.DoneButton_Click;
 
+            var enableDisableButton = view.FindViewById<Button>(Resource.Id.ButtonSignatureToggle);
+            enableDisableButton.Click += this.EnableDisableButton_Click;
+
+            var signatureToggleButton = (Button)view.FindViewById(Resource.Id.ButtonSignatureToggle);
+            var set = this.CreateBindingSet<InstructionSignatureFragment, InstructionSignatureViewModel>();
+            set.Bind(signatureToggleButton).For(b => b.Enabled).To(vm => vm.IsSignatureToggleButtonEnabled);
+            set.Apply();
+
             return view;
+        }
+
+        public override void OnViewCreated(View view, Bundle savedInstanceState)
+        {
+            base.OnViewCreated(view, savedInstanceState);
+
+            var viewModel = (InstructionSignatureViewModel)ViewModel;
+            signaturePad.Clear();
+
+            SetStrokeColor(viewModel);
+
+            signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209); // Match the color of an EditText
+            signaturePad.SignaturePrompt.Text = string.Empty;
+        }
+
+        void EnableDisableButton_Click(object sender, EventArgs e)
+        {
+            var viewModel = (InstructionSignatureViewModel)ViewModel;
+            signaturePad.Clear();
+
+            viewModel.IsSignaturePadEnabled = !viewModel.IsSignaturePadEnabled;
+
+            SetStrokeColor(viewModel);
+            
+            viewModel.RaisePropertyChanged(() => viewModel.SignatureToggleButtonLabel);
         }
 
         void DoneButton_Click(object sender, EventArgs e)
         {
             var viewModel = (InstructionSignatureViewModel)ViewModel;
 
-            if (signaturePad.IsBlank)
+            if (signaturePad.IsBlank || !viewModel.IsSignaturePadEnabled)
                 viewModel.CustomerSignatureEncodedImage = null;
             else
             {
@@ -61,6 +99,13 @@ namespace MWF.Mobile.Android.Views.Fragments
             viewModel.InstructionDoneCommand.Execute(null);
         }
 
+        private void SetStrokeColor(InstructionSignatureViewModel viewModel)
+        {
+            if (viewModel.IsSignaturePadEnabled)
+                signaturePad.StrokeColor = AndroidGraphics.Color.Black;
+            else
+                signaturePad.StrokeColor = AndroidGraphics.Color.Rgb(204, 207, 209);
+        }
           
     }
 

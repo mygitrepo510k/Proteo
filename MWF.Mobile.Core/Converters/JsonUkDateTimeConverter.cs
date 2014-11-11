@@ -18,7 +18,7 @@ namespace MWF.Mobile.Core.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            return DateTime.ParseExact(reader.Value.ToString(), "dd/MM/yyyy hh:mm:ss", CultureInfo.InvariantCulture);
+            return DateTime.ParseExact(Convert.ToString(reader.Value), "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

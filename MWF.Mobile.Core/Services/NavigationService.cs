@@ -463,7 +463,7 @@ namespace MWF.Mobile.Core.Services
                 var itemAdditionalContent = _mobileData.Order.Items.First().Additional;
 
                 // Debug Code
-                //additionalContent.IsTrailerConfirmationEnabled = true;
+                //additionalContent.IsTrailerConfirmationEnabled = false;
                 //additionalContent.CustomerSignatureRequiredForCollection = true;
                 //additionalContent.CustomerSignatureRequiredForDelivery = true;
                 //itemAdditionalContent.BypassCommentsScreen = true;

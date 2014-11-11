@@ -55,6 +55,7 @@ namespace MWF.Mobile.Core.ViewModels
             _configRepository = repositories.ConfigRepository;
 
 #if DEBUG
+            //_userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", (bool ok) => { if (ok) this.CustomerCode = "A2A67DE7-DC95-49D9-BF53-34829CF865C9"; });
             _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", (bool ok) => { if (ok) this.CustomerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031"; });
 #endif
         }

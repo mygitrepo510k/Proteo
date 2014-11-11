@@ -23,6 +23,9 @@ namespace MWF.Mobile.Core.Converters
             var target = new List<T>();
             var wrappedObject = jsonObject.Children().First().Children().First();
 
+            if (!wrappedObject.HasValues)
+                return target;
+
             if (wrappedObject.Type == JTokenType.Array)
                 serializer.Populate(wrappedObject.CreateReader(), target);
             else

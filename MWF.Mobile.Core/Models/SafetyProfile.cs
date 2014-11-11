@@ -46,6 +46,10 @@ namespace MWF.Mobile.Core.Models
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IsTrailerProfile { get; set; }
 
+        [JsonProperty("@isvosacompliant")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
+        public bool IsVOSACompliant { get; set; }
+
         [ChildRelationship(typeof(SafetyCheckFaultType))]
         [JsonProperty("faults")]
         [JsonConverter(typeof(JsonWrappedListConverter<SafetyCheckFaultType>))]

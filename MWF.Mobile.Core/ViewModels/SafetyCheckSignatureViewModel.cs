@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Services;
 using Chance.MvvmCross.Plugins.UserInteraction;
+using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -29,13 +30,22 @@ namespace MWF.Mobile.Core.ViewModels
 
             // Retrieve the vehicle and trailer safety check data from the startup info service
             _safetyCheckData = _startupService.GetCurrentSafetyCheckData();
-            
+            SafetyProfile safetyProfileVehicle = null;
+            SafetyProfile safetyProfileTrailer = null;
+
+            safetyProfileVehicle = repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == _startupService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
+
+            if (_startupService.CurrentTrailer != null)
+                safetyProfileTrailer = repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == _startupService.CurrentTrailer.SafetyCheckProfileIntLink).SingleOrDefault();
+
             if (!_safetyCheckData.Any())
                 throw new Exception("Invalid application state - signature screen should not be displayed in cases where there are no safety checks.");
 
             var combinedOverallStatus = Models.SafetyCheckData.GetOverallStatus(_safetyCheckData.Select(scd => scd.GetOverallStatus()));
 
-            if (combinedOverallStatus == Enums.SafetyCheckStatus.NotSet)
+            if ((combinedOverallStatus == Enums.SafetyCheckStatus.NotSet) &&
+               ((safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant)
+               || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant)))
                 throw new Exception("Cannot proceed to safety check signature screen because the safety check hasn't been completed");
 
             DriverName = startupService.LoggedInDriver.DisplayName;
@@ -43,20 +53,29 @@ namespace MWF.Mobile.Core.ViewModels
             TrailerRef = startupService.CurrentTrailer == null ? "- no trailer -" : startupService.CurrentTrailer.Registration;
 
             var config = repositories.ConfigRepository.Get();
-
-            switch (combinedOverallStatus)
+            if ((safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant)
+               || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant))
             {
-                case Enums.SafetyCheckStatus.Failed:
-                    this.ConfirmationText = config.SafetyCheckFailText;
-                    break;
-                case Enums.SafetyCheckStatus.DiscretionaryPass:
-                    this.ConfirmationText = config.SafetyCheckDiscretionaryText;
-                    break;
-                case Enums.SafetyCheckStatus.Passed:
-                    this.ConfirmationText = config.SafetyCheckPassText;
-                    break;
-                default:
-                    throw new Exception("Unexpected safety check status");
+
+
+                switch (combinedOverallStatus)
+                {
+                    case Enums.SafetyCheckStatus.Failed:
+                        this.ConfirmationText = config.SafetyCheckFailText;
+                        break;
+                    case Enums.SafetyCheckStatus.DiscretionaryPass:
+                        this.ConfirmationText = config.SafetyCheckDiscretionaryText;
+                        break;
+                    case Enums.SafetyCheckStatus.Passed:
+                        this.ConfirmationText = config.SafetyCheckPassText;
+                        break;
+                    default:
+                        throw new Exception("Unexpected safety check status");
+                }
+            }
+            else
+            {
+                this.ConfirmationText = config.SafetyCheckPassText;
             }
         }
 

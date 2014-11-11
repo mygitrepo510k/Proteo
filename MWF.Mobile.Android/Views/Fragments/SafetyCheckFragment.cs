@@ -46,7 +46,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             var checksDoneButton = (Button)view.FindViewById(Resource.Id.checksdonebutton);
             var set = this.CreateBindingSet<SafetyCheckFragment, SafetyCheckViewModel>();
-            set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.AllSafetyChecksCompleted);
+            set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.CanSafetyChecksBeCompleted);
             set.Apply();
 
 

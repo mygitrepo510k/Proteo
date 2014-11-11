@@ -147,30 +147,35 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public bool AllSafetyChecksCompleted
+        public bool CanSafetyChecksBeCompleted
         {
             get 
             {
                 bool allChecksCompleted = true;
-                foreach (var safetyCheckItem in SafetyCheckItemViewModels)
-                {
-                    if (!allChecksCompleted)
-                        return allChecksCompleted;
 
-                    allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
+                if ((this.SafetyProfileVehicle != null && this.SafetyProfileVehicle.IsVOSACompliant)
+                    || (this.SafetyProfileTrailer != null && this.SafetyProfileTrailer.IsVOSACompliant))
+                {
+                    foreach (var safetyCheckItem in SafetyCheckItemViewModels)
+                    {
+                        if (!allChecksCompleted)
+                            return allChecksCompleted;
+
+                        allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
+                    }
                 }
 
                 return allChecksCompleted;
             }
             set 
             {
-                RaisePropertyChanged(() => AllSafetyChecksCompleted);
+                RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
             }
         }
 
         public void CheckSafetyCheckItemsStatus()
         {
-            RaisePropertyChanged(() => AllSafetyChecksCompleted);
+            RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
         }
 
         #endregion

@@ -65,7 +65,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public IList<Item> Orders { get { return _mobileData.Order.Items; } }
 
-        public string TrailerReg { get { return (_mobileData.Order.Additional.Trailer == null) ? "No Trailer" : _mobileData.Order.Additional.Trailer.DisplayName; } }
+        public string TrailerReg { get { return (_mobileData.Order.Additional.Trailer == null) ? "No Trailer" : _mobileData.Order.Additional.Trailer.TrailerId; } }
 
 
         public bool ChangeTrailerAllowed 

@@ -366,7 +366,7 @@ namespace MWF.Mobile.Core.Services
             }
             else
             {
-                if (VehicleSafetyProfile.OdometerRequired)
+                if (VehicleSafetyProfile != null && VehicleSafetyProfile.OdometerRequired)
                     this.ShowViewModel<OdometerViewModel>();
                 else
                     this.ShowViewModel<SafetyCheckSignatureViewModel>();

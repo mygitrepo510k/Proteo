@@ -22,8 +22,7 @@
         android:maxLength="6"
         local:MvxBind="Text OdometerValue"
         android:imeOptions="actionDone"
-        android:singleLine="true"
-        android:password="false" />
+        android:singleLine="true" />
     <Button
         style="@style/Proteo.Button"
         android:id="@+id/submit"

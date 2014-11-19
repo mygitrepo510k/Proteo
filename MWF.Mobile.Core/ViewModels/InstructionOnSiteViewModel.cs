@@ -4,6 +4,7 @@ using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +15,7 @@ using System.Windows.Input;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class InstructionOnSiteViewModel : BaseFragmentViewModel
+    public class InstructionOnSiteViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
 
         
@@ -112,6 +113,19 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion
+
+        #region IBackButtonHandler Implementation
+
+        public Task<bool> OnBackButtonPressed()
+        {
+            var task = new Task<bool>(() => false);
+
+            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            _navigationService.GoBack(navItem);
+
+            return task;
+        }
+        #endregion IBackButtonHandler Implementation
 
     }
 }

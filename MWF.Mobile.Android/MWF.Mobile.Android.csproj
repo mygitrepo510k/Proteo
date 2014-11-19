@@ -177,6 +177,7 @@
     <Compile Include="Views\Fragments\InstructionSignatureFragment.cs" />
     <Compile Include="Views\Fragments\InstructionFragment.cs" />
     <Compile Include="Views\Fragments\ManifestFragment.cs" />
+    <Compile Include="Views\Fragments\ReviseQuantityFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFaultFragment.cs" />
     <Compile Include="Views\Fragments\SafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\OdometerFragment.cs" />
@@ -275,6 +276,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_InstructionOnSite_Order.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_ReviseQuantity.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

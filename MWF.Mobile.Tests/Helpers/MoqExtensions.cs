@@ -48,7 +48,7 @@ namespace MWF.Mobile.Tests.Helpers
         }
 
         public static void SetUpInstruction(this IFixture fixture, MWF.Mobile.Core.Enums.InstructionType instructionType,
-            bool isBypassCommentScreen, bool isTrailerConfirmationRequired, bool isCustomerNameRequired, bool isCustomerSignatureRequired)
+            bool isBypassCommentScreen, bool isTrailerConfirmationRequired, bool isCustomerNameRequired, bool isCustomerSignatureRequired, MWF.Mobile.Core.Enums.InstructionProgress? instructionProgress)
         {
             var mobileData = fixture.Create<MobileData>();
             mobileData.Order.Type = instructionType;
@@ -65,6 +65,9 @@ namespace MWF.Mobile.Tests.Helpers
                 mobileData.Order.Additional.CustomerNameRequiredForDelivery = isCustomerNameRequired;
                 mobileData.Order.Additional.CustomerSignatureRequiredForDelivery = isCustomerSignatureRequired;
             }
+
+            if (instructionProgress != null)
+                mobileData.ProgressState = (MWF.Mobile.Core.Enums.InstructionProgress)instructionProgress;
 
             var mobileDataRepositoryMock = fixture.InjectNewMock<IMobileDataRepository>();
             mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns(mobileData);

@@ -31,7 +31,8 @@ namespace MWF.Mobile.Android.Views
                 { typeof(Core.ViewModels.InstructionOnSiteViewModel), typeof(Fragments.InstructionOnSiteFragment)},
                 { typeof(Core.ViewModels.InstructionSignatureViewModel), typeof(Fragments.InstructionSignatureFragment) },
                 { typeof(Core.ViewModels.InstructionTrailerViewModel), typeof(Fragments.InstructionTrailerFragment)},
-                { typeof(Core.ViewModels.OrderViewModel), typeof(Fragments.OrderFragment)}
+                { typeof(Core.ViewModels.OrderViewModel), typeof(Fragments.OrderFragment)},
+                { typeof(Core.ViewModels.ReviseQuantityViewModel), typeof(Fragments.ReviseQuantityFragment)}
             };
 
         #endregion
@@ -73,7 +74,7 @@ namespace MWF.Mobile.Android.Views
 
         #endregion
 
-		#region Fragment Host
+        #region Fragment Host
 
         public override IDictionary<Type, Type> SupportedFragmentViewModels
         {
@@ -81,7 +82,7 @@ namespace MWF.Mobile.Android.Views
         }
 
         public override int FragmentHostID { get { return Resource.Id.fragment_host_main; } }
-        
+
         #endregion Fragment host
 
         #region Options Menu

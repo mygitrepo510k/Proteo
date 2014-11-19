@@ -155,7 +155,7 @@ namespace MWF.Mobile.Core.Services
             return GetNavActionWithKey(_backwardNavActionDictionary, key);
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region INavigationService
 
@@ -201,6 +201,20 @@ namespace MWF.Mobile.Core.Services
 
         }
 
+        public void GoBack(Object parameters)
+        {
+
+            Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
+            Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
+
+            Action<Object> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
+
+            if (navAction == null) throw new UnknownBackNavigationMappingException(currentActivityType, currentFragmentType);
+
+            navAction.Invoke(parameters);
+
+        }
+
         public bool IsBackActionDefined()
         {
 
@@ -210,7 +224,7 @@ namespace MWF.Mobile.Core.Services
             return BackNavActionExists(currentActivityType, currentFragmentType);
         }
 
-        #endregion
+        #endregion INavigationService
 
         #region Private Properties
 
@@ -236,7 +250,7 @@ namespace MWF.Mobile.Core.Services
             get { return SafetyCheckData.GetOverallStatus(_startupService.GetCurrentSafetyCheckData().Select(scd => scd.GetOverallStatus())); }
         }
 
-        #endregion
+        #endregion Private Properties
 
         #region Private Methods
 
@@ -306,7 +320,7 @@ namespace MWF.Mobile.Core.Services
             _gatewayPollingService.StartPollingTimer();
         }
 
-        #endregion
+        #endregion Private Methods
 
         #region Mappings Definitions
 
@@ -327,10 +341,10 @@ namespace MWF.Mobile.Core.Services
             InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomBackAction); // Back from manifest sends back to startup activity
             InsertCustomNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomAction);
 
-            InsertBackNavAction<MainViewModel, InstructionViewModel>(typeof(ManifestViewModel));
+            InsertCustomBackNavAction<MainViewModel, InstructionViewModel>(Instruction_CustomBackAction);
             InsertCustomNavAction<MainViewModel, InstructionViewModel>(Instruction_CustomAction);
 
-            InsertBackNavAction<MainViewModel, InstructionOnSiteViewModel>(typeof(ManifestViewModel));
+            InsertCustomBackNavAction<MainViewModel, InstructionOnSiteViewModel>(InstructionOnSite_CustomBackAction);
             InsertCustomNavAction<MainViewModel, InstructionOnSiteViewModel>(InstructionOnSite_CustomAction);
 
             //TODO: Implement back button
@@ -341,9 +355,14 @@ namespace MWF.Mobile.Core.Services
 
             InsertCustomNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomAction);
 
+            InsertCustomBackNavAction<MainViewModel, OrderViewModel>(Order_CustomBackAction);
+            InsertNavAction<MainViewModel, OrderViewModel>(typeof(ReviseQuantityViewModel));
+
+            InsertNavAction<MainViewModel, ReviseQuantityViewModel>(typeof(OrderViewModel));
+
         }
 
-        #endregion
+        #endregion Mappings Definitions
 
         #region Custom Mapping Actions
 
@@ -407,14 +426,6 @@ namespace MWF.Mobile.Core.Services
             // else ??
 
         }
-
-        public void Manifest_CustomBackAction(Object parameters)
-        {
-            // Stop the gateway polling service before we "logout" the user.
-            _gatewayPollingService.StopPollingTimer();
-            MoveTo(typeof(StartupViewModel), parameters);
-        }
-
 
         /// <summary>
         /// Instruction screen. If we're getting an "item" (order) then show the order in question
@@ -568,11 +579,60 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
+        #endregion Custom Mapping Actions
 
+        #region CustomBackActions
 
+        public void Manifest_CustomBackAction(Object parameters)
+        {
+            // Stop the gateway polling service before we "logout" the user.
+            _gatewayPollingService.StopPollingTimer();
+            MoveTo(typeof(StartupViewModel), parameters);
+        }
 
-        #endregion
+        public void Instruction_CustomBackAction(Object parameters)
+        {
+            this.ShowViewModel<MainViewModel>();
+        }
+
+        /// <summary>
+        /// Order screen depending on the state of the instruction then it will go to the instruction on site screen if its
+        /// Progress: Onsite, else it will go to the instruction screen the other times.
+        /// </summary>
+        public void Order_CustomBackAction(Object parameters)
+        {
+            if (parameters is NavItem<MobileData>)
+            {
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+
+                switch (_mobileData.ProgressState)
+                {
+                    case MWF.Mobile.Core.Enums.InstructionProgress.NotStarted:
+                        this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                        break;
+                    case MWF.Mobile.Core.Enums.InstructionProgress.Driving:
+                        this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                        break;
+                    case MWF.Mobile.Core.Enums.InstructionProgress.OnSite:
+                        this.ShowViewModel<InstructionOnSiteViewModel>(_mobileDataNavItem);
+                        break;
+                }
+            }
+        }
+
+        public void InstructionOnSite_CustomBackAction(Object parameters)
+        {
+            if (parameters is NavItem<MobileData>)
+            {
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+            }
+        }
+
+        #endregion CustomBackActions
+
         
+
     }
 
     #region Exception Classes

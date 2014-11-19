@@ -239,6 +239,7 @@
     <Compile Include="ViewModels\MenuViewModel.cs" />
     <Compile Include="ViewModels\BaseFragmentViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IBackButtonHandler.cs" />
+    <Compile Include="ViewModels\ReviseQuantityViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultImageViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />

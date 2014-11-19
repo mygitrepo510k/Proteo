@@ -8,7 +8,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ButtonChangeQuantity"
-        local:MvxBind="Text ChangeOrderQuantityButtonLabel; Visibility ChangeOrderQuantity, Converter=Visibility"
+        local:MvxBind="Text ChangeOrderQuantityButtonLabel; Click ReviseQuantityOrderCommand; Visibility ChangeOrderQuantity, Converter=Visibility;"
         style="@style/Proteo.Button.Bottom" />
     <ScrollView
         android:id="@+id/OrderDetailLayout"

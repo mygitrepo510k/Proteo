@@ -10,10 +10,11 @@ using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class InstructionViewModel : BaseFragmentViewModel
+    public class InstructionViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
 
         #region Private Fields
@@ -147,7 +148,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        #endregion
+        #endregion Public Properties
 
         #region Private Methods
 
@@ -192,7 +193,7 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService.MoveToNext(navItem);
         }
 
-        #endregion
+        #endregion Private Methods
 
         #region BaseFragmentViewModel Overrides
 
@@ -202,6 +203,19 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion
+
+        #region IBackButtonHandler Implementation
+
+        public Task<bool> OnBackButtonPressed()
+        {
+            var task = new Task<bool>(() => false);
+
+            //NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            _navigationService.GoBack();
+
+            return task;
+        }
+        #endregion IBackButtonHandler Implementation
 
 
 

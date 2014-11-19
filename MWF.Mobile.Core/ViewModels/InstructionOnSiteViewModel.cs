@@ -77,7 +77,8 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 return ((_mobileData.Order.Type == Enums.InstructionType.Collect
                     && (_mobileData.Order.Additional.CustomerNameRequiredForCollection
-                    || _mobileData.Order.Additional.CustomerSignatureRequiredForCollection))
+                    || _mobileData.Order.Additional.CustomerSignatureRequiredForCollection 
+                    || _mobileData.Order.Additional.IsTrailerConfirmationEnabled))
                     || (_mobileData.Order.Type == Enums.InstructionType.Deliver
                     && (_mobileData.Order.Additional.CustomerNameRequiredForDelivery
                     || _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))

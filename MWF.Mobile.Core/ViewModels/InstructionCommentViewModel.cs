@@ -19,16 +19,18 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
+        private IMobileApplicationDataChunkService _mobileDataChunkService;
 
 
         #endregion
 
         #region Construction
 
-        public InstructionCommentViewModel(INavigationService navigationService, IRepositories repositories)
+        public InstructionCommentViewModel(INavigationService navigationService, IRepositories repositories, IMobileApplicationDataChunkService mobileDataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
+            _mobileDataChunkService = mobileDataChunkService;
         }
 
         public void Init(NavItem<MobileData> item)
@@ -50,7 +52,27 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public string InstructionCommentButtonLabel { get { return "Move on"; } }
+        public string InstructionCommentButtonLabel
+        {
+            get
+            {
+                return ((_mobileData.Order.Type == Enums.InstructionType.Collect
+                    && (_mobileData.Order.Additional.CustomerNameRequiredForCollection
+                    || _mobileData.Order.Additional.CustomerSignatureRequiredForCollection))
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver
+                    && (_mobileData.Order.Additional.CustomerNameRequiredForDelivery
+                    || _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))) ? "Continue" : "Complete";
+            }
+        }
+
+        public string InstructionCommentPageHeader { get { return "Comment Screen"; } }
+
+        private string _commentText;
+        public string CommentText
+        {
+            get { return _commentText; }
+            set { _commentText = value; RaisePropertyChanged(() => CommentText); }
+        }
 
 
         #endregion
@@ -59,6 +81,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AdvanceInstructionComment()
         {
+            _mobileDataChunkService.CurrentDataChunkActivity.Comment = CommentText;
+
             NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
             _navigationService.MoveToNext(navItem);
         }

@@ -43,6 +43,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
 
             _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Complete Instruction");
+
+            _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<IUserInteraction,bool>(true);
           
             Ioc.RegisterSingleton<IMvxStringToTypeParser>(new MvxStringToTypeParser());
 
@@ -1359,6 +1361,33 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(MainViewModel), request.ViewModelType);
         }
 
+        [Fact]
+        public void NavigationService_Mappings_Instructions_SkipCommentToSignatureScreen()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+            _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<IUserInteraction, bool>(false);
+
+            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, null);
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navItemMock = Mock.Of<NavItem<MobileData>>();
+
+            // Move to the next view model
+            service.MoveToNext(navItemMock);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(InstructionSignatureViewModel), request.ViewModelType);
+        }
 
         #endregion
 

@@ -5,15 +5,22 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <TextView
-        android:text="Comment Screen"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        local:MvxBind="Text InstructionCommentPageHeader"
+        style="@style/Proteo.TextView.PageTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
+        android:layout_marginTop="32dp" />
+    <EditText
+        style="@style/Proteo.Multiline.Large"
+        android:id="@+id/commentText"
+        local:MvxBind="Text CommentText"
+        android:imeOptions="actionDone"
+        android:layout_marginTop="32dp" />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ButtonAdvanceInstructionComment"
         local:MvxBind="Text InstructionCommentButtonLabel; Click AdvanceInstructionCommentCommand"
-        style="@style/Proteo.Button" />
+        style="@style/Proteo.Button"
+        android:layout_marginTop="32dp" />
 </LinearLayout>

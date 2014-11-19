@@ -11,6 +11,7 @@ using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Presentation;
 using Chance.MvvmCross.Plugins.UserInteraction;
+using System.Threading.Tasks;
 
 
 namespace MWF.Mobile.Core.Services
@@ -294,6 +295,23 @@ namespace MWF.Mobile.Core.Services
             return typeof(MvxViewModel).IsAssignableFrom(destType);
         }
 
+        private async Task<bool> ConfirmCommentAccess(Object parameters)
+        {
+            bool advanceToCommentScreen = false;
+
+            var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to enter a comment for this instruction?","","Yes","No");
+    
+                    if(isConfirmed)
+                    {
+                        advanceToCommentScreen = true;
+                        this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
+                    }
+                    
+            
+
+            return advanceToCommentScreen;
+        }
+
         private void CompleteInstruction(MobileData mobileDataContent)
         {
             Mvx.Resolve<IUserInteraction>().Confirm("Do you wish to complete?", isConfirmed =>
@@ -459,7 +477,7 @@ namespace MWF.Mobile.Core.Services
         /// else if trailer selection is not enabled and the bypass comment screen is enabled 
         /// and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public void InstructionOnSite_CustomAction(Object parameters)
+        public async void InstructionOnSite_CustomAction(Object parameters)
         {
             if (parameters is NavItem<Item>)
             {
@@ -491,8 +509,8 @@ namespace MWF.Mobile.Core.Services
 
                 if (!itemAdditionalContent.BypassCommentsScreen)
                 {
-                    this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
-                    return;
+                    bool hasAdvanced = await ConfirmCommentAccess(parameters);
+                    if(hasAdvanced) return;
                 }
 
                 if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && _mobileData.Order.Type == Enums.InstructionType.Deliver) || 
@@ -512,7 +530,7 @@ namespace MWF.Mobile.Core.Services
         /// Instruction trailer screen, if the bypass comment screen is not then enabled then will it redirect to comment screen.
         /// else if the bypass comment screen is enabled and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public void InstructionTrailer_CustomAction(Object parameters)
+        public async void InstructionTrailer_CustomAction(Object parameters)
         {
             if (parameters is NavItem<MobileData>)
             {
@@ -524,8 +542,8 @@ namespace MWF.Mobile.Core.Services
 
                 if (!itemAdditionalContent.BypassCommentsScreen)
                 {
-                    this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
-                    return;
+                    bool hasAdvanced = await ConfirmCommentAccess(parameters);
+                    if (hasAdvanced) return;
                 }
 
                 if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)

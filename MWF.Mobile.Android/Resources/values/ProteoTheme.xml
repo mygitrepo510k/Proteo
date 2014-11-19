@@ -46,6 +46,9 @@
     <item name = "android:layout_marginRight">0dp</item>
   </style>
 
+  <style name = "Proteo.TextView.PageTitle" parent="style/Proteo">
+    <item name = "android:textSize">25dp</item>
+  </style>
 
   <style name = "Proteo.TextView.Information" parent="style/Proteo">
     <item name = "android:textSize">20dp</item>
@@ -178,6 +181,10 @@
     <item name = "android:gravity">left</item>
     <item name = "android:singleLine">false</item>
     <item name = "android:textSize">14dp</item>
+  </style>
+
+  <style name="Proteo.Multiline.Large" parent="style/Proteo.Multiline">
+    <item name ="android:textSize">18dp</item>
   </style>
 
 

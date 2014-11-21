@@ -19,14 +19,14 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
-        private IMobileApplicationDataChunkService _mobileDataChunkService;
+        private IMainService _mobileDataChunkService;
 
 
         #endregion
 
         #region Construction
 
-        public InstructionCommentViewModel(INavigationService navigationService, IRepositories repositories, IMobileApplicationDataChunkService mobileDataChunkService)
+        public InstructionCommentViewModel(INavigationService navigationService, IRepositories repositories, IMainService mobileDataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;

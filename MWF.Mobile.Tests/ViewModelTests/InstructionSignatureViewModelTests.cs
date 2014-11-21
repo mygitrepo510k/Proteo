@@ -29,7 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<INavigationService> _navigationService;
         private Mock<IUserInteraction> _mockUserInteraction;
         private Mock<IMobileDataRepository> _mobileDataRepo;
-        private Mock<IMobileApplicationDataChunkService> _mobileApplicationDataChunk;
+        private Mock<IMainService> _mainService;
 
         #endregion Private Members
 
@@ -51,9 +51,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             
-            _mobileApplicationDataChunk = _fixture.InjectNewMock<IMobileApplicationDataChunkService>();
-            _mobileApplicationDataChunk.Setup(m => m.CurrentDataChunkActivity).Returns(new MobileApplicationDataChunkContentActivity());
-            _mobileApplicationDataChunk.Setup(m => m.Commit());
+            _mainService = _fixture.InjectNewMock<IMainService>();
+            _mainService.Setup(m => m.CurrentDataChunkActivity).Returns(new MobileApplicationDataChunkContentActivity());
+            _mainService.Setup(m => m.SendDataChunk());
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
@@ -76,8 +76,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService.Verify(ns => ns.MoveToNext(It.IsAny <NavItem<MobileData>>()), Times.Once);
 
-            Assert.Same(instructionSignatureVM.CustomerSignatureEncodedImage, _mobileApplicationDataChunk.Object.CurrentDataChunkActivity.Signature.EncodedImage);
-            Assert.Same(instructionSignatureVM.CustomerName, _mobileApplicationDataChunk.Object.CurrentDataChunkActivity.Signature.Title);
+            Assert.Same(instructionSignatureVM.CustomerSignatureEncodedImage, _mainService.Object.CurrentDataChunkActivity.Signature.EncodedImage);
+            Assert.Same(instructionSignatureVM.CustomerName, _mainService.Object.CurrentDataChunkActivity.Signature.Title);
 
         }
 

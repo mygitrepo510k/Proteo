@@ -14,6 +14,7 @@ using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Android.Views.Fragments;
 using Type = System.Type;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using Android.Support.V4.Widget;
 
 
 namespace MWF.Mobile.Android.Views
@@ -206,6 +207,11 @@ namespace MWF.Mobile.Android.Views
             this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
         }
 
+
+        public override bool OnMenuItemSelected(int featureId, global::Android.Views.IMenuItem item)
+        {
+            return base.OnMenuItemSelected(featureId, item);
+        }
         #endregion
 
     }

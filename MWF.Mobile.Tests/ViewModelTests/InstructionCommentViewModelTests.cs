@@ -27,7 +27,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mobileDataRepo;
         private Mock<INavigationService> _navigationService;
-        private IMobileApplicationDataChunkService _mobileApplicationDataChunkService;
+        private IMainService _mainService;
 
         protected override void AdditionalSetup()
         {
@@ -42,8 +42,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
-            _mobileApplicationDataChunkService = _fixture.Create<IMobileApplicationDataChunkService>();
-            _fixture.Inject<IMobileApplicationDataChunkService>(_mobileApplicationDataChunkService);
+            _mainService = _fixture.Create<IMainService>();
+            _fixture.Inject<IMainService>(_mainService);
 
         }
 
@@ -64,7 +64,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             InstructionCommentVM.AdvanceInstructionCommentCommand.Execute(null);
 
-            Assert.Equal(InstructionCommentVM.CommentText, _mobileApplicationDataChunkService.CurrentDataChunkActivity.Comment);
+            Assert.Equal(InstructionCommentVM.CommentText, _mainService.CurrentDataChunkActivity.Comment);
 
         }
 

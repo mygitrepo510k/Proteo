@@ -33,7 +33,7 @@ namespace MWF.Mobile.Core.Services
         IStartupService _startupService;
         IRepositories _repositories;
         private readonly IGatewayPollingService _gatewayPollingService;
-        private readonly IMobileApplicationDataChunkService _mobileApplicationDataChunkService;
+        private readonly IMainService _mainService;
         ICloseApplication _closeApplication;
         private NavItem<MobileData> _mobileDataNavItem;
         private MobileData _mobileData;
@@ -42,13 +42,13 @@ namespace MWF.Mobile.Core.Services
 
         #region Construction
 
-        public NavigationService(ICustomPresenter presenter, IStartupService startupService, ICloseApplication closeApplication, IRepositories repositories, IGatewayPollingService gatewayPollingService, IMobileApplicationDataChunkService mobileApplicationDataChunkService)
+        public NavigationService(ICustomPresenter presenter, IStartupService startupService, ICloseApplication closeApplication, IRepositories repositories, IGatewayPollingService gatewayPollingService, IMainService mobileApplicationDataChunkService)
         {
             _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
             _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
             _presenter = presenter;
 
-            _mobileApplicationDataChunkService = mobileApplicationDataChunkService;
+            _mainService = mobileApplicationDataChunkService;
             _repositories = repositories;
             _gatewayPollingService = gatewayPollingService;
             _startupService = startupService;
@@ -319,8 +319,8 @@ namespace MWF.Mobile.Core.Services
                 if (isConfirmed)
                 {
                     mobileDataContent.ProgressState = Enums.InstructionProgress.Complete;
-                    _mobileApplicationDataChunkService.CurrentMobileData = mobileDataContent;
-                    _mobileApplicationDataChunkService.Commit();
+                    _mainService.CurrentMobileData = mobileDataContent;
+                    _mainService.SendDataChunk();
                     this.ShowViewModel<MainViewModel>();
                 }
             }, "Complete Instruction", "Confirm", "Cancel");
@@ -464,8 +464,8 @@ namespace MWF.Mobile.Core.Services
             {
                 var mobileDataNav = (NavItem<MobileData>)parameters;
                 var mobileData = _repositories.MobileDataRepository.GetByID(mobileDataNav.ID);
-                _mobileApplicationDataChunkService.CurrentMobileData = mobileData;
-                _mobileApplicationDataChunkService.Commit();
+                _mainService.CurrentMobileData = mobileData;
+                _mainService.SendDataChunk();
 
                 ShowViewModel<InstructionOnSiteViewModel>(parameters);
             }
@@ -596,6 +596,8 @@ namespace MWF.Mobile.Core.Services
                 CompleteInstruction(_mobileData);
             }
         }
+
+        
 
         #endregion Custom Mapping Actions
 

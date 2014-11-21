@@ -26,9 +26,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Constructor
 
-        public MainViewModel(IGatewayQueuedService gatewayQueuedService, IGatewayPollingService gatewayPollingService, IMobileDataRepository mobileDataRepository, INavigationService navigationService, IReachability reachability, IToast toast, IStartupService startUpService)
+        public MainViewModel(IGatewayQueuedService gatewayQueuedService, IGatewayPollingService gatewayPollingService, IMobileDataRepository mobileDataRepository, INavigationService navigationService, IReachability reachability, IToast toast, IStartupService startUpService, IMainService mainService)
         {
-            this.InitialViewModel = new ManifestViewModel(mobileDataRepository, navigationService, reachability, toast, gatewayPollingService, gatewayQueuedService, startUpService);
+            this.InitialViewModel = new ManifestViewModel(mobileDataRepository, navigationService, reachability, toast, gatewayPollingService, gatewayQueuedService, startUpService, mainService);
 
             // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
             // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:
@@ -85,7 +85,19 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void DoSelectMenuItemCommand(MenuViewModel item)
         {
-
+            
+            switch (item.Option)
+            {
+                case Option.Camera:
+                    this.ShowViewModel<CameraViewModel>();
+                    break;
+                case Option.SafetyCheck:
+                    break;
+                case Option.History:
+                    break;
+                default:
+                    break;
+            }
         }
 
         #endregion

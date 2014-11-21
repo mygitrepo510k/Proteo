@@ -222,7 +222,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             return false;
-        }
+        } 
 
         #endregion
 

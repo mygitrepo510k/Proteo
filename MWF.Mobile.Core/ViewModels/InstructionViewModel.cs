@@ -20,7 +20,7 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Fields
 
         private readonly INavigationService _navigationService;
-        private readonly IMobileApplicationDataChunkService _mobileApplicationDataChunkService;
+        private readonly IMainService _mainService;
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
         private MvxCommand _progressInstructionCommand;
@@ -31,16 +31,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public InstructionViewModel(INavigationService navigationService, IRepositories repositories, IMobileApplicationDataChunkService mobileApplicationDataChunkService)
+        public InstructionViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
         {
             _navigationService = navigationService;
-            _mobileApplicationDataChunkService = mobileApplicationDataChunkService;
+            _mainService = mainService;
             _repositories = repositories;
         }
 
         public void Init(NavItem<MobileData> item)
         {        
             _mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
+            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion
@@ -174,8 +175,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (_mobileData.ProgressState == Enums.InstructionProgress.NotStarted)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.Driving;
-                _mobileApplicationDataChunkService.CurrentMobileData = _mobileData;
-                _mobileApplicationDataChunkService.Commit();
+                _mainService.SendDataChunk();
             }
             else if (_mobileData.ProgressState == Enums.InstructionProgress.Driving)
             {

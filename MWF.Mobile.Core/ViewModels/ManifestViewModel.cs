@@ -30,6 +30,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IGatewayQueuedService _gatewayQueuedService;
         private readonly IStartupService _startupService;
 
+        private IMainService _mainService;
         private ObservableCollection<ManifestSectionViewModel> _sections;
         private MvxCommand _refreshListCommand;
         private MvxCommand _refreshStatusesCommand;
@@ -43,7 +44,7 @@ namespace MWF.Mobile.Core.ViewModels
         #region Constructor
 
         public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService, IReachability reachability, IToast toast, 
-                                 IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService)
+                                 IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService, IMainService mainService)
         {
 
             _mobileDataRepository = mobileDataRepository;
@@ -55,6 +56,12 @@ namespace MWF.Mobile.Core.ViewModels
             _gatewayPollingService = gatewayPollingService;
             _gatewayQueuedService = gatewayQueuedService;
             _startupService = startupService;
+            _mainService = mainService;
+
+            _mainService.CurrentMobileData = null;
+            _mainService.CurrentDataChunkActivity = null;
+            _mainService.CurrentDriver = _startupService.LoggedInDriver;
+            _mainService.CurrentVehicle = _startupService.CurrentVehicle;
 
             _initialised = true;
 

@@ -202,9 +202,9 @@
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\VerbProfileRepository.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
-    <Compile Include="Services\IMobileApplicationDataChunkService.cs" />
+    <Compile Include="Services\IMainService.cs" />
     <Compile Include="Services\INavigationService.cs" />
-    <Compile Include="Services\MobileApplicationDataChunkService.cs" />
+    <Compile Include="Services\MainService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\GatewayQueuedService.cs" />
@@ -225,6 +225,7 @@
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />
+    <Compile Include="ViewModels\CameraViewModel.cs" />
     <Compile Include="ViewModels\InstructionOnSiteViewModel.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\InstructionSignatureViewModel.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="ViewModels\BaseFragmentViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IBackButtonHandler.cs" />
     <Compile Include="ViewModels\ReviseQuantityViewModel.cs" />
+    <Compile Include="ViewModels\CameraImageViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultImageViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />

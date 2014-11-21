@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Android.App;
 using Android.OS;
 using Android.Support.V4.Widget;
+using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.Views;
 using Cirrious.MvvmCross.Droid.FullFragging;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
@@ -10,6 +11,7 @@ using Cirrious.MvvmCross.ViewModels;
 using Android.Content.PM;
 using MWF.Mobile.Android.Helpers;
 using MWF.Mobile.Core.ViewModels;
+using Android.Support.V4.App;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -25,13 +27,14 @@ namespace MWF.Mobile.Android.Views
         private global::Android.Support.V4.App.ActionBarDrawerToggle _drawerToggle;
         protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
             {
-                { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
+                { typeof(Core.ViewModels.CameraViewModel),typeof(Fragments.CameraFragment)},
                 { typeof(Core.ViewModels.InstructionViewModel), typeof(Fragments.InstructionFragment) },
                 { typeof(Core.ViewModels.InstructionCommentViewModel), typeof(Fragments.InstructionCommentFragment)},
                 { typeof(Core.ViewModels.InstructionOnSiteViewModel), typeof(Fragments.InstructionOnSiteFragment)},
                 { typeof(Core.ViewModels.InstructionSignatureViewModel), typeof(Fragments.InstructionSignatureFragment) },
                 { typeof(Core.ViewModels.InstructionTrailerViewModel), typeof(Fragments.InstructionTrailerFragment)},
                 { typeof(Core.ViewModels.OrderViewModel), typeof(Fragments.OrderFragment)},
+                { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
                 { typeof(Core.ViewModels.ReviseQuantityViewModel), typeof(Fragments.ReviseQuantityFragment)}
             };
 
@@ -55,12 +58,12 @@ namespace MWF.Mobile.Android.Views
 
             _drawer.DrawerOpened += delegate
             {
-                this.InvalidateOptionsMenu();
+                _drawer.OpenDrawer(5);
             };
 
             _drawer.DrawerClosed += delegate
             {
-                this.InvalidateOptionsMenu();
+                _drawer.CloseDrawer(3);
             };
 
             this._drawer.SetDrawerListener(this._drawerToggle);
@@ -99,10 +102,19 @@ namespace MWF.Mobile.Android.Views
 
         public override bool OnOptionsItemSelected(global::Android.Views.IMenuItem item)
         {
+
             if (this._drawerToggle.OnOptionsItemSelected(item))
+            {
                 return true;
+            }
 
             return base.OnOptionsItemSelected(item);
+        }
+
+        public override void InvalidateOptionsMenu()
+        {
+            _drawer.CloseDrawers();
+
         }
 
         #endregion

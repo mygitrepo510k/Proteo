@@ -9,21 +9,17 @@
         android:orientation="vertical"
         android:layout_weight="1">
         <TextView
-            style="@style/Proteo.TextView.ListHeadingNoSections"
-            local:MvxBind="Text InstructionsText" />
-        <TextView
-            style="@style/Proteo.TextView.MainHeading"
-            local:MvxBind="Text CheckTypeText" />
-        <TextView
-            style="@style/Proteo.TextView.SubHeading"
-            local:MvxBind="Text DiscretionaryOrFailureText" />
+            android:text="Camera Screen"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView1" />
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent">
             <EditText
                 style="@style/Proteo.Multiline"
-                android:scrollbars="vertical"
-                android:maxLines="4"
+                android:imeOptions="actionDone"
                 android:layout_marginTop="0dp"
                 local:MvxBind="Text CommentText; Hint CommentHintText" />
             <Mvx.MvxGridView
@@ -38,7 +34,7 @@
                 android:columnWidth="80dp"
                 android:verticalSpacing="2dp"
                 android:horizontalSpacing="2dp"
-                local:MvxBind="ItemsSource Images"
+                local:MvxBind="ItemsSource ImagesVM"
                 local:MvxItemTemplate="@layout/item_image" />
             <Button
                 style="@style/Proteo.Button.Secondary"
@@ -51,5 +47,5 @@
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/doneButton"
         android:layout_weight="0"
-        local:MvxBind="Text DoneButtonLabel; Click DoneCommand; Enabled HasCommentText;" />
+        local:MvxBind="Text DoneButtonLabel; Click DoneCommand;" />
 </LinearLayout>

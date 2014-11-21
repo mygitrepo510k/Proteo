@@ -18,7 +18,7 @@ using MWF.Mobile.Core.Models.GatewayServiceRequest;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
-    public class MobileApplicationDataChunkServiceTests
+    public class MainServiceTests
          : MvxIoCSupportingTest
     {
 
@@ -41,8 +41,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             IDriverRepository driverRepo = Mock.Of<IDriverRepository>(dr => dr.GetByID(It.IsAny<Guid>()) == _fixture.Create<Driver>());
             IVehicleRepository vehicleRepo = Mock.Of<IVehicleRepository>(vr => vr.GetByID(It.IsAny<Guid>()) == _fixture.Create<Vehicle>());
             IMobileDataRepository mobileDataRepo = Mock.Of<IMobileDataRepository>(mdr => mdr.GetByID(It.IsAny<Guid>()) == _fixture.Create<MobileData>());
-
-
 
             var mockGpsService = _fixture.InjectNewMock<IGpsService>();
             mockGpsService.Setup(mgps => mgps.GetSmpData(MWF.Mobile.Core.Enums.ReportReason.Drive)).Returns("SMP-DRIVE");
@@ -73,11 +71,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             MobileData mobileData = _fixture.Create<MobileData>();
             mobileData.ProgressState = Core.Enums.InstructionProgress.Driving;
 
-            var mobileAppDataChunkService = _fixture.Create<MobileApplicationDataChunkService>();
+            var mobileAppDataChunkService = _fixture.Create<MainService>();
 
             mobileAppDataChunkService.CurrentMobileData = mobileData;
 
-            mobileAppDataChunkService.Commit();     
+            mobileAppDataChunkService.SendDataChunk();     
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
@@ -103,11 +101,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             MobileData mobileData = _fixture.Create<MobileData>();
             mobileData.ProgressState = Core.Enums.InstructionProgress.OnSite;
 
-            var mobileAppDataChunkService = _fixture.Create<MobileApplicationDataChunkService>();
+            var mobileAppDataChunkService = _fixture.Create<MainService>();
 
             mobileAppDataChunkService.CurrentMobileData = mobileData;
 
-            mobileAppDataChunkService.Commit();
+            mobileAppDataChunkService.SendDataChunk();
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
@@ -133,11 +131,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             MobileData mobileData = _fixture.Create<MobileData>();
             mobileData.ProgressState = Core.Enums.InstructionProgress.Complete;
 
-            var mobileAppDataChunkService = _fixture.Create<MobileApplicationDataChunkService>();
+            var mobileAppDataChunkService = _fixture.Create<MainService>();
 
             mobileAppDataChunkService.CurrentMobileData = mobileData;
 
-            mobileAppDataChunkService.Commit();
+            mobileAppDataChunkService.SendDataChunk();
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);

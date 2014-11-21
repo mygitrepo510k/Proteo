@@ -20,19 +20,19 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private readonly IUserInteraction _userInteraction;
-        private readonly IMobileApplicationDataChunkService _mobileApplicationDataChunkService;
+        private readonly IMainService _mainService;
         private MobileData _mobileData;
 
         #endregion
 
         #region Construction
 
-        public InstructionSignatureViewModel(INavigationService navigationService, IRepositories repositories, IUserInteraction userInteraction, IMobileApplicationDataChunkService mobileApplicationDataChunkService)
+        public InstructionSignatureViewModel(INavigationService navigationService, IRepositories repositories, IUserInteraction userInteraction, IMainService mobileApplicationDataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
             _userInteraction = userInteraction;
-            _mobileApplicationDataChunkService = mobileApplicationDataChunkService;
+            _mainService = mobileApplicationDataChunkService;
 
         }
 
@@ -129,7 +129,7 @@ namespace MWF.Mobile.Core.ViewModels
                 return;
             }
 
-            _mobileApplicationDataChunkService.CurrentDataChunkActivity.Signature = new Models.Signature { Title = CustomerName, EncodedImage = CustomerSignatureEncodedImage };
+            _mainService.CurrentDataChunkActivity.Signature = new Models.Signature { Title = CustomerName, EncodedImage = CustomerSignatureEncodedImage };
 
             NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
             _navigationService.MoveToNext(navItem);

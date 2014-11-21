@@ -87,8 +87,9 @@ namespace MWF.Mobile.Core.Models
         [XmlIgnore]
         public ScannedDelivery ScannedDelivery { get; set; }
 
-        [XmlIgnore]
-        public List<Picture> Pictures { get; set; }
+        [XmlArray("images")]
+        [XmlArrayItem(typeof(Image), ElementName="image")]
+        public List<Image> Pictures { get; set; }
     }
 
     public class Picture

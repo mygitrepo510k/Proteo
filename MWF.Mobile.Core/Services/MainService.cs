@@ -1,6 +1,10 @@
-﻿using MWF.Mobile.Core.Models.Instruction;
+﻿using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,7 +14,8 @@ using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Services
 {
-    public class MobileApplicationDataChunkService : IMobileApplicationDataChunkService
+    public class MainService 
+        : MvxNavigatingObject, IMainService
     {
 
         #region Private Members
@@ -23,7 +28,7 @@ namespace MWF.Mobile.Core.Services
 
         #region Constructors 
 
-        public MobileApplicationDataChunkService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService)
+        public MainService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService)
         {
             _repositories = repositories;
             _gatewayQueuedService = gatewayQueuedService;
@@ -34,6 +39,9 @@ namespace MWF.Mobile.Core.Services
 
         #region Public Members
 
+        public Driver CurrentDriver { get; set; }
+        public Vehicle CurrentVehicle { get; set; }
+
         public MobileData CurrentMobileData { get; set; }
         public MobileApplicationDataChunkContentActivity CurrentDataChunkActivity { get; set; }
 
@@ -41,13 +49,21 @@ namespace MWF.Mobile.Core.Services
 
         #region Public Methods
 
-        public void Commit()
+        public void SendPhotoAndComment(string comment, List<Image> photos)
+        {
+            DriverActivity currentDriver = new DriverActivity(CurrentDriver, CurrentVehicle, Enums.DriverActivity.Comment);
+            currentDriver.Smp = _gpsService.GetSmpData(Enums.ReportReason.Comment);
+
+            currentDriver.Comment = comment;
+            currentDriver.Pictures = photos;
+
+            _gatewayQueuedService.AddToQueue("fwSyncPhotos", currentDriver);
+        }
+
+        public void SendDataChunk()
         {
             var mobileData = CurrentMobileData;
             mobileData.LatestDataChunkSequence++;
-
-            var currentDriver = _repositories.DriverRepository.GetByID(mobileData.DriverId);
-            var currentVehicle = _repositories.VehicleRepository.GetByID(mobileData.VehicleId);
 
             bool deleteMobileData = false;
             string smp = "";
@@ -63,11 +79,11 @@ namespace MWF.Mobile.Core.Services
                 CurrentDataChunkActivity = dataChunkActivity;
             }
                 dataChunkActivity.Activity = 10;
-                dataChunkActivity.DriverId = currentDriver.ID;
+                dataChunkActivity.DriverId = CurrentDriver.ID;
                 dataChunkActivity.EffectiveDate = DateTime.Now;
                 dataChunkActivity.EffectiveDate = dataChunkActivity.EffectiveDate.AddMilliseconds(-dataChunkActivity.EffectiveDate.Millisecond);
                 dataChunkActivity.MwfVersion = "";
-                dataChunkActivity.VehicleRegistration = currentVehicle.Registration;
+                dataChunkActivity.VehicleRegistration = CurrentVehicle.Registration;
 
                 dataChunk.EffectiveDate = dataChunkActivity.EffectiveDate;
                 dataChunk.ID = Guid.NewGuid();

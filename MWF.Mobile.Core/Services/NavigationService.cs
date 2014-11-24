@@ -378,6 +378,10 @@ namespace MWF.Mobile.Core.Services
 
             InsertNavAction<MainViewModel, ReviseQuantityViewModel>(typeof(OrderViewModel));
 
+            // Side bar Activity
+            InsertCustomNavAction<MainViewModel, CameraViewModel>(Camera_CustonAction);
+            InsertCustomBackNavAction<MainViewModel, CameraViewModel>(Camera_CustonAction);
+
         }
 
         #endregion Mappings Definitions
@@ -646,6 +650,34 @@ namespace MWF.Mobile.Core.Services
             {
                 GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
                 this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+            }
+        }
+
+        public void Camera_CustonAction(Object parameters)
+        {
+            if (parameters is NavItem<MobileData>)
+            {
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+
+                if (_mobileData == null)
+                {
+                    this.ShowViewModel<MainViewModel>();
+                    return;
+                }
+
+
+                switch (_mobileData.ProgressState)
+                {
+                    case MWF.Mobile.Core.Enums.InstructionProgress.NotStarted:
+                        this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                        break;
+                    case MWF.Mobile.Core.Enums.InstructionProgress.Driving:
+                        this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                        break;
+                    case MWF.Mobile.Core.Enums.InstructionProgress.OnSite:
+                        this.ShowViewModel<InstructionOnSiteViewModel>(_mobileDataNavItem);
+                        break;
+                }
             }
         }
 

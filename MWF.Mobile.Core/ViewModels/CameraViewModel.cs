@@ -1,7 +1,9 @@
 ﻿using Cirrious.MvvmCross.Plugins.PictureChooser;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class CameraViewModel : BaseFragmentViewModel
+    public class CameraViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
         #region Private Members
 
@@ -59,7 +61,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string CommentHintText
         {
-            get { return "Type Comment"; }
+            get
+            {
+                return (HasPhotoBeenTaken) ? "Type Comment" : "Take a photo to enter a comment";
+            }
         }
 
         public string InstructionsText
@@ -86,13 +91,18 @@ namespace MWF.Mobile.Core.ViewModels
         public ObservableCollection<CameraImageViewModel> ImagesVM
         {
             get { return _imagesVM; }
-            private set { _imagesVM = value; RaisePropertyChanged(() => ImagesVM); }
+            private set
+            {
+                _imagesVM = value; RaisePropertyChanged(() => ImagesVM);
+            }
         }
 
-        public List<Image> Images
+        public bool HasPhotoBeenTaken
         {
-            get { return _images; }
-            set { _images = value; RaisePropertyChanged(() => Images); }
+            get
+            {
+                return (ImagesVM.Count > 0) ? true : false;
+            }
         }
 
         #endregion Public Properties
@@ -102,8 +112,16 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void DoDoneCommand()
         {
-            //TODO: send photo to bluesphere
-            _mainService.SendPhotoAndComment(CommentText, Images);
+            List<Image> images = new List<Image>();
+
+            foreach (var viewModel in ImagesVM)
+            {
+                images.Add(viewModel.Image);
+            }
+
+            _mainService.SendPhotoAndComment(CommentText, images);
+            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = (_mainService.CurrentMobileData == null) ? Guid.Empty : _mainService.CurrentMobileData.ID };
+            _navigationService.MoveToNext(navItem);
         }
 
         private void TakePicture()
@@ -127,13 +145,14 @@ namespace MWF.Mobile.Core.ViewModels
             stream.CopyTo(memoryStream);
 
             int sequenceNumber = (ImagesVM.Any()) ? _imagesVM.Max(i => i.Image.Sequence) + 1 : 1;
-            Image image = new Image() { ID = Guid.NewGuid(), Sequence = sequenceNumber, Bytes = memoryStream.ToArray() };
-
-            Images.Add(image);
+            Image image = new Image() { ID = Guid.NewGuid(), Sequence = sequenceNumber, Bytes = memoryStream.ToArray(), Filename = string.Format("{0} {1}.jpg", _mainService.CurrentDriver.DisplayName, DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss")) };
 
             //Add to view model
             CameraImageViewModel imageViewModel = new CameraImageViewModel(image, this);
             ImagesVM.Add(imageViewModel);
+
+            RaisePropertyChanged(() => HasPhotoBeenTaken);
+            RaisePropertyChanged(() => CommentHintText);
 
         }
 
@@ -143,11 +162,26 @@ namespace MWF.Mobile.Core.ViewModels
         /// <param name="image"></param>
         internal void Delete(CameraImageViewModel image)
         {
-            Images.Remove(image.Image);
             // remove view model
             ImagesVM.Remove(image);
+
+            RaisePropertyChanged(() => HasPhotoBeenTaken);
+            RaisePropertyChanged(() => CommentHintText);
         }
 
         #endregion Private Methods
+
+        #region IBackButtonHandler Implementation
+
+        public Task<bool> OnBackButtonPressed()
+        {
+            var task = new Task<bool>(() => false);
+
+            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = (_mainService.CurrentMobileData == null) ? Guid.Empty : _mainService.CurrentMobileData.ID };
+            _navigationService.GoBack(navItem);
+
+            return task;
+        }
+        #endregion IBackButtonHandler Implementation
     }
 }

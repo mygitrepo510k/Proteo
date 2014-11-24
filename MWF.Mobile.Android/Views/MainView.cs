@@ -58,12 +58,12 @@ namespace MWF.Mobile.Android.Views
 
             _drawer.DrawerOpened += delegate
             {
-                _drawer.OpenDrawer(5);
+                this.InvalidateOptionsMenu();
             };
 
             _drawer.DrawerClosed += delegate
             {
-                _drawer.CloseDrawer(3);
+                this.InvalidateOptionsMenu();
             };
 
             this._drawer.SetDrawerListener(this._drawerToggle);

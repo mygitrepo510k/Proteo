@@ -25,15 +25,14 @@ namespace MWF.Mobile.Android.Views.Fragments
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             var view = this.BindingInflate(Resource.Layout.Fragment_Camera, null);
 
-            var doneButton = view.FindViewById<Button>(Resource.Id.doneButton);
-            doneButton.Click += DoneButton_Click;
+            var doneButton = (Button)view.FindViewById(Resource.Id.doneButton);
+            var imageCommentBox = (EditText)view.FindViewById(Resource.Id.imageComment);
+            var set = this.CreateBindingSet<CameraFragment, CameraViewModel>();
+            set.Bind(doneButton).For(b => b.Enabled).To(vm => vm.HasPhotoBeenTaken);
+            set.Bind(imageCommentBox).For(b => b.Enabled).To(vm => vm.HasPhotoBeenTaken);
+            set.Apply();
 
             return view;
-        }
-
-        public void DoneButton_Click(object sender, EventArgs e)
-        {
-            FragmentManager.PopBackStack();
         }
     }
 }

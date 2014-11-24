@@ -39,6 +39,9 @@ namespace MWF.Mobile.Core.Models
             }
         }
 
+        [XmlAttribute("filename")]
+        public string Filename { get; set; }
+
         [ForeignKey(typeof(SafetyCheckFault))]
         [XmlIgnore]
         public Guid SafetyCheckFaultID 
@@ -84,6 +87,9 @@ namespace MWF.Mobile.Core.Models
 
         [XmlAttribute("comment")]
         public string Comment { get; set; }
+
+        [XmlAttribute("datetimeofupload")]
+        public DateTime DateTimeOfUpload { get; set; }
 
         [XmlArray("images")]
         [XmlArrayItem(typeof(Image), ElementName = "image")]

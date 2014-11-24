@@ -53,11 +53,15 @@ namespace MWF.Mobile.Core.Services
         {
             UploadCameraImageObject imageUpload = new UploadCameraImageObject();
             imageUpload.Smp = _gpsService.GetSmpData(Enums.ReportReason.Comment);
-            imageUpload.ID = new Guid();
+            imageUpload.ID = Guid.NewGuid();
             imageUpload.DriverTitle = CurrentDriver.DisplayName;
             imageUpload.DriverId = CurrentDriver.ID;
             imageUpload.Pictures = photos;
             imageUpload.Comment = comment;
+            imageUpload.DateTimeOfUpload = DateTime.Now;
+
+            if (CurrentMobileData != null)
+                imageUpload.MobileApplicationID = CurrentMobileData.ID;
 
             _gatewayQueuedService.AddToQueue("fwSyncPhotos", imageUpload);
         }

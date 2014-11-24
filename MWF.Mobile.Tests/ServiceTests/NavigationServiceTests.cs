@@ -1389,6 +1389,174 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(InstructionSignatureViewModel), request.ViewModelType);
         }
 
+        [Fact]
+        public void NavigationService_Mappings_Camera_NoInstruction()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var mobileDataRepositoryMock = _fixture.InjectNewMock<IMobileDataRepository>();
+            mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns((MobileData)null);
+
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navItemMock = Mock.Of<NavItem<MobileData>>();
+
+            // Move to the next view model
+            service.MoveToNext(navItemMock);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_Camera_Instruction()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.NotStarted);
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navItemMock = Mock.Of<NavItem<MobileData>>();
+
+            // Move to the next view model
+            service.MoveToNext(navItemMock);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(InstructionViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_Camera_InstructionOnSite()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navItemMock = Mock.Of<NavItem<MobileData>>();
+
+            // Move to the next view model
+            service.MoveToNext(navItemMock);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(InstructionOnSiteViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_BackAction_Camera_NoInstruction()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var mobileDataRepositoryMock = _fixture.InjectNewMock<IMobileDataRepository>();
+            mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns((MobileData)null);
+
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navItemMock = Mock.Of<NavItem<MobileData>>();
+
+            // Move to the next view model
+            service.GoBack(navItemMock);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_BackAction_Camera_Instruction()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.NotStarted);
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navItemMock = Mock.Of<NavItem<MobileData>>();
+
+            // Move to the next view model
+            service.GoBack(navItemMock);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(InstructionViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_BackAction_Camera_InstructionOnSite()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navItemMock = Mock.Of<NavItem<MobileData>>();
+
+            // Move to the next view model
+            service.GoBack(navItemMock);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(InstructionOnSiteViewModel), request.ViewModelType);
+        }
+
         #endregion
 
         #region Helper Functions

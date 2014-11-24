@@ -51,13 +51,15 @@ namespace MWF.Mobile.Core.Services
 
         public void SendPhotoAndComment(string comment, List<Image> photos)
         {
-            DriverActivity currentDriver = new DriverActivity(CurrentDriver, CurrentVehicle, Enums.DriverActivity.Comment);
-            currentDriver.Smp = _gpsService.GetSmpData(Enums.ReportReason.Comment);
+            UploadCameraImageObject imageUpload = new UploadCameraImageObject();
+            imageUpload.Smp = _gpsService.GetSmpData(Enums.ReportReason.Comment);
+            imageUpload.ID = new Guid();
+            imageUpload.DriverTitle = CurrentDriver.DisplayName;
+            imageUpload.DriverId = CurrentDriver.ID;
+            imageUpload.Pictures = photos;
+            imageUpload.Comment = comment;
 
-            currentDriver.Comment = comment;
-            currentDriver.Pictures = photos;
-
-            _gatewayQueuedService.AddToQueue("fwSyncPhotos", currentDriver);
+            _gatewayQueuedService.AddToQueue("fwSyncPhotos", imageUpload);
         }
 
         public void SendDataChunk()

@@ -170,6 +170,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mainService = _fixture.Create<MainService>();
 
             mainService.CurrentMobileData = mobileData;
+            mainService.OnManifestPage = false;
 
             mainService.SendPhotoAndComment(comment, photos);
 
@@ -196,7 +197,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mainService = _fixture.Create<MainService>();
 
-            mainService.CurrentMobileData = null;
+            mainService.OnManifestPage = true;
 
             mainService.SendPhotoAndComment(comment, photos);
 

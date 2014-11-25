@@ -41,6 +41,7 @@ namespace MWF.Mobile.Core.ViewModels
         public void Init(NavItem<MobileData> item)
         {        
             _mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
+            _mainService.OnManifestPage = false;
             _mainService.CurrentMobileData = _mobileData;
         }
 

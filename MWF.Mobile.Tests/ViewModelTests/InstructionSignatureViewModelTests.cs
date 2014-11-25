@@ -53,7 +53,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             
             _mainService = _fixture.InjectNewMock<IMainService>();
             _mainService.Setup(m => m.CurrentDataChunkActivity).Returns(new MobileApplicationDataChunkContentActivity());
-            _mainService.Setup(m => m.SendDataChunk());
+            _mainService.Setup(m => m.SendDataChunk(false));
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 

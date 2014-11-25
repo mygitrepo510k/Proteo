@@ -10,6 +10,11 @@ namespace MWF.Mobile.Core.Models.Instruction
     [XmlRoot("activity")]
     public class MobileApplicationDataChunkContentActivity
     {
+        public MobileApplicationDataChunkContentActivity()
+        {
+            Order = new List<Item>();
+        }
+
         [XmlAttribute("drivertitle")]
         public Guid DriverId { get; set; }
 
@@ -39,5 +44,10 @@ namespace MWF.Mobile.Core.Models.Instruction
 
         [XmlElement("signature")]
         public Signature Signature { get; set; }
+
+        //This is used for sending back the updated order to bluesphere
+        [XmlArray("data")]
+        [XmlArrayItem(typeof(Item), ElementName = "item")]
+        public List<Item> Order { get; set; }
     }
 }

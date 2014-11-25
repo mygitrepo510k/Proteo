@@ -299,7 +299,7 @@ namespace MWF.Mobile.Core.Services
         {
             bool advanceToCommentScreen = false;
 
-            var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to enter a comment for this instruction?","","Yes","No");
+            var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you want to enter a comment for this instruction?","","Yes","No");
     
                     if(isConfirmed)
                     {

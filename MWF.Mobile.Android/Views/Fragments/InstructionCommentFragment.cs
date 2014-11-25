@@ -13,6 +13,7 @@ using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.Converters;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
@@ -25,6 +26,15 @@ namespace MWF.Mobile.Android.Views.Fragments
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             return this.BindingInflate(Resource.Layout.Fragment_InstructionComment, null);
+        }
+
+        public override void OnViewCreated(View view, Bundle savedInstanceState)
+        {
+            base.OnViewCreated(view, savedInstanceState);
+            var submitButton = (Button)view.FindViewById(Resource.Id.ButtonAdvanceInstructionComment);
+            var set = this.CreateBindingSet<InstructionCommentFragment, InstructionCommentViewModel>();
+            set.Bind(submitButton).For(b => b.Enabled).To(vm => vm.CommentText).WithConversion(new StringHasLengthConverter(), null);
+            set.Apply();
         }
        
         

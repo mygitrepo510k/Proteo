@@ -120,7 +120,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             _mainService.SendPhotoAndComment(CommentText, images);
-            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = (_mainService.CurrentMobileData == null) ? Guid.Empty : _mainService.CurrentMobileData.ID };
+            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = (_mainService.OnManifestPage) ? Guid.Empty : _mainService.CurrentMobileData.ID };
             _navigationService.MoveToNext(navItem);
         }
 

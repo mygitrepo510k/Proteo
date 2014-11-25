@@ -16,8 +16,9 @@ namespace MWF.Mobile.Core.Services
         MobileApplicationDataChunkContentActivity CurrentDataChunkActivity { get; set; }
         Driver CurrentDriver { get; set; }
         Vehicle CurrentVehicle { get; set; }
+        bool OnManifestPage { get; set; }
 
-        void SendDataChunk();
+        void SendDataChunk(bool revisedQuantity = false);
         void SendPhotoAndComment(string comment, List<Image> photos);
     }
 }

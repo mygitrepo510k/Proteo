@@ -45,6 +45,8 @@ namespace MWF.Mobile.Core.Services
         public MobileData CurrentMobileData { get; set; }
         public MobileApplicationDataChunkContentActivity CurrentDataChunkActivity { get; set; }
 
+        public bool OnManifestPage { get; set; }
+
         #endregion Public Members
 
         #region Public Methods
@@ -60,13 +62,13 @@ namespace MWF.Mobile.Core.Services
             imageUpload.Comment = comment;
             imageUpload.DateTimeOfUpload = DateTime.Now;
 
-            if (CurrentMobileData != null)
+            if (!OnManifestPage)
                 imageUpload.MobileApplicationID = CurrentMobileData.ID;
 
             _gatewayQueuedService.AddToQueue("fwSyncPhotos", imageUpload);
         }
 
-        public void SendDataChunk()
+        public void SendDataChunk(bool updateQuantity = false)
         {
             var mobileData = CurrentMobileData;
             mobileData.LatestDataChunkSequence++;
@@ -95,35 +97,44 @@ namespace MWF.Mobile.Core.Services
                 dataChunk.ID = Guid.NewGuid();
                 dataChunk.MobileApplicationDataID = mobileData.ID;
                 dataChunk.SyncState = Enums.SyncState.Add;
-              
 
-            switch (mobileData.ProgressState)
-            {
-                case Enums.InstructionProgress.Driving:
-                    smp = _gpsService.GetSmpData(Enums.ReportReason.Drive);
-                    dataChunkActivity.Title = "DRIVE";
-                    
-                    dataChunk.Title = "DRIVE";
-                    break;
+                if (updateQuantity)
+                {
+                    smp = _gpsService.GetSmpData(Enums.ReportReason.ActiveReport);
+                    dataChunkActivity.Title = "REVISED QUANTITY";
 
-                case Enums.InstructionProgress.OnSite:
-                    smp = _gpsService.GetSmpData(Enums.ReportReason.OnSite);
-                    dataChunkActivity.Title = "ONSITE";
-                    
-                    dataChunk.Title = "ONSITE";
+                    dataChunk.Title = "REVISED QUANTITY";
+                }
+                else
+                {
+                    switch (mobileData.ProgressState)
+                    {
+                        case Enums.InstructionProgress.Driving:
+                            smp = _gpsService.GetSmpData(Enums.ReportReason.Drive);
+                            dataChunkActivity.Title = "DRIVE";
 
-                    break;
+                            dataChunk.Title = "DRIVE";
+                            break;
 
-                case Enums.InstructionProgress.Complete:
-                    smp = _gpsService.GetSmpData(Enums.ReportReason.Complete);
-                    dataChunkActivity.Title = "COMPLETE";
-           
-                    dataChunk.Title = "COMPLETE";
+                        case Enums.InstructionProgress.OnSite:
+                            smp = _gpsService.GetSmpData(Enums.ReportReason.OnSite);
+                            dataChunkActivity.Title = "ONSITE";
 
-                    deleteMobileData = true;
+                            dataChunk.Title = "ONSITE";
 
-                    break;
-            } 
+                            break;
+
+                        case Enums.InstructionProgress.Complete:
+                            smp = _gpsService.GetSmpData(Enums.ReportReason.Complete);
+                            dataChunkActivity.Title = "COMPLETE";
+
+                            dataChunk.Title = "COMPLETE";
+
+                            deleteMobileData = true;
+
+                            break;
+                    }
+                }
 
             dataChunkActivity.Smp = smp;
             dataChunkActivity.Sequence = mobileData.LatestDataChunkSequence;

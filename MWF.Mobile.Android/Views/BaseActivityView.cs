@@ -207,11 +207,6 @@ namespace MWF.Mobile.Android.Views
             this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
         }
 
-
-        public override bool OnMenuItemSelected(int featureId, global::Android.Views.IMenuItem item)
-        {
-            return base.OnMenuItemSelected(featureId, item);
-        }
         #endregion
 
     }

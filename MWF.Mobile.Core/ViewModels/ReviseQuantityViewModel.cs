@@ -20,6 +20,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private readonly IUserInteraction _userInteraction;
+        private readonly IMainService _mainService;
         private MobileData _mobileData;
         private Item _order;
 
@@ -27,11 +28,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public ReviseQuantityViewModel(INavigationService navigationService, IRepositories repositories, IUserInteraction userInteraction)
+        public ReviseQuantityViewModel(INavigationService navigationService, IRepositories repositories, IUserInteraction userInteraction, IMainService mainService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
             _userInteraction = userInteraction;
+            _mainService = mainService;
         }
 
         public void Init(NavItem<Item> item)
@@ -85,16 +87,12 @@ namespace MWF.Mobile.Core.ViewModels
                 if(order.ID == _order.ID)
                 {
                     order.Quantity = OrderQuantity;
+                    _mainService.CurrentDataChunkActivity.Order.Add(order);
                 }
             }
 
-            var instructionToUpdate = _repositories.MobileDataRepository.GetByID(_mobileData.ID);
-            if (instructionToUpdate != null)
-            {
-                var progress = instructionToUpdate.ProgressState;
-                _repositories.MobileDataRepository.Delete(instructionToUpdate);
-            }
-            _repositories.MobileDataRepository.Insert(_mobileData);
+            _mainService.CurrentMobileData = _mobileData;
+            _mainService.SendDataChunk(true);
 
             NavItem<Item> navItem = new NavItem<Item>() { ID = _order.ID, ParentID = _mobileData.ID };
             _navigationService.MoveToNext(navItem);

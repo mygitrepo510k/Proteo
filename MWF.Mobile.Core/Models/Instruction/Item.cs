@@ -57,6 +57,7 @@ namespace MWF.Mobile.Core.Models.Instruction
 
         [ForeignKey(typeof(Order))]
         [XmlIgnore]
+        [JsonIgnore]
         public Guid OrderId { get; set; }
 
         [ChildRelationship(typeof(ItemAdditional), RelationshipCardinality.OneToOne)]

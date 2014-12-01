@@ -79,19 +79,19 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void ReviseQuantity()
         {
-            _order.Quantity = OrderQuantity;
-            var orderID = _order.ID;
 
             foreach (var order in _mobileData.Order.Items)
             {
                 if(order.ID == _order.ID)
                 {
                     order.Quantity = OrderQuantity;
+                    order.Additional.ConfirmQuantity.Value = OrderQuantity;
                     _mainService.CurrentDataChunkActivity.Order.Add(order);
                 }
             }
 
             _mainService.CurrentMobileData = _mobileData;
+            //This value gets updated in HE.
             _mainService.SendDataChunk(true);
 
             NavItem<Item> navItem = new NavItem<Item>() { ID = _order.ID, ParentID = _mobileData.ID };

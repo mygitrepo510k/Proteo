@@ -51,6 +51,12 @@ namespace MWF.Mobile.Core.Services
 
         #region Public Methods
 
+        /// <summary>
+        /// This method sends photos and comments to bluesphere, if the sender is on an
+        /// instruction page then the instruction will be associated with the photos
+        /// </summary>
+        /// <param name="comment">The comment for the photos</param>
+        /// <param name="photos">The collection of photos to be sent up</param>
         public void SendPhotoAndComment(string comment, List<Image> photos)
         {
             UploadCameraImageObject imageUpload = new UploadCameraImageObject();
@@ -62,12 +68,19 @@ namespace MWF.Mobile.Core.Services
             imageUpload.Comment = comment;
             imageUpload.DateTimeOfUpload = DateTime.Now;
 
+            //If the user is not on the manifest screen they should be on an instruction page
             if (!OnManifestPage)
                 imageUpload.MobileApplicationID = CurrentMobileData.ID;
 
+            //Sends photos up to bluesphere
             _gatewayQueuedService.AddToQueue("fwSyncPhotos", imageUpload);
         }
 
+        /// <summary>
+        /// This method sends the MobileApplicationDataChunk up to bluesphere,
+        /// this is called for when the instruction goes into Drive, OnSite and is Completed
+        /// </summary>
+        /// <param name="updateQuantity"></param>
         public void SendDataChunk(bool updateQuantity = false)
         {
             var mobileData = CurrentMobileData;
@@ -75,10 +88,14 @@ namespace MWF.Mobile.Core.Services
 
             bool deleteMobileData = false;
             string smp = "";
-            MobileApplicationDataChunk dataChunk = new MobileApplicationDataChunk();
+            
+            //These variables make up the Data variable in the MobileApplicationDataChunk object.
             MobileApplicationDataChunkContentActivity dataChunkActivity = CurrentDataChunkActivity;
             MobileApplicationDataChunkContentActivities dataChunkActivities = new MobileApplicationDataChunkContentActivities { MobileApplicationDataChunkContentActivitiesObject = new List<MobileApplicationDataChunkContentActivity>() };
             MobileApplicationDataChunkContentOrder dataChunkOrder = new MobileApplicationDataChunkContentOrder { MobileApplicationDataChunkContentOrderActivities = new List<MobileApplicationDataChunkContentActivities>() };
+            
+            //The data chunk to be sent.
+            MobileApplicationDataChunk dataChunk = new MobileApplicationDataChunk();
             MobileApplicationDataChunkCollection dataChunkCollection = new MobileApplicationDataChunkCollection { MobileApplicationDataChunkCollectionObject = new List<MobileApplicationDataChunk>() };
 
             if (dataChunkActivity == null)
@@ -86,6 +103,7 @@ namespace MWF.Mobile.Core.Services
                 dataChunkActivity = new MobileApplicationDataChunkContentActivity();
                 CurrentDataChunkActivity = dataChunkActivity;
             }
+
                 dataChunkActivity.Activity = 10;
                 dataChunkActivity.DriverId = CurrentDriver.ID;
                 dataChunkActivity.EffectiveDate = DateTime.Now;
@@ -150,6 +168,7 @@ namespace MWF.Mobile.Core.Services
 
             _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
 
+            //Delete the instruction from the repository if its completed else just update it.
             if (deleteMobileData)
             {
                 var oldMobileData = _repositories.MobileDataRepository.GetByID(mobileData.ID);

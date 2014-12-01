@@ -6,7 +6,6 @@ using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
-    [XmlRoot("Confirm_Quantity")]
     public class ConfirmQuantity : IBlueSphereEntity
     {
         public ConfirmQuantity()
@@ -20,7 +19,7 @@ namespace MWF.Mobile.Core.Models.Instruction
         public Guid ID { get; set; }
 
         [JsonProperty("#text")]
-        [XmlElement("")]
+        [XmlText]
         public string Value { get; set; }
 
         [JsonProperty("@DisplayName")]

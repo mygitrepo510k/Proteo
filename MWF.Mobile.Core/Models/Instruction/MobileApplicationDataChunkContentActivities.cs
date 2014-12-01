@@ -7,7 +7,6 @@ using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
-    [XmlRoot("activities")]
     public class MobileApplicationDataChunkContentActivities
     {
         [XmlElement("activity")]

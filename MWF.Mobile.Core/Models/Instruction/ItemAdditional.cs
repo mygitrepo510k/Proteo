@@ -22,10 +22,12 @@ namespace MWF.Mobile.Core.Models.Instruction
 
         [ChildRelationship(typeof(ConfirmQuantity), RelationshipCardinality.OneToOne)]
         [JsonProperty("Confirm_Quantity")]
+        [XmlElement("Confirm_Quantity")]
         public ConfirmQuantity ConfirmQuantity { get; set; }
 
-        [ChildRelationship(typeof(DeliveryDescription), RelationshipCardinality.OneToOne)]
+        [ChildRelationship(typeof(DeliveryDescription), RelationshipCardinality.OneToZeroOrOne)]
         [JsonProperty("Delivery_Description")]
+        [XmlElement("Delivery_Description")]
         public DeliveryDescription DeliveryDescription { get; set; }
 
         [JsonProperty("BarcodeScanRequiredForDelivery")]

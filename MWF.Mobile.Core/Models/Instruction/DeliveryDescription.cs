@@ -6,7 +6,6 @@ using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
-    [XmlRoot("Delivery_Description")]
     public class DeliveryDescription : IBlueSphereEntity
     {
         public DeliveryDescription()
@@ -14,14 +13,15 @@ namespace MWF.Mobile.Core.Models.Instruction
             ID = Guid.NewGuid();
         }
 
-        [PrimaryKey]
         [Unique]
+        [PrimaryKey]
         [XmlIgnore]
         public Guid ID { get; set; }
 
         [JsonProperty("#text")]
-        [XmlElement("")]
+        [XmlText]
         public string Value { get; set; }
+
         [JsonProperty("@DisplayName")]
         [XmlAttribute("DisplayName")]
         public string DisplayName { get; set; }

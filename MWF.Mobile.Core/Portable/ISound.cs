@@ -8,6 +8,6 @@ namespace MWF.Mobile.Core.Portable
 {
     public interface ISound
     {
-        void Play(Enum sound);
+        void Play();
     }
 }

@@ -13,6 +13,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 using System.Xml.Linq;
+using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -22,9 +23,11 @@ namespace MWF.Mobile.Core.Services
 
         private readonly IDeviceInfo _deviceInfo = null;
         private readonly IHttpService _httpService = null;
-        private readonly Portable.IReachability _reachability = null;
+        private readonly IReachability _reachability = null;
+        private readonly ISound _sound;
         private readonly IRepositories _repositories;
         private readonly IDeviceRepository _deviceRepository;
+
 
         private readonly IMvxMessenger _messenger = null;
         private readonly IGatewayService _gatewayService = null;
@@ -39,12 +42,13 @@ namespace MWF.Mobile.Core.Services
         private int _dataSpan = -1;
 
 
-        public GatewayPollingService(IDeviceInfo deviceInfo, IHttpService httpService, Portable.IReachability reachability, IRepositories repositories, IMvxMessenger messenger,
+        public GatewayPollingService(IDeviceInfo deviceInfo, IHttpService httpService, IReachability reachability, ISound sound, IRepositories repositories, IMvxMessenger messenger,
             IGatewayService gatewayService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService)
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
             _reachability = reachability;
+            _sound = sound;
             _repositories = repositories;
             _messenger = messenger;
             _gatewayService = gatewayService;
@@ -115,18 +119,6 @@ namespace MWF.Mobile.Core.Services
 
                     instruction.VehicleId = _startupService.CurrentVehicle.ID;
 
-                    //Sends acknowledgement to bluesphere that the device has received the new instructions
-                    var syncAckActions = instructions.Select(i => new Models.GatewayServiceRequest.Action<Models.SyncAck>
-                    {
-                        Command = "fwSyncAck",
-                        Parameters = new[]
-                        {
-                            new Parameter { Name = "MobileApplicationDataID", Value = i.ID.ToString() },
-                            new Parameter { Name = "SyncAck", Value = "1" },
-                        }
-                    });
-
-                    _gatewayQueuedService.AddToQueue(syncAckActions);
                     switch (instruction.SyncState)
                     {
                         case SyncState.Add:
@@ -153,6 +145,21 @@ namespace MWF.Mobile.Core.Services
                             break;
                     }
                 }
+                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instructions.ToList(), null, "Manifest Update", "Close");
+                _sound.Play();
+
+                //Sends acknowledgement to bluesphere that the device has received the new instructions
+                var syncAckActions = instructions.Select(i => new Models.GatewayServiceRequest.Action<Models.SyncAck>
+                {
+                    Command = "fwSyncAck",
+                    Parameters = new[]
+                    {
+                        new Parameter { Name = "MobileApplicationDataID", Value = i.ID.ToString() },
+                        new Parameter { Name = "SyncAck", Value = "1" },
+                    }
+                });
+
+                _gatewayQueuedService.AddToQueue(syncAckActions);
             }
         }
 

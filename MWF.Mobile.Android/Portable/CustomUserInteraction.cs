@@ -11,6 +11,9 @@ using Cirrious.CrossCore.Droid.Platform;
 using Cirrious.MvvmCross.Plugins.PictureChooser.Droid;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Android.Views;
+using MWF.Mobile.Core.Models.Instruction;
+using System.Collections.Generic;
 
 namespace MWF.Mobile.Android.Portable
 {
@@ -24,17 +27,60 @@ namespace MWF.Mobile.Android.Portable
 
         #region ICustomUserInteraction Members
 
+        public void PopUpInstructionNotifaction(List<MobileData> alteredInstructions, Action done = null, string title = "", string okButton = "OK")
+        {
+            Application.SynchronizationContext.Post(ignored =>
+            {
+
+                if (CurrentActivity == null) return;
+
+                var customView = CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_InstructionNotification, null);
+
+                var header = (TextView)customView.FindViewById(Resource.Id.listHeader);
+                header.SetText("Altered Instructions", TextView.BufferType.Normal);
+
+                var listView = (ListView)customView.FindViewById(Resource.Id.instuctionList);
+
+                //var groupView = (BindableGroupListView)customView.FindViewById(Resource.Id.instuctionList);
+
+                //BindableGroupListAdapter grouplist = new BindableGroupListAdapter(CurrentActivity);
+
+                //grouplist.ItemsSource = (IEnumerable<MobileData>)alteredInstructions;
+                //grouplist.ItemTemplateId = Resource.Layout.Item_InstructionNotificationText;
+
+                var listAdapter = new ArrayAdapter<MobileData>(CurrentActivity, Resource.Layout.Item_InstructionNotificationText, alteredInstructions);
+                listView.Adapter = listAdapter;
+
+
+                new AlertDialog.Builder(CurrentActivity)
+                    .SetView(customView)
+                    
+                        .SetTitle(title)
+
+                        .SetPositiveButton(okButton, delegate
+                        {
+                            if (done != null)
+                                done();
+                        })
+                        .Show();
+
+            }, null);
+        }
+
+        public Task PopUpInstructionNotifactionAsync(System.Collections.Generic.List<Core.Models.Instruction.MobileData> alteredInstructions, string title = "", string okButton = "OK")
+        {
+            throw new NotImplementedException();
+        }
+
         public void PopUpImage(byte[] bytes, string message, Action done = null, string title = "", string okButton = "OK")
         {
             Application.SynchronizationContext.Post(ignored =>
             {
 
-
                 if (CurrentActivity == null) return;
 
                 var customView =  CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_Image, null);
                 var imageView = (ImageView) customView.FindViewById(Resource.Id.popUpImageView);
-
 
                 MvxInMemoryImageValueConverter converter = new MvxInMemoryImageValueConverter();
                 var bitmap = (Bitmap) converter.Convert(bytes, typeof(Bitmap), null, null);
@@ -100,8 +146,16 @@ namespace MWF.Mobile.Android.Portable
             imageView.LayoutParameters.Height = newBmapHeight;
 
         }
+        
 
 
         #endregion
+
+
+        public void OnClick(IDialogInterface dialog, int which)
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

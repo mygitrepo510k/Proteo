@@ -206,6 +206,7 @@
     <Compile Include="Views\Fragments\TrailerListFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
+    <Compile Include="Views\ListViewOnClickListnerAdapter.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\BaseActivityView.cs" />
     <Compile Include="Views\StartupView.cs" />
@@ -302,6 +303,12 @@
     <AndroidResource Include="Resources\layout\Item_SafetyCheck.axml" />
     <AndroidResource Include="Resources\layout\Fragment_SafetyCheckFaultView.axml" />
     <AndroidResource Include="Resources\layout\Fragment_Camera.axml" />
+    <AndroidResource Include="Resources\layout\PopUp_InstructionNotification.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_InstructionNotificationText.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />

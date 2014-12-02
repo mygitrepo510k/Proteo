@@ -81,5 +81,13 @@ namespace MWF.Mobile.Core.Models.Instruction
 
         [XmlIgnore]
         public int LatestDataChunkSequence { get; set; }
+
+
+        public override string ToString()
+        {
+            return this.Reference;
+        }
+
+
     }
 }

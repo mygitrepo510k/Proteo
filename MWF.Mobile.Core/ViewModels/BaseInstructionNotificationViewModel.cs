@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
+    /// <summary>
+    /// This base class is used to recieve notifications for when instructions that are being viewed are updated or deleted.
+    /// </summary>
     public abstract class BaseInstructionNotificationViewModel
         : BaseFragmentViewModel
     {

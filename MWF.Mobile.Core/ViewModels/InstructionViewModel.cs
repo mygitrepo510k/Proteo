@@ -30,7 +30,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand<Item> _showOrderCommand;
         private MvxCommand _editTrailerCommand;
 
-        #endregion
+        #endregion Private Fields
 
         #region Construction
 
@@ -48,7 +48,7 @@ namespace MWF.Mobile.Core.ViewModels
             _mainService.CurrentMobileData = _mobileData;
         }
 
-        #endregion
+        #endregion Construction
 
         #region Public Properties
 
@@ -234,13 +234,13 @@ namespace MWF.Mobile.Core.ViewModels
             if (instructionID == _mainService.CurrentMobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Do you want the screen to refresh?", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK", "Cancel");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");
                 else
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
             }
         }
 
-        #endregion
+        #endregion BaseInstructionNotificationViewModel
 
 
     }

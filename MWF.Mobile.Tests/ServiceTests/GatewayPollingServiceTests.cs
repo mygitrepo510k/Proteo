@@ -28,7 +28,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         private MvxSubscriptionToken _pollTimerToken;
         private ApplicationProfile _applicationProfile;
         private Mock<IGatewayService> _gatewayMock;
-        private Mock<ICustomUserInteraction> _customUserInteractionMock;
+        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+        private Mock<IMvxMessenger> _mockMvxMessenger;
 
         protected override void AdditionalSetup()
         {
@@ -45,9 +46,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var applicationRepo = _fixture.InjectNewMock<IApplicationProfileRepository>();
             applicationRepo.Setup(ar => ar.GetAll()).Returns(new List<ApplicationProfile>() { _applicationProfile});
 
-            _customUserInteractionMock = Ioc.RegisterNewMock<ICustomUserInteraction>();
-
-            _customUserInteractionMock.Setup(cui => cui.PopUpInstructionNotifaction(It.IsAny<List<MobileData>>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
+            _mockCustomUserInteraction.Setup(cui => cui.PopUpInstructionNotifaction(It.IsAny<List<MobileData>>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<List<MobileData>, Action, string, string>((s1, a, s2, s3) => a.Invoke());
 
             var mockStartupService = Mock.Of<IStartupService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
@@ -57,15 +57,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             IRepositories repos = Mock.Of<IRepositories>(r => r.DeviceRepository == deviceRepo);
             _fixture.Register<IRepositories>(() => repos);
 
-            var messenger = new MvxMessengerHub();
-            _fixture.Register<IMvxMessenger>(() => messenger);
+            _mockMvxMessenger = new Mock<IMvxMessenger>();
+            _fixture.Inject<IMvxMessenger>(_mockMvxMessenger.Object);
 
-            // We don't have the GatewayQueueTimerService so replicate the trigger -> publish elapsed message functionality
-            _pollTimerToken = messenger.Subscribe<Core.Messages.GatewayPollTimerCommandMessage>(m =>
-            {
-                if (m.Command == Core.Messages.GatewayPollTimerCommandMessage.TimerCommand.Trigger)
-                    messenger.Publish(new Core.Messages.GatewayPollTimerElapsedMessage(this));
-            });
         }
 
         [Fact]
@@ -149,6 +143,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockMobileDataRepo.Verify(mdr => mdr.Delete(It.Is<MobileData>(md => md.ID == id)), Times.Once);
             // Check that we insert the new instruction
             _mockMobileDataRepo.Verify(mdr => mdr.Insert(It.Is<MobileData>(md => md.ID == id)), Times.Once);
+            // Check that it publishes the updated instruction to the current view model
+            _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => id.ToString() == inm.InstructionID.ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update)), Times.Once);
         }
 
         [Fact]
@@ -172,6 +168,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(g => g.ToString() == id.ToString())), Times.Once);
             // Check we delete the instruction
             _mockMobileDataRepo.Verify(mdr => mdr.Delete(It.Is<MobileData>(md => md.ID == id)), Times.Once);
+            // Check that it publishes the deleted instruction to the current view model
+            _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => id.ToString() == inm.InstructionID.ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete)), Times.Once);
+
         }
 
         [Fact]
@@ -218,7 +217,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var id2 = new Guid();
             var id3 = new Guid();
             Guid[] ids = { id1, id2, id3 };
-            CreateMultipleMobileDatas(SyncState.Add, ids);
+            CreateMultipleMobileDatas(SyncState.Update, ids);
 
             List<Guid> getList = new List<Guid>();
             List<MobileData> deleteList = new List<MobileData>();
@@ -266,6 +265,15 @@ namespace MWF.Mobile.Tests.ServiceTests
                 Assert.Equal(item.ID, ids[insertCounter]);
                 insertCounter++;
             }
+
+            var publishCounter = 0;
+            // Check that we get the instructions
+            foreach (var item in getList)
+            {
+                _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => inm.InstructionID.ToString() == ids[publishCounter].ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update)), Times.Exactly(3));
+                publishCounter++;
+            }
+
         }
 
         [Fact]
@@ -277,7 +285,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var id2 = new Guid();
             var id3 = new Guid();
             Guid[] ids = { id1, id2, id3 };
-            CreateMultipleMobileDatas(SyncState.Add, ids);
+            CreateMultipleMobileDatas(SyncState.Delete, ids);
 
             List<Guid> getList = new List<Guid>();
             List<MobileData> deleteList = new List<MobileData>();
@@ -313,6 +321,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                 Assert.Equal(item.ID, ids[deleteCounter]);
                 deleteCounter++;
             }
+
+            var publishCounter = 0;
+            // Check that we get the instructions
+            foreach (var item in getList)
+            {
+                _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => inm.InstructionID.ToString() == ids[publishCounter].ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete)), Times.Exactly(3));
+                publishCounter++;
+            }
         }
 
         /// <summary>
@@ -337,6 +353,65 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockGatewayQueuedService.Verify(mgqs => 
                 mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task GatewayPollingService_SingleInstructionNotficationPopUp()
+        {
+            base.ClearAll();
+            var id = new Guid();
+            CreateSingleMobileData(SyncState.Add, id);
+
+            _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            var service = _fixture.Create<GatewayPollingService>();
+
+            service.StartPollingTimer();
+            service.PollForInstructions();
+
+            // Allow the timer to process the queue
+            await Task.Delay(2000);
+
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpInstructionNotifaction(It.Is<List<MobileData>>(lmd => lmd.Count == 1), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+            _mockGatewayQueuedService.Verify(mgqs =>
+             mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task GatewayPollingService_MultipleInstructionNotficationPopUp()
+        {
+            base.ClearAll();
+
+            var id1 = new Guid();
+            var id2 = new Guid();
+            var id3 = new Guid();
+            Guid[] ids = { id1, id2, id3 };
+            CreateMultipleMobileDatas(SyncState.Delete, ids);
+
+            List<Guid> getList = new List<Guid>();
+            List<MobileData> deleteList = new List<MobileData>();
+
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.IsAny<Guid>()))
+                               .Callback<Guid>((md) => { getList.Add(md); });
+
+            _mockMobileDataRepo.Setup(mdr => mdr.Delete(It.IsAny<MobileData>()))
+                               .Callback<MobileData>((md) => { deleteList.Add(md); });
+
+            _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            var service = _fixture.Create<GatewayPollingService>();
+
+            service.StartPollingTimer();
+            service.PollForInstructions();
+
+            // Allow the timer to process the queue
+            await Task.Delay(100);
+
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpInstructionNotifaction(It.Is<List<MobileData>>(lmd => lmd.Count == ids.Count()), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+            _mockGatewayQueuedService.Verify(mgqs =>
+             mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
         }
 
         #region Helpers

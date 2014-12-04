@@ -146,8 +146,7 @@ namespace MWF.Mobile.Android.Portable
         /// <param name="done">The action that is taken when the postive button is pressed</param>
         /// <param name="title">Title of the modal</param>
         /// <param name="okButton">The text of the positive button</param>
-        /// <param name="cancelButton">The text of the negative button</param>
-        public void PopUpCurrentInstructionNotifaction(string message, Action done = null, string title = "", string okButton = "OK", string cancelButton = "")
+        public void PopUpCurrentInstructionNotifaction(string message, Action done = null, string title = "", string okButton = "OK")
         {
 
             Application.SynchronizationContext.Post(ignored =>
@@ -175,10 +174,6 @@ namespace MWF.Mobile.Android.Portable
                                if (done != null)
                                    done();
                            });
-
-               //Create the negative button if text is passed through
-               if (cancelButton != "")
-                   notificationDialog.SetNegativeButton(cancelButton, delegate { });
 
                CurrentInstructionNotificationDialog = notificationDialog.Create();
                CurrentInstructionNotificationDialog.Show();

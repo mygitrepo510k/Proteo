@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 using Xunit;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using Cirrious.MvvmCross.Plugins.Messenger;
+using MWF.Mobile.Core.Enums;
+using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -27,9 +29,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         private IFixture _fixture;
         private MobileData _mobileData;
-        private Mock<IMobileDataRepository> _mobileDataRepo;
+        private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<INavigationService> _navigationService;
-        private Mock<IMvxMessenger> _mockMessenger;
+        private IMvxMessenger _messenger;
+        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+        private Mock<IMainService> _mockMainService;
+
+
 
         protected override void AdditionalSetup()
         {
@@ -38,15 +44,20 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData = _fixture.Create<MobileData>();
             _mobileData.GroupTitle = "Run1010";
 
-            _mobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            _mobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+            _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
-            _mockMessenger = new Mock<IMvxMessenger>();
-            Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
+            _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
+
+            _messenger = _fixture.Create<IMvxMessenger>();
+            Ioc.RegisterSingleton<IMvxMessenger>(_messenger);
+
+            _mockMainService = _fixture.InjectNewMock<IMainService>();
+            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
 
         }
 
@@ -147,14 +158,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
 
-            Assert.Equal(_mobileData.Order.Addresses[0].Lines.Replace("|","\n") + "\n" + _mobileData.Order.Addresses[0].Postcode, instructionVM.Address);
+            Assert.Equal(_mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode, instructionVM.Address);
 
         }
 
         [Fact]
         public void InstructionVM_ProgressButtonText_NotStarted()
         {
-            base.ClearAll();         
+            base.ClearAll();
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
@@ -168,10 +179,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.True(_mobileData.ProgressState == Core.Enums.InstructionProgress.Driving);
 
-            _mobileDataRepo.Verify(mdr => mdr.Update(It.Is<MobileData>(md => md == _mobileData)), Times.Once);
-
-
-
+            _mockMobileDataRepo.Verify(mdr => mdr.Update(It.Is<MobileData>(md => md == _mobileData)), Times.Once);
 
         }
 
@@ -192,7 +200,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.True(_mobileData.ProgressState == Core.Enums.InstructionProgress.OnSite);
 
-            _mobileDataRepo.Verify(mdr => mdr.Update(It.Is<MobileData>(md => md == _mobileData)), Times.Once);
+            _mockMobileDataRepo.Verify(mdr => mdr.Update(It.Is<MobileData>(md => md == _mobileData)), Times.Once);
 
         }
 
@@ -215,7 +223,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.True(_mobileData.ProgressState == Core.Enums.InstructionProgress.OnSite);
 
             // Should have told navigation service to move on
-            _navigationService.Verify(ns => ns.MoveToNext(It.Is<NavItem<MobileData>>(ni => ni.ID == _mobileData.ID )), Times.Once);
+            _navigationService.Verify(ns => ns.MoveToNext(It.Is<NavItem<MobileData>>(ni => ni.ID == _mobileData.ID)), Times.Once);
 
         }
 
@@ -287,6 +295,54 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.False(instructionVM.ChangeTrailerAllowed);
 
         }
+
+        [Fact]
+        public void InstructionVM_CheckInstructionNotification_Delete()
+        {
+
+            base.ClearAll();
+
+            _mockCustomUserInteraction.Setup(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+
+            var instructionVM = _fixture.Create<InstructionViewModel>();
+
+            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+
+            instructionVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+            _navigationService.Verify(ns => ns.GoToManifest(), Times.Once);
+
+        }
+
+
+        [Fact]
+        public void InstructionVM_CheckInstructionNotification_Update_Confirm()
+        {
+
+            base.ClearAll();
+
+            _mockCustomUserInteraction.Setup(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+
+            var instructionVM = _fixture.Create<InstructionViewModel>();
+
+            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+
+            _mobileData.GroupTitle = "UpdateTitle";
+
+            instructionVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(2));
+
+            Assert.Equal(_mobileData.GroupTitle, instructionVM.RunID);
+
+        }
         #endregion Test
+
     }
 }

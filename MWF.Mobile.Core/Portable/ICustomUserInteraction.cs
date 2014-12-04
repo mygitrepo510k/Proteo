@@ -11,6 +11,6 @@ namespace MWF.Mobile.Core.Portable
         Task PopUpImageAsync(byte[] bytes, string message, string title = "", string okButton = "OK");
 
         void PopUpInstructionNotifaction(List<MobileData> alteredInstructions, Action done = null, string title = "", string okButton = "OK");
-        void PopUpCurrentInstructionNotifaction(string message, Action done = null, string title = "", string okButton = "OK", string cancelButton = "");
+        void PopUpCurrentInstructionNotifaction(string message, Action done = null, string title = "", string okButton = "OK");
     }
 }

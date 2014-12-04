@@ -11,10 +11,13 @@ using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
+using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class InstructionViewModel : BaseFragmentViewModel, IBackButtonHandler
+    public class InstructionViewModel : BaseInstructionNotificationViewModel, IBackButtonHandler
     {
 
         #region Private Fields
@@ -39,8 +42,8 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         public void Init(NavItem<MobileData> item)
-        {        
-            _mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
+        {
+            GetMobileDataFromRepository(item.ID);
             _mainService.OnManifestPage = false;
             _mainService.CurrentMobileData = _mobileData;
         }
@@ -55,11 +58,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string DepartDateTime { get { return _mobileData.Order.Depart.ToStringIgnoreDefaultDate(); } }
 
-        public string Address { get { return _mobileData.Order.Addresses[0].Lines.Replace("|","\n") + "\n" + _mobileData.Order.Addresses[0].Postcode; } }
+        public string Address { get { return _mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode; } }
 
-        public string Notes 
-        { 
-            get 
+        public string Notes
+        {
+            get
             {
                 if (_mobileData.Order.Instructions == null || !_mobileData.Order.Instructions.Any()) return string.Empty;
                 else return string.Join("\n", _mobileData.Order.Instructions.Select(i => i.Lines));
@@ -71,15 +74,15 @@ namespace MWF.Mobile.Core.ViewModels
         public string TrailerReg { get { return (_mobileData.Order.Additional.Trailer == null) ? "No Trailer" : _mobileData.Order.Additional.Trailer.TrailerId; } }
 
 
-        public bool ChangeTrailerAllowed 
-        { 
-            get 
+        public bool ChangeTrailerAllowed
+        {
+            get
             {
                 return _mobileData.Order.Additional.IsTrailerConfirmationEnabled &&
                       _mobileData.Order.Type == Enums.InstructionType.Collect &&
                       (_mobileData.ProgressState == Enums.InstructionProgress.NotStarted
                       || _mobileData.ProgressState == Enums.InstructionProgress.Driving);
-            } 
+            }
         }
 
         public string ArriveLabelText { get { return "Arrive"; } }
@@ -94,11 +97,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string TrailersLabelText { get { return "Trailer"; } }
 
-        public string TrailerChangeButtonText { get { return "Change Trailer";  } }
+        public string TrailerChangeButtonText { get { return "Change Trailer"; } }
 
-        public string ProgressButtonText 
-        { 
-            get 
+        public string ProgressButtonText
+        {
+            get
             {
 
                 string retVal;
@@ -123,7 +126,7 @@ namespace MWF.Mobile.Core.ViewModels
                 }
 
                 return retVal;
-            } 
+            }
         }
 
         public ICommand ProgressInstructionCommand
@@ -146,7 +149,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return(_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(() => EditTrailer()));
+                return (_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(() => EditTrailer()));
             }
         }
 
@@ -181,7 +184,7 @@ namespace MWF.Mobile.Core.ViewModels
             else if (_mobileData.ProgressState == Enums.InstructionProgress.Driving)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.OnSite;
-            }           
+            }
 
             _repositories.MobileDataRepository.Update(_mobileData);
 
@@ -192,6 +195,12 @@ namespace MWF.Mobile.Core.ViewModels
         {
             NavItem<Item> navItem = new NavItem<Item>() { ID = order.ID, ParentID = _mobileData.ID };
             _navigationService.MoveToNext(navItem);
+        }
+
+        private void GetMobileDataFromRepository(Guid ID)
+        {
+            _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            RaiseAllPropertiesChanged();
         }
 
         #endregion Private Methods
@@ -218,6 +227,20 @@ namespace MWF.Mobile.Core.ViewModels
         }
         #endregion IBackButtonHandler Implementation
 
+        #region BaseInstructionNotificationViewModel
+
+        public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        {
+            if (instructionID == _mainService.CurrentMobileData.ID)
+            {
+                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Do you want the screen to refresh?", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK", "Cancel");
+                else
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+            }
+        }
+
+        #endregion
 
 
     }

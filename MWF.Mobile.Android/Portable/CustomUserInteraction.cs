@@ -14,11 +14,18 @@ using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Android.Views;
 using MWF.Mobile.Core.Models.Instruction;
 using System.Collections.Generic;
+using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
+using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using MWF.Mobile.Core.Enums;
 
 namespace MWF.Mobile.Android.Portable
 {
     public class CustomUserInteraction : ICustomUserInteraction
     {
+        public AlertDialog InstructionNotificationDialog;
+        public AlertDialog CurrentInstructionNotificationDialog;
+        public Vibrate Vibrate = new Vibrate();
+        public Sound Sound = new Sound();
 
         protected Activity CurrentActivity
         {
@@ -27,49 +34,157 @@ namespace MWF.Mobile.Android.Portable
 
         #region ICustomUserInteraction Members
 
+        /// <summary>
+        /// This method is called when new instructions that have been polled were added, updated or deleted.
+        /// It causes a modal pop up to appear showing the new instructions and what action was taken to them.
+        /// </summary>
+        /// <param name="alteredInstructions">The list of instructions to display</param>
+        /// <param name="done">The action that is taken when the postive button is pressed</param>
+        /// <param name="title">Title of the modal</param>
+        /// <param name="okButton">The text of the positive button</param>
         public void PopUpInstructionNotifaction(List<MobileData> alteredInstructions, Action done = null, string title = "", string okButton = "OK")
         {
             Application.SynchronizationContext.Post(ignored =>
             {
-
                 if (CurrentActivity == null) return;
+
+                //This closes the pop if its showing so it can reopen another, else it will play sound and vibrate first time.
+                if (InstructionNotificationDialog != null && InstructionNotificationDialog.IsShowing)
+                    InstructionNotificationDialog.Dismiss();
+                else
+                {
+                    Vibrate.VibrateDevice();
+                    Sound.Play();
+                }
+
 
                 var customView = CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_InstructionNotification, null);
 
-                var header = (TextView)customView.FindViewById(Resource.Id.listHeader);
-                header.SetText("Altered Instructions", TextView.BufferType.Normal);
+                InstructionGroupedListObject addInstructions = new InstructionGroupedListObject();
+                InstructionGroupedListObject updateInstructions = new InstructionGroupedListObject();
+                InstructionGroupedListObject deleteInstructions = new InstructionGroupedListObject();
 
-                var listView = (ListView)customView.FindViewById(Resource.Id.instuctionList);
+                //Filter the instructions into SyncStates (Added, Updated, Deleted)
+                foreach (var instruction in alteredInstructions)
+                {
+                    switch (instruction.SyncState)
+                    {
+                        case SyncState.Add:
+                            addInstructions.Instructions.Add(instruction);
+                            break;
+                        case SyncState.Update:
+                            updateInstructions.Instructions.Add(instruction);
+                            break;
+                        case SyncState.Delete:
+                            deleteInstructions.Instructions.Add(instruction);
+                            break;
+                    }
+                }
 
-                //var groupView = (BindableGroupListView)customView.FindViewById(Resource.Id.instuctionList);
 
-                //BindableGroupListAdapter grouplist = new BindableGroupListAdapter(CurrentActivity);
+                List<InstructionGroupedListObject> inoList = new List<InstructionGroupedListObject>();
+                List<string> headers = new List<string>();
 
-                //grouplist.ItemsSource = (IEnumerable<MobileData>)alteredInstructions;
-                //grouplist.ItemTemplateId = Resource.Layout.Item_InstructionNotificationText;
+                if (addInstructions.Instructions.Count > 0)
+                {
+                    inoList.Add(addInstructions);
+                    headers.Add("Instructions added (" + addInstructions.Instructions.Count + ")");
+                }
 
-                var listAdapter = new ArrayAdapter<MobileData>(CurrentActivity, Resource.Layout.Item_InstructionNotificationText, alteredInstructions);
-                listView.Adapter = listAdapter;
+                if (updateInstructions.Instructions.Count > 0)
+                {
+                    inoList.Add(updateInstructions);
+                    headers.Add(" Instructions updated (" + updateInstructions.Instructions.Count + ")");
+                }
 
+                if (deleteInstructions.Instructions.Count > 0)
+                {
+                    inoList.Add(deleteInstructions);
+                    headers.Add("Instructions deleted (" + deleteInstructions.Instructions.Count + ")");
+                }
 
-                new AlertDialog.Builder(CurrentActivity)
-                    .SetView(customView)
-                    
-                        .SetTitle(title)
+                if (inoList.Count > 0)
+                {
+                    //Create the expandableListView to be displayed
+                    ExpandableListView expandableListView = (ExpandableListView)customView.FindViewById(Resource.Id.instuctionList);
+                    ExpandableListAdapter expandableListAdapter = new ExpandableListAdapter(CurrentActivity, headers, inoList);
 
-                        .SetPositiveButton(okButton, delegate
-                        {
-                            if (done != null)
-                                done();
-                        })
-                        .Show();
+                    expandableListView.SetAdapter(expandableListAdapter);
+
+                    //Expand all the sections from the start.
+                    for (int i = 0; i < expandableListAdapter.GroupCount; i++)
+                    {
+                        expandableListView.ExpandGroup(i);
+                    }
+
+                    //Create the dialog popup
+                    var notificationDialog = new AlertDialog.Builder(CurrentActivity)
+                        .SetView(customView)
+                            .SetTitle(title)
+
+                            //Prevents the user from closes the pop up by click on the sides.
+                            .SetCancelable(false)
+                            .SetPositiveButton(okButton, delegate
+                            {
+                                if (done != null)
+                                    done();
+                            });
+
+                    InstructionNotificationDialog = notificationDialog.Create();
+                    InstructionNotificationDialog.Show();
+                }
 
             }, null);
+
         }
 
-        public Task PopUpInstructionNotifactionAsync(System.Collections.Generic.List<Core.Models.Instruction.MobileData> alteredInstructions, string title = "", string okButton = "OK")
+        /// <summary>
+        /// This method is called when new instruction that has been polled and if the user is currently viewing that instruction then
+        /// it causes a modal pop up to appear stating that the instruction has been altered and what action will be taken
+        /// </summary>
+        /// <param name="message">The message to appear in the pop up</param>
+        /// <param name="done">The action that is taken when the postive button is pressed</param>
+        /// <param name="title">Title of the modal</param>
+        /// <param name="okButton">The text of the positive button</param>
+        /// <param name="cancelButton">The text of the negative button</param>
+        public void PopUpCurrentInstructionNotifaction(string message, Action done = null, string title = "", string okButton = "OK", string cancelButton = "")
         {
-            throw new NotImplementedException();
+
+            Application.SynchronizationContext.Post(ignored =>
+           {
+               if (CurrentActivity == null) return;
+
+               //This closes the pop if its showing so it can reopen another, else it will play sound and vibrate first time.
+
+               if (CurrentInstructionNotificationDialog != null && CurrentInstructionNotificationDialog.IsShowing)
+                   CurrentInstructionNotificationDialog.Dismiss();
+
+               var customView = CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_CurrentInstructionNotification, null);
+               var textView = (TextView)customView.FindViewById(Resource.Id.currentInstructionUpdateText);
+               textView.Text = message;
+
+
+               var notificationDialog = new AlertDialog.Builder(CurrentActivity)
+                       .SetView(customView)
+                           .SetTitle(title)
+
+                           //Prevents the user from closes the pop up by click on the sides.
+                           .SetCancelable(false)
+                           .SetPositiveButton(okButton, delegate
+                           {
+                               if (done != null)
+                                   done();
+                           });
+
+               //Create the negative button if text is passed through
+               if (cancelButton != "")
+                   notificationDialog.SetNegativeButton(cancelButton, delegate { });
+
+               CurrentInstructionNotificationDialog = notificationDialog.Create();
+               CurrentInstructionNotificationDialog.Show();
+
+           }, null);
+
         }
 
         public void PopUpImage(byte[] bytes, string message, Action done = null, string title = "", string okButton = "OK")
@@ -79,17 +194,17 @@ namespace MWF.Mobile.Android.Portable
 
                 if (CurrentActivity == null) return;
 
-                var customView =  CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_Image, null);
-                var imageView = (ImageView) customView.FindViewById(Resource.Id.popUpImageView);
+                var customView = CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_Image, null);
+                var imageView = (ImageView)customView.FindViewById(Resource.Id.popUpImageView);
 
                 MvxInMemoryImageValueConverter converter = new MvxInMemoryImageValueConverter();
-                var bitmap = (Bitmap) converter.Convert(bytes, typeof(Bitmap), null, null);
+                var bitmap = (Bitmap)converter.Convert(bytes, typeof(Bitmap), null, null);
                 imageView.SetImageBitmap(bitmap);
 
                 // Scale the image view to use maximum width
                 SetImageViewSize(customView, imageView, bitmap);
 
-                new AlertDialog.Builder(CurrentActivity) 
+                new AlertDialog.Builder(CurrentActivity)
                     .SetView(customView)
                     .SetMessage(message)
                         .SetTitle(title)
@@ -146,16 +261,21 @@ namespace MWF.Mobile.Android.Portable
             imageView.LayoutParameters.Height = newBmapHeight;
 
         }
-        
+
 
 
         #endregion
 
+    }
 
-        public void OnClick(IDialogInterface dialog, int which)
-        {
-            throw new NotImplementedException();
-        }
+    /// <summary>
+    /// This object is used to display the grouped lists on the instruction notification Popup
+    /// </summary>
+    public class InstructionGroupedListObject
+    {
+        public InstructionGroupedListObject() { Instructions = new List<MobileData>(); }
+
+        public List<MobileData> Instructions { get; set; }
 
     }
 }

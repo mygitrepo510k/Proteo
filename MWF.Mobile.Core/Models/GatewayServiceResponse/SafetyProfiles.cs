@@ -13,6 +13,7 @@ namespace MWF.Mobile.Core.Models.GatewayServiceResponse
     public class SafetyProfiles
     {
         [JsonProperty("safetyprofile")]
+        [JsonConverter(typeof(SingleObjectToListConverter<SafetyProfile>))]
         public List<SafetyProfile> List { get; set; }
     }
 

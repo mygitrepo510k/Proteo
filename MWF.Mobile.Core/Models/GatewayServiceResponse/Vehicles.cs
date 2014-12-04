@@ -13,6 +13,7 @@ namespace MWF.Mobile.Core.Models.GatewayServiceResponse
     public class Vehicles
     {
         [JsonProperty("vehicle")]
+        [JsonConverter(typeof(SingleObjectToListConverter<Vehicle>))]
         public List<Vehicle> List { get; set; }
     }
 

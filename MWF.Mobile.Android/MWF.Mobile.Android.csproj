@@ -177,6 +177,7 @@
     <Compile Include="Portable\Reachability.cs" />
     <Compile Include="Portable\Sound.cs" />
     <Compile Include="Portable\Toast.cs" />
+    <Compile Include="Portable\Vibrate.cs" />
     <Compile Include="Presenters\CustomPresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
@@ -206,7 +207,7 @@
     <Compile Include="Views\Fragments\TrailerListFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
-    <Compile Include="Views\ListViewOnClickListnerAdapter.cs" />
+    <Compile Include="Views\ExpandableListAdapter.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\BaseActivityView.cs" />
     <Compile Include="Views\StartupView.cs" />
@@ -307,6 +308,12 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_InstructionNotificationText.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_InstructionNotifcationHeader.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\PopUp_CurrentInstructionNotification.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

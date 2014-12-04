@@ -26,7 +26,9 @@ namespace MWF.Mobile.Core.ViewModels
         public ObservableCollection<ManifestInstructionViewModel> Instructions
         {
             get { return _instructions; }
-            set { _instructions = value; RaisePropertyChanged(() => Instructions); }
+            set { _instructions = value;
+            _instructions.OrderBy(inst => inst.ArrivalDate);
+                RaisePropertyChanged(() => Instructions); }
         }
 
         private string _sectionHeader;

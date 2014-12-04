@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using MWF.Mobile.Core.Repositories.Interfaces;
+using Cirrious.MvvmCross.Plugins.Messenger;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -28,6 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mobileDataRepo;
         private Mock<INavigationService> _navigationService;
+        private Mock<IMvxMessenger> _mockMessenger;
 
         protected override void AdditionalSetup()
         {
@@ -42,6 +44,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
+
+            _mockMessenger = new Mock<IMvxMessenger>();
+            Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
 
         }
 

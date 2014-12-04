@@ -11,5 +11,6 @@ namespace MWF.Mobile.Core.Services
         bool IsBackActionDefined();
         void MoveToNext();
         void MoveToNext(Object parameters);
+        void GoToManifest();
     }
 }

@@ -21,6 +21,7 @@ using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
 using MWF.Mobile.Tests.Helpers;
 using MWF.Mobile.Core.Repositories.Interfaces;
+using Cirrious.MvvmCross.Plugins.Messenger;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
@@ -34,6 +35,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private IFixture _fixture;
         private MockDispatcher _mockViewDispatcher;
         private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<IMvxMessenger> _mockMessenger;
 
            
 
@@ -52,6 +54,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             Ioc.RegisterSingleton<IMvxViewDispatcher>(_mockViewDispatcher);
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
+
+            _mockMessenger = new Mock<IMvxMessenger>();
+            Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
 
         }
 
@@ -920,7 +925,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
 
         [Fact]
@@ -1024,7 +1029,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
 
         [Fact]
@@ -1076,7 +1081,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
 
         [Fact]
@@ -1180,7 +1185,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
         
         [Fact]
@@ -1232,7 +1237,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
 
         [Fact]
@@ -1358,7 +1363,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
 
         [Fact]
@@ -1416,7 +1421,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
 
         [Fact]
@@ -1500,7 +1505,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(MainViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
 
         [Fact]

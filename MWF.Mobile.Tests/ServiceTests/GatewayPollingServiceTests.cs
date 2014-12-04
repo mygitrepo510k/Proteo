@@ -16,6 +16,7 @@ using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
+using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
@@ -27,6 +28,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private MvxSubscriptionToken _pollTimerToken;
         private ApplicationProfile _applicationProfile;
         private Mock<IGatewayService> _gatewayMock;
+        private Mock<ICustomUserInteraction> _customUserInteractionMock;
 
         protected override void AdditionalSetup()
         {
@@ -43,6 +45,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             var applicationRepo = _fixture.InjectNewMock<IApplicationProfileRepository>();
             applicationRepo.Setup(ar => ar.GetAll()).Returns(new List<ApplicationProfile>() { _applicationProfile});
 
+            _customUserInteractionMock = Ioc.RegisterNewMock<ICustomUserInteraction>();
+
+            _customUserInteractionMock.Setup(cui => cui.PopUpInstructionNotifaction(It.IsAny<List<MobileData>>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<List<MobileData>, Action, string, string>((s1, a, s2, s3) => a.Invoke());
 
             var mockStartupService = Mock.Of<IStartupService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
                                                     && ssr.LoggedInDriver == _fixture.Create<Driver>());

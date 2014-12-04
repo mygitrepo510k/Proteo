@@ -113,6 +113,8 @@ namespace MWF.Mobile.Android.Views
 
         public override void InvalidateOptionsMenu()
         {
+
+            base.InvalidateOptionsMenu();
             _drawer.CloseDrawers();
 
         }

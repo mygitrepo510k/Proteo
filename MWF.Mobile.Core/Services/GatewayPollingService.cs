@@ -24,10 +24,8 @@ namespace MWF.Mobile.Core.Services
         private readonly IDeviceInfo _deviceInfo = null;
         private readonly IHttpService _httpService = null;
         private readonly IReachability _reachability = null;
-        private readonly ISound _sound;
         private readonly IRepositories _repositories;
         private readonly IDeviceRepository _deviceRepository;
-
 
         private readonly IMvxMessenger _messenger = null;
         private readonly IGatewayService _gatewayService = null;
@@ -42,13 +40,12 @@ namespace MWF.Mobile.Core.Services
         private int _dataSpan = -1;
 
 
-        public GatewayPollingService(IDeviceInfo deviceInfo, IHttpService httpService, IReachability reachability, ISound sound, IRepositories repositories, IMvxMessenger messenger,
+        public GatewayPollingService(IDeviceInfo deviceInfo, IHttpService httpService, IReachability reachability, IRepositories repositories, IMvxMessenger messenger,
             IGatewayService gatewayService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService)
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
             _reachability = reachability;
-            _sound = sound;
             _repositories = repositories;
             _messenger = messenger;
             _gatewayService = gatewayService;
@@ -137,30 +134,38 @@ namespace MWF.Mobile.Core.Services
                                 instruction.ProgressState = progress;
                             }
                             _repositories.MobileDataRepository.Insert(instruction);
+
+                            PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
+
                             break;
                         case SyncState.Delete:
                             var oldInstruction = _repositories.MobileDataRepository.GetByID(instruction.ID);
                             if (oldInstruction != null)
                                 _repositories.MobileDataRepository.Delete(oldInstruction);
+
+                            PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, instruction.ID);
                             break;
                     }
                 }
-                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instructions.ToList(), null, "Manifest Update", "Close");
-                _sound.Play();
+                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instructions.ToList(), () => AcknowledgeInstructions(instructions), "Manifest Update", "Acknowledge");
 
-                //Sends acknowledgement to bluesphere that the device has received the new instructions
-                var syncAckActions = instructions.Select(i => new Models.GatewayServiceRequest.Action<Models.SyncAck>
-                {
-                    Command = "fwSyncAck",
-                    Parameters = new[]
+            }
+        }
+
+        private void AcknowledgeInstructions(IEnumerable<MobileData> instructions)
+        {
+            //Sends acknowledgement to bluesphere that the device has received the new instructions
+            var syncAckActions = instructions.Select(i => new Models.GatewayServiceRequest.Action<Models.SyncAck>
+            {
+                Command = "fwSyncAck",
+                Parameters = new[]
                     {
                         new Parameter { Name = "MobileApplicationDataID", Value = i.ID.ToString() },
                         new Parameter { Name = "SyncAck", Value = "1" },
                     }
-                });
+            });
 
-                _gatewayQueuedService.AddToQueue(syncAckActions);
-            }
+            _gatewayQueuedService.AddToQueue(syncAckActions);
         }
 
         public int DataSpan
@@ -176,6 +181,11 @@ namespace MWF.Mobile.Core.Services
         private void PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand timerCommand)
         {
             _messenger.Publish(new Messages.GatewayPollTimerCommandMessage(this, timerCommand));
+        }
+
+        private void PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand command, Guid instructionID)
+        {
+            _messenger.Publish(new Messages.GatewayInstructionNotificationMessage(this, command, instructionID));
         }
     }
 }

@@ -225,6 +225,11 @@ namespace MWF.Mobile.Core.Services
             return BackNavActionExists(currentActivityType, currentFragmentType);
         }
 
+        public void GoToManifest()
+        {
+            this.ShowViewModel<ManifestViewModel>();
+        }
+
         #endregion INavigationService
 
         #region Private Properties
@@ -321,7 +326,7 @@ namespace MWF.Mobile.Core.Services
                     mobileDataContent.ProgressState = Enums.InstructionProgress.Complete;
                     _mainService.CurrentMobileData = mobileDataContent;
                     _mainService.SendDataChunk();
-                    this.ShowViewModel<MainViewModel>();
+                    this.ShowViewModel<ManifestViewModel>();
                 }
             }, "Complete Instruction", "Confirm", "Cancel");
         }
@@ -616,7 +621,7 @@ namespace MWF.Mobile.Core.Services
 
         public void Instruction_CustomBackAction(Object parameters)
         {
-            this.ShowViewModel<MainViewModel>();
+            this.ShowViewModel<ManifestViewModel>();
         }
 
         /// <summary>
@@ -661,7 +666,7 @@ namespace MWF.Mobile.Core.Services
 
                 if (_mobileData == null)
                 {
-                    this.ShowViewModel<MainViewModel>();
+                    this.ShowViewModel<ManifestViewModel>();
                     return;
                 }
 

@@ -3,11 +3,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <TextView
-        android:id="@+id/listHeader"
-        style="@style/Proteo.TextView.SubHeading"
-        android:gravity="center" />
-    <ListView
+    <ExpandableListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/instuctionList" />

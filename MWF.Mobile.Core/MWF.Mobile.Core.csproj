@@ -101,6 +101,7 @@
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Helpers\SMP.cs" />
+    <Compile Include="Messages\GatewayInstructionNotificationMessage.cs" />
     <Compile Include="Messages\GatewayQueueTimerCommandMessage.cs" />
     <Compile Include="Messages\GatewayPollTimerCommandMessage.cs" />
     <Compile Include="Messages\GatewayQueueTimerElapsedMessage.cs" />
@@ -168,6 +169,7 @@
     <Compile Include="Portable\IReachability.cs" />
     <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />
+    <Compile Include="Portable\IVibrate.cs" />
     <Compile Include="Presentation\CloseUpToViewPresentationHint.cs" />
     <Compile Include="Presentation\CloseToInitialViewPresentationHint.cs" />
     <Compile Include="Presentation\ICustomPresenter.cs" />
@@ -224,6 +226,7 @@
     <Compile Include="Services\IStartupService.cs" />
     <Compile Include="Services\StartupService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
+    <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />
     <Compile Include="ViewModels\CameraViewModel.cs" />

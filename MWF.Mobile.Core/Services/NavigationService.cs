@@ -667,28 +667,27 @@ namespace MWF.Mobile.Core.Services
                 if (_mobileData == null)
                 {
                     this.ShowViewModel<ManifestViewModel>();
-                    return;
                 }
-
-
-                switch (_mobileData.ProgressState)
+                else
                 {
-                    case MWF.Mobile.Core.Enums.InstructionProgress.NotStarted:
-                        this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
-                        break;
-                    case MWF.Mobile.Core.Enums.InstructionProgress.Driving:
-                        this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
-                        break;
-                    case MWF.Mobile.Core.Enums.InstructionProgress.OnSite:
-                        this.ShowViewModel<InstructionOnSiteViewModel>(_mobileDataNavItem);
-                        break;
+
+                    switch (_mobileData.ProgressState)
+                    {
+                        case MWF.Mobile.Core.Enums.InstructionProgress.NotStarted:
+                            this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                            break;
+                        case MWF.Mobile.Core.Enums.InstructionProgress.Driving:
+                            this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                            break;
+                        case MWF.Mobile.Core.Enums.InstructionProgress.OnSite:
+                            this.ShowViewModel<InstructionOnSiteViewModel>(_mobileDataNavItem);
+                            break;
+                    }
                 }
             }
         }
 
         #endregion CustomBackActions
-
-        
 
     }
 

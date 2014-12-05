@@ -1,6 +1,9 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using System;
@@ -12,14 +15,13 @@ using System.Windows.Input;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class ReviseQuantityViewModel : BaseFragmentViewModel
+    public class ReviseQuantityViewModel : BaseInstructionNotificationViewModel
     {
 
         #region Private Fields
 
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
-        private readonly IUserInteraction _userInteraction;
         private readonly IMainService _mainService;
         private MobileData _mobileData;
         private Item _order;
@@ -32,15 +34,12 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _navigationService = navigationService;
             _repositories = repositories;
-            _userInteraction = userInteraction;
             _mainService = mainService;
         }
 
         public void Init(NavItem<Item> item)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(item.ParentID);
-            _order = _mobileData.Order.Items.First(i => i.ID == item.ID);
-            OrderQuantity = _order.Quantity;
+            GetMobileDataFromRepository(item.ParentID, item.ID);
         }
 
         #endregion Construction
@@ -99,11 +98,39 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        #endregion
+        private void GetMobileDataFromRepository(Guid parentID, Guid childID)
+        {
+            _mobileData = _repositories.MobileDataRepository.GetByID(parentID);
+            _order = _mobileData.Order.Items.First(i => i.ID == childID);
+            OrderQuantity = _order.Quantity;
+            RaiseAllPropertiesChanged();
+            _mainService.CurrentMobileData = _mobileData;  
+        }
+
+        #endregion Private Methods
+
+        #region BaseFragmentViewModel Overrides
 
         public override string FragmentTitle
         {
             get { return "Revise Quantity"; }
         }
+
+        #endregion BaseFragmentViewModel Overrides
+
+        #region BaseInstructionNotificationViewModel
+
+        public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        {
+            if (instructionID == _mainService.CurrentMobileData.ID)
+            {
+                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID, _order.ID), "This instruction has been Updated", "OK");
+                else
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+            }
+        }
+
+        #endregion BaseInstructionNotificationViewModel
     }
 }

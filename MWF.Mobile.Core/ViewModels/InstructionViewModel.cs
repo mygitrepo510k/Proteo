@@ -45,7 +45,6 @@ namespace MWF.Mobile.Core.ViewModels
         {
             GetMobileDataFromRepository(item.ID);
             _mainService.OnManifestPage = false;
-            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion Construction
@@ -201,6 +200,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
             RaiseAllPropertiesChanged();
+            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion Private Methods

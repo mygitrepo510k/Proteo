@@ -31,7 +31,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<INavigationService> _navigationService;
-        private IMvxMessenger _messenger;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
         private Mock<IMainService> _mockMainService;
 
@@ -53,8 +52,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
-            _messenger = _fixture.Create<IMvxMessenger>();
-            Ioc.RegisterSingleton<IMvxMessenger>(_messenger);
+            Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
             _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
@@ -338,8 +336,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(2));
-
-            Assert.Equal(_mobileData.GroupTitle, instructionVM.RunID);
 
         }
         #endregion Test

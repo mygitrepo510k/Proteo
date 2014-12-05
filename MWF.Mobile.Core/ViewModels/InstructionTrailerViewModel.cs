@@ -1,5 +1,8 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using System;
@@ -12,7 +15,7 @@ using System.Windows.Input;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class InstructionTrailerViewModel
-        : BaseFragmentViewModel
+        : BaseInstructionNotificationViewModel
     {
         #region Private Fields
 
@@ -21,16 +24,17 @@ namespace MWF.Mobile.Core.ViewModels
         private MobileData _mobileData;
         private IEnumerable<Models.Trailer> _trailers;
         private MvxCommand _selectTrailerCommand;
+        private IMainService _mainService;
 
 
         #endregion
 
         #region Construction
 
-        public InstructionTrailerViewModel(INavigationService navigationService, IRepositories repositories)
+        public InstructionTrailerViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
         {
             _navigationService = navigationService;
-
+            _mainService = mainService;
             _repositories = repositories;
             Trailers = _repositories.TrailerRepository.GetAll();
 
@@ -38,12 +42,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void Init(NavItem<MobileData> item)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
+            GetMobileDataFromRepository(item.ID);
         }
 
         public void Init(NavItem<Models.Instruction.Trailer> item)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
+            GetMobileDataFromRepository(item.ID);
         }
 
 
@@ -86,6 +90,13 @@ namespace MWF.Mobile.Core.ViewModels
             }            
         }
 
+        private void GetMobileDataFromRepository(Guid ID)
+        {
+            _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            RaiseAllPropertiesChanged();
+            _mainService.CurrentMobileData = _mobileData;
+        }
+
         #endregion
 
         #region BaseFragmentViewModel Overrides
@@ -95,6 +106,21 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion
+
+        #region BaseInstructionNotificationViewModel
+
+        public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        {
+            if (instructionID == _mainService.CurrentMobileData.ID)
+            {
+                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");
+                else
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+            }
+        }
+
+        #endregion BaseInstructionNotificationViewModel
 
     }
 }

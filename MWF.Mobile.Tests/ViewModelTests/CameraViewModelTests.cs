@@ -1,4 +1,5 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Plugins.PictureChooser;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
@@ -27,16 +28,20 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Setup
 
         private IFixture _fixture;
+        private MobileData _mobileData;
         private Mock<INavigationService> _navigationService;
         private Mock<IMvxPictureChooserTask> _pictureChooserMock;
-        private Mock<IMainService> _mainService;
+        private Mock<IMainService> _mockMainService;
         private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
 
         private byte[] _pictureBytes;
 
         protected override void AdditionalSetup()
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
+
+            _mobileData = _fixture.Create<MobileData>();
 
             _pictureBytes = new byte[] { 1, 2, 3, 4 };
             _pictureChooserMock = new Mock<IMvxPictureChooserTask>();
@@ -46,15 +51,24 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
-            _mainService = new Mock<IMainService>();
-            Ioc.RegisterSingleton<IMainService>(_mainService.Object);
+            _mockMainService = _fixture.InjectNewMock<IMainService>();
+            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
+            _mockMainService.Setup(m => m.CurrentDriver).Returns(_fixture.Create<Driver>());
 
             _mockUserInteraction = new Mock<IUserInteraction>();
             Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
 
             _mockUserInteraction.ConfirmReturnsTrue();
 
+            _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
+
+            Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
+
+
         }
+#endregion Setup
+
+        #region Tests
 
         [Fact]
         public void CommentHintText_Enabled()
@@ -177,7 +191,42 @@ namespace MWF.Mobile.Tests.ViewModelTests
                                                   It.Is<string>(s => s == "Close")));
         }
 
-        #endregion Setup
+
+        [Fact]
+        public void InstructionVM_CheckInstructionNotification_Delete()
+        {
+
+            base.ClearAll();
+
+            _mockCustomUserInteraction.Setup(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+
+            var cameraVM = _fixture.Create<CameraViewModel>();
+
+            cameraVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+            _navigationService.Verify(ns => ns.GoToManifest(), Times.Once);
+
+        }
+
+
+        [Fact]
+        public void InstructionVM_CheckInstructionNotification_Update_Confirm()
+        {
+
+            base.ClearAll();
+
+            var cameraVM = _fixture.Create<CameraViewModel>();
+
+            cameraVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+        }
+
+        #endregion Tests
 
     }
 }

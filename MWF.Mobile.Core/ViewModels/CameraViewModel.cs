@@ -1,7 +1,10 @@
-﻿using Cirrious.MvvmCross.Plugins.PictureChooser;
+﻿using Cirrious.CrossCore;
+using Cirrious.MvvmCross.Plugins.PictureChooser;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using System;
@@ -14,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class CameraViewModel : BaseFragmentViewModel, IBackButtonHandler
+    public class CameraViewModel : BaseInstructionNotificationViewModel, IBackButtonHandler
     {
         #region Private Members
 
@@ -183,5 +186,20 @@ namespace MWF.Mobile.Core.ViewModels
             return task;
         }
         #endregion IBackButtonHandler Implementation
+
+        #region BaseInstructionNotificationViewModel
+
+        public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        {
+            if (instructionID == _mainService.CurrentMobileData.ID)
+            {
+                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", null, "This instruction has been Updated", "OK");
+                else
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+            }
+        }
+
+        #endregion BaseInstructionNotificationViewModel
     }
 }

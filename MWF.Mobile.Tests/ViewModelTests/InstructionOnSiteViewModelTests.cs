@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using MWF.Mobile.Tests.Helpers;
 using Xunit;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.Portable;
+using Cirrious.MvvmCross.Plugins.Messenger;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -25,7 +27,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         private IFixture _fixture;
         private MobileData _mobileData;
-        private Mock<INavigationService> _navigationService;
+        private Mock<INavigationService> _navigationService; 
+        private Mock<IMobileDataRepository> _mockMobileDataRepo;
+        private Mock<IMainService> _mockMainService;
+        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
 
         protected override void AdditionalSetup()
         {
@@ -34,7 +39,19 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData = _fixture.Create<MobileData>();
             _mobileData.GroupTitle = "Run1010";
 
+            _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+
             _navigationService = _fixture.InjectNewMock<INavigationService>();
+
+            _mockMainService = _fixture.InjectNewMock<IMainService>();
+            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
+
+            _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
+
+            Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
 
         }
 
@@ -124,6 +141,49 @@ namespace MWF.Mobile.Tests.ViewModelTests
             instructionOnSiteVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
 
             Assert.Equal("Continue", instructionOnSiteVM.InstructionCommentButtonLabel);
+        }
+
+        [Fact]
+        public void InstructionOnSiteVM_CheckInstructionNotification_Delete()
+        {
+
+            base.ClearAll();
+
+            _mockCustomUserInteraction.Setup(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+
+            var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+
+            instructionOnSiteVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+
+            instructionOnSiteVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+            _navigationService.Verify(ns => ns.GoToManifest(), Times.Once);
+
+        }
+
+
+        [Fact]
+        public void InstructionOnSiteVM_CheckInstructionNotification_Update_Confirm()
+        {
+
+            base.ClearAll();
+
+            _mockCustomUserInteraction.Setup(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+
+            var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+
+            instructionOnSiteVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+
+            instructionOnSiteVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(2));
+
         }
 
         #endregion Test

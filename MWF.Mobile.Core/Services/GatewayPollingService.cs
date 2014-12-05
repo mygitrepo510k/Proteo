@@ -31,6 +31,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IGatewayService _gatewayService = null;
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IStartupService _startupService;
+        private readonly IMainService _mainService;
 
         private readonly string _gatewayDeviceRequestUrl = null;
 
@@ -41,7 +42,7 @@ namespace MWF.Mobile.Core.Services
 
 
         public GatewayPollingService(IDeviceInfo deviceInfo, IHttpService httpService, IReachability reachability, IRepositories repositories, IMvxMessenger messenger,
-            IGatewayService gatewayService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService)
+            IGatewayService gatewayService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService, IMainService mainService)
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
@@ -51,6 +52,7 @@ namespace MWF.Mobile.Core.Services
             _gatewayService = gatewayService;
             _gatewayQueuedService = gatewayQueuedService;
             _startupService = startupService;
+            _mainService = mainService;
 
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
@@ -121,10 +123,10 @@ namespace MWF.Mobile.Core.Services
                         case SyncState.Add:
                             var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
                             if (instructionToAdd == null)
-                            {
                                 _repositories.MobileDataRepository.Insert(instruction);
-                            }
+
                             break;
+
                         case SyncState.Update:
                             var instructionToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
                             if (instructionToUpdate != null)
@@ -135,15 +137,17 @@ namespace MWF.Mobile.Core.Services
                             }
                             _repositories.MobileDataRepository.Insert(instruction);
 
-                            PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
-
+                            if (!_mainService.OnManifestPage)
+                                PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
                             break;
+
                         case SyncState.Delete:
                             var oldInstruction = _repositories.MobileDataRepository.GetByID(instruction.ID);
                             if (oldInstruction != null)
                                 _repositories.MobileDataRepository.Delete(oldInstruction);
 
-                            PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, instruction.ID);
+                            if (!_mainService.OnManifestPage)
+                                PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, instruction.ID);
                             break;
                     }
                 }

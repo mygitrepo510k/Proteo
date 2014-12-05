@@ -1,5 +1,8 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using System;
@@ -12,30 +15,30 @@ using System.Windows.Input;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class InstructionCommentViewModel
-        : BaseFragmentViewModel
+        : BaseInstructionNotificationViewModel
     {
         #region Private Fields
 
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
-        private IMainService _mobileDataChunkService;
+        private IMainService _mainService;
 
 
         #endregion
 
         #region Construction
 
-        public InstructionCommentViewModel(INavigationService navigationService, IRepositories repositories, IMainService mobileDataChunkService)
+        public InstructionCommentViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
-            _mobileDataChunkService = mobileDataChunkService;
+            _mainService = mainService;
         }
 
         public void Init(NavItem<MobileData> item)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(item.ID);
+            GetMobileDataFromRepository(item.ID);
         }
 
 
@@ -81,10 +84,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AdvanceInstructionComment()
         {
-            _mobileDataChunkService.CurrentDataChunkActivity.Comment = CommentText;
+            _mainService.CurrentDataChunkActivity.Comment = CommentText;
 
             NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
             _navigationService.MoveToNext(navItem);
+        }
+
+        private void GetMobileDataFromRepository(Guid ID)
+        {
+            _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            RaiseAllPropertiesChanged();
+            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion
@@ -97,5 +107,19 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
+        #region BaseInstructionNotificationViewModel Overrides
+
+        public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        {
+            if (instructionID == _mainService.CurrentMobileData.ID)
+            {
+                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");
+                else
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+            }
+        }
+
+        #endregion BaseInstructionNotificationViewModel Overrides
     }
 }

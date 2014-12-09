@@ -230,6 +230,7 @@
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />
     <Compile Include="ViewModels\CameraViewModel.cs" />
+    <Compile Include="ViewModels\DisplaySafetyCheckFaultItemViewModel.cs" />
     <Compile Include="ViewModels\DisplaySafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\InstructionOnSiteViewModel.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />

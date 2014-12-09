@@ -92,6 +92,7 @@ namespace MWF.Mobile.Core.ViewModels
                 VehicleID = vehicle.ID,
                 VehicleRegistration = vehicle.Registration,
                 Faults = faults,
+                IsTrailer = isTrailer
             };
 
             // Add the safety check item view models
@@ -102,6 +103,7 @@ namespace MWF.Mobile.Core.ViewModels
                 IsVehicle = !isTrailer,
                 Title = (isTrailer ? "TRL: " : "VEH: ") + scf.Title,
                 IsDiscretionaryQuestion = scf.IsDiscretionaryQuestion,
+                CheckStatus = scf.Status,
             }));
 
             return safetyCheckData;
@@ -140,16 +142,16 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _checksDoneCommand;
         public System.Windows.Input.ICommand ChecksDoneCommand
         {
-            get 
-            { 
-                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(DoChecksDoneCommand); 
+            get
+            {
+                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(DoChecksDoneCommand);
                 return _checksDoneCommand;
             }
         }
 
         public bool CanSafetyChecksBeCompleted
         {
-            get 
+            get
             {
                 bool allChecksCompleted = true;
 
@@ -167,7 +169,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 return allChecksCompleted;
             }
-            set 
+            set
             {
                 RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
             }

@@ -192,6 +192,7 @@
     <Compile Include="Views\Fragments\BaseFragment.cs" />
     <Compile Include="Views\Fragments\CameraFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
+    <Compile Include="Views\Fragments\DisplaySafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\InstructionCommentFragment.cs" />
     <Compile Include="Views\Fragments\InstructionOnSiteFragment.cs" />
     <Compile Include="Views\Fragments\OrderFragment.cs" />
@@ -314,6 +315,12 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\PopUp_CurrentInstructionNotification.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_DisplaySafetyCheck.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_SafetyCheckFault.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

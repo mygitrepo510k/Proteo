@@ -44,6 +44,20 @@ namespace MWF.Mobile.Core.Extensions
             return (attr == null) ? null : attr.ChildType;
         }
 
+        public static string GetIdentifyingPropertyNameOfChildRelation(this PropertyInfo propertyInfo)
+        {
+            ChildRelationshipAttribute attr = propertyInfo.GetCustomAttribute<ChildRelationshipAttribute>();
+
+            return (attr == null) ? null : attr.ChildIdentifyingPropertyName;
+        }
+
+        public static object GetIdentifyingPropertyValueOfChildRelation(this PropertyInfo propertyInfo)
+        {
+            ChildRelationshipAttribute attr = propertyInfo.GetCustomAttribute<ChildRelationshipAttribute>();
+
+            return (attr == null) ? null : attr.ChildIdentifyingPropertyValue;
+        }
+
         public static RelationshipCardinality GetCardinalityOfChildRelation(this PropertyInfo propertyInfo)
         {
            ChildRelationshipAttribute attr = propertyInfo.GetCustomAttribute<ChildRelationshipAttribute>();

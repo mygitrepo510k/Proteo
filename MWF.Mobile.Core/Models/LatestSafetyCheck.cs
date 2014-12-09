@@ -27,10 +27,10 @@ namespace MWF.Mobile.Core.Models
         [Unique]
         public Guid DriverID { get; set; }
 
-        [ChildRelationship(typeof(SafetyCheckData), RelationshipCardinality.OneToZeroOrOne)]
+        [ChildRelationship(typeof(SafetyCheckData), RelationshipCardinality.OneToZeroOrOne, "IsTrailer", false)]
         public SafetyCheckData VehicleSafetyCheck { get; set; }
 
-        [ChildRelationship(typeof(SafetyCheckData), RelationshipCardinality.OneToZeroOrOne)]
+        [ChildRelationship(typeof(SafetyCheckData), RelationshipCardinality.OneToZeroOrOne, "IsTrailer", true)]
         public SafetyCheckData TrailerSafetyCheck { get; set; }
 
     }

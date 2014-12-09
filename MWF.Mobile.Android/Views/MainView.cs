@@ -12,6 +12,7 @@ using Android.Content.PM;
 using MWF.Mobile.Android.Helpers;
 using MWF.Mobile.Core.ViewModels;
 using Android.Support.V4.App;
+using System.Windows.Input;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -24,18 +25,24 @@ namespace MWF.Mobile.Android.Views
 
         private DrawerLayout _drawer;
         private MvxListView _drawerList;
+        private MvxCommand _drawerClickCommand;
         private global::Android.Support.V4.App.ActionBarDrawerToggle _drawerToggle;
         protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
             {
                 { typeof(Core.ViewModels.CameraViewModel),typeof(Fragments.CameraFragment)},
+                { typeof(Core.ViewModels.DisplaySafetyCheckViewModel), typeof(Fragments.DisplaySafetyCheckFragment)},
                 { typeof(Core.ViewModels.InstructionViewModel), typeof(Fragments.InstructionFragment) },
                 { typeof(Core.ViewModels.InstructionCommentViewModel), typeof(Fragments.InstructionCommentFragment)},
                 { typeof(Core.ViewModels.InstructionOnSiteViewModel), typeof(Fragments.InstructionOnSiteFragment)},
                 { typeof(Core.ViewModels.InstructionSignatureViewModel), typeof(Fragments.InstructionSignatureFragment) },
                 { typeof(Core.ViewModels.InstructionTrailerViewModel), typeof(Fragments.InstructionTrailerFragment)},
+                { typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
                 { typeof(Core.ViewModels.OrderViewModel), typeof(Fragments.OrderFragment)},
                 { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
-                { typeof(Core.ViewModels.ReviseQuantityViewModel), typeof(Fragments.ReviseQuantityFragment)}
+                { typeof(Core.ViewModels.ReviseQuantityViewModel), typeof(Fragments.ReviseQuantityFragment)},
+                { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
+			    { typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
+                { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) }
             };
 
         #endregion

@@ -20,7 +20,8 @@ namespace MWF.Mobile.Core.ViewModels
         public enum Option
         {
             Camera,
-            SafetyCheck,
+            ViewSafetyCheck,
+            RunNewSafetyCheck,
             History
         }
 
@@ -39,7 +40,7 @@ namespace MWF.Mobile.Core.ViewModels
             this.InitializeMenu();
         }
 
-        #endregion   
+        #endregion
 
         #region Public Properties
 
@@ -57,8 +58,8 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        #endregion 
-        
+        #endregion
+
         #region Private Methods
 
         private void InitializeMenu()
@@ -77,21 +78,30 @@ namespace MWF.Mobile.Core.ViewModels
                 },
                 new MenuViewModel
                 {
-                    Option = Option.SafetyCheck,
-                    Text = "SafetyCheck"
+                    Option = Option.ViewSafetyCheck,
+                    Text = "View Safety Check"
+                },
+                new MenuViewModel
+                {
+                   Option = Option.RunNewSafetyCheck,
+                   Text = "Run Safety Check"
                 },
             };
         }
 
         private void DoSelectMenuItemCommand(MenuViewModel item)
         {
-            
+
             switch (item.Option)
             {
                 case Option.Camera:
                     this.ShowViewModel<CameraViewModel>();
                     break;
-                case Option.SafetyCheck:
+                case Option.ViewSafetyCheck:
+                    this.ShowViewModel<DisplaySafetyCheckViewModel>();
+                    break;
+                case Option.RunNewSafetyCheck:
+                    this.ShowViewModel<SafetyCheckViewModel>();
                     break;
                 case Option.History:
                     break;

@@ -47,11 +47,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
-        public override string FragmentTitle
-        {
-            get { return "Camera"; }
-        }
-
         public string DoneButtonLabel
         {
             get { return "Done"; }
@@ -194,12 +189,21 @@ namespace MWF.Mobile.Core.ViewModels
             if (instructionID == _mainService.CurrentMobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", null, "This instruction has been Updated", "OK");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Data may have changed.", null, "This instruction has been Updated", "OK");
                 else
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
             }
         }
 
         #endregion BaseInstructionNotificationViewModel
+
+        #region BaseFragmentViewModel Overrides
+
+        public override string FragmentTitle
+        {
+            get { return "Camera"; }
+        }
+
+        #endregion BaseFragmentViewModel Overrides
     }
 }

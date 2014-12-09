@@ -38,7 +38,7 @@
   <style name = "Proteo.TextView.Instructions" parent="style/Proteo">
     <item name = "android:textSize">10dp</item>
     <item name = "android:layout_marginBottom">5dp</item>
-    <item name = "android:paddingLeft">10dp</item>
+    <item name = "android:paddingLeft">8dp</item>
     <item name = "android:background">#cccfd1</item>
     <item name = "android:gravity">left</item>
     <item name = "android:layout_marginTop">0dp</item>

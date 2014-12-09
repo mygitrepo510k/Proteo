@@ -212,7 +212,7 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _mobileData.Order.Type.ToString(); }
         }
 
-        #endregion
+        #endregion  BaseFragmentViewModel Overrides
 
         #region IBackButtonHandler Implementation
 

@@ -33,7 +33,7 @@ namespace MWF.Mobile.Core.Services
         IStartupService _startupService;
         IRepositories _repositories;
         private readonly IGatewayPollingService _gatewayPollingService;
-        private readonly IMainService _mainService;
+        private IMainService _mainService;
         ICloseApplication _closeApplication;
         private NavItem<MobileData> _mobileDataNavItem;
         private MobileData _mobileData;
@@ -42,13 +42,13 @@ namespace MWF.Mobile.Core.Services
 
         #region Construction
 
-        public NavigationService(ICustomPresenter presenter, IStartupService startupService, ICloseApplication closeApplication, IRepositories repositories, IGatewayPollingService gatewayPollingService, IMainService mobileApplicationDataChunkService)
+        public NavigationService(ICustomPresenter presenter, IStartupService startupService, ICloseApplication closeApplication, IRepositories repositories, IGatewayPollingService gatewayPollingService, IMainService mainService)
         {
             _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
             _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
             _presenter = presenter;
 
-            _mainService = mobileApplicationDataChunkService;
+            _mainService = mainService;
             _repositories = repositories;
             _gatewayPollingService = gatewayPollingService;
             _startupService = startupService;
@@ -304,15 +304,15 @@ namespace MWF.Mobile.Core.Services
         {
             bool advanceToCommentScreen = false;
 
-            var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you want to enter a comment for this instruction?","","Yes","No");
-    
-                    if(isConfirmed)
-                    {
-                        advanceToCommentScreen = true;
-                        this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
-                    }
-                    
-            
+            var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you want to enter a comment for this instruction?", "", "Yes", "No");
+
+            if (isConfirmed)
+            {
+                advanceToCommentScreen = true;
+                this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
+            }
+
+
 
             return advanceToCommentScreen;
         }
@@ -356,7 +356,7 @@ namespace MWF.Mobile.Core.Services
             InsertNavAction<StartupViewModel, TrailerListViewModel>(typeof(SafetyCheckViewModel));
             InsertCustomNavAction<StartupViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);        //to odometer, signature screen or main activity (manifest)
             InsertNavAction<StartupViewModel, OdometerViewModel>(typeof(SafetyCheckSignatureViewModel));
-            InsertCustomNavAction<StartupViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction); //to either main activity (manifest) or back to driver passcode
+            InsertCustomNavAction<StartupViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_Login); //to either main activity (manifest) or back to driver passcode
 
             InsertCustomBackNavAction<StartupViewModel, PasscodeViewModel>(CloseApplication);               //Back from passcode closes app
 
@@ -387,6 +387,10 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, CameraViewModel>(Camera_CustonAction);
             InsertCustomBackNavAction<MainViewModel, CameraViewModel>(Camera_CustonAction);
 
+            InsertCustomNavAction<MainViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);        //to odometer, signature screen or main activity (manifest)
+            InsertNavAction<MainViewModel, OdometerViewModel>(typeof(SafetyCheckSignatureViewModel));
+            InsertCustomNavAction<MainViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_Login);
+
         }
 
         #endregion Mappings Definitions
@@ -407,7 +411,9 @@ namespace MWF.Mobile.Core.Services
 
             if (VehicleSafetyProfile == null && TrailerSafetyProfile == null)
             {
-                this.DriverLogIn();
+                if (_presenter.CurrentActivityViewModel.GetType().Equals(typeof(ViewModels.StartupViewModel)))
+                    this.DriverLogIn();
+
                 this.ShowViewModel<MainViewModel>();
             }
             else
@@ -424,7 +430,7 @@ namespace MWF.Mobile.Core.Services
         /// Signature screen goes back to driver pass code screen if we have any safety check failures
         /// and to main acticity (manifest) otherwise
         /// </summary>
-        public void Signature_CustomAction(Object parameters)
+        public void Signature_CustomAction_Login(Object parameters)
         {
 
             if (SafetyCheckStatus == Enums.SafetyCheckStatus.Failed)
@@ -433,7 +439,9 @@ namespace MWF.Mobile.Core.Services
             }
             else
             {
-                this.DriverLogIn();
+                if (_presenter.CurrentActivityViewModel.Equals(typeof(StartupViewModel)))
+                    this.DriverLogIn();
+
                 this.ShowViewModel<MainViewModel>();
             }
 
@@ -519,10 +527,10 @@ namespace MWF.Mobile.Core.Services
                 if (!itemAdditionalContent.BypassCommentsScreen)
                 {
                     bool hasAdvanced = await ConfirmCommentAccess(parameters);
-                    if(hasAdvanced) return;
+                    if (hasAdvanced) return;
                 }
 
-                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && _mobileData.Order.Type == Enums.InstructionType.Deliver) || 
+                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && _mobileData.Order.Type == Enums.InstructionType.Deliver) ||
                     ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && _mobileData.Order.Type == Enums.InstructionType.Collect))
                 {
                     this.ShowViewModel<InstructionSignatureViewModel>(_mobileDataNavItem);
@@ -606,7 +614,7 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        
+
 
         #endregion Custom Mapping Actions
 

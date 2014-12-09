@@ -188,7 +188,9 @@ namespace MWF.Mobile.Core.Repositories
                 foreach (var relationshipProperty in parent.GetType().GetChildRelationProperties())
                 {
                     Type childType = relationshipProperty.GetTypeOfChildRelation();
-                    IList children = GetChildren(parent, childType);
+                    string childIdentifyingPropertyName = relationshipProperty.GetIdentifyingPropertyNameOfChildRelation();
+                    object childIdentifyingPropertyValue = relationshipProperty.GetIdentifyingPropertyValueOfChildRelation();
+                    IList children = GetChildren(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue);
 
                     if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
                     {
@@ -227,19 +229,32 @@ namespace MWF.Mobile.Core.Repositories
             }
 
             // Gets the children of the specfied type for specified parent using foreign key mappings
-            private IList GetChildren(IBlueSphereEntity parent, Type childType)
+            private IList GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue)
             {
                 ITableMapping tableMapping = _connection.GetMapping(childType);
 
                 string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
                                                                                 childType.GetForeignKeyName(parent.GetType()));
 
+                if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
+                {
+                    query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
+                }
 
                 List<object> queryResults;
 
                 try
                 {
-                    queryResults = _connection.Query(tableMapping, query, parent.ID);
+                    if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
+                    {
+                        queryResults = _connection.Query(tableMapping, query, parent.ID, childIdentifyingPropertyValue);
+                    }
+                    else
+                    {
+                        queryResults = _connection.Query(tableMapping, query, parent.ID);
+                    }
+
+                   
                 }
                 catch (Exception ex)
                 {

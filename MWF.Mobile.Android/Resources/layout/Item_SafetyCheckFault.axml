@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_gravity="left"
+    android:layout_height="match_parent">
+    <TextView
+        style="@style/Proteo.TextView.Order"
+        android:layout_weight="0.2"
+        android:textSize="15dp"
+        android:background="#FFFFFF"
+        local:MvxBind="Text FaultType" />
+    <TextView
+        style="@style/Proteo.TextView.Order"
+        android:layout_weight="0.6"
+        android:background="#FFFFFF"
+        android:textSize="15dp"
+        android:id="@+id/faultCheckTitleAndComment"
+        local:MvxBind="Text FaultCheckTitleAndComment" />
+    <TextView
+        style="@style/Proteo.TextView.Order"
+        android:layout_weight="0.2"
+        android:textSize="15dp"
+        android:background="#FFFFFF"
+        local:MvxBind="Text FaultStatus" />
+</LinearLayout>

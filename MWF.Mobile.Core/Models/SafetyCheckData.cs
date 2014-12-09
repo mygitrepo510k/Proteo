@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 namespace MWF.Mobile.Core.Models
 {
 
-    // Model class which holds represents the results of a safety check performed by a driver on a vehicle
+    // Model class which holds represents the results of a safety check performed by a driver on a vehicle/trailer
     [XmlRoot("safetycheckdata")]
     public class SafetyCheckData: IBlueSphereEntity
     {
@@ -57,6 +57,9 @@ namespace MWF.Mobile.Core.Models
 
         [XmlAttribute("intlink")]
         public int ProfileIntLink { get; set; }
+
+        [XmlIgnore]
+        public bool IsTrailer { get; set; }
 
         [ForeignKey(typeof(LatestSafetyCheck))]
         [XmlIgnore]

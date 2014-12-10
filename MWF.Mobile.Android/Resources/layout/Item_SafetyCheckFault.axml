@@ -2,26 +2,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_gravity="left"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1"
+    android:gravity="left">
     <TextView
-        style="@style/Proteo.TextView.Order"
         android:layout_weight="0.2"
-        android:textSize="15dp"
-        android:background="#FFFFFF"
-        local:MvxBind="Text FaultType" />
-    <TextView
-        style="@style/Proteo.TextView.Order"
+        style="@style/Proteo.TextView.ItemText"
+        android:layout_width="0dp"
+        local:MvxBind="Text FaultType"
+        android:textSize="15dp" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="0.6"
-        android:background="#FFFFFF"
-        android:textSize="15dp"
-        android:id="@+id/faultCheckTitleAndComment"
-        local:MvxBind="Text FaultCheckTitleAndComment" />
+        style="@style/Proteo.TextView.ItemText">
+        <TextView
+            android:textSize="15dp"
+            android:gravity="left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/faultCheckTitle"
+            local:MvxBind="Text FaultCheckTitle"
+            android:singleLine="false"
+            android:maxLines="4" />
+        <TextView
+            android:textSize="15dp"
+            android:gravity="left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/faultCheckComment"
+            local:MvxBind="Text FaultCheckComment"
+            android:textStyle="italic"
+            android:singleLine="true"
+            android:ellipsize="end" />
+    </LinearLayout>
     <TextView
-        style="@style/Proteo.TextView.Order"
+        style="@style/Proteo.TextView.ItemText"
         android:layout_weight="0.2"
-        android:textSize="15dp"
-        android:background="#FFFFFF"
-        local:MvxBind="Text FaultStatus" />
+        android:layout_width="0dp"
+        local:MvxBind="Text FaultStatus"
+        android:textSize="15dp" />
 </LinearLayout>

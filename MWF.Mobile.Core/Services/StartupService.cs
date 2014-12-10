@@ -58,21 +58,13 @@ namespace MWF.Mobile.Core.Services
 
             var safetyCheckFailed = false;
 
+            // Store the latest safety check so the driver can display it at a later point if required
+            var latestSafetyCheck = new LatestSafetyCheck { DriverID = this.LoggedInDriver.ID };
+
             if (safetyCheckData.Any())
             {
                 var overallStatus = SafetyCheckData.GetOverallStatus(safetyCheckData.Select(scd => scd.GetOverallStatus()));
                 safetyCheckFailed = overallStatus == Enums.SafetyCheckStatus.Failed;
-
-                // Store the latest safety check so the driver can display it at a later point if required
-                var latestSafetyCheck = new LatestSafetyCheck { DriverID = this.LoggedInDriver.ID };
-
-                if (this.CurrentVehicleSafetyCheckData != null && this.CurrentVehicleSafetyCheckData.Faults.Any())
-                    latestSafetyCheck.VehicleSafetyCheck = this.CurrentVehicleSafetyCheckData;
-
-                if (this.CurrentTrailerSafetyCheckData != null && this.CurrentTrailerSafetyCheckData.Faults.Any())
-                    latestSafetyCheck.TrailerSafetyCheck = this.CurrentTrailerSafetyCheckData;
-
-                _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
 
                 // Submit the safety checks to the gateway service
                 var smp = _gpsService.GetSmpData(Enums.ReportReason.SafetyReport);
@@ -80,6 +72,20 @@ namespace MWF.Mobile.Core.Services
                 // Don't include milliseconds in the EffectiveDate submitted to BlueSphere
                 var effectiveDateTime = DateTime.Now;
                 effectiveDateTime = effectiveDateTime.AddMilliseconds(-effectiveDateTime.Millisecond);
+
+                if (this.CurrentVehicleSafetyCheckData != null && this.CurrentVehicleSafetyCheckData.Faults.Any())
+                {
+                    latestSafetyCheck.VehicleSafetyCheck = this.CurrentVehicleSafetyCheckData;
+                    latestSafetyCheck.VehicleSafetyCheck.EffectiveDate = effectiveDateTime;
+                }
+
+                if (this.CurrentTrailerSafetyCheckData != null && this.CurrentTrailerSafetyCheckData.Faults.Any())
+                {
+                    latestSafetyCheck.TrailerSafetyCheck = this.CurrentTrailerSafetyCheckData;
+                    latestSafetyCheck.TrailerSafetyCheck.EffectiveDate = effectiveDateTime; 
+                }
+
+                _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
 
                 foreach (var safetyCheck in safetyCheckData)
                 {
@@ -95,6 +101,11 @@ namespace MWF.Mobile.Core.Services
                 var actions = safetyCheckData.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
                 _gatewayQueuedService.AddToQueue(actions);
             }
+            else
+            {
+                _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
+            }
+
         }
 
         /// <summary>

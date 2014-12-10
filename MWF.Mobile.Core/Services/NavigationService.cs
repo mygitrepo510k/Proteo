@@ -387,6 +387,7 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, CameraViewModel>(Camera_CustonAction);
             InsertCustomBackNavAction<MainViewModel, CameraViewModel>(Camera_CustonAction);
 
+            InsertNavAction<MainViewModel, DisplaySafetyCheckViewModel>(typeof(ManifestViewModel));
             InsertCustomNavAction<MainViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);        //to odometer, signature screen or main activity (manifest)
             InsertNavAction<MainViewModel, OdometerViewModel>(typeof(SafetyCheckSignatureViewModel));
             InsertCustomNavAction<MainViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_Login);

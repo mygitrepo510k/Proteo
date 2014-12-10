@@ -29,9 +29,6 @@ namespace MWF.Mobile.Core.Repositories
 
         public void SetForDriver(LatestSafetyCheck latestSafetyCheck)
         {
-            if (latestSafetyCheck.VehicleSafetyCheck == null && latestSafetyCheck.TrailerSafetyCheck == null)
-                return;
-
             var latestSafetyCheckForDriver = this.GetForDriver(latestSafetyCheck.DriverID);
 
             // Delete any existing latest safety check for the driver before adding a new one.

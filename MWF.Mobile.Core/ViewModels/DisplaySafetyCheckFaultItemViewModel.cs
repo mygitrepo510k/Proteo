@@ -19,11 +19,18 @@ namespace MWF.Mobile.Core.ViewModels
             set { _faultType = value; RaisePropertyChanged(() => FaultType); }
         }
 
-        private string _faultCheckTitleAndComment;
-        public string FaultCheckTitleAndComment
+        private string _faultCheckTitle;
+        public string FaultCheckTitle
         {
-            get { return _faultCheckTitleAndComment; }
-            set { _faultCheckTitleAndComment = value; RaisePropertyChanged(() => FaultCheckTitleAndComment); }
+            get { return _faultCheckTitle; }
+            set { _faultCheckTitle = value; RaisePropertyChanged(() => FaultCheckTitle); }
+        }
+
+        private string _faultCheckComment;
+        public string FaultCheckComment
+        {
+            get { return _faultCheckComment; }
+            set { _faultCheckComment = value; RaisePropertyChanged(() => FaultCheckComment); }
         }
 
         private string _faultStatus;

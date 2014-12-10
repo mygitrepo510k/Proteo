@@ -1,4 +1,6 @@
-﻿using Cirrious.CrossCore;
+﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
@@ -8,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -17,25 +20,29 @@ namespace MWF.Mobile.Core.ViewModels
         private IMainService _mainService;
         private INavigationService _navigationService;
         private Repositories.IRepositories _repositories;
-        private IStartupService _startupService;
+        private LatestSafetyCheck _latestSafetyCheckData;
 
-        public DisplaySafetyCheckViewModel(IMainService mainService, INavigationService navigationService, IStartupService startupService, Repositories.IRepositories repositories)
+        public DisplaySafetyCheckViewModel(IMainService mainService, INavigationService navigationService, Repositories.IRepositories repositories)
         {
             //Safety check data is within this service.
 
             _mainService = mainService;
             _navigationService = navigationService;
             _repositories = repositories;
-            _startupService = startupService;
-
-            var driverSafetyCheck = _repositories.LatestSafetyCheckRepository.GetForDriver(_mainService.CurrentDriver.ID);
             SafetyCheckFaultItemViewModels = new List<DisplaySafetyCheckFaultItemViewModel>();
 
-            if (driverSafetyCheck.VehicleSafetyCheck != null)
-                GenerateSafetyCheckFaultItems(driverSafetyCheck.VehicleSafetyCheck.Faults, false);
+            _latestSafetyCheckData = _repositories.LatestSafetyCheckRepository.GetForDriver(_mainService.CurrentDriver.ID);
 
-            if (driverSafetyCheck.TrailerSafetyCheck != null)
-                GenerateSafetyCheckFaultItems(driverSafetyCheck.TrailerSafetyCheck.Faults, true);
+            if (_latestSafetyCheckData.VehicleSafetyCheck == null && _latestSafetyCheckData.TrailerSafetyCheck == null)
+            {
+                Mvx.Resolve<IUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been completed - Refer to your manual safety check.", () => { _navigationService.MoveToNext(); });
+            }
+
+            if (_latestSafetyCheckData.VehicleSafetyCheck != null)
+                GenerateSafetyCheckFaultItems(_latestSafetyCheckData.VehicleSafetyCheck.Faults, false);
+
+            if (_latestSafetyCheckData.TrailerSafetyCheck != null)
+                GenerateSafetyCheckFaultItems(_latestSafetyCheckData.TrailerSafetyCheck.Faults, true);
 
         }
 
@@ -43,22 +50,22 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string VehicleRegistration
         {
-            get { return "Vehicle: " + ((_startupService.CurrentVehicle != null) ? _startupService.CurrentVehicleSafetyCheckData.VehicleRegistration : ""); }
+            get { return "Vehicle: " + ((_latestSafetyCheckData.VehicleSafetyCheck != null) ? _latestSafetyCheckData.VehicleSafetyCheck.VehicleRegistration : ""); }
         }
 
         public string TrailerRegistration
         {
-            get { return "Trailer: " + ((_startupService.CurrentTrailer != null) ? _startupService.CurrentTrailerSafetyCheckData.VehicleRegistration : ""); }
+            get { return "Trailer: " + ((_latestSafetyCheckData.TrailerSafetyCheck != null) ? _latestSafetyCheckData.TrailerSafetyCheck.VehicleRegistration : ""); }
         }
 
         public string VehicleSafetyCheckStatus
         {
-            get { return "Checked: " + ((_startupService != null) ? _startupService.CurrentVehicleSafetyCheckData.EffectiveDate.ToString("g") : ""); }
+            get { return "Checked: " + ((_latestSafetyCheckData.VehicleSafetyCheck != null) ? _latestSafetyCheckData.VehicleSafetyCheck.EffectiveDate.ToString("g") : ""); }
         }
 
         public string TrailerSafetyCheckStatus
         {
-            get { return "Checked: " + ((_startupService.CurrentTrailer != null) ? _startupService.CurrentTrailerSafetyCheckData.EffectiveDate.ToString("g") : ""); }
+            get { return "Checked: " + ((_latestSafetyCheckData.TrailerSafetyCheck != null) ? _latestSafetyCheckData.TrailerSafetyCheck.EffectiveDate.ToString("g") : ""); }
         }
 
         public string SafetyCheckStatusKey
@@ -78,14 +85,30 @@ namespace MWF.Mobile.Core.ViewModels
             set { _safetyCheckFaultItemViewModels = value; RaisePropertyChanged(() => SafetyCheckFaultItemViewModels); }
         }
 
+        private MvxCommand<DisplaySafetyCheckFaultItemViewModel> _showSafetyCheckFaultCommand;
+        public ICommand ShowSafetyCheckFaultCommand
+        {
+            get
+            {
+                return (_showSafetyCheckFaultCommand = _showSafetyCheckFaultCommand ?? new MvxCommand<DisplaySafetyCheckFaultItemViewModel>((f) => SafetyCheckFaultDetail(f)));
+            }
+        }
+
         #endregion Public Properties
+
+        private void SafetyCheckFaultDetail(DisplaySafetyCheckFaultItemViewModel fault)
+        {
+            if (!string.IsNullOrWhiteSpace(fault.FaultCheckComment))
+                Mvx.Resolve<IUserInteraction>().Alert(fault.FaultCheckComment.Trim(new Char[] {' ', '-'}), null, string.Format("{0} - {1}", "Fault", fault.FaultCheckTitle));
+        }
 
         private void GenerateSafetyCheckFaultItems(List<SafetyCheckFault> faults, bool isTrailer)
         {
             // Add the safety check item view models
             this.SafetyCheckFaultItemViewModels.AddRange(faults.Select(scf => new DisplaySafetyCheckFaultItemViewModel()
             {
-                FaultCheckTitleAndComment = (string.IsNullOrWhiteSpace(scf.Comment) ? scf.Title : string.Format("{0} - {1}", scf.Title, scf.Comment)),
+                FaultCheckTitle = scf.Title,
+                FaultCheckComment = (string.IsNullOrWhiteSpace(scf.Comment) ? "" : " - " + scf.Comment),
                 FaultStatus = GetFaultStatusKey(scf.Status),
                 FaultType = (isTrailer ? "TRL " : "VEH "),
             }));

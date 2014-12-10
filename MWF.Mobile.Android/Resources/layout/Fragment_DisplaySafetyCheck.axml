@@ -95,6 +95,6 @@
     <Mvx.MvxListView
         android:id="@+id/safetyCheckFaults"
         android:layout_weight="1"
-        local:MvxBind="ItemsSource SafetyCheckFaultItemViewModels"
+        local:MvxBind="ItemsSource SafetyCheckFaultItemViewModels;  ItemClick ShowSafetyCheckFaultCommand"
         local:MvxItemTemplate="@layout/item_safetycheckfault" />
 </LinearLayout>

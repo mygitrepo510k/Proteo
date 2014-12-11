@@ -40,6 +40,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
                 _dataService.Connection.DeleteAll<ChildEntity>();
                 _dataService.Connection.DeleteAll<ChildEntity2>();
                 _dataService.Connection.DeleteAll<SingleChildEntity>();
+                _dataService.Connection.CreateTable<MultiChildEntity>();
             }
             else
             {
@@ -50,6 +51,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
                 _dataService.Connection.CreateTable<ChildEntity>();
                 _dataService.Connection.CreateTable<ChildEntity2>();
                 _dataService.Connection.CreateTable<SingleChildEntity>();
+                _dataService.Connection.CreateTable<MultiChildEntity>();
             }
 
         }
@@ -168,6 +170,10 @@ namespace MWF.Mobile.Tests.RepositoryTests
 
             var fixture = new Fixture().Customize(new AutoMoqCustomization());
             var parentEntityIn = fixture.Create<ParentEntity>();
+
+            parentEntityIn.FirstChild.IsFirstChild = true;
+            parentEntityIn.SecondChild.IsFirstChild = false;
+
             var parentEntity2In = fixture.Create<ParentEntity>();
 
             ParentEntityRepository repository = new ParentEntityRepository(_dataService);
@@ -201,6 +207,15 @@ namespace MWF.Mobile.Tests.RepositoryTests
             // Check single child relationship
             Assert.Equal(parentEntityIn.Child.ID, parentEntityOut.Child.ID);
             Assert.Equal(parentEntityIn.Child.Title, parentEntityOut.Child.Title);
+
+            // Check multi child relationship
+            Assert.Equal(parentEntityIn.FirstChild.ID, parentEntityOut.FirstChild.ID);
+            Assert.Equal(parentEntityIn.FirstChild.Title, parentEntityOut.FirstChild.Title);
+            Assert.Equal(parentEntityIn.FirstChild.IsFirstChild, parentEntityOut.FirstChild.IsFirstChild);
+
+            Assert.Equal(parentEntityIn.SecondChild.ID, parentEntityOut.SecondChild.ID);
+            Assert.Equal(parentEntityIn.SecondChild.Title, parentEntityOut.SecondChild.Title);
+            Assert.Equal(parentEntityIn.SecondChild.IsFirstChild, parentEntityOut.SecondChild.IsFirstChild);
 
         }
 

@@ -78,19 +78,19 @@
             style="@style/Proteo.TextView.Order"
             android:layout_weight="0.2"
             android:textSize="15dp"
-            android:text="Type" />
+            local:MvxBind="Text SafetyCheckTypeColumnHeader" />
         <TextView
             style="@style/Proteo.TextView.Order"
             android:layout_weight="0.6"
             android:paddingLeft="4dp"
             android:textSize="15dp"
-            android:text="Check - Comment" />
+            local:MvxBind="Text SafetyCheckCheckTitleColumnHeader" />
         <TextView
             style="@style/Proteo.TextView.Order"
             android:layout_weight="0.2"
             android:paddingLeft="4dp"
             android:textSize="15dp"
-            android:text="*Status" />
+            local:MvxBind="Text SafetyCheckStatusColumnHeader" />
     </LinearLayout>
     <Mvx.MvxListView
         android:id="@+id/safetyCheckFaults"

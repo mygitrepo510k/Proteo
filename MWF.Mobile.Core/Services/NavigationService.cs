@@ -384,10 +384,12 @@ namespace MWF.Mobile.Core.Services
             InsertNavAction<MainViewModel, ReviseQuantityViewModel>(typeof(OrderViewModel));
 
             // Side bar Activity
-            InsertCustomNavAction<MainViewModel, CameraViewModel>(Camera_CustonAction);
-            InsertCustomBackNavAction<MainViewModel, CameraViewModel>(Camera_CustonAction);
+            InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustonAction);
+            InsertCustomBackNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustonAction);
 
-            InsertNavAction<MainViewModel, DisplaySafetyCheckViewModel>(typeof(ManifestViewModel));
+            InsertCustomNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustonAction);
+            InsertCustomBackNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustonAction);
+
             InsertCustomNavAction<MainViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);        //to odometer, signature screen or main activity (manifest)
             InsertNavAction<MainViewModel, OdometerViewModel>(typeof(SafetyCheckSignatureViewModel));
             InsertCustomNavAction<MainViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_Login);
@@ -667,7 +669,7 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        public void Camera_CustonAction(Object parameters)
+        public void SidebarNavigation_CustonAction(Object parameters)
         {
             if (parameters is NavItem<MobileData>)
             {

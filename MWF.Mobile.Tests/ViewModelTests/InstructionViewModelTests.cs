@@ -30,7 +30,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
-        private Mock<INavigationService> _navigationService;
+        private Mock<INavigationService> _mockNavigationService;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
         private Mock<IMainService> _mockMainService;
 
@@ -48,7 +48,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
-            _navigationService = _fixture.InjectNewMock<INavigationService>();
+            _mockNavigationService = _fixture.InjectNewMock<INavigationService>();
 
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
@@ -221,7 +221,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.True(_mobileData.ProgressState == Core.Enums.InstructionProgress.OnSite);
 
             // Should have told navigation service to move on
-            _navigationService.Verify(ns => ns.MoveToNext(It.Is<NavItem<MobileData>>(ni => ni.ID == _mobileData.ID)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavItem<MobileData>>(ni => ni.ID == _mobileData.ID)), Times.Once);
 
         }
 
@@ -239,7 +239,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             instructionVM.ShowOrderCommand.Execute(order);
 
             // Should have told navigation service to move on
-            _navigationService.Verify(ns => ns.MoveToNext(It.Is<NavItem<Item>>(ni => ni.ID == order.ID && ni.ParentID == _mobileData.ID)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavItem<Item>>(ni => ni.ID == order.ID && ni.ParentID == _mobileData.ID)), Times.Once);
 
 
         }
@@ -311,7 +311,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _navigationService.Verify(ns => ns.GoToManifest(), Times.Once);
+            _mockNavigationService.Verify(ns => ns.GoToManifest(), Times.Once);
 
         }
 

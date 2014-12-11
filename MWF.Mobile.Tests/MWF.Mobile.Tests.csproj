@@ -125,6 +125,7 @@
     <Compile Include="RepositoryTests\BaseRepositoryTests.cs" />
     <Compile Include="RepositoryTests\MobileApplicationDataRepositoryTests.cs" />
     <Compile Include="RepositoryTests\RepositoryIntegrationTest.cs" />
+    <Compile Include="RepositoryTests\TestModels\MultiChildEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\SingleChildEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\ChildEntity2.cs" />
     <Compile Include="RepositoryTests\TestModels\GrandParentEntity.cs" />
@@ -139,6 +140,7 @@
     <Compile Include="ViewModelTests\CameraViewModelTests.cs" />
     <Compile Include="ViewModelTests\CustomerCodeViewModelTests.cs" />
     <Compile Include="ServiceTests\GatewayServiceTests.cs" />
+    <Compile Include="ViewModelTests\DisplaySafetyCheckViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionCommentViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionOnSiteViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionSignatureViewModelTests.cs" />

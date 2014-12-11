@@ -115,6 +115,14 @@ namespace MWF.Mobile.Tests.Helpers
             return userInteractionMock;
         }
 
+        public static Mock<IUserInteraction> AlertInvokeAction(this Mock<IUserInteraction> userInteractionMock)
+        {
+            userInteractionMock.Setup(ui => ui.Alert(It.IsAny<String>(), It.Is<Action>(a => a != null), It.IsAny<String>(), It.IsAny<String>()))
+                    .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+
+            return userInteractionMock;
+        }
+
         #endregion
 
     }

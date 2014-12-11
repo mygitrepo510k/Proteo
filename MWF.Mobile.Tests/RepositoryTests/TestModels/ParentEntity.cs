@@ -28,6 +28,12 @@ namespace MWF.Mobile.Tests.RepositoryTests.TestModels
 
         [ChildRelationship(typeof(SingleChildEntity), RelationshipCardinality.OneToOne)]
         public SingleChildEntity Child { get; set; }
+
+        [ChildRelationship(typeof(MultiChildEntity), RelationshipCardinality.OneToZeroOrOne, "IsFirstChild", true)]
+        public MultiChildEntity FirstChild { get; set; }
+
+        [ChildRelationship(typeof(MultiChildEntity), RelationshipCardinality.OneToZeroOrOne, "IsFirstChild", false)]
+        public MultiChildEntity SecondChild { get; set; }
     
     }
 }

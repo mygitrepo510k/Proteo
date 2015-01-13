@@ -34,10 +34,10 @@ namespace MWF.Mobile.Core.Models.Instruction
         [JsonProperty("country")]
         public string Country { get; set; }
         [JsonProperty("arrive")]
-        [JsonConverter(typeof(JsonUkDateTimeConverter))]
+        [JsonConverter(typeof(JsonMultiFormatDateTimeConverter))]
         public DateTime Arrive { get; set; }
         [JsonProperty("depart")]
-        [JsonConverter(typeof(JsonUkDateTimeConverter))]
+        [JsonConverter(typeof(JsonMultiFormatDateTimeConverter))]
         public DateTime Depart { get; set; }
 
         [ForeignKey(typeof(Order))]

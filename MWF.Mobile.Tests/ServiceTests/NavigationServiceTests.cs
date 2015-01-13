@@ -22,6 +22,7 @@ using Xunit;
 using MWF.Mobile.Tests.Helpers;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using Cirrious.MvvmCross.Plugins.Messenger;
+using MWF.Mobile.Core.Enums;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
@@ -36,6 +37,9 @@ namespace MWF.Mobile.Tests.ServiceTests
         private MockDispatcher _mockViewDispatcher;
         private Mock<IUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
+
+        private MobileData _mobileData;
+        private Mock<IMobileDataRepository> _mockMobileDataRepo;
 
            
 
@@ -57,6 +61,13 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockMessenger = new Mock<IMvxMessenger>();
             Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
+
+            _mobileData = _fixture.Create<MobileData>();
+
+            _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
         }
 
@@ -667,6 +678,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
+            _mobileData.Order.Type = InstructionType.Collect;
 
             var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
@@ -695,6 +707,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
+            _mobileData.Order.Type = InstructionType.Collect;
+
             var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
             // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
@@ -707,7 +721,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             //Create a nav item for a mobile data model
-            NavItem<MobileData> parametersObjectIn = new NavItem<MobileData> { ID = Guid.NewGuid() };
+            NavItem<MobileData> parametersObjectIn = new NavItem<MobileData> { ID = _mobileData.ID };
             service.MoveToNext(parametersObjectIn);
 
             //Check that the startup the instruction view model was navigated to

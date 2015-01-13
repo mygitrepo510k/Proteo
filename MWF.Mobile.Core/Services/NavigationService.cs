@@ -312,11 +312,12 @@ namespace MWF.Mobile.Core.Services
                 this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
             }
 
-
-
             return advanceToCommentScreen;
         }
 
+        /// <summary>
+        /// Once the user confirms the prompt it updates the instruction to complete and then sends off the Complete chunk to Bluesphere.
+        /// </summary>
         private void CompleteInstruction(MobileData mobileDataContent)
         {
             Mvx.Resolve<IUserInteraction>().Confirm("Do you wish to complete?", isConfirmed =>
@@ -382,6 +383,8 @@ namespace MWF.Mobile.Core.Services
             InsertNavAction<MainViewModel, OrderViewModel>(typeof(ReviseQuantityViewModel));
 
             InsertNavAction<MainViewModel, ReviseQuantityViewModel>(typeof(OrderViewModel));
+
+            InsertCustomNavAction<MainViewModel, InstructionTrunkToViewModel>(InstructionTrunkTo_CustomAction);
 
             // Side bar Activity
             InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustonAction);
@@ -459,9 +462,13 @@ namespace MWF.Mobile.Core.Services
 
             if (parameters is NavItem<MobileData>)
             {
-                this.ShowViewModel<InstructionViewModel>(parameters as NavItem<MobileData>);
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+
+                if (_mobileData.Order.Type == Enums.InstructionType.Collect || _mobileData.Order.Type == Enums.InstructionType.Deliver)
+                    this.ShowViewModel<InstructionViewModel>(parameters as NavItem<MobileData>);
+                else if (_mobileData.Order.Type == Enums.InstructionType.TrunkTo)
+                    this.ShowViewModel<InstructionTrunkToViewModel>(parameters);
             }
-            // else ??
 
         }
 
@@ -617,7 +624,17 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-
+        /// <summary>
+        /// Instruction Trunk To screen, completes the instruction and goes back to manifest screen
+        /// </summary>
+        public void InstructionTrunkTo_CustomAction(Object parameters)
+        {
+            if(parameters is NavItem<MobileData>)
+            {
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                CompleteInstruction(_mobileData);
+            }
+        }
 
         #endregion Custom Mapping Actions
 

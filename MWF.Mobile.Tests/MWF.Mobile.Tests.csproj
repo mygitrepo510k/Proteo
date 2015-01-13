@@ -144,6 +144,7 @@
     <Compile Include="ViewModelTests\InstructionCommentViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionOnSiteViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionSignatureViewModelTests.cs" />
+    <Compile Include="ViewModelTests\InstructionTrunkToViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionViewModelTests.cs" />
     <Compile Include="ViewModelTests\ManifestViewModelTests.cs" />
     <Compile Include="ViewModelTests\OrderViewModelTests.cs" />

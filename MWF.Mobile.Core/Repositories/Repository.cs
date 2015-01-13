@@ -336,14 +336,12 @@ namespace MWF.Mobile.Core.Repositories
                 {
                     // Child property is a collection of Bluesphere entities
                     IEnumerable<IBlueSphereEntity> children = relationshipProperty.GetValue(entity, null) as IEnumerable<IBlueSphereEntity>;
-                    if (children == null)
+                    if (children != null)
                     {
-                        throw new ArgumentException(string.Format("{0} type property {1} does not contain BlueSphere entities", entity.GetType().ToString(), relationshipProperty.Name));
-                    }
-
-                    foreach (var child in children)
-                    {
-                        action.Invoke(entity, child);
+                        foreach (var child in children)
+                        {
+                            action.Invoke(entity, child);
+                        }
                     }
                 }
             }

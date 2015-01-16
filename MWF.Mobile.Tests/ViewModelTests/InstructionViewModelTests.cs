@@ -85,7 +85,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
 
-            Assert.Equal(_mobileData.GroupTitleFormatted, instructionVM.RunID);
+            Assert.Equal(_mobileData.Order.RouteTitle, instructionVM.RunID);
 
         }
 

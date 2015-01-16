@@ -116,16 +116,16 @@ namespace MWF.Mobile.Core.ViewModels
         private void InstructionDone()
         {
 
-            if ((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerSignatureRequiredForCollection)
-                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery)
+            if (((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerSignatureRequiredForCollection)
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))
                     && string.IsNullOrWhiteSpace(CustomerSignatureEncodedImage))
             {
                 _userInteraction.Alert("Signature is required");
                 return;
             }
 
-            if ((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerNameRequiredForCollection)
-                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerNameRequiredForDelivery)
+            if (((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerNameRequiredForCollection)
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerNameRequiredForDelivery))
                     && string.IsNullOrWhiteSpace(CustomerName))
             {
                 _userInteraction.Alert("The signers name is required");

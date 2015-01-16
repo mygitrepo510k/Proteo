@@ -445,7 +445,7 @@ namespace MWF.Mobile.Core.Services
             }
             else
             {
-                if (_presenter.CurrentActivityViewModel.Equals(typeof(StartupViewModel)))
+                if (_presenter.CurrentActivityViewModel.GetType().Equals(typeof(ViewModels.StartupViewModel)))
                     this.DriverLogIn();
 
                 this.ShowViewModel<MainViewModel>();

@@ -51,7 +51,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
-        public string RunID { get { return _mobileData.GroupTitleFormatted; } }
+        public string RunID { get { return _mobileData.Order.RouteTitle; } }
 
         public string ArriveDateTime { get { return _mobileData.Order.Arrive.ToStringIgnoreDefaultDate(); } }
 

@@ -35,7 +35,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string RunID
         {
-            get { return _mobileData.GroupTitleFormatted; }        
+            get { return _mobileData.Order.RouteTitle; }        
         }
 
         public string PointDescripion

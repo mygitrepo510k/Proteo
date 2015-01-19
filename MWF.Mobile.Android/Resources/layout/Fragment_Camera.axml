@@ -42,6 +42,11 @@
                 android:layout_weight="0"
                 android:id="@+id/takePictureButton"
                 local:MvxBind="Text TakePictureButtonLabel; Click TakePictureCommand;" />
+            <Button
+                style="@style/Proteo.Button.Secondary"
+                android:layout_weight="0"
+                android:id="@+id/selectFromLibrarytButton"
+                local:MvxBind="Text SelectFromLibraryButtonLabel; Click SelectPictureFromLibraryCommand;" />
         </LinearLayout>
     </LinearLayout>
     <Button

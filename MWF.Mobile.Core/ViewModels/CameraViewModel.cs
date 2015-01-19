@@ -23,6 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private MvxCommand _doneCommand;
         private MvxCommand _takePictureCommand;
+        private MvxCommand _selectPictureFromLibrary;
         ObservableCollection<CameraImageViewModel> _imagesVM;
         List<Image> _images;
         private string _commentText;
@@ -57,6 +58,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Take Picture"; }
         }
 
+        public string SelectFromLibraryButtonLabel
+        {
+            get { return "Select From Library"; }
+        }
+
         public string CommentHintText
         {
             get
@@ -86,6 +92,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return (_takePictureCommand = _takePictureCommand ?? new MvxCommand(() => TakePicture())); }
         }
 
+        public System.Windows.Input.ICommand SelectPictureFromLibraryCommand
+        {
+            get { return (_selectPictureFromLibrary = _selectPictureFromLibrary ?? new MvxCommand(() => SelectPictureFromLibrary()));}
+        }
+
         public ObservableCollection<CameraImageViewModel> ImagesVM
         {
             get { return _imagesVM; }
@@ -104,7 +115,6 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion Public Properties
-
 
         #region Private Methods
 
@@ -127,8 +137,12 @@ namespace MWF.Mobile.Core.ViewModels
             // note use "TakePicture" for release
             // ChoosePictureFromLibrary should only be used when debugging with an emulator
             //_pictureChooserTask.ChoosePictureFromLibrary(400, 95, OnPictureTaken, () => { });
-            _pictureChooserTask.TakePicture(400, 95, OnPictureTaken, () => { });
+            _pictureChooserTask.TakePicture(400, 95, OnPictureTaken, () => { });       
+        }
 
+        private void SelectPictureFromLibrary()
+        {
+            _pictureChooserTask.ChoosePictureFromLibrary(400, 95, OnPictureTaken, () => { });
         }
 
 

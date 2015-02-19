@@ -14,7 +14,7 @@ using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Services
 {
-    public class MainService 
+    public class MainService
         : MvxNavigatingObject, IMainService
     {
 
@@ -26,7 +26,7 @@ namespace MWF.Mobile.Core.Services
 
         #endregion Private Members
 
-        #region Constructors 
+        #region Constructors
 
         public MainService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService)
         {
@@ -35,7 +35,7 @@ namespace MWF.Mobile.Core.Services
             _gpsService = gpsService;
         }
 
-        #endregion Constructors 
+        #endregion Constructors
 
         #region Public Members
 
@@ -77,6 +77,67 @@ namespace MWF.Mobile.Core.Services
         }
 
         /// <summary>
+        /// This method sends the instructions that have been acknowledged by the driver.
+        /// This is in the form of a 'Read' Chunk
+        /// </summary>
+        /// <param name="instructions">The instruction that have been acknowledged</param>
+        public void SendReadChunk(IEnumerable<MobileData> instructions)
+        {
+            //The data chunk to be sent.
+            MobileApplicationDataChunkCollection dataChunkCollection = new MobileApplicationDataChunkCollection { MobileApplicationDataChunkCollectionObject = new List<MobileApplicationDataChunk>() };
+
+            foreach (var instruction in instructions)
+            {
+                MobileApplicationDataChunk dataChunk = new MobileApplicationDataChunk();
+                MobileApplicationDataChunkContentActivity dataChunkActivity = new MobileApplicationDataChunkContentActivity();
+
+                //These variables make up the Data variable in the MobileApplicationDataChunk object.
+                MobileApplicationDataChunkContentActivities dataChunkActivities = new MobileApplicationDataChunkContentActivities { MobileApplicationDataChunkContentActivitiesObject = new List<MobileApplicationDataChunkContentActivity>() };
+                MobileApplicationDataChunkContentOrder dataChunkOrder = new MobileApplicationDataChunkContentOrder { MobileApplicationDataChunkContentOrderActivities = new List<MobileApplicationDataChunkContentActivities>() };
+
+                instruction.LatestDataChunkSequence++;
+
+                dataChunkActivity.Activity = 10;
+                dataChunkActivity.DriverId = CurrentDriver.ID;
+                dataChunkActivity.EffectiveDate = DateTime.Now;
+                dataChunkActivity.EffectiveDate = dataChunkActivity.EffectiveDate.AddMilliseconds(-dataChunkActivity.EffectiveDate.Millisecond);
+                dataChunkActivity.MwfVersion = "";
+                dataChunkActivity.VehicleRegistration = CurrentVehicle.Registration;
+                dataChunkActivity.Smp = _gpsService.GetSmpData(Enums.ReportReason.Begin);
+                dataChunkActivity.Title = "READ";
+                dataChunkActivity.Sequence = instruction.LatestDataChunkSequence;
+
+                dataChunkActivities.MobileApplicationDataChunkContentActivitiesObject.Add(dataChunkActivity);
+                dataChunkOrder.MobileApplicationDataChunkContentOrderActivities.Add(dataChunkActivities);
+
+                dataChunk.EffectiveDate = dataChunkActivity.EffectiveDate;
+                dataChunk.ID = Guid.NewGuid();
+                dataChunk.MobileApplicationDataID = instruction.ID;
+                dataChunk.SyncState = Enums.SyncState.Add;
+                dataChunk.Title = "READ";
+                dataChunk.Data = dataChunkOrder;
+                dataChunk.Sequence = instruction.Sequence;
+
+                dataChunkCollection.MobileApplicationDataChunkCollectionObject.Add(dataChunk);
+
+                if (instruction.SyncState != Enums.SyncState.Delete)
+                {
+
+                    var mobileDataToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                    if (mobileDataToUpdate != null)
+                    {
+                        _repositories.MobileDataRepository.Delete(mobileDataToUpdate);
+                    }
+                    _repositories.MobileDataRepository.Insert(instruction);
+                }
+
+            }
+
+            _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
+
+        }
+
+        /// <summary>
         /// This method sends the MobileApplicationDataChunk up to bluesphere,
         /// this is called for when the instruction goes into Drive, OnSite and is Completed
         /// </summary>
@@ -88,12 +149,12 @@ namespace MWF.Mobile.Core.Services
 
             bool deleteMobileData = false;
             string smp = "";
-            
+
             //These variables make up the Data variable in the MobileApplicationDataChunk object.
             MobileApplicationDataChunkContentActivity dataChunkActivity = CurrentDataChunkActivity;
             MobileApplicationDataChunkContentActivities dataChunkActivities = new MobileApplicationDataChunkContentActivities { MobileApplicationDataChunkContentActivitiesObject = new List<MobileApplicationDataChunkContentActivity>() };
             MobileApplicationDataChunkContentOrder dataChunkOrder = new MobileApplicationDataChunkContentOrder { MobileApplicationDataChunkContentOrderActivities = new List<MobileApplicationDataChunkContentActivities>() };
-            
+
             //The data chunk to be sent.
             MobileApplicationDataChunk dataChunk = new MobileApplicationDataChunk();
             MobileApplicationDataChunkCollection dataChunkCollection = new MobileApplicationDataChunkCollection { MobileApplicationDataChunkCollectionObject = new List<MobileApplicationDataChunk>() };
@@ -104,55 +165,55 @@ namespace MWF.Mobile.Core.Services
                 CurrentDataChunkActivity = dataChunkActivity;
             }
 
-                dataChunkActivity.Activity = 10;
-                dataChunkActivity.DriverId = CurrentDriver.ID;
-                dataChunkActivity.EffectiveDate = DateTime.Now;
-                dataChunkActivity.EffectiveDate = dataChunkActivity.EffectiveDate.AddMilliseconds(-dataChunkActivity.EffectiveDate.Millisecond);
-                dataChunkActivity.MwfVersion = "";
-                dataChunkActivity.VehicleRegistration = CurrentVehicle.Registration;
+            dataChunkActivity.Activity = 10;
+            dataChunkActivity.DriverId = CurrentDriver.ID;
+            dataChunkActivity.EffectiveDate = DateTime.Now;
+            dataChunkActivity.EffectiveDate = dataChunkActivity.EffectiveDate.AddMilliseconds(-dataChunkActivity.EffectiveDate.Millisecond);
+            dataChunkActivity.MwfVersion = "";
+            dataChunkActivity.VehicleRegistration = CurrentVehicle.Registration;
 
-                dataChunk.EffectiveDate = dataChunkActivity.EffectiveDate;
-                dataChunk.ID = Guid.NewGuid();
-                dataChunk.MobileApplicationDataID = mobileData.ID;
-                dataChunk.SyncState = Enums.SyncState.Add;
+            dataChunk.EffectiveDate = dataChunkActivity.EffectiveDate;
+            dataChunk.ID = Guid.NewGuid();
+            dataChunk.MobileApplicationDataID = mobileData.ID;
+            dataChunk.SyncState = Enums.SyncState.Add;
 
-                if (updateQuantity)
+            if (updateQuantity)
+            {
+                smp = _gpsService.GetSmpData(Enums.ReportReason.ActiveReport);
+                dataChunkActivity.Title = "REVISED QUANTITY";
+
+                dataChunk.Title = "REVISED QUANTITY";
+            }
+            else
+            {
+                switch (mobileData.ProgressState)
                 {
-                    smp = _gpsService.GetSmpData(Enums.ReportReason.ActiveReport);
-                    dataChunkActivity.Title = "REVISED QUANTITY";
+                    case Enums.InstructionProgress.Driving:
+                        smp = _gpsService.GetSmpData(Enums.ReportReason.Drive);
+                        dataChunkActivity.Title = "DRIVE";
 
-                    dataChunk.Title = "REVISED QUANTITY";
+                        dataChunk.Title = "DRIVE";
+                        break;
+
+                    case Enums.InstructionProgress.OnSite:
+                        smp = _gpsService.GetSmpData(Enums.ReportReason.OnSite);
+                        dataChunkActivity.Title = "ONSITE";
+
+                        dataChunk.Title = "ONSITE";
+
+                        break;
+
+                    case Enums.InstructionProgress.Complete:
+                        smp = _gpsService.GetSmpData(Enums.ReportReason.Complete);
+                        dataChunkActivity.Title = "COMPLETE";
+
+                        dataChunk.Title = "COMPLETE";
+
+                        deleteMobileData = true;
+
+                        break;
                 }
-                else
-                {
-                    switch (mobileData.ProgressState)
-                    {
-                        case Enums.InstructionProgress.Driving:
-                            smp = _gpsService.GetSmpData(Enums.ReportReason.Drive);
-                            dataChunkActivity.Title = "DRIVE";
-
-                            dataChunk.Title = "DRIVE";
-                            break;
-
-                        case Enums.InstructionProgress.OnSite:
-                            smp = _gpsService.GetSmpData(Enums.ReportReason.OnSite);
-                            dataChunkActivity.Title = "ONSITE";
-
-                            dataChunk.Title = "ONSITE";
-
-                            break;
-
-                        case Enums.InstructionProgress.Complete:
-                            smp = _gpsService.GetSmpData(Enums.ReportReason.Complete);
-                            dataChunkActivity.Title = "COMPLETE";
-
-                            dataChunk.Title = "COMPLETE";
-
-                            deleteMobileData = true;
-
-                            break;
-                    }
-                }
+            }
 
             dataChunkActivity.Smp = smp;
             dataChunkActivity.Sequence = mobileData.LatestDataChunkSequence;
@@ -160,9 +221,9 @@ namespace MWF.Mobile.Core.Services
             dataChunkOrder.MobileApplicationDataChunkContentOrderActivities.Add(dataChunkActivities);
 
             dataChunk.Data = dataChunkOrder;
+            dataChunk.Sequence = mobileData.Sequence;
 
             dataChunkCollection.MobileApplicationDataChunkCollectionObject.Add(dataChunk);
-            dataChunk.Sequence = mobileData.Sequence;
 
             CurrentDataChunkActivity = dataChunkActivity;
 

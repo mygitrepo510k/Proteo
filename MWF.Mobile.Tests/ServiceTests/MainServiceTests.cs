@@ -44,6 +44,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             IMobileDataRepository mobileDataRepo = Mock.Of<IMobileDataRepository>(mdr => mdr.GetByID(It.IsAny<Guid>()) == _fixture.Create<MobileData>());
 
             var mockGpsService = _fixture.InjectNewMock<IGpsService>();
+            mockGpsService.Setup(mgps => mgps.GetSmpData(MWF.Mobile.Core.Enums.ReportReason.Begin)).Returns("SMP-BEGIN");
             mockGpsService.Setup(mgps => mgps.GetSmpData(MWF.Mobile.Core.Enums.ReportReason.Drive)).Returns("SMP-DRIVE");
             mockGpsService.Setup(mgps => mgps.GetSmpData(MWF.Mobile.Core.Enums.ReportReason.OnSite)).Returns("SMP-ONSITE");
             mockGpsService.Setup(mgps => mgps.GetSmpData(MWF.Mobile.Core.Enums.ReportReason.Complete)).Returns("SMP-COMPLETE");
@@ -207,6 +208,38 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(Guid.Empty, _uploadImageObject.MobileApplicationID);
             Assert.Equal(comment, _uploadImageObject.Comment);
             Assert.Equal(photos, _uploadImageObject.Pictures);
+
+        }
+
+        /// <summary>
+        /// This test is to verify that the right content is added to the gatewayqueuedservice for a Read chunk
+        /// </summary>
+        [Fact]
+        public void MainService_SendReadChunk()
+        {
+            base.ClearAll();
+
+            MobileData mobileData = _fixture.Create<MobileData>();
+            mobileData.ProgressState = Core.Enums.InstructionProgress.OnSite;
+
+            var mainService = _fixture.Create<MainService>();
+
+            var instructions = _fixture.CreateMany<MobileData>();
+
+            mainService.SendReadChunk(instructions);
+
+            _mockGatewayQueuedService.Verify(mgqs =>
+                mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
+
+
+            MobileApplicationDataChunk mobileDataChunk = _mobileDataChunkCollection.MobileApplicationDataChunkCollectionObject.FirstOrDefault();
+            var dataChunkActivities = mobileDataChunk.Data.MobileApplicationDataChunkContentOrderActivities.FirstOrDefault().MobileApplicationDataChunkContentActivitiesObject.FirstOrDefault();
+
+            Assert.Equal("READ", mobileDataChunk.Title);
+            Assert.Equal("READ", dataChunkActivities.Title);
+            Assert.Equal("SMP-BEGIN", dataChunkActivities.Smp);
+
+            Assert.Equal(3, _mobileDataChunkCollection.MobileApplicationDataChunkCollectionObject.Count);
 
         }
 

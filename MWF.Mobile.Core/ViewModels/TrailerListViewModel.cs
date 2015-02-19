@@ -162,18 +162,18 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         //This is method associated with the search button in the action bar.
-        private string _searchText;
-        public string SearchText
+        private string _trailerSearchText;
+        public string TrailerSearchText
         {
-            get { return _searchText; }
-            set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); RaisePropertyChanged(() => TrailerSelectText); }
+            get { return _trailerSearchText; }
+            set { _trailerSearchText = value; RaisePropertyChanged(() => TrailerSearchText); FilterList(); RaisePropertyChanged(() => TrailerSelectText); }
         }
 
 
         private void FilterList()
         {
-            if (SearchText != string.Empty)
-                Trailers = _originalTrailerList.Where(t => t.Registration.ToUpper().Contains(SearchText.ToUpper()));
+            if (TrailerSearchText != string.Empty)
+                Trailers = _originalTrailerList.Where(t => t.Registration.ToUpper().Contains(TrailerSearchText.ToUpper()));
         }
 
         //This is method associated with the refresh button in the action bar. 
@@ -240,7 +240,7 @@ namespace MWF.Mobile.Core.ViewModels
                     Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll();
 
                     //Recalls the filter text if there is text in the search field.
-                    if (SearchText != null)
+                    if (TrailerSearchText != null)
                     {
                         FilterList();
                     }

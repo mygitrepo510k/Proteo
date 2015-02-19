@@ -30,6 +30,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private Mock<IGatewayService> _gatewayMock;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
         private Mock<IMvxMessenger> _mockMvxMessenger;
+        private Mock<IMainService> _mockMainService;
 
         protected override void AdditionalSetup()
         {
@@ -53,6 +54,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mockStartupService = Mock.Of<IStartupService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
                                                     && ssr.LoggedInDriver == _fixture.Create<Driver>());
             _fixture.Inject<IStartupService>(mockStartupService);
+
+            _mockMainService = new Mock<IMainService>();
+            _fixture.Inject<IMainService>(_mockMainService.Object);
 
             IRepositories repos = Mock.Of<IRepositories>(r => r.DeviceRepository == deviceRepo);
             _fixture.Register<IRepositories>(() => repos);
@@ -353,6 +357,9 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockGatewayQueuedService.Verify(mgqs => 
                 mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
+
+            _mockMainService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>()), Times.Once);
+
         }
 
         [Fact]
@@ -376,6 +383,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
+
+            _mockMainService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>()), Times.Once);
         }
 
         [Fact]
@@ -412,6 +421,9 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
+
+            _mockMainService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>()), Times.Once);
+
         }
 
         #region Helpers

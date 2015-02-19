@@ -34,7 +34,7 @@ namespace MWF.Mobile.Android.Views.Fragments
            
             _searchView = searchItem.JavaCast<SearchView>();
 
-            _searchView.QueryTextChange += (s, e) => ((TrailerListViewModel)this.ViewModel).SearchText = e.NewText;
+            _searchView.QueryTextChange += (s, e) => ((TrailerListViewModel)this.ViewModel).TrailerSearchText = e.NewText;
         }
         public override bool OnOptionsItemSelected(IMenuItem item)
         {

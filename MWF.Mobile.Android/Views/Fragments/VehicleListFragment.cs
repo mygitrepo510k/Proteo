@@ -39,7 +39,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             var searchItem = menu.FindItem(Resource.Id.action_search).ActionView;
             _searchView = searchItem.JavaCast<SearchView>();
 
-            _searchView.QueryTextChange += (s, e) => ((VehicleListViewModel)this.ViewModel).SearchText = e.NewText;
+            _searchView.QueryTextChange += (s, e) => ((VehicleListViewModel)this.ViewModel).VehicleSearchText = e.NewText;
 
         }
         public override bool OnOptionsItemSelected(IMenuItem item)

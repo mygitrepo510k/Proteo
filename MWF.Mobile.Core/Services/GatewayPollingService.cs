@@ -151,7 +151,10 @@ namespace MWF.Mobile.Core.Services
                             break;
                     }
                 }
-                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instructions.ToList(), () => AcknowledgeInstructions(instructions), "Manifest Update", "Acknowledge");
+                //Acknowledge that they are on the Device (Not however acknowledged by the driver)
+                AcknowledgeInstructions(instructions);
+
+                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instructions.ToList(), () => _mainService.SendReadChunk(instructions), "Manifest Update", "Acknowledge");
 
             }
         }

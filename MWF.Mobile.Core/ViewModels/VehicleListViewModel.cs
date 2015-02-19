@@ -140,16 +140,16 @@ namespace MWF.Mobile.Core.ViewModels
             }, "Confirm your vehicle", "Confirm");
         }
 
-        private string _searchText;
-        public string SearchText
+        private string _vehicleSearchText;
+        public string VehicleSearchText
         {
-            get { return _searchText; }
-            set { _searchText = value; RaisePropertyChanged(() => SearchText); FilterList(); RaisePropertyChanged(() => VehicleSelectText); }
+            get { return _vehicleSearchText; }
+            set { _vehicleSearchText = value; RaisePropertyChanged(() => VehicleSearchText); FilterList(); RaisePropertyChanged(() => VehicleSelectText); }
         }
 
         private void FilterList()
         {
-            Vehicles = _originalVehicleList.Where(v => v.Registration.ToUpper().Contains(SearchText.ToUpper()));
+            Vehicles = _originalVehicleList.Where(v => v.Registration.ToUpper().Contains(VehicleSearchText.ToUpper()));
         }
 
         private MvxCommand _refreshListCommand;
@@ -191,7 +191,7 @@ namespace MWF.Mobile.Core.ViewModels
                     Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
 
                     //Recalls the filter text if there is text in the search field.
-                    if (SearchText != null)
+                    if (VehicleSearchText != null)
                     {
                         FilterList();
                     }

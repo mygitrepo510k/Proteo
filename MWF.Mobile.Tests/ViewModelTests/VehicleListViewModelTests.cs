@@ -157,7 +157,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<VehicleListViewModel>();
-            vm.SearchText = "registration";
+            vm.VehicleSearchText = "registration";
 
             Assert.Equal(vehicles, vm.Vehicles);
 
@@ -181,7 +181,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<VehicleListViewModel>();
-            vm.SearchText = "";
+            vm.VehicleSearchText = "";
 
             vm.RefreshListCommand.Execute(null);
 
@@ -209,7 +209,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<VehicleListViewModel>();
-            vm.SearchText = "Registration";
+            vm.VehicleSearchText = "Registration";
 
             vm.RefreshListCommand.Execute(null);
 

@@ -399,6 +399,9 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\values\SplashStyle.xml" />
+    <AndroidResource Include="Resources\menu\trailer_activity_actions.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

@@ -61,6 +61,8 @@ namespace MWF.Mobile.Core.ViewModels
                         {
                             _checkStatus = value;
                             _safetyCheckViewModel.CheckSafetyCheckItemsStatus();
+                            this.SafetyCheckFault.Comment = string.Empty;
+                            this.SafetyCheckFault.Images = new List<Image>();
                             this.SafetyCheckFault.Status = value;
                             this.SafetyCheckFault.IsDiscretionaryPass = false;
                             RaisePropertyChanged(() => CheckStatus);

@@ -644,9 +644,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             service.MoveToNext();
 
             //Check that the main activity view model was navigated to
-            Assert.Equal(1, _mockViewDispatcher.Hints.Count);
-            var hint = _mockViewDispatcher.Hints.First();
-            Assert.Equal(typeof(PasscodeViewModel), (hint as CloseUpToViewPresentationHint).ViewModelType);
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(StartupViewModel), request.ViewModelType);
 
         }
 

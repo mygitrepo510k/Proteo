@@ -441,7 +441,7 @@ namespace MWF.Mobile.Core.Services
 
             if (SafetyCheckStatus == Enums.SafetyCheckStatus.Failed)
             {
-                ChangePresentation(new Presentation.CloseUpToViewPresentationHint(typeof(PasscodeViewModel)));
+                MoveTo(typeof(StartupViewModel), parameters);
             }
             else
             {

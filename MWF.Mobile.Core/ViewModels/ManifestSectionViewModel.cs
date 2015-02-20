@@ -20,15 +20,20 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         private ManifestViewModel _manifestViewModel;
-      
+
 
         private ObservableCollection<ManifestInstructionViewModel> _instructions;
         public ObservableCollection<ManifestInstructionViewModel> Instructions
         {
-            get { return _instructions; }
-            set { _instructions = value;
-            _instructions.OrderBy(inst => inst.ArrivalDate);
-                RaisePropertyChanged(() => Instructions); }
+            get
+            {
+                return _instructions;
+            }
+            set
+            {
+                _instructions = value;
+                RaisePropertyChanged(() => Instructions);
+            }
         }
 
         private string _sectionHeader;

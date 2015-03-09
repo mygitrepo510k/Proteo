@@ -249,10 +249,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
+        #region BaseInstructionNotificationViewModel
+
         public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             RefreshInstructions();
         }
+
+        #endregion BaseInstructionNotificationViewModel
     }
 
     public class DummyMobileData : MobileData { }

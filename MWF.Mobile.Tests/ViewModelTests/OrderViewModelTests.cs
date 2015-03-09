@@ -52,6 +52,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
+           var test = Ioc.Resolve<IMvxMessenger>();
 
         }
 

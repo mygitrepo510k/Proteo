@@ -69,6 +69,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
+            var test = Ioc.Resolve<IMvxMessenger>();
+
         }
 
         #endregion
@@ -78,6 +80,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         [Fact]
         public void NavigationService_InsertNavAction()
         {
+
             base.ClearAll();
 
             var service = _fixture.Create<NavigationService>();

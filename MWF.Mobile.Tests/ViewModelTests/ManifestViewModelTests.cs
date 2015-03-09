@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Xunit;
 using MWF.Mobile.Tests.Helpers;
 using MWF.Mobile.Core.Repositories.Interfaces;
+using Cirrious.MvvmCross.Plugins.Messenger;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -30,6 +31,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
+
+            Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
         }
 
         /// <summary>

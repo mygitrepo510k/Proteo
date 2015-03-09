@@ -9,6 +9,23 @@
             Represents source information about a test case.
             </summary>
         </member>
+        <member name="T:Xunit.Abstractions.IXunitSerializable">
+            <summary>
+            Interface implement by objects that want to support serialization in xUnit.net.
+            </summary>
+        </member>
+        <member name="M:Xunit.Abstractions.IXunitSerializable.Deserialize(Xunit.Abstractions.IXunitSerializationInfo)">
+            <summary>
+            Called when the object should populate itself with data from the serialization info.
+            </summary>
+            <param name="info">The info to get the data from</param>
+        </member>
+        <member name="M:Xunit.Abstractions.IXunitSerializable.Serialize(Xunit.Abstractions.IXunitSerializationInfo)">
+            <summary>
+            Called when the object should store its data into the serialization info.
+            </summary>
+            <param name="info">The info to store the data in</param>
+        </member>
         <member name="P:Xunit.Abstractions.ISourceInformation.FileName">
             <summary>
             Gets or sets the source file name. A <c>null</c> value indicates that the
@@ -38,7 +55,9 @@
         <member name="T:Xunit.Abstractions.ITestFramework">
             <summary>
             Represents a test framework. There are two pieces to test frameworks: discovery and
-            execution. The two factory methods represent these two pieces.
+            execution. The two factory methods represent these two pieces. Test frameworks can
+            implement an empty constructor, or they can implement one that takes <see cref="T:Xunit.Abstractions.IMessageSink"/>
+            if they want to be able to send diagnostic messages.
             </summary>
         </member>
         <member name="M:Xunit.Abstractions.ITestFramework.GetDiscoverer(Xunit.Abstractions.IAssemblyInfo)">
@@ -65,22 +84,22 @@
             Represents an implementation of the discovery part of a test framework.
             </summary>
         </member>
-        <member name="M:Xunit.Abstractions.ITestFrameworkDiscoverer.Find(System.Boolean,Xunit.Abstractions.IMessageSink,Xunit.Abstractions.ITestFrameworkOptions)">
+        <member name="M:Xunit.Abstractions.ITestFrameworkDiscoverer.Find(System.Boolean,Xunit.Abstractions.IMessageSink,Xunit.Abstractions.ITestFrameworkDiscoveryOptions)">
             <summary>
             Starts the process of finding all tests in an assembly.
             </summary>
             <param name="includeSourceInformation">Whether to include source file information, if possible.</param>
-            <param name="messageSink">The message sink to report results back to.</param>
-            <param name="options">The options used by the test framework during discovery.</param>
+            <param name="discoveryMessageSink">The message sink to report results back to.</param>
+            <param name="discoveryOptions">The options used by the test framework during discovery.</param>
         </member>
-        <member name="M:Xunit.Abstractions.ITestFrameworkDiscoverer.Find(System.String,System.Boolean,Xunit.Abstractions.IMessageSink,Xunit.Abstractions.ITestFrameworkOptions)">
+        <member name="M:Xunit.Abstractions.ITestFrameworkDiscoverer.Find(System.String,System.Boolean,Xunit.Abstractions.IMessageSink,Xunit.Abstractions.ITestFrameworkDiscoveryOptions)">
             <summary>
             Starts the process of finding all tests in a class.
             </summary>
             <param name="typeName">The fully qualified type name to find tests in.</param>
             <param name="includeSourceInformation">Whether to include source file information, if possible.</param>
-            <param name="messageSink">The message sink to report results back to.</param>
-            <param name="options">The options used by the test framework during discovery.</param>
+            <param name="discoveryMessageSink">The message sink to report results back to.</param>
+            <param name="discoveryOptions">The options used by the test framework during discovery.</param>
         </member>
         <member name="M:Xunit.Abstractions.ITestFrameworkDiscoverer.Serialize(Xunit.Abstractions.ITestCase)">
             <summary>
@@ -99,6 +118,41 @@
             Returns the display name of the test framework that this discoverer is running tests for.
             </summary>
         </member>
+        <member name="T:Xunit.Abstractions.ITestFrameworkDiscoveryOptions">
+            <summary>
+            Represents an instance of <see cref="T:Xunit.Abstractions.ITestFrameworkOptions"/> that is to be used for
+            test discovery purposes.
+            </summary>
+        </member>
+        <member name="T:Xunit.Abstractions.ITestFrameworkOptions">
+            <summary>
+            This interface should not be consumed directly; instead, you should
+            consume <see cref="T:Xunit.Abstractions.ITestFrameworkDiscoveryOptions"/>
+            or <see cref="T:Xunit.Abstractions.ITestFrameworkExecutionOptions"/>.
+            </summary>
+        </member>
+        <member name="M:Xunit.Abstractions.ITestFrameworkOptions.GetValue``1(System.String)">
+            <summary>
+            Gets an option value.
+            </summary>
+            <typeparam name="TValue">The type of the value.</typeparam>
+            <param name="name">The name of the value.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="M:Xunit.Abstractions.ITestFrameworkOptions.SetValue``1(System.String,``0)">
+            <summary>
+            Sets an option value.
+            </summary>
+            <typeparam name="TValue">The type of the value.</typeparam>
+            <param name="name">The name of the value.</param>
+            <param name="value">The value to be set.</param>
+        </member>
+        <member name="T:Xunit.Abstractions.ITestFrameworkExecutionOptions">
+            <summary>
+            Represents an instance of <see cref="T:Xunit.Abstractions.ITestFrameworkOptions"/> that is to be used for
+            test execution purposes.
+            </summary>
+        </member>
         <member name="T:Xunit.Abstractions.ITestFrameworkExecutor">
             <summary>
             Represents an implementation of the execution part of a test framework.
@@ -111,44 +165,21 @@
             <param name="value">The string representation of the test case.</param>
             <returns>The de-serialized test case.</returns>
         </member>
-        <member name="M:Xunit.Abstractions.ITestFrameworkExecutor.RunAll(Xunit.Abstractions.IMessageSink,Xunit.Abstractions.ITestFrameworkOptions,Xunit.Abstractions.ITestFrameworkOptions)">
+        <member name="M:Xunit.Abstractions.ITestFrameworkExecutor.RunAll(Xunit.Abstractions.IMessageSink,Xunit.Abstractions.ITestFrameworkDiscoveryOptions,Xunit.Abstractions.ITestFrameworkExecutionOptions)">
             <summary>
             Starts the process of running all the tests in the assembly.
             </summary>
-            <param name="messageSink">The message sink to report results back to.</param>
+            <param name="executionMessageSink">The message sink to report results back to.</param>
             <param name="discoveryOptions">The options to be used during test discovery.</param>
             <param name="executionOptions">The options to be used during test execution.</param>
         </member>
-        <member name="M:Xunit.Abstractions.ITestFrameworkExecutor.RunTests(System.Collections.Generic.IEnumerable{Xunit.Abstractions.ITestCase},Xunit.Abstractions.IMessageSink,Xunit.Abstractions.ITestFrameworkOptions)">
+        <member name="M:Xunit.Abstractions.ITestFrameworkExecutor.RunTests(System.Collections.Generic.IEnumerable{Xunit.Abstractions.ITestCase},Xunit.Abstractions.IMessageSink,Xunit.Abstractions.ITestFrameworkExecutionOptions)">
             <summary>
             Starts the process of running selected tests in the assembly.
             </summary>
             <param name="testCases">The test cases to run.</param>
-            <param name="messageSink">The message sink to report results back to.</param>
+            <param name="executionMessageSink">The message sink to report results back to.</param>
             <param name="executionOptions">The options to be used during test execution.</param>
-        </member>
-        <member name="T:Xunit.Abstractions.ITestFrameworkOptions">
-            <summary>
-            Represents options given to an implementation of <see cref="T:Xunit.Abstractions.ITestFrameworkDiscoverer"/>.Find
-            or <see cref="T:Xunit.Abstractions.ITestFrameworkExecutor"/>.Run.
-            </summary>
-        </member>
-        <member name="M:Xunit.Abstractions.ITestFrameworkOptions.GetValue``1(System.String,``0)">
-            <summary>
-            Gets an option value.
-            </summary>
-            <typeparam name="TValue">The type of the value.</typeparam>
-            <param name="name">The name of the value.</param>
-            <param name="defaultValue">The default value when none is present.</param>
-            <returns>The value.</returns>
-        </member>
-        <member name="M:Xunit.Abstractions.ITestFrameworkOptions.SetValue``1(System.String,``0)">
-            <summary>
-            Sets an option value.
-            </summary>
-            <typeparam name="TValue">The type of the value.</typeparam>
-            <param name="name">The name of the value.</param>
-            <param name="value">The value to be set.</param>
         </member>
         <member name="T:Xunit.Abstractions.IExecutionMessage">
             <summary>
@@ -292,9 +323,9 @@
             Base message interface for all messages related to tests.
             </summary>
         </member>
-        <member name="P:Xunit.Abstractions.ITestMessage.TestDisplayName">
+        <member name="P:Xunit.Abstractions.ITestMessage.Test">
             <summary>
-            The display name of the test.
+            The test that is associated with this message.
             </summary>
         </member>
         <member name="T:Xunit.Abstractions.ITestResultMessage">
@@ -357,15 +388,21 @@
             The fully qualified type name of the <see cref="T:Xunit.Sdk.BeforeAfterTestAttribute"/>.
             </summary>
         </member>
+        <member name="T:Xunit.Abstractions.IDiagnosticMessage">
+            <summary>
+            This message is sent when the test framework wants to report a diagnostic message
+            to the end user.
+            </summary>
+        </member>
+        <member name="P:Xunit.Abstractions.IDiagnosticMessage.Message">
+            <summary>
+            Gets the diagnostic message.
+            </summary>
+        </member>
         <member name="T:Xunit.Abstractions.IDiscoveryCompleteMessage">
             <summary>
             This message indicates that the discovery process has been completed for
             the requested assembly.
-            </summary>
-        </member>
-        <member name="P:Xunit.Abstractions.IDiscoveryCompleteMessage.Warnings">
-            <summary>
-            Gets the list of warnings that were raised during discovery.
             </summary>
         </member>
         <member name="T:Xunit.Abstractions.IErrorMessage">
@@ -522,6 +559,16 @@
         <member name="T:Xunit.Abstractions.ITestMethodStarting">
             <summary>
             This message indicates that a test method is about to begin executing.
+            </summary>
+        </member>
+        <member name="T:Xunit.Abstractions.ITestOutput">
+            <summary>
+            This message indicates that a line of output was provided for a test.
+            </summary>
+        </member>
+        <member name="P:Xunit.Abstractions.ITestOutput.Output">
+            <summary>
+            Gets the line of output.
             </summary>
         </member>
         <member name="T:Xunit.Abstractions.ITestPassed">
@@ -840,6 +887,54 @@
             Gets the underlying <see cref="P:Xunit.Abstractions.IReflectionTypeInfo.Type"/> object.
             </summary>
         </member>
+        <member name="T:Xunit.Abstractions.IXunitSerializationInfo">
+            <summary>
+            Represents serialization support in xUnit.net.
+            </summary>
+        </member>
+        <member name="M:Xunit.Abstractions.IXunitSerializationInfo.AddValue(System.String,System.Object,System.Type)">
+            <summary>
+            Adds a value to the serialization. Supported value types include the built-in
+            intrinsics (string, int, long, float, double, and decimal, including nullable
+            versions of those), any class which implements <see cref="T:Xunit.Abstractions.IXunitSerializable"/>),
+            or arrays of any supported types.
+            </summary>
+            <param name="key">The key</param>
+            <param name="value">The value</param>
+            <param name="type">The optional type of the value</param>
+        </member>
+        <member name="M:Xunit.Abstractions.IXunitSerializationInfo.GetValue(System.String,System.Type)">
+            <summary>
+            Gets a value from the serialization.
+            </summary>
+            <param name="key">The key</param>
+            <param name="type">The type of the value</param>
+            <returns>The value, if present; <c>null</c>, otherwise</returns>
+        </member>
+        <member name="M:Xunit.Abstractions.IXunitSerializationInfo.GetValue``1(System.String)">
+            <summary>
+            Gets a value from the serialization.
+            </summary>
+            <param name="key">The key</param>
+            <returns>The value, if present; default(T), otherwise</returns>
+        </member>
+        <member name="T:Xunit.Abstractions.ITest">
+            <summary>
+            Represents a single test in the system. A test case typically contains only a single test,
+            but may contain many if circumstances warrant it (for example, test data for a theory cannot
+            be pre-enumerated, so the theory yields a single test case with multiple tests).
+            </summary>
+        </member>
+        <member name="P:Xunit.Abstractions.ITest.DisplayName">
+            <summary>
+            Gets the display name of the test.
+            </summary>
+        </member>
+        <member name="P:Xunit.Abstractions.ITest.TestCase">
+            <summary>
+            Gets the test case this test belongs to.
+            </summary>
+        </member>
         <member name="T:Xunit.Abstractions.ITestAssembly">
             <summary>
             Represents a test assembly.
@@ -969,6 +1064,24 @@
             <summary>
             Gets the test class that this test method belongs to.
             </summary>
+        </member>
+        <member name="T:Xunit.Abstractions.ITestOutputHelper">
+            <summary>
+            Represents a class which can be used to provide test output.
+            </summary>
+        </member>
+        <member name="M:Xunit.Abstractions.ITestOutputHelper.WriteLine(System.String)">
+            <summary>
+            Adds a line of text to the output.
+            </summary>
+            <param name="message">The message</param>
+        </member>
+        <member name="M:Xunit.Abstractions.ITestOutputHelper.WriteLine(System.String,System.Object[])">
+            <summary>
+            Formats a line of text and adds it to the output.
+            </summary>
+            <param name="format">The message format</param>
+            <param name="args">The format arguments</param>
         </member>
     </members>
 </doc>

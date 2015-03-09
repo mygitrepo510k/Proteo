@@ -144,12 +144,19 @@ namespace MWF.Mobile.Core.ViewModels
         public string VehicleSearchText
         {
             get { return _vehicleSearchText; }
-            set { _vehicleSearchText = value; RaisePropertyChanged(() => VehicleSearchText); FilterList(); RaisePropertyChanged(() => VehicleSelectText); }
+            set { _vehicleSearchText = value; FilterList(); RaisePropertyChanged(() => VehicleSelectText); }
         }
 
         private void FilterList()
         {
-            Vehicles = _originalVehicleList.Where(v => v.Registration.ToUpper().Contains(VehicleSearchText.ToUpper()));
+            if (string.IsNullOrEmpty(VehicleSearchText))
+            {
+                Vehicles = _originalVehicleList;
+            }
+            else
+            {
+                Vehicles = _originalVehicleList.Where(t => t.Registration != null && t.Registration.ToUpper().Contains(VehicleSearchText.ToUpper()));
+            }
         }
 
         private MvxCommand _refreshListCommand;

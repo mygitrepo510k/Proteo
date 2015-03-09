@@ -98,7 +98,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get { return "Setting up safety check profile..."; }
         }
-  
+
 
         private IEnumerable<Trailer> _trailers;
         public IEnumerable<Trailer> Trailers
@@ -124,11 +124,11 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 var title = "No trailer";
                 var message = "Confirm you don't have a trailer";
-                return (_notrailerSelectorCommand = _notrailerSelectorCommand ?? new MvxCommand<Trailer>(t => TrailerDetail(null, title ,message)));
+                return (_notrailerSelectorCommand = _notrailerSelectorCommand ?? new MvxCommand<Trailer>(t => TrailerDetail(null, title, message)));
             }
         }
 
-        public void TrailerDetail(Trailer trailer, string title ,string message)
+        public void TrailerDetail(Trailer trailer, string title, string message)
         {
 
             Guid trailerID = Guid.Empty;
@@ -137,7 +137,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 trailerID = trailer.ID;
             }
-    
+
             //This will take to the next view model with a trailer value of null.
             Mvx.Resolve<IUserInteraction>().Confirm(message, async isConfirmed =>
             {
@@ -156,7 +156,7 @@ namespace MWF.Mobile.Core.ViewModels
                     _startupService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
                     _startupService.CurrentTrailer = trailer;
                     _navigationService.MoveToNext();
-                    
+
                 }
             }, title, "Confirm");
         }
@@ -166,13 +166,20 @@ namespace MWF.Mobile.Core.ViewModels
         public string TrailerSearchText
         {
             get { return _trailerSearchText; }
-            set { _trailerSearchText = value; RaisePropertyChanged(() => TrailerSearchText); FilterList(); RaisePropertyChanged(() => TrailerSelectText); }
+            set { _trailerSearchText = value; FilterList(); RaisePropertyChanged(() => TrailerSelectText); }
         }
 
 
         private void FilterList()
         {
-            Trailers = _originalTrailerList.Where(t => t.Registration.ToUpper().Contains(TrailerSearchText.ToUpper()));
+            if (string.IsNullOrEmpty(TrailerSearchText))
+            {
+                Trailers = _originalTrailerList;
+            }
+            else
+            {
+                Trailers = _originalTrailerList.Where(t => t.Registration != null && t.Registration.ToUpper().Contains(TrailerSearchText.ToUpper()));
+            }
         }
 
         //This is method associated with the refresh button in the action bar. 
@@ -201,7 +208,7 @@ namespace MWF.Mobile.Core.ViewModels
             else
             {
                 var safetyProfileRepository = _repositories.SafetyProfileRepository;
-                if(safetyProfileRepository.GetAll().ToList().Count == 0)
+                if (safetyProfileRepository.GetAll().ToList().Count == 0)
                 {
                     Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found.");
                 }
@@ -274,7 +281,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                     _vehicleRepository.Insert(vehicles);
 
-                   
+
                 }
             }
         }

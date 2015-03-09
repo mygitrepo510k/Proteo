@@ -6,12 +6,13 @@ using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Converters;
 using MWF.Mobile.Core.Models.Attributes;
 using System.Xml.Serialization;
+using System.Xml;
 
 namespace MWF.Mobile.Core.Models
 {
     // Model class which represents a fault for a specific safety check item (SafetyCheckFaultType)
     [XmlType("fault")]
-    public class SafetyCheckFault: IBlueSphereEntity
+    public class SafetyCheckFault : IBlueSphereEntity
     {
 
         public SafetyCheckFault()
@@ -40,8 +41,21 @@ namespace MWF.Mobile.Core.Models
         [XmlIgnore]
         public bool IsDiscretionaryQuestion { get; set; }
 
-        [XmlAttribute("discrete")]
+        [XmlIgnore]
         public bool IsDiscretionaryPass { get; set; }
+
+        [XmlAttribute("discretionaryPassAllowDrive")]
+        public int IsDiscretionaryPassXml
+        {
+            get
+            {
+                return Convert.ToInt32(IsDiscretionaryPass);
+            }
+            set
+            {
+                value = Convert.ToInt32(IsDiscretionaryPass);
+            }
+        }
 
         [ChildRelationship(typeof(Image))]
         [XmlArray("images")]
@@ -60,7 +74,7 @@ namespace MWF.Mobile.Core.Models
         {
             //simple memberwise clone deal with all value types
             SafetyCheckFault clone = this.MemberwiseClone() as SafetyCheckFault;
-            
+
             // deep copy of images
 
             clone.Images = new List<Image>();

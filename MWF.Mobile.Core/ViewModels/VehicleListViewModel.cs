@@ -31,6 +31,23 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IStartupService _startupService;
         private readonly INavigationService _navigationService;
 
+        public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,
+           IToast toast, IStartupService startupService, INavigationService navigationService, ICurrentDriverRepository currentDriverRepository)
+        {
+            _gatewayService = gatewayService;
+            _toast = toast;
+            _reachability = reachabibilty;
+            _startupService = startupService;
+            _navigationService = navigationService;
+
+            _currentDriverRepository = currentDriverRepository;
+            _vehicleRepository = vehicleRepository;
+            Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
+            _vehicleListCount = FilteredVehicleCount;
+
+            LastVehicleSelect();
+        }
+
         public string VehicleSelectText
         {
             get { return "Select vehicle - Showing " + FilteredVehicleCount + " of " + VehicleListCount; }
@@ -51,23 +68,6 @@ namespace MWF.Mobile.Core.ViewModels
         public int FilteredVehicleCount
         {
             get { return Vehicles.ToList().Count; }
-        }
-
-        public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,
-            IToast toast, IStartupService startupService, INavigationService navigationService, ICurrentDriverRepository currentDriverRepository)
-        {
-            _gatewayService = gatewayService;
-            _toast = toast;
-            _reachability = reachabibilty;
-            _startupService = startupService;
-            _navigationService = navigationService;
-
-            _currentDriverRepository = currentDriverRepository;
-            _vehicleRepository = vehicleRepository;
-            Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
-            _vehicleListCount = FilteredVehicleCount;
-
-            LastVehicleSelect();
         }
 
         private IEnumerable<Vehicle> _vehicles;

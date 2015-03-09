@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
+using System.Xml;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -97,7 +98,7 @@ namespace MWF.Mobile.Core.Services
                     safetyCheck.Mileage = this.Mileage;
                     safetyCheck.EffectiveDate = effectiveDateTime;
                 }
-
+                
                 var actions = safetyCheckData.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
                 _gatewayQueuedService.AddToQueue(actions);
             }

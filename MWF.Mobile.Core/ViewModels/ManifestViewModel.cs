@@ -18,7 +18,7 @@ using System.Collections.Specialized;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class ManifestViewModel : BaseFragmentViewModel, IBackButtonHandler
+    public class ManifestViewModel : BaseInstructionNotificationViewModel, IBackButtonHandler
     {
         #region Private Members
 
@@ -43,13 +43,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Constructor
 
-        public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService, IReachability reachability, IToast toast, 
+        public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService, IReachability reachability, IToast toast,
                                  IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService, IMainService mainService)
         {
 
             _mobileDataRepository = mobileDataRepository;
 
- 
+
             _navigationService = navigationService;
             _reachability = reachability;
             _toast = toast;
@@ -66,8 +66,8 @@ namespace MWF.Mobile.Core.ViewModels
             _initialised = true;
 
             CreateSections();
-            RefreshInstructions();        
-            
+            RefreshInstructions();
+
         }
 
 
@@ -119,10 +119,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         public int InstructionsCount
         {
-            get {
+            get
+            {
                 return Sections.Sum(s => s.Instructions.
                     Where(i => !(i.MobileData is DummyMobileData)).Count());
-                }
+            }
         }
 
         public ICommand RefreshListCommand
@@ -171,9 +172,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void RefreshInstructions()
         {
+
+            Mvx.Trace("started refreshing manifest screen");
+
             if (!_initialised) return;
 
             //TODO: Implement update message section
+
 
             // get instruction data models from repository and order them
             var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
@@ -200,16 +205,18 @@ namespace MWF.Mobile.Core.ViewModels
             var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
             var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
 
-           
+
 
             // Update the observable collections in each section
             _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels.OrderBy(ivm => ivm.ArrivalDate));
             _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels.OrderBy(ivm => ivm.ArrivalDate));
-            
+
             // Let the UI know the number of instructions has changed
             RaisePropertyChanged(() => InstructionsCount);
             RaisePropertyChanged(() => Sections);
             RaisePropertyChanged(() => HeaderText);
+
+            Mvx.Trace("finished refreshing manifest screen");
 
         }
 
@@ -222,7 +229,7 @@ namespace MWF.Mobile.Core.ViewModels
         public async Task<bool> OnBackButtonPressed()
         {
 
-            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to logout?","","Logout");
+            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to logout?", "", "Logout");
 
             if (continueWithBackPress)
             {
@@ -241,6 +248,11 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion
+
+        public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        {
+            RefreshInstructions();
+        }
     }
 
     public class DummyMobileData : MobileData { }

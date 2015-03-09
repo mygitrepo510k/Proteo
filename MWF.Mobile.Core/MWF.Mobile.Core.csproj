@@ -226,6 +226,7 @@
     <Compile Include="Services\IStartupService.cs" />
     <Compile Include="Services\StartupService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
+    <Compile Include="Utilities\Timer.cs" />
     <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />

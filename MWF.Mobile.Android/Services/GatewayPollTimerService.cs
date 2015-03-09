@@ -16,7 +16,7 @@ namespace MWF.Mobile.Android.Services
     public class GatewayPollTimerService : Service
     {
 
-        private const double _timerIntervalMilliseconds = 60000;
+        private const double _timerIntervalMilliseconds = 30000;
 
         private System.Timers.Timer _timer = new System.Timers.Timer();
         private volatile bool _requestStop = false;

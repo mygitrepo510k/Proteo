@@ -14,6 +14,8 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Xml.Linq;
 using MWF.Mobile.Core.Portable;
+using Chance.MvvmCross.Plugins.UserInteraction;
+using MWF.Mobile.Core.Utilities;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -30,6 +32,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IMvxMessenger _messenger = null;
         private readonly IGatewayService _gatewayService = null;
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
+        private Timer _timer;
         private readonly IStartupService _startupService;
         private readonly IMainService _mainService;
 
@@ -54,6 +57,7 @@ namespace MWF.Mobile.Core.Services
             _startupService = startupService;
             _mainService = mainService;
 
+
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
 
@@ -61,28 +65,32 @@ namespace MWF.Mobile.Core.Services
 
         }
 
+        private void TimerCallback(object state)
+        {
+            Task.Run(async () => await PollForInstructionsAsync());
+
+            _timer.Reset();
+        }
+
         public void StartPollingTimer()
         {
-            if (_pollTimerMessageToken == null)
-                _pollTimerMessageToken = _messenger.Subscribe<Messages.GatewayPollTimerElapsedMessage>(async m => await PollForInstructionsAsync());
-
-            PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand.Start);
+            if (_timer == null)
+                _timer = new Timer(TimerCallback, null, 30000);
         }
 
         public void StopPollingTimer()
         {
-            if (_pollTimerMessageToken != null)
+            if (_timer != null)
             {
-                _pollTimerMessageToken.Dispose();
-                _pollTimerMessageToken = null;
+                _timer.Dispose();
+                _timer = null;
             }
-
-            PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand.Stop);
         }
 
         public async Task PollForInstructions()
         {
             PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand.Reset);
+
             await PollForInstructionsAsync();
         }
 
@@ -109,50 +117,81 @@ namespace MWF.Mobile.Core.Services
                 Mvx.Trace("Error deserialising instructions: " + ex.Message);
             }
 
+
+            Mvx.Trace("Successfully pulled instructions.");
+
             // Check if we have anything in the response
             if (instructions.Any())
             {
                 // We have a response so check what we need to do (Save/Update/Delete)
                 foreach (var instruction in instructions)
                 {
+                    Mvx.Trace("started processing instruction." + instruction.ID);
 
-                    instruction.VehicleId = _startupService.CurrentVehicle.ID;
-
-                    switch (instruction.SyncState)
+                    try
                     {
-                        case SyncState.Add:
-                            var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
-                            if (instructionToAdd == null)
+                        instruction.VehicleId = _startupService.CurrentVehicle.ID;
+
+                        switch (instruction.SyncState)
+                        {
+                            case SyncState.Add:
+
+                                Mvx.Trace("started adding instruction." + instruction.ID);
+                                var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                                if (instructionToAdd == null)
+                                    _repositories.MobileDataRepository.Insert(instruction);
+                                Mvx.Trace("completed adding instruction." + instruction.ID);
+
+                                PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, instruction.ID);
+                                break;
+
+                            case SyncState.Update:
+                                Mvx.Trace("started updating instruction." + instruction.ID);
+                                var instructionToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                                if (instructionToUpdate != null)
+                                {
+                                    var progress = instructionToUpdate.ProgressState;
+                                    _repositories.MobileDataRepository.Delete(instructionToUpdate);
+                                    instruction.ProgressState = progress;
+                                }
+
                                 _repositories.MobileDataRepository.Insert(instruction);
+                                Mvx.Trace("completed updating instruction." + instruction.ID);
 
-                            break;
-
-                        case SyncState.Update:
-                            var instructionToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
-                            if (instructionToUpdate != null)
-                            {
-                                var progress = instructionToUpdate.ProgressState;
-                                _repositories.MobileDataRepository.Delete(instructionToUpdate);
-                                instruction.ProgressState = progress;
-                            }
-                            _repositories.MobileDataRepository.Insert(instruction);
-
-                            if (!_mainService.OnManifestPage)
                                 PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
-                            break;
+                                break;
 
-                        case SyncState.Delete:
-                            var oldInstruction = _repositories.MobileDataRepository.GetByID(instruction.ID);
-                            if (oldInstruction != null)
-                                _repositories.MobileDataRepository.Delete(oldInstruction);
+                            case SyncState.Delete:
+                                Mvx.Trace("started deleting instruction." + instruction.ID);
+                                var oldInstruction = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                                if (oldInstruction != null)
+                                    _repositories.MobileDataRepository.Delete(oldInstruction);
+                                Mvx.Trace("completed deleting instruction." + instruction.ID);
 
-                            if (!_mainService.OnManifestPage)
                                 PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, instruction.ID);
-                            break;
+                                break;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Mvx.Trace("Error modifying instructions in Repository." + ex.Message);
+                        Mvx.Resolve<IUserInteraction>().Alert("Error modifying instructions in Repository");
                     }
                 }
-                //Acknowledge that they are on the Device (Not however acknowledged by the driver)
-                AcknowledgeInstructions(instructions);
+
+                Mvx.Trace("Successfully inserted instructions into Repository.");
+
+                try
+                {
+                    //Acknowledge that they are on the Device (Not however acknowledged by the driver)
+                    AcknowledgeInstructions(instructions);
+                }
+                catch (Exception ex)
+                {
+                    Mvx.Trace("Error acknowledging instructions." + ex.Message);
+                }
+
+                Mvx.Trace("Successfully sent device acknowledgement.");
 
                 Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instructions.ToList(), () => _mainService.SendReadChunk(instructions), "Manifest Update", "Acknowledge");
 

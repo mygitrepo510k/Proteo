@@ -8,10 +8,11 @@ using Cirrious.MvvmCross.Plugins.Messenger;
 using Newtonsoft.Json;
 using MWF.Mobile.Core.Repositories;
 using System.Xml.Serialization;
+using MWF.Mobile.Core.Utilities;
 
 namespace MWF.Mobile.Core.Services
 {
-    
+
     public class GatewayQueuedService : IGatewayQueuedService
     {
 
@@ -25,17 +26,21 @@ namespace MWF.Mobile.Core.Services
 
         private readonly string _gatewayDeviceRequestUrl = null;
 
+        private Timer _timer;
+
         private MvxSubscriptionToken _queueTimerMessageToken = null;
         private bool _isSubmitting = false;
         private bool _submitAgainOnCompletion = false;
-        
+
         public GatewayQueuedService(IDeviceInfo deviceInfo, IHttpService httpService, Portable.IReachability reachability, IRepositories repositories, IMvxMessenger messenger)
         {
-            _deviceInfo= deviceInfo;
+            _deviceInfo = deviceInfo;
             _httpService = httpService;
             _queueItemRepository = repositories.GatewayQueueItemRepository;
             _reachability = reachability;
             _messenger = messenger;
+
+
 
             //TODO: read this from config or somewhere?
 
@@ -48,23 +53,25 @@ namespace MWF.Mobile.Core.Services
             _deviceRepository = repositories.DeviceRepository;
         }
 
+        private void TimerCallback(object state)
+        {
+            Task.Run(async () => await SubmitQueueAsync());
+
+        }
+
         public void StartQueueTimer()
         {
-            if (_queueTimerMessageToken == null)
-                _queueTimerMessageToken = _messenger.Subscribe<Messages.GatewayQueueTimerElapsedMessage>(async m => await SubmitQueueAsync());
-
-            PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Start);
+            if (_timer == null)
+                _timer = new Timer(TimerCallback, null, 60000);
         }
 
         public void StopQueueTimer()
         {
-            if (_queueTimerMessageToken != null)
+            if (_timer != null)
             {
-                _queueTimerMessageToken.Dispose();
-                _queueTimerMessageToken = null;
+                _timer.Dispose();
+                _timer = null;
             }
-
-            PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Stop);
         }
 
         /// <summary>
@@ -85,7 +92,7 @@ namespace MWF.Mobile.Core.Services
         /// Note that submission will only occur if the GatewayQueueTimerService has been started (i.e. by first calling StartQueueTimer())
         /// </remarks>
         public void AddToQueue<TData>(string command, TData data, Models.GatewayServiceRequest.Parameter[] parameters = null)
-            where TData: class
+            where TData : class
         {
             this.AddToQueue(CreateRequestContent(command, data, parameters));
         }
@@ -102,7 +109,7 @@ namespace MWF.Mobile.Core.Services
             _queueItemRepository.Insert(queueItem);
 
             // Always attempt to sync with the MWF Mobile Gateway service whenever items are added to the queue (providing the GatewayQueueTimerService has been started)
-            PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Trigger);
+            Task.Run(async () => await SubmitQueueAsync());
         }
 
         public async Task UploadQueue()
@@ -142,7 +149,7 @@ namespace MWF.Mobile.Core.Services
                             //TODO: write failure to error log or report in some other way?
                             submitted = false;
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         //TODO: write failure to error log or report in some other way?
                         submitted = false;
@@ -156,6 +163,7 @@ namespace MWF.Mobile.Core.Services
             finally
             {
                 _isSubmitting = false;
+                _timer.Reset();
             }
 
             if (_submitAgainOnCompletion)
@@ -180,7 +188,7 @@ namespace MWF.Mobile.Core.Services
         /// Create a single-action request's content with data - the data will be serialized as xml
         /// </summary>
         private Models.GatewayServiceRequest.Content CreateRequestContent<TData>(string command, TData data, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
-            where TData: class
+            where TData : class
         {
             return this.CreateRequestContent(new[]
             {

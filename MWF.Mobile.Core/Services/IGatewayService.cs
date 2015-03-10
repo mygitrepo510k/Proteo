@@ -23,6 +23,7 @@ namespace MWF.Mobile.Core.Services
                                                                                DateTime endDate);
         Task<Models.MWFMobileConfig> GetConfig();
         Task<bool> CreateDevice();
+        Task<HttpResult> PostLogMessageAsync(DeviceLogMessage log);
     }
 
 }

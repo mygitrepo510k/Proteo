@@ -94,6 +94,7 @@
     <Compile Include="Enums\DriverActivity.cs" />
     <Compile Include="Enums\InstructionProgress.cs" />
     <Compile Include="Enums\InstructionType.cs" />
+    <Compile Include="Enums\LogType.cs" />
     <Compile Include="Enums\ReportReason.cs" />
     <Compile Include="Enums\SafetyCheckStatus.cs" />
     <Compile Include="Enums\SyncState.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Models\GatewayServiceRequest\BaseContent.cs" />
     <Compile Include="Models\GatewayServiceRequest\Content.cs" />
     <Compile Include="Models\GatewayServiceRequest\DeviceInfo.cs" />
+    <Compile Include="Models\GatewayServiceRequest\DeviceMessage.cs" />
     <Compile Include="Models\GatewayServiceRequest\Parameter.cs" />
     <Compile Include="Models\GatewayServiceResponse\ResponseAction.cs" />
     <Compile Include="Models\GatewayServiceResponse\Response.cs" />
@@ -150,6 +152,7 @@
     <Compile Include="Models\Instruction\Item.cs" />
     <Compile Include="Models\Instruction\Trailer.cs" />
     <Compile Include="Models\LatestSafetyCheck.cs" />
+    <Compile Include="Models\LogMessage.cs" />
     <Compile Include="Models\MWFMobileConfig.cs" />
     <Compile Include="Models\Signature.cs" />
     <Compile Include="Models\SafetyCheckFault.cs" />
@@ -183,6 +186,8 @@
     <Compile Include="Repositories\Interfaces\IMobileDataRepository.cs" />
     <Compile Include="Repositories\Interfaces\IRepositories.cs" />
     <Compile Include="Repositories\Interfaces\ILatestSafetyCheckRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ILogMessageRepository.cs" />
+    <Compile Include="Repositories\LogMessageRepository.cs" />
     <Compile Include="Repositories\MobileDataRepository.cs" />
     <Compile Include="Repositories\Repositories.cs" />
     <Compile Include="Repositories\GatewayQueueItemRepository.cs" />
@@ -205,6 +210,8 @@
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\VerbProfileRepository.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Services\LoggingService.cs" />
+    <Compile Include="Services\ILoggingService.cs" />
     <Compile Include="Services\IMainService.cs" />
     <Compile Include="Services\INavigationService.cs" />
     <Compile Include="Services\MainService.cs" />

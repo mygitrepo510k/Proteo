@@ -31,6 +31,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IUserInteraction _userInteraction = null;
         private readonly ICurrentDriverRepository _currentDriver;
         private readonly IGpsService _gpsService;
+        private readonly ILoggingService _loggingService = null;
         
 
         public StartupViewModel(IAuthenticationService authenticationService, 
@@ -44,7 +45,8 @@ namespace MWF.Mobile.Core.ViewModels
                                 IStartupService startupService, 
                                 IUserInteraction userInteraction, 
                                 IGpsService gpsService,
-                                INavigationService navigationService)
+                                INavigationService navigationService,
+                                ILoggingService loggingService)
         {
             _authenticationService = authenticationService;
             _gatewayService = gatewayService;
@@ -58,6 +60,7 @@ namespace MWF.Mobile.Core.ViewModels
             _userInteraction = userInteraction;
             _gpsService = gpsService;
             _navigationService = navigationService;
+            _loggingService = loggingService;
             this.SetInitialViewModel();
         }
 
@@ -71,7 +74,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (customerRepository.GetAll().Any())
             {
-                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _startupService, _closeApplication, _repositories, _navigationService);
+                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _startupService, _closeApplication, _repositories, _navigationService, _loggingService);
             }
             else
             {

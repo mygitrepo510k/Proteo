@@ -21,6 +21,7 @@ namespace MWF.Mobile.Core.Services
         private readonly Repositories.IGatewayQueueItemRepository _queueItemRepository = null;
         private readonly Portable.IReachability _reachability = null;
         private readonly IDeviceRepository _deviceRepository;
+        private readonly ILoggingService _loggingService = null;
 
         private readonly IMvxMessenger _messenger = null;
 
@@ -32,13 +33,20 @@ namespace MWF.Mobile.Core.Services
         private bool _isSubmitting = false;
         private bool _submitAgainOnCompletion = false;
 
-        public GatewayQueuedService(IDeviceInfo deviceInfo, IHttpService httpService, Portable.IReachability reachability, IRepositories repositories, IMvxMessenger messenger)
+        public GatewayQueuedService(
+            IDeviceInfo deviceInfo,
+            IHttpService httpService,
+            Portable.IReachability reachability,
+            IRepositories repositories,
+            IMvxMessenger messenger,
+            ILoggingService loggingService )
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
             _queueItemRepository = repositories.GatewayQueueItemRepository;
             _reachability = reachability;
             _messenger = messenger;
+            _loggingService = loggingService;
 
 
 
@@ -55,7 +63,7 @@ namespace MWF.Mobile.Core.Services
 
         private void TimerCallback(object state)
         {
-            Task.Run(async () => await SubmitQueueAsync());
+            Task.Run(async () => await UploadQueueAsync());
 
         }
 
@@ -109,12 +117,13 @@ namespace MWF.Mobile.Core.Services
             _queueItemRepository.Insert(queueItem);
 
             // Always attempt to sync with the MWF Mobile Gateway service whenever items are added to the queue (providing the GatewayQueueTimerService has been started)
-            Task.Run(async () => await SubmitQueueAsync());
+            Task.Run(async () => await UploadQueueAsync());
         }
 
-        public async Task UploadQueue()
+        public async Task UploadQueueAsync()
         {
             PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Reset);
+            await _loggingService.UploadLoggedExceptionsAsync();
             await SubmitQueueAsync();
         }
 
@@ -151,7 +160,7 @@ namespace MWF.Mobile.Core.Services
                     }
                     catch (Exception e)
                     {
-                        //TODO: write failure to error log or report in some other way?
+                        _loggingService.LogException(e);
                         submitted = false;
                     }
 

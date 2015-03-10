@@ -72,6 +72,7 @@ namespace MWF.Mobile.Core.Services
             _connection.CreateTable<ItemAdditional>();
             _connection.CreateTable<Item>();
             _connection.CreateTable<LatestSafetyCheck>();
+            _connection.CreateTable<LogMessage>();
             _connection.CreateTable<MWFMobileConfig>();
             _connection.CreateTable<MobileData>();
             _connection.CreateTable<Order>();

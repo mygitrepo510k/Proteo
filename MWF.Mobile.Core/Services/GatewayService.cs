@@ -21,6 +21,7 @@ namespace MWF.Mobile.Core.Services
         private readonly string _gatewayDeviceRequestUrl = null;
         private readonly string _gatewayDeviceCreateUrl = null;
         private readonly string _gatewayConfigRequestUrl = null;
+        private readonly string _gatewayLogMessageUrl = null;
         private readonly IDeviceRepository _deviceRepository;
 
         public GatewayService(IDeviceInfo deviceInfo, IHttpService httpService, IRepositories repositories)
@@ -32,9 +33,15 @@ namespace MWF.Mobile.Core.Services
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
             _gatewayDeviceCreateUrl = "http://87.117.243.226:7090/api/gateway/createdevice";
             _gatewayConfigRequestUrl = "http://87.117.243.226:7090/api/gateway/configrequest";
+            _gatewayLogMessageUrl = "http://87.117.243.226:7090/api/gateway/logmessage";
+
+            //Local url will need to change the station number
+            //_gatewayLogMessageUrl = "http://proteo-dev3:17337/api/gateway/logmessage";
 
             _deviceRepository = repositories.DeviceRepository;
         }
+
+        #region Public Methods
 
         public async Task<Models.ApplicationProfile> GetApplicationProfile()
         {
@@ -127,6 +134,16 @@ namespace MWF.Mobile.Core.Services
             return data.Result == null ? Enumerable.Empty<Models.Instruction.MobileData>() : data.Result.List;
         }
 
+        public async Task<HttpResult> PostLogMessageAsync(DeviceLogMessage deviceMessage)
+        {
+            var response = await _httpService.PostAsJsonAsync<DeviceLogMessage, HttpStatusCode>(deviceMessage, _gatewayLogMessageUrl);
+            return response;
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
         private class ServiceCallResult<T>
         {
             public T Result { get; set; }
@@ -189,6 +206,9 @@ namespace MWF.Mobile.Core.Services
                 Actions = actions,
             };
         }
+
+        #endregion Private Methods
+
 
     }
 

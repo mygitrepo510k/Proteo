@@ -20,18 +20,27 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IStartupService _startupService = null;
         private readonly ICloseApplication _closeApplication;
         private readonly INavigationService _navigationService;
+        private readonly ILoggingService _loggingService;
         private bool _isBusy = false;
 
-        public PasscodeViewModel(IAuthenticationService authenticationService, IStartupService startupService,
-                        ICloseApplication closeApplication, IRepositories repositories, INavigationService navigationService)
+        public PasscodeViewModel(
+            IAuthenticationService authenticationService, 
+            IStartupService startupService,
+            ICloseApplication closeApplication, 
+            IRepositories repositories, 
+            INavigationService navigationService,
+            ILoggingService loggingService)
         {
             _authenticationService = authenticationService;
             _startupService = startupService;
             _navigationService = navigationService;
+            _loggingService = loggingService;
 
             _currentDriverRepository = repositories.CurrentDriverRepository;
             _closeApplication = closeApplication;
         }
+
+        #region Public Members
 
         public bool IsBusy
         {
@@ -79,6 +88,16 @@ namespace MWF.Mobile.Core.ViewModels
             get { return (_loginCommand = _loginCommand ?? new MvxCommand(async () => await LoginAsync())); }
         }
 
+        public override string FragmentTitle
+        {
+            get { return "Passcode"; }
+        }
+
+        #endregion Public Members
+
+        #region Private Methods
+
+
         private async Task LoginAsync()
         {
             if (string.IsNullOrWhiteSpace(this.Passcode))
@@ -90,8 +109,6 @@ namespace MWF.Mobile.Core.ViewModels
 
             await Authenticate();
         }
-
-        #region Private Methods
 
         private async Task Authenticate()
         {
@@ -119,9 +136,9 @@ namespace MWF.Mobile.Core.ViewModels
                     _navigationService.MoveToNext();
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                // TODO: log the exception to be picked up by bluesphere
+                _loggingService.LogException(ex);
                 result = new AuthenticationResult() { AuthenticationFailedMessage = "Unable to check your passcode.", Success = false };
             }
             finally
@@ -137,16 +154,15 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
-        public override string FragmentTitle
-        {
-            get { return "Passcode"; }
-        }
+        #region IBackButtonHandler Implementation
 
         public Task<bool> OnBackButtonPressed()
         {
             _closeApplication.CloseApp();
             return new Task<bool>(() => false);
         }
+
+        #endregion IBackButtonHandler Implementation
     }
 
 }

@@ -21,7 +21,7 @@ namespace MWF.Mobile.Core.Services
         void AddToQueue(string command, Models.GatewayServiceRequest.Parameter[] parameters = null);
         void AddToQueue<TData>(string command, TData data, Models.GatewayServiceRequest.Parameter[] parameters = null) where TData : class;
         void AddToQueue<TData>(IEnumerable<Models.GatewayServiceRequest.Action<TData>> actions) where TData : class;
-        Task UploadQueue();
+        Task UploadQueueAsync();
     }
 
 }

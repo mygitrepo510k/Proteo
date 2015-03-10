@@ -30,15 +30,25 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IReachability _reachability;
         private readonly IStartupService _startupService;
         private readonly INavigationService _navigationService;
+        private readonly ILoggingService _loggingService;
 
-        public VehicleListViewModel(IGatewayService gatewayService, IVehicleRepository vehicleRepository, IReachability reachabibilty,
-           IToast toast, IStartupService startupService, INavigationService navigationService, ICurrentDriverRepository currentDriverRepository)
+        public VehicleListViewModel(
+            IGatewayService gatewayService, 
+            IVehicleRepository vehicleRepository, 
+            IReachability reachabibilty,
+            IToast toast, 
+            IStartupService startupService, 
+            INavigationService navigationService, 
+            ICurrentDriverRepository currentDriverRepository,
+            ILoggingService loggingService)
         {
-            _gatewayService = gatewayService;
             _toast = toast;
             _reachability = reachabibilty;
+
+            _gatewayService = gatewayService;
             _startupService = startupService;
             _navigationService = navigationService;
+            _loggingService = loggingService;
 
             _currentDriverRepository = currentDriverRepository;
             _vehicleRepository = vehicleRepository;

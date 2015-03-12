@@ -159,7 +159,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// a photo and comment for an instruction.
         /// </summary>
         [Fact]
-        public void MainService_SendCommentAndImageAttachedToInstruction()
+        public async Task MainService_SendCommentAndImageAttachedToInstruction()
         {
             base.ClearAll();
 
@@ -167,13 +167,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             List<Image> photos = _fixture.CreateMany<Image>().ToList();
 
             MobileData mobileData = _fixture.Create<MobileData>();
+            Driver driver = _fixture.Create<Driver>();
 
-            var mainService = _fixture.Create<MainService>();
+            var imageUploadService = _fixture.Create<ImageUploadService>();
 
-            mainService.CurrentMobileData = mobileData;
-            mainService.OnManifestPage = false;
-
-            mainService.SendPhotoAndComment(comment, photos);
+            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, false, mobileData);
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueue("fwSyncPhotos", It.IsAny<UploadCameraImageObject>(), null), Times.Once);
@@ -189,18 +187,19 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// a photo and comment (not attached to an instruction).
         /// </summary>
         [Fact]
-        public void MainService_SendCommentAndImageAttachedToNothing()
+        public async Task MainService_SendCommentAndImageAttachedToNothing()
         {
             base.ClearAll();
 
             string comment = _fixture.Create<string>();
             List<Image> photos = _fixture.CreateMany<Image>().ToList();
 
-            var mainService = _fixture.Create<MainService>();
+            var imageUploadService = _fixture.Create<ImageUploadService>();
 
-            mainService.OnManifestPage = true;
+            MobileData mobileData = _fixture.Create<MobileData>();
+            Driver driver = _fixture.Create<Driver>();
 
-            mainService.SendPhotoAndComment(comment, photos);
+            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, false, null);
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueue("fwSyncPhotos", It.IsAny<UploadCameraImageObject>(), null), Times.Once);

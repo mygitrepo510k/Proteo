@@ -118,6 +118,7 @@
     <Compile Include="Models\GatewayServiceRequest\Content.cs" />
     <Compile Include="Models\GatewayServiceRequest\DeviceInfo.cs" />
     <Compile Include="Models\GatewayServiceRequest\DeviceMessage.cs" />
+    <Compile Include="Models\GatewayServiceRequest\FileParameter.cs" />
     <Compile Include="Models\GatewayServiceRequest\Parameter.cs" />
     <Compile Include="Models\GatewayServiceResponse\ResponseAction.cs" />
     <Compile Include="Models\GatewayServiceResponse\Response.cs" />
@@ -210,6 +211,8 @@
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\VerbProfileRepository.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Services\IImageUploadService.cs" />
+    <Compile Include="Services\ImageUploadService.cs" />
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\ILoggingService.cs" />
     <Compile Include="Services\IMainService.cs" />

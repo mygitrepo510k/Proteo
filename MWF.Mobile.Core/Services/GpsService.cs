@@ -65,6 +65,16 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
+        public double GetLongitude()
+        {
+            return _location.Coordinates.Longitude;
+        }
+
+        public double GetLatitude()
+        {
+            return _location.Coordinates.Latitude;
+        }
+
         #endregion
 
         #region Private Methods
@@ -104,5 +114,8 @@ namespace MWF.Mobile.Core.Services
         }
 
         #endregion
+
+
+        
     }
 }

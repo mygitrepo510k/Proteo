@@ -37,6 +37,8 @@ namespace MWF.Mobile.Core.Services
 
             //Local url will need to change the station number
             //_gatewayLogMessageUrl = "http://proteo-dev3:17337/api/gateway/logmessage";
+            //_gatewayConfigRequestUrl = "http://proteo-dev3:17337/api/gateway/configrequest";
+
 
             _deviceRepository = repositories.DeviceRepository;
         }

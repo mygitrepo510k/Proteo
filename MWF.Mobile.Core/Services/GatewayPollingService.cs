@@ -44,8 +44,16 @@ namespace MWF.Mobile.Core.Services
         private int _dataSpan = -1;
 
 
-        public GatewayPollingService(IDeviceInfo deviceInfo, IHttpService httpService, IReachability reachability, IRepositories repositories, IMvxMessenger messenger,
-            IGatewayService gatewayService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService, IMainService mainService)
+        public GatewayPollingService(
+            IDeviceInfo deviceInfo, 
+            IHttpService httpService, 
+            IReachability reachability, 
+            IRepositories repositories, 
+            IMvxMessenger messenger,
+            IGatewayService gatewayService, 
+            IGatewayQueuedService gatewayQueuedService, 
+            IStartupService startupService, 
+            IMainService mainService)
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
@@ -89,8 +97,6 @@ namespace MWF.Mobile.Core.Services
 
         public async Task PollForInstructions()
         {
-            PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand.Reset);
-
             await PollForInstructionsAsync();
         }
 
@@ -222,11 +228,6 @@ namespace MWF.Mobile.Core.Services
                 return (_dataSpan < 0) ? _dataSpan = _repositories.ApplicationRepository.GetAll().First().DataSpan : _dataSpan;
             }
 
-        }
-
-        private void PublishTimerCommand(Messages.GatewayPollTimerCommandMessage.TimerCommand timerCommand)
-        {
-            _messenger.Publish(new Messages.GatewayPollTimerCommandMessage(this, timerCommand));
         }
 
         private void PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand command, Guid instructionID)

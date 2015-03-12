@@ -83,7 +83,7 @@ namespace MWF.Mobile.Core.Models
         public Guid MobileApplicationID { get; set; }
 
         [XmlAttribute("orderid")]
-        public Guid OrderID { get; set; }
+        public string OrderIDs { get; set; }
 
         [XmlAttribute("comment")]
         public string Comment { get; set; }

@@ -138,7 +138,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
             catch(Exception ex)
             {
-                _loggingService.LogException(ex);
+                _loggingService.LogEvent(ex);
                 result = new AuthenticationResult() { AuthenticationFailedMessage = "Unable to check your passcode.", Success = false };
             }
             finally

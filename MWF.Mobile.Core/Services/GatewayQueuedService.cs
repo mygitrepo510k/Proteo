@@ -23,7 +23,6 @@ namespace MWF.Mobile.Core.Services
         private readonly IDeviceRepository _deviceRepository;
         private readonly ILoggingService _loggingService = null;
 
-        private readonly IMvxMessenger _messenger = null;
 
         private readonly string _gatewayDeviceRequestUrl = null;
 
@@ -38,14 +37,12 @@ namespace MWF.Mobile.Core.Services
             IHttpService httpService,
             Portable.IReachability reachability,
             IRepositories repositories,
-            IMvxMessenger messenger,
             ILoggingService loggingService )
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
             _queueItemRepository = repositories.GatewayQueueItemRepository;
             _reachability = reachability;
-            _messenger = messenger;
             _loggingService = loggingService;
 
 
@@ -122,8 +119,7 @@ namespace MWF.Mobile.Core.Services
 
         public async Task UploadQueueAsync()
         {
-            PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand.Reset);
-            await _loggingService.UploadLoggedExceptionsAsync();
+            await _loggingService.UploadLoggedEventsAsync();
             await SubmitQueueAsync();
         }
 
@@ -160,7 +156,7 @@ namespace MWF.Mobile.Core.Services
                     }
                     catch (Exception e)
                     {
-                        _loggingService.LogException(e);
+                        _loggingService.LogEvent(e);
                         submitted = false;
                     }
 
@@ -259,11 +255,6 @@ namespace MWF.Mobile.Core.Services
             }
 
             return stringBuilder.ToString();
-        }
-
-        private void PublishTimerCommand(Messages.GatewayQueueTimerCommandMessage.TimerCommand timerCommand)
-        {
-            _messenger.Publish(new Messages.GatewayQueueTimerCommandMessage(this, timerCommand));
         }
 
     }

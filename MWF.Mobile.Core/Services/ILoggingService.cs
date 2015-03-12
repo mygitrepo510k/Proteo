@@ -8,7 +8,8 @@ namespace MWF.Mobile.Core.Services
 {
     public interface ILoggingService
     {
-        void LogException(Exception exception);
-        Task UploadLoggedExceptionsAsync();
+        void LogEvent(Exception exception);
+        void LogEvent(string eventDescription, Enums.LogType type);
+        Task UploadLoggedEventsAsync();
     }
 }

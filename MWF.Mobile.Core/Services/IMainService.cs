@@ -20,6 +20,5 @@ namespace MWF.Mobile.Core.Services
 
         void SendReadChunk(IEnumerable<MobileData> instructions);
         void SendDataChunk(bool revisedQuantity = false);
-        void SendPhotoAndComment(string comment, List<Image> photos);
     }
 }

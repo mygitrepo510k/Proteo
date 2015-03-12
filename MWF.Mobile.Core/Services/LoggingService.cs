@@ -30,23 +30,35 @@ namespace MWF.Mobile.Core.Services
             _deviceInfo = deviceInfo;
         }
 
-        public void LogException(Exception exception)
+        public void LogEvent(Exception exception)
         {
             var loggedException = new LogMessage
             {
                 LogDateTime = DateTime.Now.ToLocalTime(),
-                Message = exception.Message + ": " + exception.StackTrace,
+                Message = string.Format("{0} - {1}: {2}", Enums.LogType.Error.ToString(), exception.Message,exception.StackTrace),
                 LogType = Enums.LogType.Error
             };
 
             _loggedRepository.Insert(loggedException);
         }
 
-        public async Task UploadLoggedExceptionsAsync()
+        public void LogEvent(string eventDescription, Enums.LogType type)
         {
-            var exceptions = _loggedRepository.GetAll().OrderBy(e => e.LogDateTime).ToList();
+            var loggedEvent = new LogMessage
+            {
+                LogDateTime = DateTime.Now.ToLocalTime(),
+                Message = string.Format("{0} - {1}", type.ToString(), eventDescription),
+                LogType = type
+            };
 
-            if (exceptions.Any())
+            _loggedRepository.Insert(loggedEvent);
+        }
+
+        public async Task UploadLoggedEventsAsync()
+        {
+            var events = _loggedRepository.GetAll().OrderBy(e => e.LogDateTime).ToList();
+
+            if (events.Any())
             {
                 var reachability = Mvx.Resolve<IReachability>();
 
@@ -56,7 +68,7 @@ namespace MWF.Mobile.Core.Services
                 var deviceIdentifier = _deviceInfo.GetDeviceIdentifier();
                 
 
-                foreach (var e in exceptions)
+                foreach (var e in events)
                 {
                     var deviceMessage = new DeviceLogMessage
                     {
@@ -78,6 +90,5 @@ namespace MWF.Mobile.Core.Services
                 }
             }
         }
-
     }
 }

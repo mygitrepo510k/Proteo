@@ -1,12 +1,17 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -23,16 +28,22 @@ namespace MWF.Mobile.Core.Services
         private readonly Repositories.IRepositories _repositories = null;
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IGpsService _gpsService = null;
+        private readonly ILoggingService _loggingService = null;
 
         #endregion Private Members
 
         #region Constructors
 
-        public MainService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService)
+        public MainService(
+            Repositories.IRepositories repositories,
+            IGatewayQueuedService gatewayQueuedService,
+            IGpsService gpsService,
+            ILoggingService loggingService)
         {
             _repositories = repositories;
             _gatewayQueuedService = gatewayQueuedService;
             _gpsService = gpsService;
+            _loggingService = loggingService;
         }
 
         #endregion Constructors
@@ -50,31 +61,6 @@ namespace MWF.Mobile.Core.Services
         #endregion Public Members
 
         #region Public Methods
-
-        /// <summary>
-        /// This method sends photos and comments to bluesphere, if the sender is on an
-        /// instruction page then the instruction will be associated with the photos
-        /// </summary>
-        /// <param name="comment">The comment for the photos</param>
-        /// <param name="photos">The collection of photos to be sent up</param>
-        public void SendPhotoAndComment(string comment, List<Image> photos)
-        {
-            UploadCameraImageObject imageUpload = new UploadCameraImageObject();
-            imageUpload.Smp = _gpsService.GetSmpData(Enums.ReportReason.Comment);
-            imageUpload.ID = Guid.NewGuid();
-            imageUpload.DriverTitle = CurrentDriver.DisplayName;
-            imageUpload.DriverId = CurrentDriver.ID;
-            imageUpload.Pictures = photos;
-            imageUpload.Comment = comment;
-            imageUpload.DateTimeOfUpload = DateTime.Now;
-
-            //If the user is not on the manifest screen they should be on an instruction page
-            if (!OnManifestPage)
-                imageUpload.MobileApplicationID = CurrentMobileData.ID;
-
-            //Sends photos up to bluesphere
-            _gatewayQueuedService.AddToQueue("fwSyncPhotos", imageUpload);
-        }
 
         /// <summary>
         /// This method sends the instructions that have been acknowledged by the driver.

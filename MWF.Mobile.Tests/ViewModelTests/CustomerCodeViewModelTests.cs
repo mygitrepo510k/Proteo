@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
+using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Xunit;
 
 
@@ -40,7 +41,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Register<IUserInteraction>(() => _mockUserInteraction.Object);
 
             _dataService = new Mock<IDataService>();
-            _dataService.Setup(ds => ds.RunInTransaction(It.IsAny<Action>())).Callback<Action>(a => a.Invoke());
+            var connection = _fixture.Create<ISQLiteConnection>();
+            _dataService.Setup(ds => ds.RunInTransaction(It.IsAny<Action<ISQLiteConnection>>())).Callback<Action<ISQLiteConnection>>(a => a.Invoke(connection));
             _fixture.Register<IDataService>(() => _dataService.Object);
         }
 
@@ -135,7 +137,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             ccvm.EnterCodeCommand.Execute(null);
 
             //check that the customer repository was written to
-            customerRepository.Verify(cr => cr.Insert(It.IsAny<Customer>()), Times.Once);
+            customerRepository.Verify(cr => cr.Insert(It.IsAny<Customer>(), It.IsAny<ISQLiteConnection>()), Times.Once);
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);

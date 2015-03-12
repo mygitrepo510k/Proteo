@@ -56,11 +56,11 @@ namespace MWF.Mobile.Core.ViewModels
 
 #if DEBUG
             //Dev.Firmin
-            //_userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", (bool ok) => { if (ok) this.CustomerCode = "A2A67DE7-DC95-49D9-BF53-34829CF865C9"; });
+            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", (bool ok) => { if (ok) this.CustomerCode = "A2A67DE7-DC95-49D9-BF53-34829CF865C9"; });
             //Demo.ProteoMobile Customer Code
             //_userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", (bool ok) => { if (ok) this.CustomerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031"; });
             //Demo.ProteoEnterprise Customer Code
-            _userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", (bool ok) => { if (ok) this.CustomerCode = "DB78C027-CA85-4DF3-A25A-760562C4EEB5"; });
+            //_userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", (bool ok) => { if (ok) this.CustomerCode = "DB78C027-CA85-4DF3-A25A-760562C4EEB5"; });
 #endif
         }
 
@@ -197,21 +197,21 @@ namespace MWF.Mobile.Core.ViewModels
                 verbProfiles.Add(await _gatewayService.GetVerbProfile(verbProfileTitle));
             }          
 
-            // write all this retrieved data to the database
-            _dataService.RunInTransaction(() =>
+            _dataService.RunInTransaction( connection =>
             {
                 //TODO: Store the customer title? Need to get the customer title from somewhere.
-                _customerRepository.Insert(new Customer() { ID = new Guid(), CustomerCode = CustomerCode });
-                _deviceRepository.Insert(device);
-                _verbProfileRepository.Insert(verbProfiles); 
-                _applicationProfileRepository.Insert(applicationProfile);
-                _driverRepository.Insert(drivers);
+                _customerRepository.Insert(new Customer() { ID = new Guid(), CustomerCode = CustomerCode }, connection);
+                _deviceRepository.Insert(device, connection);
+                _verbProfileRepository.Insert(verbProfiles, connection);
+                _applicationProfileRepository.Insert(applicationProfile, connection);
+                _driverRepository.Insert(drivers, connection);
                 //TODO: relate Vehicles to VehicleViews?  Are VehicleViews actually used for anything within the app?
-                _vehicleRepository.Insert(vehicles);
-                _trailerRepository.Insert(trailers);
-                _safetyProfileRepository.Insert(safetyProfiles);
-                _configRepository.Insert(config);
+                _vehicleRepository.Insert(vehicles, connection);
+                _trailerRepository.Insert(trailers, connection);
+                _safetyProfileRepository.Insert(safetyProfiles, connection);
+                _configRepository.Insert(config, connection);
             });
+
 
 
             //TODO: call fwRegisterDevice - what does this actually do?

@@ -33,7 +33,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
             _connectionMock = new Mock<ISQLiteConnection>();
             _connectionMock.Setup(c => c.RunInTransaction(It.IsAny<Action>())).Callback( (Action a) => a.Invoke() );
 
-            var dataServiceMock = Mock.Of<IDataService>(ds => ds.Connection == _connectionMock.Object);
+            var dataServiceMock = Mock.Of<IDataService>(ds => ds.GetDBConnection() == _connectionMock.Object);
             _fixture.Register<IDataService>(() => dataServiceMock);
             
         }

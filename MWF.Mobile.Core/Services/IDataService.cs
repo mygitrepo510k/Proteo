@@ -3,9 +3,9 @@ using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 
 namespace MWF.Mobile.Core.Services
 {
-    public interface IDataService : IDisposable
+    public interface IDataService
     {
-        ISQLiteConnection Connection { get; }
-        void RunInTransaction(Action action);
+        ISQLiteConnection GetDBConnection();
+        void RunInTransaction(Action<ISQLiteConnection> action);
     }
 }

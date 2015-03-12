@@ -137,7 +137,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// End to end test of gateway service GetDriverInstruction method 
         /// </summary>
         /// <returns></returns>
-        [Fact]
+        [Fact(Skip = "This end-to-end test is fragile (calls through to Bluesphere)")]
         public async Task GatewayService_EndToEnd_GetDriverInstructions()
         {
             base.ClearAll();

@@ -18,102 +18,217 @@ namespace MWF.Mobile.Core.Repositories
         public abstract class Repository<T> : IRepository<T> where T : IBlueSphereEntity, new()
         {
 
-            protected ISQLiteConnection _connection;
+            protected IDataService _dataService;
+
 
             #region Construction
 
             public Repository(IDataService dataService)
             {
-                //Contract.Requires<ArgumentNullException>(dataService != null, "dataService cannot be null");
-
-                _connection = dataService.Connection;
+                _dataService = dataService;
             }
 
             #endregion
 
             #region IRepository<T> Members
 
+            public virtual void Insert(T entity, ISQLiteConnection transactionConnection)
+            {
+                ISQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
+
+                try
+                {
+                    connection.RunInTransaction(() =>
+                    {
+                        InsertRecursive(entity, connection);
+                    });
+                }
+                finally
+                {
+                    // if we created our own connection then close it
+                    if (transactionConnection == null)
+                        connection.Close();
+                }
+
+
+            }
+
             public virtual void Insert(T entity)
             {
-                //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
+                Insert(entity, null);
+            }
 
-                _connection.RunInTransaction(() =>
-                 {     
-                    InsertRecursive(entity);
-                 });
+            public virtual void Insert(IEnumerable<T> entities, ISQLiteConnection transactionConnection)
+            {
+
+                ISQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
+
+                try
+                {
+                    foreach (var entity in entities)
+                    {
+                        InsertRecursive(entity, connection);
+                    }
+                }
+                finally
+                {
+                    // if we created our own connection then close it
+                    if (transactionConnection == null)
+                        connection.Close();
+                }
+
+
             }
 
             public virtual void Insert(IEnumerable<T> entities)
             {
-                //Contract.Requires<ArgumentNullException>(entities != null, "entities cannot be null");
+                Insert(entities, null);
+            }
 
-                _connection.RunInTransaction(() =>
+
+            public virtual void Update(T entity, ISQLiteConnection transactionConnection)
+            {
+
+                ISQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
+
+                try
                 {
-                    foreach (var entity in entities)
+                    connection.RunInTransaction(() =>
                     {
-                        InsertRecursive(entity);
-                    }
+                        var existingEntity = GetByID(entity.ID);
+                        if (existingEntity != null)
+                        {
+                            Delete(existingEntity);
+                        }
 
-                });
-
+                        InsertRecursive(entity, connection);
+                    });
+                }
+                finally
+                {
+                    // if we created our own connection then close it
+                    if (transactionConnection == null)
+                        connection.Close();
+                }
+            
             }
 
             public virtual void Update(T entity)
             {
-                //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
-
-                _connection.RunInTransaction(() =>
-                {
-                    var existingEntity = GetByID(entity.ID);
-                    if (existingEntity!=null)
-                    {
-                        Delete(existingEntity);
-                    }
-
-                    InsertRecursive(entity);
-                });
+                Update(entity, null);
             }
 
 
+            public virtual void DeleteAll(ISQLiteConnection transactionConnection)
+            {
+                ISQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
+
+                try
+                {
+                    connection.RunInTransaction(() =>
+                    {
+                        DeleteAllRecursive(typeof(T), connection);
+                    });
+                }
+                finally
+                {
+                    // if we created our own connection then close it
+                    if (transactionConnection == null)
+                        connection.Close();
+                }
+
+            }
+
             public virtual void DeleteAll()
             {
-                //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
+                DeleteAll(null);
+            }
 
-                _connection.RunInTransaction(() =>
+            public virtual void Delete(T entity, ISQLiteConnection transactionConnection)
+            {
+                ISQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
+
+                try
                 {
-                    DeleteAllRecursive(typeof(T));
-                });
+                    connection.RunInTransaction(() =>
+                    {
+                        DeleteRecursive(entity, connection);
+                    });
+                }
+                finally
+                {
+                    // if we created our own connection then close it
+                    if (transactionConnection == null)
+                        connection.Close();
+                }
+
             }
 
             public virtual void Delete(T entity)
             {
-                //Contract.Requires<ArgumentNullException>(entity != null, "entity cannot be null");
-
-                _connection.RunInTransaction(() =>
-                {
-                    DeleteRecursive(entity);
-                });
+                Delete(entity, null);
             }
 
 
+            public virtual IEnumerable<T> GetAll(ISQLiteConnection transactionConnection)
+            {
+
+                List<T> entities;
+
+                ISQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
+
+                try
+                {
+                    entities = connection.Table<T>().ToList();
+                    if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities, connection);
+                }
+                finally
+                {
+                    // if we created our own connection then close it
+                    if (transactionConnection == null)
+                        connection.Close();
+                }
+              
+                return entities;
+            }
+
             public virtual IEnumerable<T> GetAll()
             {
-                var entities = _connection.Table<T>().ToList();
+                return GetAll(null);
+            }
 
-                if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities);
 
-                return entities;
+            public virtual T GetByID(Guid ID, ISQLiteConnection transactionConnection)
+            {
+                T entity;
+
+                ISQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
+
+                try
+                {
+                    entity = connection.Table<T>().SingleOrDefault(e => e.ID == ID);
+
+                    if (entity != null)
+                        if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity, connection);
+                }
+                finally
+                {
+                    // if we created our own connection then close it
+                    if (transactionConnection == null)
+                        connection.Close();
+                }
+
+                return entity;
             }
 
             public virtual T GetByID(Guid ID)
             {
-                T entity = _connection.Table<T>().SingleOrDefault(e => e.ID == ID);
-
-                if (entity != null)
-                    if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity);
-
-                return entity;
+                return GetByID(ID, null);
             }
+
+            #endregion
+
+            #region Private Properties
 
             #endregion
 
@@ -124,17 +239,17 @@ namespace MWF.Mobile.Core.Repositories
             ///  ChildRelationship and ForeignKey attributes to guide the process
             /// </summary>
             /// <param name="entity"></param>
-            private void InsertRecursive(IBlueSphereEntity entity)
+            private void InsertRecursive(IBlueSphereEntity entity, ISQLiteConnection connection)
             {
 
-                _connection.Insert(entity);
+                connection.Insert(entity);
 
                 foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())
                 {
                     DoRecursiveTreeAction(entity, relationshipProperty, (parent, child) =>
                     {
                         SetForeignKeyOnChild(parent, child);
-                        InsertRecursive(child);
+                        InsertRecursive(child, connection);
                     });
                 }
             }
@@ -145,15 +260,15 @@ namespace MWF.Mobile.Core.Repositories
             ///  ChildRelationship and ForeignKey attributes to guide the process
             /// </summary>
             /// <param name="entity"></param>
-            private void DeleteRecursive(IBlueSphereEntity entity)
+            private void DeleteRecursive(IBlueSphereEntity entity, ISQLiteConnection connection)
             {
-                _connection.Delete(entity);
+                connection.Delete(entity);
 
                 foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())
                 {
                     DoRecursiveTreeAction(entity, relationshipProperty, (parent, child) =>
                     {
-                        DeleteRecursive(child);
+                        DeleteRecursive(child, connection);
                     });
 
                 }
@@ -164,14 +279,14 @@ namespace MWF.Mobile.Core.Repositories
             /// plus any child types as specified by the ChildRelationship attribute
             /// </summary>
             /// <param name="type"></param>
-            private void DeleteAllRecursive(Type type)
+            private void DeleteAllRecursive(Type type, ISQLiteConnection connection)
             {
-                DeleteAllFromTable(type);
+                DeleteAllFromTable(type, connection);
 
                 foreach (var childType in type.GetChildRelationTypes())
                 {
 
-                    DeleteAllRecursive(childType);
+                    DeleteAllRecursive(childType, connection);
 
                 }
             }
@@ -182,7 +297,7 @@ namespace MWF.Mobile.Core.Repositories
             /// as labelled with the ChildRelationship. 
             /// </summary>
             /// <param name="parent"></param>
-            protected void PopulateChildrenRecursive(IBlueSphereEntity parent)
+            protected void PopulateChildrenRecursive(IBlueSphereEntity parent, ISQLiteConnection connection)
             {
 
                 foreach (var relationshipProperty in parent.GetType().GetChildRelationProperties())
@@ -190,7 +305,7 @@ namespace MWF.Mobile.Core.Repositories
                     Type childType = relationshipProperty.GetTypeOfChildRelation();
                     string childIdentifyingPropertyName = relationshipProperty.GetIdentifyingPropertyNameOfChildRelation();
                     object childIdentifyingPropertyValue = relationshipProperty.GetIdentifyingPropertyValueOfChildRelation();
-                    IList children = GetChildren(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue);
+                    IList children = GetChildren(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
 
                     if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
                     {
@@ -210,7 +325,7 @@ namespace MWF.Mobile.Core.Repositories
                         relationshipProperty.SetValue(parent, children);
                     }
 
-                    PopulateChildrenRecursive(children);
+                    PopulateChildrenRecursive(children, connection);
 
                 }
             }
@@ -220,18 +335,18 @@ namespace MWF.Mobile.Core.Repositories
             /// a collection of parents
             /// </summary>
             /// <param name="parents"></param>
-            protected void PopulateChildrenRecursive(IEnumerable parents)
+            protected void PopulateChildrenRecursive(IEnumerable parents, ISQLiteConnection connection)
             {
                 foreach (var parent in parents)
                 {
-                    PopulateChildrenRecursive(parent as IBlueSphereEntity);
+                    PopulateChildrenRecursive(parent as IBlueSphereEntity, connection);
                 }
             }
 
             // Gets the children of the specfied type for specified parent using foreign key mappings
-            private IList GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue)
+            private IList GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, ISQLiteConnection connection)
             {
-                ITableMapping tableMapping = _connection.GetMapping(childType);
+                ITableMapping tableMapping = connection.GetMapping(childType);
 
                 string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
                                                                                 childType.GetForeignKeyName(parent.GetType()));
@@ -247,11 +362,11 @@ namespace MWF.Mobile.Core.Repositories
                 {
                     if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
                     {
-                        queryResults = _connection.Query(tableMapping, query, parent.ID, childIdentifyingPropertyValue);
+                        queryResults = connection.Query(tableMapping, query, parent.ID, childIdentifyingPropertyValue);
                     }
                     else
                     {
-                        queryResults = _connection.Query(tableMapping, query, parent.ID);
+                        queryResults = connection.Query(tableMapping, query, parent.ID);
                     }
 
                    
@@ -277,10 +392,10 @@ namespace MWF.Mobile.Core.Repositories
             }
 
             // Deletes all items from the table associated with the specified type
-            private void DeleteAllFromTable(Type type)
+            private void DeleteAllFromTable(Type type, ISQLiteConnection connection)
             {
                 string command = string.Format("delete from {0}", type.GetTableName());
-                _connection.CreateCommand(command).ExecuteNonQuery();
+                connection.CreateCommand(command).ExecuteNonQuery();
             }
 
 

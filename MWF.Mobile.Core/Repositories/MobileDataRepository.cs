@@ -20,32 +20,46 @@ namespace MWF.Mobile.Core.Repositories
 
         public bool InstructionExists(Guid id)
         {
-            var instruction = _connection.Table<MobileData>().Where(m => m.ID == id);
-            return (instruction != null);
+            return (this.GetByID(id) != null);
+
         }
 
         public IEnumerable<MobileData> GetInProgressInstructions(Guid driverID)
         {
-            var parentItems = _connection
-               .Table<MobileData>()
-               .Where(m => 
-                      m.DriverId == driverID &&
-                     (m.ProgressState == Enums.InstructionProgress.Driving || m.ProgressState == Enums.InstructionProgress.OnSite)).ToList();
 
-            PopulateChildrenRecursive(parentItems);
+            List<MobileData> parentItems;
+
+            using (var connection = _dataService.GetDBConnection())
+            {
+
+                parentItems = connection
+                   .Table<MobileData>()
+                   .Where(m =>
+                          m.DriverId == driverID &&
+                         (m.ProgressState == Enums.InstructionProgress.Driving || m.ProgressState == Enums.InstructionProgress.OnSite)).ToList();
+
+                PopulateChildrenRecursive(parentItems, connection);
+
+            }
 
             return parentItems;
         }
 
         public IEnumerable<MobileData> GetNotStartedInstructions(Guid driverID)
         {
-            var parentItems = _connection
-                .Table<MobileData>()
-                .Where(m => 
-                       m.DriverId == driverID &&
-                       (m.ProgressState == Enums.InstructionProgress.NotStarted)).ToList();
+            List<MobileData> parentItems;
 
-            PopulateChildrenRecursive(parentItems);
+            using (var connection = _dataService.GetDBConnection())
+            {
+
+                parentItems = connection
+                    .Table<MobileData>()
+                    .Where(m =>
+                           m.DriverId == driverID &&
+                           (m.ProgressState == Enums.InstructionProgress.NotStarted)).ToList();
+
+                PopulateChildrenRecursive(parentItems, connection);
+            }
 
             return parentItems;
         }

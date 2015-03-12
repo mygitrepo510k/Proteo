@@ -34,24 +34,24 @@ namespace MWF.Mobile.Tests.RepositoryTests
             if (File.Exists("db.sql"))
             {
                 _dataService = new DataService(connectionFactory);
-                _dataService.Connection.DeleteAll<Device>();
-                _dataService.Connection.DeleteAll<GrandParentEntity>();
-                _dataService.Connection.DeleteAll<ParentEntity>();
-                _dataService.Connection.DeleteAll<ChildEntity>();
-                _dataService.Connection.DeleteAll<ChildEntity2>();
-                _dataService.Connection.DeleteAll<SingleChildEntity>();
-                _dataService.Connection.CreateTable<MultiChildEntity>();
+                _dataService.GetDBConnection().DeleteAll<Device>();
+                _dataService.GetDBConnection().DeleteAll<GrandParentEntity>();
+                _dataService.GetDBConnection().DeleteAll<ParentEntity>();
+                _dataService.GetDBConnection().DeleteAll<ChildEntity>();
+                _dataService.GetDBConnection().DeleteAll<ChildEntity2>();
+                _dataService.GetDBConnection().DeleteAll<SingleChildEntity>();
+                _dataService.GetDBConnection().CreateTable<MultiChildEntity>();
             }
             else
             {
                 _dataService = new DataService(connectionFactory);
-                _dataService.Connection.CreateTable<Device>();
-                _dataService.Connection.CreateTable<GrandParentEntity>();
-                _dataService.Connection.CreateTable<ParentEntity>();
-                _dataService.Connection.CreateTable<ChildEntity>();
-                _dataService.Connection.CreateTable<ChildEntity2>();
-                _dataService.Connection.CreateTable<SingleChildEntity>();
-                _dataService.Connection.CreateTable<MultiChildEntity>();
+                _dataService.GetDBConnection().CreateTable<Device>();
+                _dataService.GetDBConnection().CreateTable<GrandParentEntity>();
+                _dataService.GetDBConnection().CreateTable<ParentEntity>();
+                _dataService.GetDBConnection().CreateTable<ChildEntity>();
+                _dataService.GetDBConnection().CreateTable<ChildEntity2>();
+                _dataService.GetDBConnection().CreateTable<SingleChildEntity>();
+                _dataService.GetDBConnection().CreateTable<MultiChildEntity>();
             }
 
         }
@@ -291,11 +291,11 @@ namespace MWF.Mobile.Tests.RepositoryTests
             repository.DeleteAll();
 
             // Check the table and all its child tables are now empty
-            Assert.Empty(_dataService.Connection.Table<GrandParentEntity>());
-            Assert.Empty(_dataService.Connection.Table<ParentEntity>());
-            Assert.Empty(_dataService.Connection.Table<ChildEntity>());
-            Assert.Empty(_dataService.Connection.Table<ChildEntity2>());
-            Assert.Empty(_dataService.Connection.Table<SingleChildEntity>());
+            Assert.Empty(_dataService.GetDBConnection().Table<GrandParentEntity>());
+            Assert.Empty(_dataService.GetDBConnection().Table<ParentEntity>());
+            Assert.Empty(_dataService.GetDBConnection().Table<ChildEntity>());
+            Assert.Empty(_dataService.GetDBConnection().Table<ChildEntity2>());
+            Assert.Empty(_dataService.GetDBConnection().Table<SingleChildEntity>());
         }
 
         #region helper functions

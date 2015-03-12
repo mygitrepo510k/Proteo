@@ -7,14 +7,14 @@ using System;
 namespace MWF.Mobile.Core.Services
 {
 
-    public class DataService : IDataService, IDisposable
+    public class DataService : IDataService
     {
 
         #region Private Members
 
-        private ISQLiteConnection _connection;
+        private ISQLiteConnectionFactory _connectionFactory;
         private const string DBNAME = "db.sql";
-        private bool disposed = false; 
+        //private bool disposed = false; 
 
         #endregion
 
@@ -22,8 +22,12 @@ namespace MWF.Mobile.Core.Services
 
         public DataService(ISQLiteConnectionFactory connectionFactory)
         {
-            _connection = connectionFactory.Create(DBNAME);
-            CreateTablesIfRequired();
+            _connectionFactory = connectionFactory;
+
+            using (var connection = GetDBConnection())
+            {
+                CreateTablesIfRequired(connection);
+            }
 
         }
 
@@ -31,18 +35,21 @@ namespace MWF.Mobile.Core.Services
 
         #region Public Methods
 
-        public void RunInTransaction(Action action)
+        public void RunInTransaction(Action<ISQLiteConnection> action)
         {
-            _connection.RunInTransaction(action);
+            using (var connection = this.GetDBConnection())
+            {
+                action(connection);
+            }          
         }
 
         #endregion
 
         #region Properties
 
-        public ISQLiteConnection Connection
+        public ISQLiteConnection GetDBConnection()
         {
-            get { return _connection; }
+           return _connectionFactory.Create(DBNAME);
         }
         
         #endregion
@@ -55,64 +62,64 @@ namespace MWF.Mobile.Core.Services
         /// If tables already exist connection.CreateTable handles
         /// this gracefully
         /// </summary>
-        private void CreateTablesIfRequired()
+        private void CreateTablesIfRequired(ISQLiteConnection connection)
         {
-            _connection.CreateTable<Additional>();
-            _connection.CreateTable<Models.Instruction.Address>();
-            _connection.CreateTable<ApplicationProfile>();
-            _connection.CreateTable<ConfirmQuantity>();
-            _connection.CreateTable<CurrentDriver>();
-            _connection.CreateTable<Customer>();
-            _connection.CreateTable<DeliveryDescription>();
-            _connection.CreateTable<Device>();
-            _connection.CreateTable<Driver>();
-            _connection.CreateTable<GatewayQueueItem>();
-            _connection.CreateTable<Instruction>();
-            _connection.CreateTable<Image>();
-            _connection.CreateTable<ItemAdditional>();
-            _connection.CreateTable<Item>();
-            _connection.CreateTable<LatestSafetyCheck>();
-            _connection.CreateTable<LogMessage>();
-            _connection.CreateTable<MWFMobileConfig>();
-            _connection.CreateTable<MobileData>();
-            _connection.CreateTable<Order>();
-            _connection.CreateTable<SafetyCheckData>();
-            _connection.CreateTable<SafetyCheckFault>();
-            _connection.CreateTable<SafetyCheckFaultType>();
-            _connection.CreateTable<SafetyProfile>();
-            _connection.CreateTable<Signature>();
-            _connection.CreateTable<Vehicle>();
-            _connection.CreateTable<Models.Trailer>();
-            _connection.CreateTable<Models.Instruction.Trailer>();
-            _connection.CreateTable<VehicleView>();
-            _connection.CreateTable<VerbProfile>();
-            _connection.CreateTable<VerbProfileItem>();
+            connection.CreateTable<Additional>();
+            connection.CreateTable<Models.Instruction.Address>();
+            connection.CreateTable<ApplicationProfile>();
+            connection.CreateTable<ConfirmQuantity>();
+            connection.CreateTable<CurrentDriver>();
+            connection.CreateTable<Customer>();
+            connection.CreateTable<DeliveryDescription>();
+            connection.CreateTable<Device>();
+            connection.CreateTable<Driver>();
+            connection.CreateTable<GatewayQueueItem>();
+            connection.CreateTable<Instruction>();
+            connection.CreateTable<Image>();
+            connection.CreateTable<ItemAdditional>();
+            connection.CreateTable<Item>();
+            connection.CreateTable<LatestSafetyCheck>();
+            connection.CreateTable<LogMessage>();
+            connection.CreateTable<MWFMobileConfig>();
+            connection.CreateTable<MobileData>();
+            connection.CreateTable<Order>();
+            connection.CreateTable<SafetyCheckData>();
+            connection.CreateTable<SafetyCheckFault>();
+            connection.CreateTable<SafetyCheckFaultType>();
+            connection.CreateTable<SafetyProfile>();
+            connection.CreateTable<Signature>();
+            connection.CreateTable<Vehicle>();
+            connection.CreateTable<Models.Trailer>();
+            connection.CreateTable<Models.Instruction.Trailer>();
+            connection.CreateTable<VehicleView>();
+            connection.CreateTable<VerbProfile>();
+            connection.CreateTable<VerbProfileItem>();
         }
 
         #endregion
 
-        #region IDisposable
+        //#region IDisposable
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        //public void Dispose()
+        //{
+        //    Dispose(true);
+        //    GC.SuppressFinalize(this);
+        //}
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                if (disposing)
-                {
-                    _connection.Close();
-                }
+        //protected virtual void Dispose(bool disposing)
+        //{
+        //    if (!disposed)
+        //    {
+        //        if (disposing)
+        //        {
+        //            _connection.Close();
+        //        }
 
-                disposed = true;
-            }
-        }
+        //        disposed = true;
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
 
     }

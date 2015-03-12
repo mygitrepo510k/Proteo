@@ -28,7 +28,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             DataService dataService = new DataService(connectionFactoryMock.Object);
-            ISQLiteConnection connection = dataService.Connection;
+            ISQLiteConnection connection = dataService.GetDBConnection();
 
             Assert.NotNull(connection);
 
@@ -46,7 +46,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             connectionFactoryMock.Setup(cf => cf.Create(It.Is<string>(s => s == "db.sql"))).Returns(connectionMock.Object);
 
             DataService dataService = new DataService(connectionFactoryMock.Object);
-            ISQLiteConnection connection = dataService.Connection;
+            ISQLiteConnection connection = dataService.GetDBConnection();
 
             // Check that the various tables has been created
             connectionMock.Verify(c => c.CreateTable<ApplicationProfile>(CreateFlags.None), Times.Once);

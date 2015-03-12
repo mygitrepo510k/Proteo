@@ -36,7 +36,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             this.optionsMenu = menu;
 
-            var searchItem = menu.FindItem(Resource.Id.action_search).ActionView;
+            var searchItem = menu.FindItem(Resource.Id.vehicle_action_search).ActionView;
             _searchView = searchItem.JavaCast<SearchView>();
 
             _searchView.QueryTextChange += (s, e) => ((VehicleListViewModel)this.ViewModel).VehicleSearchText = e.NewText;
@@ -97,8 +97,8 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             base.OnPause();
 
-            var searhMenuItem = this.optionsMenu.FindItem(Resource.Id.action_search);
-            searhMenuItem.CollapseActionView();
+            var searchMenuItem = this.optionsMenu.FindItem(Resource.Id.vehicle_action_search);
+            searchMenuItem.CollapseActionView();
         }
     }
 

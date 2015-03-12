@@ -15,7 +15,6 @@ namespace MWF.Mobile.Android.Views.Fragments
         private IMenu optionsMenu;
         private BindableProgress _bindableProgress;
 
-
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code
@@ -25,17 +24,24 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
         {
-            inflater.Inflate(Resource.Menu.vehicle_activity_actions, menu);
+            inflater.Inflate(Resource.Menu.trailer_activity_actions, menu);
             base.OnCreateOptionsMenu(menu, inflater);
 
             this.optionsMenu = menu;
-            
-            var searchItem = menu.FindItem(Resource.Id.action_search).ActionView;
-           
-            _searchView = searchItem.JavaCast<SearchView>();
 
-            _searchView.QueryTextChange += (s, e) => ((TrailerListViewModel)this.ViewModel).TrailerSearchText = e.NewText;
+            var searchItem = menu.FindItem(Resource.Id.trailer_action_search).ActionView;
+            _searchView = searchItem.JavaCast<SearchView>();
+            
         }
+
+        public override void OnPrepareOptionsMenu(IMenu menu)
+        {
+            base.OnPrepareOptionsMenu(menu);
+            _searchView.QueryTextChange += (s, e) => { ((TrailerListViewModel)this.ViewModel).TrailerSearchText = e.NewText; };
+    
+        }
+
+
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             switch (item.ItemId)
@@ -49,6 +55,8 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             return base.OnOptionsItemSelected(item);
         }
+
+
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);

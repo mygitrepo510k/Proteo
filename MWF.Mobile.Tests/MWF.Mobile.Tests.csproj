@@ -135,6 +135,8 @@
     <Compile Include="RepositoryTests\TestModels\GrandParentEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\ChildEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\ParentEntity.cs" />
+    <Compile Include="ServiceTests\ImageUploadServiceTests.cs" />
+    <Compile Include="ServiceTests\LoggingServiceTests.cs" />
     <Compile Include="ServiceTests\MainServiceTests.cs" />
     <Compile Include="ServiceTests\NavigationServiceTests.cs" />
     <Compile Include="ServiceTests\DataServiceTests.cs" />

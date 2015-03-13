@@ -155,62 +155,6 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         /// <summary>
-        /// This test is to verify that the right content is added to the gatewayqueuedservice for a driver uploading
-        /// a photo and comment for an instruction.
-        /// </summary>
-        [Fact]
-        public async Task MainService_SendCommentAndImageAttachedToInstruction()
-        {
-            base.ClearAll();
-
-            string comment = _fixture.Create<string>();
-            List<Image> photos = _fixture.CreateMany<Image>().ToList();
-
-            MobileData mobileData = _fixture.Create<MobileData>();
-            Driver driver = _fixture.Create<Driver>();
-
-            var imageUploadService = _fixture.Create<ImageUploadService>();
-
-            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, false, mobileData);
-
-            _mockGatewayQueuedService.Verify(mgqs =>
-                mgqs.AddToQueue("fwSyncPhotos", It.IsAny<UploadCameraImageObject>(), null), Times.Once);
-
-            Assert.Equal(mobileData.ID, _uploadImageObject.MobileApplicationID);
-            Assert.Equal(comment, _uploadImageObject.Comment);
-            Assert.Equal(photos, _uploadImageObject.Pictures);
-
-        }
-
-        /// <summary>
-        /// This test is to verify that the right content is added to the gatewayqueuedservice for a driver uploading
-        /// a photo and comment (not attached to an instruction).
-        /// </summary>
-        [Fact]
-        public async Task MainService_SendCommentAndImageAttachedToNothing()
-        {
-            base.ClearAll();
-
-            string comment = _fixture.Create<string>();
-            List<Image> photos = _fixture.CreateMany<Image>().ToList();
-
-            var imageUploadService = _fixture.Create<ImageUploadService>();
-
-            MobileData mobileData = _fixture.Create<MobileData>();
-            Driver driver = _fixture.Create<Driver>();
-
-            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, false, null);
-
-            _mockGatewayQueuedService.Verify(mgqs =>
-                mgqs.AddToQueue("fwSyncPhotos", It.IsAny<UploadCameraImageObject>(), null), Times.Once);
-
-            Assert.Equal(Guid.Empty, _uploadImageObject.MobileApplicationID);
-            Assert.Equal(comment, _uploadImageObject.Comment);
-            Assert.Equal(photos, _uploadImageObject.Pictures);
-
-        }
-
-        /// <summary>
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a Read chunk
         /// </summary>
         [Fact]

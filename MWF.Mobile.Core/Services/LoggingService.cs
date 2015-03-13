@@ -22,12 +22,18 @@ namespace MWF.Mobile.Core.Services
         private readonly ILogMessageRepository _loggedRepository = null;
         private readonly IDeviceInfo _deviceInfo = null;
         private readonly IGatewayService _gatewayService = null;
+        private readonly IReachability _reachability = null;
 
-        public LoggingService(IRepositories repositories, IGatewayService gatewayService, IDeviceInfo deviceInfo)
+        public LoggingService(
+            IRepositories repositories, 
+            IGatewayService gatewayService, 
+            IDeviceInfo deviceInfo,
+            IReachability reachability)
         {
             _loggedRepository = repositories.LogMessageRepository;
             _gatewayService = gatewayService;
             _deviceInfo = deviceInfo;
+            _reachability = reachability;
         }
 
         public void LogEvent(Exception exception)
@@ -60,9 +66,8 @@ namespace MWF.Mobile.Core.Services
 
             if (events.Any())
             {
-                var reachability = Mvx.Resolve<IReachability>();
 
-                if (!reachability.IsConnected())
+                if (!_reachability.IsConnected())
                     return;
 
                 var deviceIdentifier = _deviceInfo.GetDeviceIdentifier();

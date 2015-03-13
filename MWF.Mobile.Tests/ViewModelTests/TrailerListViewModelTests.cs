@@ -36,9 +36,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<IMvxMainThreadDispatcher>(mockDispatcher);
 
             var mockUserInteraction = new Mock<IUserInteraction>();
-            mockUserInteraction.Setup(ui => ui.Confirm(It.IsAny<string>(), It.IsAny<Action<bool>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
             Ioc.RegisterSingleton<IUserInteraction>(mockUserInteraction.Object);
 
+            var mockCustomUserInteraction = new Mock<ICustomUserInteraction>();
+            mockCustomUserInteraction.Setup(ui => ui.PopUpConfirm(It.IsAny<string>(), It.IsAny<Action<bool>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
+            Ioc.RegisterSingleton<ICustomUserInteraction>(mockCustomUserInteraction.Object);
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));

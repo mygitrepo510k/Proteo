@@ -139,7 +139,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             //This will take to the next view model with a trailer value of null.
-            Mvx.Resolve<IUserInteraction>().Confirm(message, async isConfirmed =>
+            Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm(message, async isConfirmed =>
             {
                 if (isConfirmed)
                 {

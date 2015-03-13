@@ -132,22 +132,23 @@ namespace MWF.Mobile.Core.ViewModels
         private void VehicleDetail(Vehicle vehicle)
         {
 
-            Mvx.Resolve<IUserInteraction>().Confirm(vehicle.Registration, isConfirmed =>
-            {
-                if (isConfirmed)
+                Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm(vehicle.Registration, isConfirmed =>
                 {
-                    var newDriver = _currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID);
+                    if (isConfirmed)
+                    {
+                        var newDriver = _currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID);
 
-                    if (newDriver == null)
-                        return;
+                        if (newDriver == null)
+                            return;
 
-                    _currentDriverRepository.Delete(newDriver);
-                    newDriver.LastVehicleID = vehicle.ID;
-                    _currentDriverRepository.Insert(newDriver);
+                        _currentDriverRepository.Delete(newDriver);
+                        newDriver.LastVehicleID = vehicle.ID;
+                        _currentDriverRepository.Insert(newDriver);
 
-                    ShowTrailerScreen(vehicle);
-                }
-            }, "Confirm your vehicle", "Confirm");
+                        ShowTrailerScreen(vehicle);
+                    }
+
+                }, "Confirm your vehicle", "Confirm");
         }
 
         private string _vehicleSearchText;

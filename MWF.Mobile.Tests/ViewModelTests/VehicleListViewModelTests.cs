@@ -32,12 +32,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IStartupService _startupService;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
         private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+
 
         protected override void AdditionalSetup()
         {
 
+            _mockCustomUserInteraction = new Mock<ICustomUserInteraction>();
+            _mockCustomUserInteraction.ConfirmReturnsFalseIfTitleStartsWith("Last Used Vehicle");
+            Ioc.RegisterSingleton<ICustomUserInteraction>(_mockCustomUserInteraction.Object);
+
             _mockUserInteraction = new Mock<IUserInteraction>();
-            _mockUserInteraction.ConfirmReturnsFalseIfTitleStartsWith("Last Used Vehicle");
+            
             Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
 
 
@@ -66,7 +72,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockCustomUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var navigationServiceMock = new Mock<INavigationService>();
             navigationServiceMock.Setup(ns => ns.MoveToNext());
@@ -89,7 +95,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockCustomUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var vm = _fixture.Create<VehicleListViewModel>();
 
@@ -108,7 +114,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockCustomUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var vm = _fixture.Create<VehicleListViewModel>();
 

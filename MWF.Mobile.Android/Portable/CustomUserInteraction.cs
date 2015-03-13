@@ -24,6 +24,7 @@ namespace MWF.Mobile.Android.Portable
     {
         public AlertDialog InstructionNotificationDialog;
         public AlertDialog CurrentInstructionNotificationDialog;
+        public AlertDialog ConfirmDialog;
         public Vibrate Vibrate = new Vibrate();
         public Sound Sound = new Sound();
 
@@ -219,6 +220,52 @@ namespace MWF.Mobile.Android.Portable
             return tcs.Task;
         }
 
+        /// <summary>
+        /// This is the same as the IUserInteraction Confirm method however this has got the 'SetCancelable' to false so they have to
+        /// click one of the buttons
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="answer"></param>
+        /// <param name="title"></param>
+        /// <param name="okButton"></param>
+        /// <param name="cancelButton"></param>
+        public void PopUpConfirm(string message, Action<bool> answer, string title = null, string okButton = "OK", string cancelButton = "Cancel")
+        {
+            Application.SynchronizationContext.Post(ignored =>
+            {
+
+                if (CurrentActivity == null) return;
+
+                //This closes the pop if its showing so it can reopen another, else it will play sound and vibrate first time.
+
+                if (ConfirmDialog != null && ConfirmDialog.IsShowing)
+                    return;
+
+                if (CurrentActivity == null) return;
+                var notificationDialog = new AlertDialog.Builder(CurrentActivity)
+                    .SetMessage(message)
+                        .SetTitle(title)
+
+                            //Prevents the user from closes the pop up by click on the sides.
+                            .SetCancelable(false)
+
+                        .SetPositiveButton(okButton, delegate
+                {
+                    if (answer != null)
+                        answer(true);
+                })
+                        .SetNegativeButton(cancelButton, delegate
+                {
+                    if (answer != null)
+                        answer(false);
+                });
+
+
+                ConfirmDialog = notificationDialog.Create();
+                ConfirmDialog.Show();
+            }, null);
+        }
+
         #endregion
 
         #region Private Methods
@@ -260,6 +307,9 @@ namespace MWF.Mobile.Android.Portable
 
 
         #endregion
+
+
+
 
     }
 

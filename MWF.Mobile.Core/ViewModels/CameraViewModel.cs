@@ -90,7 +90,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public System.Windows.Input.ICommand DoneCommand
         {
-            get { return (_doneCommand = _doneCommand ?? new MvxCommand(() => DoDoneCommand())); }
+            get { return (_doneCommand = _doneCommand ?? new MvxCommand(async () => await DoDoneCommand())); }
         }
 
         public System.Windows.Input.ICommand TakePictureCommand
@@ -124,7 +124,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private void DoDoneCommand()
+        private async Task DoDoneCommand()
         {
             List<Image> images = new List<Image>();
 
@@ -133,7 +133,8 @@ namespace MWF.Mobile.Core.ViewModels
                 images.Add(viewModel.Image);
             }
 
-            _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, _mainService.OnManifestPage, _mainService.CurrentMobileData);
+            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, _mainService.OnManifestPage, _mainService.CurrentMobileData);
+
             NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = (_mainService.OnManifestPage) ? Guid.Empty : _mainService.CurrentMobileData.ID };
             _navigationService.MoveToNext(navItem);
         }

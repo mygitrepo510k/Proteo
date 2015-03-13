@@ -23,6 +23,8 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private readonly IMainService _mainService;
+        private readonly IDataChunkService _dataChunkService;
+
         private MobileData _mobileData;
         private Item _order;
 
@@ -30,11 +32,16 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public ReviseQuantityViewModel(INavigationService navigationService, IRepositories repositories, IUserInteraction userInteraction, IMainService mainService)
+        public ReviseQuantityViewModel(
+            INavigationService navigationService, 
+            IRepositories repositories, 
+            IMainService mainService,
+            IDataChunkService dataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
             _mainService = mainService;
+            _dataChunkService = dataChunkService;
         }
 
         public void Init(NavItem<Item> item)
@@ -91,7 +98,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             _mainService.CurrentMobileData = _mobileData;
             //This value gets updated in HE.
-            _mainService.SendDataChunk(true);
+            _dataChunkService.SendDataChunk(_mainService.CurrentMobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle, true);
 
             NavItem<Item> navItem = new NavItem<Item>() { ID = _order.ID, ParentID = _mobileData.ID };
             _navigationService.MoveToNext(navItem);

@@ -35,6 +35,7 @@ namespace MWF.Mobile.Core.Services
         private Timer _timer;
         private readonly IStartupService _startupService;
         private readonly IMainService _mainService;
+        IDataChunkService _dataChunkService;
 
         private readonly string _gatewayDeviceRequestUrl = null;
 
@@ -45,15 +46,16 @@ namespace MWF.Mobile.Core.Services
 
 
         public GatewayPollingService(
-            IDeviceInfo deviceInfo, 
-            IHttpService httpService, 
-            IReachability reachability, 
-            IRepositories repositories, 
+            IDeviceInfo deviceInfo,
+            IHttpService httpService,
+            IReachability reachability,
+            IRepositories repositories,
             IMvxMessenger messenger,
-            IGatewayService gatewayService, 
-            IGatewayQueuedService gatewayQueuedService, 
-            IStartupService startupService, 
-            IMainService mainService)
+            IGatewayService gatewayService,
+            IGatewayQueuedService gatewayQueuedService,
+            IStartupService startupService,
+            IMainService mainService,
+            IDataChunkService dataChunkService)
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
@@ -64,6 +66,7 @@ namespace MWF.Mobile.Core.Services
             _gatewayQueuedService = gatewayQueuedService;
             _startupService = startupService;
             _mainService = mainService;
+            _dataChunkService = dataChunkService;
 
 
             //TODO: read this from config or somewhere?
@@ -199,7 +202,8 @@ namespace MWF.Mobile.Core.Services
 
                 Mvx.Trace("Successfully sent device acknowledgement.");
 
-                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instructions.ToList(), () => _mainService.SendReadChunk(instructions), "Manifest Update", "Acknowledge");
+                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instructions.ToList(), () => 
+                    _dataChunkService.SendReadChunk(instructions, _mainService.CurrentDriver, _mainService.CurrentVehicle), "Manifest Update", "Acknowledge");
 
             }
         }

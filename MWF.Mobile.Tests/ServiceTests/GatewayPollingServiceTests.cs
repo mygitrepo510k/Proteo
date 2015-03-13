@@ -31,6 +31,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
         private Mock<IMvxMessenger> _mockMvxMessenger;
         private Mock<IMainService> _mockMainService;
+        private Mock<IDataChunkService> _mockDataChunkService;
 
         protected override void AdditionalSetup()
         {
@@ -63,6 +64,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockMvxMessenger = new Mock<IMvxMessenger>();
             _fixture.Inject<IMvxMessenger>(_mockMvxMessenger.Object);
+
+            _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
 
         }
 
@@ -358,7 +361,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGatewayQueuedService.Verify(mgqs => 
                 mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
 
-            _mockMainService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>()), Times.Once);
+            _mockDataChunkService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()), Times.Once);
 
         }
 
@@ -384,7 +387,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
 
-            _mockMainService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>()), Times.Once);
+            _mockDataChunkService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()), Times.Once);
         }
 
         [Fact]
@@ -422,7 +425,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
 
-            _mockMainService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>()), Times.Once);
+            _mockDataChunkService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()), Times.Once);
 
         }
 

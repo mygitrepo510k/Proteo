@@ -211,6 +211,8 @@
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\VerbProfileRepository.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Services\DataChunkService.cs" />
+    <Compile Include="Services\IDataChunkService.cs" />
     <Compile Include="Services\IImageUploadService.cs" />
     <Compile Include="Services\ImageUploadService.cs" />
     <Compile Include="Services\LoggingService.cs" />

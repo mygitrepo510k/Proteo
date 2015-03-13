@@ -17,14 +17,14 @@ using MWF.Mobile.Core.ViewModels;
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class InstructionTrunkToFragment : BaseFragment
+    public class InstructionTrunkProceedFragment : BaseFragment
     {
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            return this.BindingInflate(Resource.Layout.Fragment_InstructionTrunkTo, null);
+            return this.BindingInflate(Resource.Layout.Fragment_InstructionTrunkProceed, null);
         }
        
         

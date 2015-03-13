@@ -74,6 +74,11 @@
     <item name = "android:layout_marginBottom">0dp</item>
   </style>
 
+  <style name = "Proteo.TextView.SectionContentLarge" parent="style/Proteo.TextView.SectionContent">
+    <item name = "android:textSize">15dp</item>
+    <item name = "android:layout_marginBottom">1dp</item>
+  </style>
+
   <style name ="Proteo.TextView.ItemText" parent="style/Proteo">
     <item name = "android:gravity">left</item>
     <item name = "android:layout_marginTop">4dp</item>

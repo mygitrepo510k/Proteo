@@ -19,6 +19,7 @@ using MWF.Mobile.Core.Repositories.Interfaces;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Enums;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Extensions;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -98,7 +99,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
 
-            Assert.Equal(_mobileData.Order.Arrive.ToString(), instructionVM.ArriveDateTime);
+            Assert.Equal(_mobileData.Order.Arrive.ToStringIgnoreDefaultDate(), instructionVM.ArriveDateTime);
 
         }
 
@@ -126,7 +127,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
 
-            Assert.Equal(_mobileData.Order.Depart.ToString(), instructionVM.DepartDateTime);
+            Assert.Equal(_mobileData.Order.Depart.ToStringIgnoreDefaultDate(), instructionVM.DepartDateTime);
 
         }
 

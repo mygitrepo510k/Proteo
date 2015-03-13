@@ -1772,9 +1772,43 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the startup the instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(InstructionTrunkToViewModel), request.ViewModelType);
+            Assert.Equal(typeof(InstructionTrunkProceedViewModel), request.ViewModelType);
 
-            // chck that the supplied parameters were passed through correctly
+            // check that the supplied parameters were passed through correctly
+            var parametersObjectOut = request.ParameterValues.First();
+            Assert.Equal("ID", parametersObjectOut.Key);
+            Assert.Equal(parametersObjectIn.ID.ToString(), parametersObjectOut.Value);
+
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_Manifest_ProceedFrom()
+        {
+            base.ClearAll();
+
+            _mobileData.Order.Type = InstructionType.ProceedFrom;
+
+            var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+
+            // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == manifestViewModel);
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var service = _fixture.Create<NavigationService>();
+
+            //Create a nav item for a mobile data model
+            NavItem<MobileData> parametersObjectIn = new NavItem<MobileData> { ID = _mobileData.ID };
+            service.MoveToNext(parametersObjectIn);
+
+            //Check that the startup the instruction view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(InstructionTrunkProceedViewModel), request.ViewModelType);
+
+            // check that the supplied parameters were passed through correctly
             var parametersObjectOut = request.ParameterValues.First();
             Assert.Equal("ID", parametersObjectOut.Key);
             Assert.Equal(parametersObjectIn.ID.ToString(), parametersObjectOut.Value);
@@ -1791,7 +1825,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrunkToViewModel>());
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrunkProceedViewModel>());
 
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 

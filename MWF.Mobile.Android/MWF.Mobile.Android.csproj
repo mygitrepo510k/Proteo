@@ -195,7 +195,7 @@
     <Compile Include="Views\Fragments\DisplaySafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\InstructionCommentFragment.cs" />
     <Compile Include="Views\Fragments\InstructionOnSiteFragment.cs" />
-    <Compile Include="Views\Fragments\InstructionTrunkToFragment.cs" />
+    <Compile Include="Views\Fragments\InstructionTrunkProceedFragment.cs" />
     <Compile Include="Views\Fragments\OrderFragment.cs" />
     <Compile Include="Views\Fragments\InstructionTrailerFragment.cs" />
     <Compile Include="Views\Fragments\InstructionSignatureFragment.cs" />
@@ -323,7 +323,7 @@
     <AndroidResource Include="Resources\layout\Item_SafetyCheckFault.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\Fragment_InstructionTrunkTo.axml">
+    <AndroidResource Include="Resources\layout\Fragment_InstructionTrunkProceed.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

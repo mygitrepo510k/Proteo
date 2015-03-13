@@ -24,36 +24,22 @@
             android:layout_marginRight="0dp">
             <TextView
                 style="@style/Proteo.TextView.MainHeading"
-                local:MvxBind="Text RunID"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp" />
+                local:MvxBind="Text RunID" />
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_marginLeft="0dp"
-                android:layout_marginBottom="2dp"
+                android:layout_marginBottom="10dp"
                 android:layout_gravity="center"
                 android:orientation="horizontal">
                 <TextView
-                    style="@style/Proteo.TextView.SectionContent"
+                    style="@style/Proteo.TextView.SectionContentLarge"
+                    android:layout_width="48dp"
+                    android:layout_marginRight="1dp"
+                    local:MvxBind="Text ArriveDepartLabelText" />
+                <TextView                  
+                    style="@style/Proteo.TextView.SectionContentLarge"
                     android:layout_width="wrap_content"
                     local:MvxBind="Text ArriveDepartDateTime" />
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="0dp"
-                android:layout_marginBottom="32dp"
-                android:orientation="horizontal">
-                <TextView
-                    style="@style/Proteo.TextView.SectionContent"
-                    android:layout_width="50dp"
-                    android:textSize="16dp"
-                    local:MvxBind="Text DepartLabelText" />
-                <TextView
-                    style="@style/Proteo.TextView.SectionContent"
-                    android:layout_width="wrap_content"
-                    android:textSize="16dp"
-                    local:MvxBind="Text DepartDateTime" />
             </LinearLayout>
             <TextView
                 style="@style/Proteo.TextView.SectionHeading"

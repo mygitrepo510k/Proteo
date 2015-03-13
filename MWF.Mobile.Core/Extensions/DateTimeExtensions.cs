@@ -9,7 +9,7 @@ namespace MWF.Mobile.Core.Extensions
         public static string ToStringIgnoreDefaultDate(this DateTime dateTime)
         {
             //if datetime is the default date (i.e. it was never set) then return empty string
-            return (dateTime.CompareTo(new DateTime()) == 0) ? string.Empty : dateTime.ToString();
+            return (dateTime.CompareTo(new DateTime()) == 0) ? string.Empty : dateTime.ToString("dd/MM/yyyy HH:mm");
         }
 
     }

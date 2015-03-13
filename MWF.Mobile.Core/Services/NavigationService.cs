@@ -384,7 +384,7 @@ namespace MWF.Mobile.Core.Services
 
             InsertNavAction<MainViewModel, ReviseQuantityViewModel>(typeof(OrderViewModel));
 
-            InsertCustomNavAction<MainViewModel, InstructionTrunkToViewModel>(InstructionTrunkTo_CustomAction);
+            InsertCustomNavAction<MainViewModel, InstructionTrunkProceedViewModel>(InstructionTrunkProceed_CustomAction);
 
             // Side bar Activity
             InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustonAction);
@@ -466,8 +466,8 @@ namespace MWF.Mobile.Core.Services
 
                 if (_mobileData.Order.Type == Enums.InstructionType.Collect || _mobileData.Order.Type == Enums.InstructionType.Deliver)
                     this.ShowViewModel<InstructionViewModel>(parameters as NavItem<MobileData>);
-                else if (_mobileData.Order.Type == Enums.InstructionType.TrunkTo)
-                    this.ShowViewModel<InstructionTrunkToViewModel>(parameters);
+                else if (_mobileData.Order.Type == Enums.InstructionType.TrunkTo || _mobileData.Order.Type == Enums.InstructionType.ProceedFrom)
+                    this.ShowViewModel<InstructionTrunkProceedViewModel>(parameters);
             }
 
         }
@@ -625,9 +625,9 @@ namespace MWF.Mobile.Core.Services
         }
 
         /// <summary>
-        /// Instruction Trunk To screen, completes the instruction and goes back to manifest screen
+        /// Instruction TrunkTo/Proceed screens, completes the instruction and goes back to manifest screen
         /// </summary>
-        public void InstructionTrunkTo_CustomAction(Object parameters)
+        public void InstructionTrunkProceed_CustomAction(Object parameters)
         {
             if(parameters is NavItem<MobileData>)
             {

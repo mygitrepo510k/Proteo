@@ -15,7 +15,7 @@ using Cirrious.MvvmCross.ViewModels;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class InstructionTrunkToViewModel
+    public class InstructionTrunkProceedViewModel
         : BaseInstructionNotificationViewModel
     {
         #region Private Members
@@ -31,7 +31,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public InstructionTrunkToViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
+        public InstructionTrunkProceedViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
         {
             _navigationService = navigationService;
             _mainService = mainService;
@@ -50,19 +50,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string RunID { get { return _mobileData.Order.RouteTitle; } }
 
-        public string ArriveDateTime { get { return _mobileData.Order.Arrive.ToStringIgnoreDefaultDate(); } }
-
-        public string DepartDateTime { get { return _mobileData.Order.Depart.ToStringIgnoreDefaultDate(); } }
+        public string ArriveDepartDateTime { get { return _mobileData.Order.Arrive.ToStringIgnoreDefaultDate(); } }
 
         public string Address { get { return _mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode; } }
 
-        public string ArriveLabelText { get { return "Arrive"; } }
-
-        public string DepartLabelText { get { return "Depart"; } }
+        public string ArriveDepartLabelText { get { return (IsTrunkTo) ? "Arrive" : "Depart"; } }
 
         public string AddressLabelText { get { return "Address"; } }
 
         public string ProgressButtonText { get { return "Complete"; } }
+
+        public bool IsTrunkTo { get { return _mobileData.Order.Type == Enums.InstructionType.TrunkTo; }}
 
         public ICommand CompleteInstructionCommand
         {
@@ -108,10 +106,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseFragmentViewModel Overrides
 
-        public override string FragmentTitle
-        {
-            get { return "Trunk To"; }
-        }
+        public override string FragmentTitle { get { return (IsTrunkTo) ? "Trunk To" : "Proceed From"; }}
 
         #endregion  BaseFragmentViewModel Overrides
 

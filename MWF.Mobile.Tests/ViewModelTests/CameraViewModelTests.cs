@@ -34,6 +34,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMainService> _mockMainService;
         private Mock<IUserInteraction> _mockUserInteraction;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+        private Mock<IImageUploadService> _mockImageUploadService;
 
         private byte[] _pictureBytes;
 
@@ -64,9 +65,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
 
+            _mockImageUploadService = _fixture.InjectNewMock<IImageUploadService>();
+
 
         }
-#endregion Setup
+
+        #endregion Setup
 
         #region Tests
 
@@ -113,6 +117,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             cameraVM.DoneCommand.Execute(null);
 
             _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavItem<MobileData>>()), Times.Once);
+            _mockImageUploadService.Verify(mis => mis.SendPhotoAndCommentAsync(It.IsAny<string>(), It.IsAny<List<Image>>(), It.IsAny<Driver>(), It.IsAny<bool>(), It.IsAny<MobileData>()), Times.Once);
 
         }
 

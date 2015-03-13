@@ -18,15 +18,22 @@ namespace MWF.Mobile.Core.Services
         private readonly Repositories.IRepositories _repositories = null;
         private readonly IGpsService _gpsService = null;
         private readonly ILoggingService _loggingService = null;
+        private readonly IReachability _reachability = null;
+        private readonly IToast _toast = null;
+
 
         public ImageUploadService (
             Repositories.IRepositories repositories,
             IGpsService gpsService,
-            ILoggingService loggingService)
+            ILoggingService loggingService,
+            IReachability reachability,
+            IToast toast)
         {
             _repositories = repositories;
             _gpsService = gpsService;
             _loggingService = loggingService;
+            _reachability = reachability;
+            _toast = toast;
         }
 
         /// <summary>
@@ -42,10 +49,11 @@ namespace MWF.Mobile.Core.Services
             bool onManifestPage, 
             MobileData currentMobileData)
         {
-            var reachability = Mvx.Resolve<IReachability>();
 
-            if (!reachability.IsConnected())
+            if (!_reachability.IsConnected())
                 return;
+
+            _toast.Show("Now uploading images");
 
             Encoding encoding = Encoding.UTF8;
             int uploadedCount = 0;
@@ -126,7 +134,10 @@ namespace MWF.Mobile.Core.Services
             }
 
             if (uploadedCount != imageUpload.Pictures.Count)
-                Mvx.Resolve<IUserInteraction>().Alert(string.Format("Only {0} of {1} were uploaded successful.", uploadedCount, imageUpload.Pictures.Count));
+                Mvx.Resolve<IUserInteraction>().Alert(string.Format("Only {0} of {1} were uploaded successful.", uploadedCount, imageUpload.Pictures.Count),null, "Upload Failed");
+            else
+                _toast.Show("Successfully uploaded images");
+
         }
     }
 }

@@ -2,6 +2,7 @@
 using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
+using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
@@ -32,6 +33,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IUserInteraction> _mockUserInteraction;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<IMainService> _mockMainService;
+        private Mock<IDataChunkService> _mockDataChunkService;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
 
         #endregion Private Members
@@ -55,8 +57,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
             _mockMainService.Setup(m => m.CurrentDataChunkActivity).Returns(new MobileApplicationDataChunkContentActivity());
-            _mockMainService.Setup(m => m.SendDataChunk(false));
             _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
+
+            _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
+            _mockDataChunkService.Setup(m => m.SendDataChunk(It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(),false));
+
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 

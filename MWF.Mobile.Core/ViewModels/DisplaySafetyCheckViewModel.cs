@@ -37,7 +37,7 @@ namespace MWF.Mobile.Core.ViewModels
             //If there is no safety check data to view, then sends them back to where they came.
             if (_latestSafetyCheckData.VehicleSafetyCheck == null && _latestSafetyCheckData.TrailerSafetyCheck == null)
             {
-                NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = (_mainService.OnManifestPage) ? Guid.Empty : _mainService.CurrentMobileData.ID };
+                NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = (_navigationService.OnManifestPage) ? Guid.Empty : _mainService.CurrentMobileData.ID };
 
                 Mvx.Resolve<IUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been completed - Refer to your manual safety check.",
                     () => { _navigationService.MoveToNext(navItem); });

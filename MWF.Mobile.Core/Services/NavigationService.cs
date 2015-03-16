@@ -247,6 +247,8 @@ namespace MWF.Mobile.Core.Services
             MoveTo(typeof(StartupViewModel), parameters);
         }
 
+        public bool OnManifestPage { get; set; }
+
         #endregion INavigationService
 
         #region Private Properties

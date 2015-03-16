@@ -234,7 +234,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _latestSafetyCheck.TrailerSafetyCheck = null;
             _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriver(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
 
-            _mockMainService.Setup(mms => mms.OnManifestPage).Returns(true);
+            _mockNavigationService.Setup(mms => mms.OnManifestPage).Returns(true);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
 

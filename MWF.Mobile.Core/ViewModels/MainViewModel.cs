@@ -15,6 +15,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private List<MenuViewModel> _menuItems;
         private MvxCommand<MenuViewModel> _selectMenuItemCommand;
+        private MvxCommand _logoutCommand;
         private INavigationService _navigationService;
 
         #endregion
@@ -24,7 +25,6 @@ namespace MWF.Mobile.Core.ViewModels
             Camera,
             ViewSafetyCheck,
             RunNewSafetyCheck,
-            Logout,
             Manifest
         }
 
@@ -54,11 +54,24 @@ namespace MWF.Mobile.Core.ViewModels
             set { this._menuItems = value; this.RaisePropertyChanged(() => this.MenuItems); }
         }
 
+        public string LogoutText
+        {
+            get { return "Logout"; }
+        }
+
         public System.Windows.Input.ICommand SelectMenuItemCommand
         {
             get
             {
                 return this._selectMenuItemCommand ?? (this._selectMenuItemCommand = new MvxCommand<MenuViewModel>(this.DoSelectMenuItemCommand));
+            }
+        }
+
+        public System.Windows.Input.ICommand LogoutCommand
+        {
+            get
+            {
+                return this._logoutCommand ?? (this._logoutCommand = new MvxCommand(this.DoLogoutCommand));
             }
         }
 
@@ -70,11 +83,6 @@ namespace MWF.Mobile.Core.ViewModels
         {
             MenuItems = new List<MenuViewModel>
             {
-                new MenuViewModel
-                {
-                    Option = Option.Logout,
-                    Text = "Logout"
-                },
                 new MenuViewModel
                 {
                     Option = Option.Manifest,
@@ -98,6 +106,17 @@ namespace MWF.Mobile.Core.ViewModels
             };
         }
 
+        private void DoLogoutCommand()
+        {
+            Mvx.Resolve<IUserInteraction>().Confirm("Are you sure you want to log out?", isConfirmed =>
+            {
+                if (isConfirmed)
+                {
+                    _navigationService.Logout_Action(null);
+                }
+            }, "Logout", "Logout", "Cancel");
+        }
+
         private void DoSelectMenuItemCommand(MenuViewModel item)
         {
 
@@ -111,17 +130,6 @@ namespace MWF.Mobile.Core.ViewModels
                     break;
                 case Option.RunNewSafetyCheck:
                     this.ShowViewModel<SafetyCheckViewModel>();
-                    break;
-                case Option.Logout:
-
-                    Mvx.Resolve<IUserInteraction>().Confirm("Are you sure you want to log out?", isConfirmed =>
-                    {
-                        if (isConfirmed)
-                        {
-                            _navigationService.Logout_Action(null);
-                        }
-                    }, "Logout", "Logout", "Cancel");
-
                     break;
                 case Option.Manifest:
                     this.ShowViewModel<ManifestViewModel>();

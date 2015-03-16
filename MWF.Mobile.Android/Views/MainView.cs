@@ -25,6 +25,7 @@ namespace MWF.Mobile.Android.Views
 
         private DrawerLayout _drawer;
         private MvxListView _drawerList;
+        private RelativeLayout _relativeLayout;
         private MvxCommand _drawerClickCommand;
         private global::Android.Support.V4.App.ActionBarDrawerToggle _drawerToggle;
         protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
@@ -60,6 +61,8 @@ namespace MWF.Mobile.Android.Views
             //Navigation Draw
             _drawer = this.FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
             _drawerList = this.FindViewById<MvxListView>(Resource.Id.left_drawer);
+
+            _relativeLayout = this.FindViewById<RelativeLayout>(Resource.Id.relative_layout);
 
             _drawerToggle = new CustomActionBarDrawerToggle(this, this._drawer, Resource.Drawable.ic_drawer_light, Resource.String.drawer_open,
                                                       Resource.String.drawer_close);
@@ -100,7 +103,7 @@ namespace MWF.Mobile.Android.Views
 
         public override bool OnPrepareOptionsMenu(global::Android.Views.IMenu menu)
         {
-            var drawerOpen = this._drawer.IsDrawerOpen(this._drawerList);
+            var drawerOpen = this._drawer.IsDrawerOpen(this._relativeLayout);
 
             for (int i = 0; i < menu.Size(); i++)
                 menu.GetItem(i).SetVisible(!drawerOpen);

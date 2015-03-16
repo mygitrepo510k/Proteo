@@ -57,18 +57,13 @@ namespace MWF.Mobile.Core.Helpers
         private string ConvertLatLonToSMP(decimal lat, decimal lon)
         {
             string retVal = string.Empty;
-            try
-            {
-                Int32 sign = ((lat >= 0) ? 2 : 0) | ((lon >= 0) ? 1 : 0);
 
-                retVal = sign.ToString();
-                retVal += ConvertToRealNumber((double)lat, 6).ToString("00000000");
-                retVal += ConvertToRealNumber((double)lon, 6).ToString("000000000");
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            Int32 sign = ((lat >= 0) ? 2 : 0) | ((lon >= 0) ? 1 : 0);
+
+            retVal = sign.ToString();
+            retVal += ConvertToRealNumber((double)lat, 6).ToString("00000000");
+            retVal += ConvertToRealNumber((double)lon, 6).ToString("000000000");
+
             return retVal;
 
         }

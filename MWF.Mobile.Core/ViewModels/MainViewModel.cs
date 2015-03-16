@@ -3,6 +3,8 @@ using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Services;
+using Cirrious.CrossCore;
+using Chance.MvvmCross.Plugins.UserInteraction;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -22,7 +24,8 @@ namespace MWF.Mobile.Core.ViewModels
             Camera,
             ViewSafetyCheck,
             RunNewSafetyCheck,
-            History
+            Logout,
+            Manifest
         }
 
         #region Constructor
@@ -36,6 +39,7 @@ namespace MWF.Mobile.Core.ViewModels
             //gatewayQueuedService.StartQueueTimer();
 
             //gatewayPollingService.StartPollingTimer();
+            _navigationService = navigationService;
 
             this.InitializeMenu();
         }
@@ -64,17 +68,22 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void InitializeMenu()
         {
-            _menuItems = new List<MenuViewModel>
+            MenuItems = new List<MenuViewModel>
             {
+                new MenuViewModel
+                {
+                    Option = Option.Logout,
+                    Text = "Logout"
+                },
+                new MenuViewModel
+                {
+                    Option = Option.Manifest,
+                    Text = "Manifest Screen"
+                },
                 new MenuViewModel
                 {
                     Option = Option.Camera,
                     Text = "Camera"
-                },
-                new MenuViewModel
-                {
-                    Option = Option.History,
-                    Text = "History"
                 },
                 new MenuViewModel
                 {
@@ -103,11 +112,25 @@ namespace MWF.Mobile.Core.ViewModels
                 case Option.RunNewSafetyCheck:
                     this.ShowViewModel<SafetyCheckViewModel>();
                     break;
-                case Option.History:
+                case Option.Logout:
+
+                    Mvx.Resolve<IUserInteraction>().Confirm("Are you sure you want to log out?", isConfirmed =>
+                    {
+                        if (isConfirmed)
+                        {
+                            _navigationService.Logout_Action(null);
+                        }
+                    }, "Logout", "Logout", "Cancel");
+
+                    break;
+                case Option.Manifest:
+                    this.ShowViewModel<ManifestViewModel>();
                     break;
                 default:
                     break;
             }
+
+            InitializeMenu();
         }
 
         #endregion

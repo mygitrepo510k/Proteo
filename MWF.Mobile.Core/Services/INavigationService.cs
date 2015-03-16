@@ -12,5 +12,6 @@ namespace MWF.Mobile.Core.Services
         void MoveToNext();
         void MoveToNext(Object parameters);
         void GoToManifest();
+        void Logout_Action(Object parameters);
     }
 }

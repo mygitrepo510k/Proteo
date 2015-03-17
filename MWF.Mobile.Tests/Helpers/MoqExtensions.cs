@@ -48,7 +48,7 @@ namespace MWF.Mobile.Tests.Helpers
             return newMock;
         }
 
-        public static void SetUpInstruction(this IFixture fixture, MWF.Mobile.Core.Enums.InstructionType instructionType,
+        public static MobileData SetUpInstruction(this IFixture fixture, MWF.Mobile.Core.Enums.InstructionType instructionType,
             bool isBypassCommentScreen, bool isTrailerConfirmationRequired, bool isCustomerNameRequired, bool isCustomerSignatureRequired, MWF.Mobile.Core.Enums.InstructionProgress? instructionProgress)
         {
             var mobileData = fixture.Create<MobileData>();
@@ -70,10 +70,7 @@ namespace MWF.Mobile.Tests.Helpers
             if (instructionProgress != null)
                 mobileData.ProgressState = (MWF.Mobile.Core.Enums.InstructionProgress)instructionProgress;
 
-            var mobileDataRepositoryMock = fixture.InjectNewMock<IMobileDataRepository>();
-            mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns(mobileData);
-
-            fixture.Inject<IRepositories>(fixture.Create<Repositories>());
+            return mobileData;
         }
 
         #region IUserInteraction Helpers

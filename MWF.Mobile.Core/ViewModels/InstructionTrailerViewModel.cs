@@ -23,7 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private MobileData _mobileData;
         private IMainService _mainService;
-        private object _navItem;
+        private NavData _navData;
 
 
         private MvxSubscriptionToken _notificationToken;
@@ -49,16 +49,12 @@ namespace MWF.Mobile.Core.ViewModels
                 );
         }
 
-        public void Init(NavItem<MobileData> item)
+        public void Init(NavData<MobileData> navData)
         {
-            _navItem = item;
-            GetMobileDataFromRepository(item.ID);
-        }
-
-        public void Init(NavItem<Models.Instruction.Trailer> item)
-        {
-            _navItem = item;
-            GetMobileDataFromRepository(item.ID);
+            _navData = navData;
+            _navData.Reinflate();
+            _mobileData = navData.Data;
+            _mainService.CurrentMobileData = _mobileData;
         }
 
 
@@ -111,7 +107,7 @@ namespace MWF.Mobile.Core.ViewModels
                    
                     }
 
-                    _navigationService.MoveToNext(_navItem);
+                    _navigationService.MoveToNext(_navData);
 
                 }
             }, title, "Confirm");

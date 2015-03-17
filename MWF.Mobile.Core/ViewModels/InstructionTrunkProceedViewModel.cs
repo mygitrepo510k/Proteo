@@ -21,6 +21,7 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Members
 
         private MobileData _mobileData;
+        private NavData<MobileData> _navData;
         private IMainService _mainService;
         private IRepositories _repositories;
         private INavigationService _navigationService;
@@ -38,9 +39,13 @@ namespace MWF.Mobile.Core.ViewModels
             _repositories = repositories;
         }
 
-        public void Init(NavItem<MobileData> item)
+        public void Init(NavData<MobileData> navData)
         {
-            GetMobileDataFromRepository(item.ID);
+            _navData = navData;
+            navData.Reinflate();
+            _mobileData = navData.Data;
+            RaiseAllPropertiesChanged();
+            _mainService.CurrentMobileData = _mobileData;
             _navigationService.OnManifestPage = false;
         }
 
@@ -76,11 +81,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void CompleteInstruction()
         {
-            var navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
-            _navigationService.MoveToNext(navItem);
+            _navigationService.MoveToNext(_navData);
         }
 
-        private void GetMobileDataFromRepository(Guid ID)
+        private void RefreshPage(Guid ID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
             RaiseAllPropertiesChanged();
@@ -93,10 +97,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+            if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been Updated", "OK");
                 else
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
             }

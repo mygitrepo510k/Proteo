@@ -133,7 +133,7 @@ namespace MWF.Mobile.Core.ViewModels
                 images.Add(viewModel.Image);
             }
 
-            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = (_navigationService.OnManifestPage) ? Guid.Empty : _mainService.CurrentMobileData.ID };
+            NavData<MobileData> navItem = new NavData<MobileData>() { Data = (_navigationService.OnManifestPage) ? null : _mainService.CurrentMobileData };
             _navigationService.MoveToNext(navItem);
 
             await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, _navigationService.OnManifestPage, _mainService.CurrentMobileData);
@@ -196,7 +196,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var task = new Task<bool>(() => false);
 
-            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = (_mainService.CurrentMobileData == null) ? Guid.Empty : _mainService.CurrentMobileData.ID };
+            NavData<MobileData> navItem = new NavData<MobileData>() { Data = (_navigationService.OnManifestPage) ? null : _mainService.CurrentMobileData };
             _navigationService.GoBack(navItem);
 
             return task;

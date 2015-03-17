@@ -68,6 +68,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
+            Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
 
         }
 
@@ -82,11 +83,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny <NavItem<MobileData>>()), Times.Once);
+            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny <NavData<MobileData>>()), Times.Once);
 
             Assert.Same(instructionSignatureVM.CustomerSignatureEncodedImage, _mockMainService.Object.CurrentDataChunkActivity.Signature.EncodedImage);
             Assert.Same(instructionSignatureVM.CustomerName, _mockMainService.Object.CurrentDataChunkActivity.Signature.Title);
@@ -105,11 +106,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.CustomerSignatureEncodedImage = "";
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavItem<MobileData>>()), Times.Never);
+            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
@@ -124,11 +125,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.CustomerSignatureEncodedImage = "";
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavItem<MobileData>>()), Times.Never);
+            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
@@ -143,11 +144,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.CustomerName = "";
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavItem<MobileData>>()), Times.Never);
+            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
@@ -162,11 +163,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.CustomerName = "";
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavItem<MobileData>>()), Times.Never);
+            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
@@ -178,7 +179,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Sign for Collection", instructionSignatureVM.FragmentTitle);
 
@@ -193,7 +194,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Sign for Delivery", instructionSignatureVM.FragmentTitle);
 
@@ -208,7 +209,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.IsSignaturePadEnabled = false;
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Signature available", instructionSignatureVM.SignatureToggleButtonLabel);
 
@@ -223,7 +224,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.IsSignaturePadEnabled = true;
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Signature unavailable", instructionSignatureVM.SignatureToggleButtonLabel);
 
@@ -239,7 +240,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
          
             Assert.Equal(false, instructionSignatureVM.IsSignatureToggleButtonEnabled);
             Assert.Equal(true, instructionSignatureVM.IsSignaturePadEnabled);
@@ -258,7 +259,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal(false, instructionSignatureVM.IsSignatureToggleButtonEnabled);
             Assert.Equal(true, instructionSignatureVM.IsSignaturePadEnabled);
@@ -278,7 +279,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
 
             Assert.Equal(true, instructionSignatureVM.IsSignatureToggleButtonEnabled);
@@ -297,7 +298,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal(false, instructionSignatureVM.IsSignaturePadEnabled);
             Assert.Equal(true, instructionSignatureVM.IsSignatureToggleButtonEnabled);
@@ -317,7 +318,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionSignatureVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
@@ -339,13 +340,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionSignatureVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(2));
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
 
         }
 

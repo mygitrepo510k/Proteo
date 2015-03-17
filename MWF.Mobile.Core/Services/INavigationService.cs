@@ -7,12 +7,13 @@ namespace MWF.Mobile.Core.Services
     public interface INavigationService
     {
         void GoBack();
-        void GoBack(Object parameters);
+        void GoBack(NavData navData);
         bool IsBackActionDefined();
         void MoveToNext();
-        void MoveToNext(Object parameters);
+        void MoveToNext(NavData navData);
         void GoToManifest();
-        void Logout_Action(Object parameters);
+        void Logout_Action(NavData navData);
+        void PopulateNavData(NavData navData);
         bool OnManifestPage { get; set; }
 
     }

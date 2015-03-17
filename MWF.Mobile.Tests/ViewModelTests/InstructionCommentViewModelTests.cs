@@ -51,6 +51,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
+            Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
 
         }
 
@@ -65,7 +66,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var InstructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
 
-            InstructionCommentVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            InstructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             var inputText = "This is a test comment";
 
@@ -90,7 +91,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
 
-            instructionCommentVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Complete", instructionCommentVM.InstructionCommentButtonLabel);
         }
@@ -104,7 +105,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
 
-            instructionCommentVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Complete", instructionCommentVM.InstructionCommentButtonLabel);
         }
@@ -114,11 +115,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, null);
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
 
-            instructionCommentVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionCommentVM.Init(new NavData<MobileData>() { Data = mobileData });
 
             Assert.Equal("Continue", instructionCommentVM.InstructionCommentButtonLabel);
         }
@@ -128,11 +129,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, true, true, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, true, true, null);
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
 
-            instructionCommentVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionCommentVM.Init(new NavData<MobileData>() { Data = mobileData });
 
             Assert.Equal("Continue", instructionCommentVM.InstructionCommentButtonLabel);
         }
@@ -148,7 +149,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
 
-            instructionCommentVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionCommentVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
@@ -170,13 +171,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
 
-            instructionCommentVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionCommentVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(2));
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
 
         }
 

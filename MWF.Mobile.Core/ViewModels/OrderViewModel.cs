@@ -39,9 +39,13 @@ namespace MWF.Mobile.Core.ViewModels
             _mainService = mainService;
         }
 
-        public void Init(NavItem<Item> item)
+        public void Init(NavData<Item> navData)
         {
-            GetMobileDataFromRepository(item.ParentID, item.ID);
+            navData.Reinflate();
+            _order = navData.Data;
+            _mobileData = navData.OtherData["MobileData"] as MobileData;
+            _mainService.CurrentMobileData = _mobileData;
+
         }
 
 
@@ -89,8 +93,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void ReviseQuantity(Item order)
         {
-            NavItem<Item> navItem = new NavItem<Item>() { ID = _order.ID, ParentID = _mobileData.ID };
-            _navigationService.MoveToNext(navItem);
+            NavData<Item> navData = new NavData<Item>() { Data = _order};
+            navData.OtherData["MobileData"] = _mobileData;
+            _navigationService.MoveToNext(navData);
         }
 
         private void GetMobileDataFromRepository(Guid parentID, Guid childID)
@@ -117,7 +122,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var task = new Task<bool>(() => false);
 
-            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            NavData<MobileData> navItem = new NavData<MobileData>() { Data = _mobileData};
             _navigationService.GoBack(navItem);
 
             return task;

@@ -44,9 +44,12 @@ namespace MWF.Mobile.Core.ViewModels
             _dataChunkService = dataChunkService;
         }
 
-        public void Init(NavItem<Item> item)
+        public void Init(NavData<Item> navData)
         {
-            GetMobileDataFromRepository(item.ParentID, item.ID);
+            navData.Reinflate();
+            _mobileData = navData.OtherData["MobileData"] as MobileData;
+            _order = navData.Data;
+            OrderQuantity = _order.Quantity;
         }
 
         #endregion Construction
@@ -100,7 +103,8 @@ namespace MWF.Mobile.Core.ViewModels
             //This value gets updated in HE.
             _dataChunkService.SendDataChunk(_mainService.CurrentMobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle, true);
 
-            NavItem<Item> navItem = new NavItem<Item>() { ID = _order.ID, ParentID = _mobileData.ID };
+            NavData<Item> navItem = new NavData<Item>() { Data = _order};
+            navItem.OtherData["MobileData"] = _mobileData;
             _navigationService.MoveToNext(navItem);
 
         }

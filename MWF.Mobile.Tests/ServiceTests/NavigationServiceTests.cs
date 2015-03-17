@@ -110,18 +110,21 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            bool testBool = false;
+            Object myObj = null;
+            Driver driver = _fixture.Create<Driver>();
+
+            NavData<Driver> navData = new NavData<Driver> { Data = driver }; 
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertCustomNavAction<ActivityViewModel, FragmentViewModel1>( (a) => testBool = (bool) a );
+            service.InsertCustomNavAction<ActivityViewModel, FragmentViewModel1>( (a) =>  myObj = a);
 
             Assert.True(service.NavActionExists<ActivityViewModel, FragmentViewModel1>());
 
-            Action<Object> navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
+            Action<NavData> navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
 
-            navAction.Invoke(true);
+            navAction.Invoke(navData);
 
-            Assert.True(testBool);
+            Assert.Equal(navData, myObj);
 
         }
 
@@ -146,18 +149,21 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            bool testBool = false;
+            Object myObj = null;
+            Driver driver = _fixture.Create<Driver>();
+
+            NavData<Driver> navData = new NavData<Driver> { Data = driver }; 
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertCustomBackNavAction<ActivityViewModel, FragmentViewModel1>((a) => testBool = (bool) a);
+            service.InsertCustomBackNavAction<ActivityViewModel, FragmentViewModel1>((a) => myObj = a);
 
             Assert.True(service.BackNavActionExists<ActivityViewModel, FragmentViewModel1>());
 
-            Action<Object> navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
+            Action<NavData> navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
 
-            navAction.Invoke(true);
+            navAction.Invoke(navData);
 
-            Assert.True(testBool);
+            Assert.Equal(navData, myObj);         
 
         }
 
@@ -182,7 +188,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
             service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
 
-            Action<Object> navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
+            Action<NavData> navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
 
             Assert.NotNull(navAction);
 
@@ -206,7 +212,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Specify that from StartUp/APsscode view model we should navigate to FragmentViewModel1
             service.InsertBackNavAction<ActivityViewModel, FragmentViewModel2>(typeof(FragmentViewModel1));
 
-            Action<Object> navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel2));
+            Action<NavData> navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel2));
 
             Assert.NotNull(navAction);
 
@@ -231,7 +237,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
             service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
 
-            Action<Object> navAction = service.GetNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
+            Action<NavData> navAction = service.GetNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
 
             Assert.NotNull(navAction);
 
@@ -267,7 +273,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            Action<Object> navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
+            Action<NavData> navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
 
             Assert.Null(navAction);
 
@@ -298,7 +304,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_MoveToNext_WithParameters()
+        public void NavigationService_MoveToNext_WithNavData()
         {
             base.ClearAll();
 
@@ -307,23 +313,40 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
             var service = _fixture.Create<NavigationService>();
+            Ioc.RegisterSingleton<INavigationService>(service);
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
             service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
 
             //Create an object to pass through as a parameter 
-            NavItem<Driver> parametersObjectIn = new NavItem<Driver> { ID = Guid.NewGuid() };
-            service.MoveToNext(parametersObjectIn);
+            Driver driver = _fixture.Create<Driver>();
+            Vehicle vehicle = _fixture.Create<Vehicle>();
+            NavData<Driver> navData = new NavData<Driver> { Data = driver };
+            navData.OtherData["vehicle"] = vehicle;
+
+            service.MoveToNext(navData);
 
             //Check that the startup the instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(FragmentViewModel2), request.ViewModelType);
 
-            // check that the supplied parameters were passed through correctly
+            // check that the nav item guid was passed through correctly
             var parametersObjectOut = request.ParameterValues.First();
-            Assert.Equal("ID", parametersObjectOut.Key);
-            Assert.Equal(parametersObjectIn.ID.ToString(), parametersObjectOut.Value);
+            Assert.Equal("NavGUID", parametersObjectOut.Key);
+            Assert.Equal(navData.NavGUID.ToString(), parametersObjectOut.Value);
+
+            // check that the nav item can be "re-inflated" by the nav service
+
+            //clear down the nav data
+            navData.OtherData = null;
+            navData.Data = null;
+            navData.Reinflate();
+
+            Assert.Equal(driver, navData.Data);
+            Assert.Equal(vehicle, navData.OtherData["vehicle"]);
+
+
 
         }
 
@@ -724,18 +747,19 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             //Create a nav item for a mobile data model
-            NavItem<MobileData> parametersObjectIn = new NavItem<MobileData> { ID = _mobileData.ID };
-            service.MoveToNext(parametersObjectIn);
+            NavData<MobileData> navData = new NavData<MobileData> { Data = _mobileData };
+            service.MoveToNext(navData);
 
             //Check that the startup the instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(InstructionViewModel), request.ViewModelType);
 
-            // chck that the supplied parameters were passed through correctly
+            // check that the supplied parameters were passed through correctly
             var parametersObjectOut = request.ParameterValues.First();
-            Assert.Equal("ID", parametersObjectOut.Key);
-            Assert.Equal(parametersObjectIn.ID.ToString(), parametersObjectOut.Value);
+
+            Assert.Equal("NavGUID", parametersObjectOut.Key);
+            Assert.Equal(navData.NavGUID.ToString(), parametersObjectOut.Value);
 
         }
 
@@ -754,7 +778,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // nav item is an item (i.e. an order) indicating user has clicked on an order from the order list
-            var navItemMock = Mock.Of<NavItem<Item>>();
+            var navItemMock = Mock.Of<NavData<Item>>();
 
             // Move to the next view model
             service.MoveToNext(navItemMock);
@@ -779,7 +803,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MWF.Mobile.Core.Models.Instruction.Trailer>>();
+            var navItemMock = Mock.Of<NavData<MWF.Mobile.Core.Models.Instruction.Trailer>>();
 
             // Move to the next view model
             service.MoveToNext(navItemMock);
@@ -804,7 +828,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navItemMock = Mock.Of<NavData<MobileData>>();
 
             // Move to the next view model
             service.MoveToNext(navItemMock);
@@ -830,7 +854,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // nav item is an item (i.e. an order) indicating user has clicked on an order from the order list
-            var navItemMock = Mock.Of<NavItem<Item>>();
+            var navItemMock = Mock.Of<NavData<Item>>();
 
             // Move to the next view model
             service.MoveToNext(navItemMock);
@@ -852,14 +876,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, false, false, null);
+            var mobileData =_fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData};
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -878,14 +902,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData}; 
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -904,14 +928,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -930,14 +954,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -956,14 +980,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, InstructionProgress.NotStarted);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MWF.Mobile.Core.Models.Instruction.Trailer>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -982,14 +1006,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, null);
+            var mobileData= _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1008,14 +1032,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1034,14 +1058,13 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
-
+            var navData = new NavData<MobileData>() { Data = mobileData };
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1060,14 +1083,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionCommentViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, null);
+            var mobileData =  _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1086,14 +1109,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionCommentViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1112,14 +1135,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, true, false, false, null);
+            var mobileData =  _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, true, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1138,14 +1161,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1164,14 +1187,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, true, true, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, true, true, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1190,14 +1213,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1216,14 +1239,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionCommentViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, true, true, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, true, true, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1242,14 +1265,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionCommentViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1262,21 +1285,23 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            // presenter will report the current activity view model as MainView, current fragment model as an order view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<OrderViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, null);
+
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
-            //Check that the trailer list view model was navigated to
+            //Check that the Revise Quantity screen was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(ReviseQuantityViewModel), request.ViewModelType);
@@ -1287,22 +1312,22 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            // presenter will report the current activity view model as MainView, current fragment model as an order view view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<OrderViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, false, false, MWF.Mobile.Core.Enums.InstructionProgress.Driving);
+            var mobileData =_fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, false, false, MWF.Mobile.Core.Enums.InstructionProgress.Driving);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBack(navItemMock);
+            service.GoBack(navData);
 
-            //Check that the trailer list view model was navigated to
+            //Check that the Instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(InstructionViewModel), request.ViewModelType);
@@ -1319,14 +1344,14 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<OrderViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, false, false, MWF.Mobile.Core.Enums.InstructionProgress.OnSite);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, false, false, MWF.Mobile.Core.Enums.InstructionProgress.OnSite);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBack(navItemMock);
+            service.GoBack(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1348,10 +1373,10 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.GoBack(navItemMock);
+            service.GoBack(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1396,14 +1421,14 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<IUserInteraction, bool>(false);
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, null);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1423,17 +1448,12 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            var mobileDataRepositoryMock = _fixture.InjectNewMock<IMobileDataRepository>();
-            mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns((MobileData)null);
-
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
-
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1453,14 +1473,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.NotStarted);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.NotStarted);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1480,14 +1500,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1514,10 +1534,10 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.GoBack(navItemMock);
+            service.GoBack(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1537,14 +1557,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.NotStarted);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.NotStarted);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBack(navItemMock);
+            service.GoBack(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1564,16 +1584,15 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBack(navItemMock);
+            service.GoBack(navData);
 
-            //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(InstructionOnSiteViewModel), request.ViewModelType);
@@ -1591,17 +1610,13 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            var mobileDataRepositoryMock = _fixture.InjectNewMock<IMobileDataRepository>();
-            mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns((MobileData)null);
-
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.GoBack(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1625,10 +1640,10 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = _mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.GoBack(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1648,14 +1663,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.GoBack(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1675,17 +1690,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            var mobileDataRepositoryMock = _fixture.InjectNewMock<IMobileDataRepository>();
-            mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns((MobileData)null);
 
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.GoBack(navItemMock);
+            service.GoBack(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1705,14 +1717,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.NotStarted);
+            var mobileData =_fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.NotStarted);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBack(navItemMock);
+            service.GoBack(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1732,14 +1744,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
+            var mobileData =_fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavItem<MobileData>>();
+            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBack(navItemMock);
+            service.MoveToNext(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1766,7 +1778,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             //Create a nav item for a mobile data model
-            NavItem<MobileData> parametersObjectIn = new NavItem<MobileData> { ID = _mobileData.ID };
+            NavData<MobileData> parametersObjectIn = new NavData<MobileData> { Data = _mobileData };
             service.MoveToNext(parametersObjectIn);
 
             //Check that the startup the instruction view model was navigated to
@@ -1774,10 +1786,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(InstructionTrunkProceedViewModel), request.ViewModelType);
 
-            // check that the supplied parameters were passed through correctly
-            var parametersObjectOut = request.ParameterValues.First();
-            Assert.Equal("ID", parametersObjectOut.Key);
-            Assert.Equal(parametersObjectIn.ID.ToString(), parametersObjectOut.Value);
 
         }
 
@@ -1800,7 +1808,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             //Create a nav item for a mobile data model
-            NavItem<MobileData> parametersObjectIn = new NavItem<MobileData> { ID = _mobileData.ID };
+            NavData<MobileData> parametersObjectIn = new NavData<MobileData> { Data = _mobileData };
             service.MoveToNext(parametersObjectIn);
 
             //Check that the startup the instruction view model was navigated to
@@ -1808,10 +1816,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(InstructionTrunkProceedViewModel), request.ViewModelType);
 
-            // check that the supplied parameters were passed through correctly
-            var parametersObjectOut = request.ParameterValues.First();
-            Assert.Equal("ID", parametersObjectOut.Key);
-            Assert.Equal(parametersObjectIn.ID.ToString(), parametersObjectOut.Value);
 
         }
 
@@ -1833,7 +1837,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             //Create a nav item for a mobile data model
-            NavItem<MobileData> parametersObjectIn = new NavItem<MobileData> { ID = _mobileData.ID };
+            NavData<MobileData> parametersObjectIn = new NavData<MobileData> { Data = _mobileData };
             service.MoveToNext(parametersObjectIn);
 
             //Check that the startup the instruction view model was navigated to

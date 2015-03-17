@@ -26,6 +26,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
+        private NavData _navData;
         private IMainService _mainService;
 
 
@@ -40,9 +41,13 @@ namespace MWF.Mobile.Core.ViewModels
             _mainService = mainService;
         }
 
-        public void Init(NavItem<MobileData> item)
+        public void Init(NavData<MobileData> navData)
         {
-            GetMobileDataFromRepository(item.ID);
+            navData.Reinflate();
+            _navData = navData;
+            _mobileData = navData.Data;
+            _orderList = new ObservableCollection<Item>(_mobileData.Order.Items);
+            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion
@@ -97,17 +102,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AdvanceInstructionOnSite()
         {
-            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
-            _navigationService.MoveToNext(navItem);
+            _navigationService.MoveToNext(_navData);
         }
 
         private void ShowOrder(Item order)
         {
-            NavItem<Item> navItem = new NavItem<Item>() { ID = order.ID, ParentID = _mobileData.ID };
-            _navigationService.MoveToNext(navItem);
+            NavData<Item> navData = new NavData<Item>() { Data = order};
+            navData.OtherData["MobileData"] = _mobileData;
+            _navigationService.MoveToNext(navData);
         }
 
-        private void GetMobileDataFromRepository(Guid ID)
+        private void RefreshPage(Guid ID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
             _orderList = new ObservableCollection<Item>(_mobileData.Order.Items);
@@ -132,7 +137,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var task = new Task<bool>(() => false);
 
-            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            NavData<MobileData> navItem = new NavData<MobileData>() { Data = _mobileData };
             _navigationService.GoBack(navItem);
 
             return task;
@@ -146,7 +151,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (instructionID == _mainService.CurrentMobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been Updated", "OK");
                 else
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
             }

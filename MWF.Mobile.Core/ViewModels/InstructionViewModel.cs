@@ -28,6 +28,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IDataChunkService _dataChunkService;
 
         private MobileData _mobileData;
+        private NavData<MobileData> _navData;
         private MvxCommand _progressInstructionCommand;
         private MvxCommand<Item> _showOrderCommand;
         private MvxCommand _editTrailerCommand;
@@ -48,9 +49,12 @@ namespace MWF.Mobile.Core.ViewModels
             _dataChunkService = dataChunkService;
         }
 
-        public void Init(NavItem<MobileData> item)
+        public void Init(NavData<MobileData> navData)
         {
-            GetMobileDataFromRepository(item.ID);
+            navData.Reinflate();
+            _navData = navData;
+            _mobileData = _navData.Data;
+            _mainService.CurrentMobileData = _mobileData;
             _navigationService.OnManifestPage = false;
         }
 
@@ -165,8 +169,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void EditTrailer()
         {
-            NavItem<Trailer> navItem = new NavItem<Trailer>() { ID = _mobileData.ID };
-            _navigationService.MoveToNext(navItem);
+            _navigationService.MoveToNext(_navData);
         }
 
         private void ProgressInstruction()
@@ -175,7 +178,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
             {
-                var navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+                var navItem = new NavData<MobileData>() { Data = _mobileData };
                 _navigationService.MoveToNext(navItem);
             }
         }
@@ -199,7 +202,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void ShowOrder(Item order)
         {
-            NavItem<Item> navItem = new NavItem<Item>() { ID = order.ID, ParentID = _mobileData.ID };
+            NavData<Item> navItem = new NavData<Item>() { Data = order };
+            navItem.OtherData["MobileData"] = _mobileData;
             _navigationService.MoveToNext(navItem);
         }
 

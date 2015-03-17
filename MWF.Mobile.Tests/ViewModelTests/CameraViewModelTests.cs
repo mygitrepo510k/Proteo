@@ -116,7 +116,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             //// Invoke the done command
             cameraVM.DoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavItem<MobileData>>()), Times.Once);
+            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Once);
             _mockImageUploadService.Verify(mis => mis.SendPhotoAndCommentAsync(It.IsAny<string>(), It.IsAny<List<Image>>(), It.IsAny<Driver>(), It.IsAny<bool>(), It.IsAny<MobileData>()), Times.Once);
 
         }

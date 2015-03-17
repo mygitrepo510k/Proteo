@@ -57,6 +57,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
             _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
+            Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
 
         }
 
@@ -71,7 +72,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal(_mobileData.Order.Type.ToString(), instructionVM.FragmentTitle);
 
@@ -84,7 +85,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal(_mobileData.Order.RouteTitle, instructionVM.RunID);
 
@@ -97,7 +98,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal(_mobileData.Order.Arrive.ToStringIgnoreDefaultDate(), instructionVM.ArriveDateTime);
 
@@ -112,7 +113,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal(string.Empty, instructionVM.ArriveDateTime);
 
@@ -125,7 +126,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal(_mobileData.Order.Depart.ToStringIgnoreDefaultDate(), instructionVM.DepartDateTime);
 
@@ -140,7 +141,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal(string.Empty, instructionVM.DepartDateTime);
 
@@ -155,7 +156,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal(_mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode, instructionVM.Address);
 
@@ -170,7 +171,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.ProgressState = Core.Enums.InstructionProgress.NotStarted;
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Drive", instructionVM.ProgressButtonText);
 
@@ -191,7 +192,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.ProgressState = Core.Enums.InstructionProgress.Driving;
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("On Site", instructionVM.ProgressButtonText);
 
@@ -212,7 +213,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.ProgressState = Core.Enums.InstructionProgress.OnSite;
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("On Site", instructionVM.ProgressButtonText);
 
@@ -222,7 +223,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.True(_mobileData.ProgressState == Core.Enums.InstructionProgress.OnSite);
 
             // Should have told navigation service to move on
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavItem<MobileData>>(ni => ni.ID == _mobileData.ID)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(ni => ni.Data == _mobileData)), Times.Once);
 
         }
 
@@ -233,14 +234,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Item order = _mobileData.Order.Items[0];
 
             instructionVM.ShowOrderCommand.Execute(order);
 
             // Should have told navigation service to move on
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavItem<Item>>(ni => ni.ID == order.ID && ni.ParentID == _mobileData.ID)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<Item>>(ni => ni.Data == order && ni.OtherData["MobileData"] == _mobileData)), Times.Once);
 
 
         }
@@ -255,7 +256,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.False(instructionVM.ChangeTrailerAllowed);
 
@@ -272,7 +273,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.True(instructionVM.ChangeTrailerAllowed);
 
@@ -289,7 +290,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.False(instructionVM.ChangeTrailerAllowed);
 
@@ -306,7 +307,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             instructionVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
@@ -328,7 +329,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavItem<MobileData>() { ID = _mobileData.ID });
+            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             _mobileData.GroupTitle = "UpdateTitle";
 
@@ -336,7 +337,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(2));
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
 
         }
         #endregion Test

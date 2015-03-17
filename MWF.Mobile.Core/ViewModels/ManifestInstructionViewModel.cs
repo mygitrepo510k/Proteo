@@ -70,7 +70,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void SelectInstruction()
         {
-            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            NavData<MobileData> navItem = new NavData<MobileData>() { Data = _mobileData };
             _navigationService.MoveToNext(navItem);
         }
     }

@@ -39,9 +39,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        public void Init(NavItem<MobileData> item)
+        public void Init(NavData<MobileData> navData)
         {
-            GetMobileDataFromRepository(item.ID);
+            navData.Reinflate();
+            _mobileData = navData.Data;
+            _mainService.CurrentMobileData = _mobileData;
         }
 
 
@@ -134,12 +136,12 @@ namespace MWF.Mobile.Core.ViewModels
 
             _mainService.CurrentDataChunkActivity.Signature = new Models.Signature { Title = CustomerName, EncodedImage = CustomerSignatureEncodedImage };
 
-            NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
+            NavData<MobileData> navItem = new NavData<MobileData>() { Data = _mobileData };
             _navigationService.MoveToNext(navItem);
 
         }
 
-        private void GetMobileDataFromRepository(Guid ID)
+        private void RefreshPage(Guid ID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
             RaiseAllPropertiesChanged();
@@ -164,7 +166,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (instructionID == _mainService.CurrentMobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been Updated", "OK");
                 else
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
             }

@@ -252,7 +252,7 @@
     <Compile Include="ViewModels\InstructionCommentViewModel.cs" />
     <Compile Include="ViewModels\InstructionTrailerViewModel.cs" />
     <Compile Include="ViewModels\InstructionViewModel.cs" />
-    <Compile Include="ViewModels\Navigation\NavItem.cs" />
+    <Compile Include="ViewModels\Navigation\NavData.cs" />
     <Compile Include="ViewModels\ManifestInstructionViewModel.cs" />
     <Compile Include="ViewModels\ManifestSectionViewModel.cs" />
     <Compile Include="ViewModels\Navigation\IViewModelNavItem.cs" />

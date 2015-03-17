@@ -240,7 +240,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Verify(mui => mui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavItem<MobileData>>(ni => ni.ID == Guid.Empty)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(ni => ni.Data == null)), Times.Once);
         }
 
         [Fact]

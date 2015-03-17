@@ -27,10 +27,11 @@ namespace MWF.Mobile.Core.Services
 
         #region Private Members
 
-        private Dictionary<Tuple<Type, Type>, Action<Object>> _forwardNavActionDictionary;
-        private Dictionary<Tuple<Type, Type>, Action<Object>> _backwardNavActionDictionary;
-        private NavItem<MobileData> _mobileDataNavItem;
-        private MobileData _mobileData;
+        private Dictionary<Tuple<Type, Type>, Action<NavData>> _forwardNavActionDictionary;
+        private Dictionary<Tuple<Type, Type>, Action<NavData>> _backwardNavActionDictionary;
+        private Dictionary<Guid, Tuple<Object, Dictionary<string, Object>>> _navDataDictionary;
+        //private NavData<MobileData> _mobileDataNavItem;
+        //private MobileData _mobileData;
 
         private readonly IGatewayPollingService _gatewayPollingService;
         private IMainService _mainService;
@@ -53,8 +54,9 @@ namespace MWF.Mobile.Core.Services
             IMainService mainService,
             IDataChunkService dataChunkService)
         {
-            _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
-            _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<Object>>();
+            _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<NavData>>();
+            _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<NavData>>();
+            _navDataDictionary = new Dictionary<Guid, Tuple<object, Dictionary<string, object>>>();
             _presenter = presenter;
 
             _mainService = mainService;
@@ -84,7 +86,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public void InsertCustomNavAction<T1, T2>(Action<Object> action)
+        public void InsertCustomNavAction<T1, T2>(Action<NavData> action)
             where T1 : BaseActivityViewModel
             where T2 : BaseFragmentViewModel
         {
@@ -104,7 +106,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public void InsertCustomBackNavAction<T1, T2>(Action<Object> action)
+        public void InsertCustomBackNavAction<T1, T2>(Action<NavData> action)
             where T1 : BaseActivityViewModel
             where T2 : BaseFragmentViewModel
         {
@@ -140,7 +142,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public Action<Object> GetNavAction<T1, T2>()
+        public Action<NavData> GetNavAction<T1, T2>()
             where T1 : BaseActivityViewModel
             where T2 : BaseFragmentViewModel
         {
@@ -149,7 +151,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public Action<Object> GetNavAction(Type activityType, Type fragmentType)
+        public Action<NavData> GetNavAction(Type activityType, Type fragmentType)
         {
             if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
 
@@ -158,7 +160,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public Action<Object> GetBackNavAction(Type activityType, Type fragmentType)
+        public Action<NavData> GetBackNavAction(Type activityType, Type fragmentType)
         {
             if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
 
@@ -176,7 +178,7 @@ namespace MWF.Mobile.Core.Services
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action<Object> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
+            Action<NavData> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownNavigationMappingException(currentActivityType, currentFragmentType);
 
@@ -184,19 +186,22 @@ namespace MWF.Mobile.Core.Services
 
         }
 
-        public void MoveToNext(Object parameters)
+        public void MoveToNext(NavData navData)
         {
 
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action<Object> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
+            Action<NavData> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownNavigationMappingException(currentActivityType, currentFragmentType);
 
-            navAction.Invoke(parameters);
+            AddNavDataToDictionary(navData);
+
+            navAction.Invoke(navData);
 
         }
+
 
         public void GoBack()
         {
@@ -204,7 +209,7 @@ namespace MWF.Mobile.Core.Services
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action<Object> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
+            Action<NavData> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownBackNavigationMappingException(currentActivityType, currentFragmentType);
 
@@ -212,17 +217,20 @@ namespace MWF.Mobile.Core.Services
 
         }
 
-        public void GoBack(Object parameters)
+        public void GoBack(NavData navData)
         {
 
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action<Object> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
+            Action<NavData> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownBackNavigationMappingException(currentActivityType, currentFragmentType);
 
-            navAction.Invoke(parameters);
+
+            AddNavDataToDictionary(navData);
+
+            navAction.Invoke(navData);
 
         }
 
@@ -240,11 +248,22 @@ namespace MWF.Mobile.Core.Services
             this.ShowViewModel<ManifestViewModel>();
         }
 
-        public void Logout_Action(Object parameters)
+        public void Logout_Action(NavData navData)
         {
             // Stop the gateway polling service before we "logout" the user.
             _gatewayPollingService.StopPollingTimer();
-            MoveTo(typeof(StartupViewModel), parameters);
+            MoveTo(typeof(StartupViewModel),navData);
+        }
+
+        public void PopulateNavData(NavData navData)
+        {
+            var tuple = _navDataDictionary[navData.NavGUID];
+            navData.SetData(tuple.Item1);
+            navData.OtherData = tuple.Item2;
+
+            //remove the item data from the dictionary now
+            _navDataDictionary.Remove(navData.NavGUID);
+
         }
 
         public bool OnManifestPage { get; set; }
@@ -279,9 +298,9 @@ namespace MWF.Mobile.Core.Services
 
         #region Private Methods
 
-        private void MoveTo(Type type, Object parameters)
+        private void MoveTo(Type type, NavData navData)
         {
-            this.ShowViewModel(type, parameters);
+            this.ShowViewModel(type, navData);
         }
 
         private void MoveBackTo(Type type)
@@ -301,11 +320,9 @@ namespace MWF.Mobile.Core.Services
             return Tuple.Create<Type, Type>(activityType, fragmentType);
         }
 
-
-
-        private Action<Object> GetNavActionWithKey(Dictionary<Tuple<Type, Type>, Action<Object>> dictionary, Tuple<Type, Type> key)
+        private Action<NavData> GetNavActionWithKey(Dictionary<Tuple<Type, Type>, Action<NavData>> dictionary, Tuple<Type, Type> key)
         {
-            Action<Object> action = null;
+            Action<NavData> action = null;
             dictionary.TryGetValue(key, out action);
             return action;
         }
@@ -319,7 +336,7 @@ namespace MWF.Mobile.Core.Services
             return typeof(MvxViewModel).IsAssignableFrom(destType);
         }
 
-        private async Task<bool> ConfirmCommentAccess(Object parameters)
+        private async Task<bool> ConfirmCommentAccess(NavData navData)
         {
             bool advanceToCommentScreen = false;
 
@@ -328,10 +345,26 @@ namespace MWF.Mobile.Core.Services
             if (isConfirmed)
             {
                 advanceToCommentScreen = true;
-                this.ShowViewModel<InstructionCommentViewModel>(_mobileDataNavItem);
+                this.ShowViewModel<InstructionCommentViewModel>(navData);
             }
 
             return advanceToCommentScreen;
+        }
+
+        /// <summary>
+        /// Adds navigation data object to our dictionary so it can be retreived by a view model after a navigation action has completed
+        /// MVVM cross only allows passing of simple objects via serialization. Navigation improves this by having MVVM Cross pass a GUID
+        /// linked to the full objects that can be retrieved after the navigated to ViewModel is shown
+        /// a 
+        /// </summary>
+        /// <param name="navData"></param>
+        private void AddNavDataToDictionary(NavData navData)
+        {
+            navData.NavGUID = Guid.NewGuid();
+
+            var tuple = Tuple.Create<object, Dictionary<string, object>>(navData.GetData(), navData.OtherData);
+            _navDataDictionary.Add(navData.NavGUID, tuple);
+            
         }
 
         /// <summary>
@@ -351,11 +384,6 @@ namespace MWF.Mobile.Core.Services
             }, "Complete Instruction", "Confirm", "Cancel");
         }
 
-        private void GetMobileDataContent(Object parameters, out NavItem<MobileData> navItem, out MobileData mobileDataContent)
-        {
-            navItem = (parameters as NavItem<MobileData>);
-            mobileDataContent = _repositories.MobileDataRepository.GetByID(navItem.ID);
-        }
 
         private void DriverLogIn()
         {
@@ -406,11 +434,11 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, InstructionTrunkProceedViewModel>(InstructionTrunkProceed_CustomAction);
 
             // Side bar Activity
-            InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustonAction);
-            InsertCustomBackNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustonAction);
+            InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustomAction);
 
-            InsertCustomNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustonAction);
-            InsertCustomBackNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustonAction);
+            InsertCustomNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustomAction);
 
             InsertCustomNavAction<MainViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);        //to odometer, signature screen or main activity (manifest)
             InsertNavAction<MainViewModel, OdometerViewModel>(typeof(SafetyCheckSignatureViewModel));
@@ -431,7 +459,7 @@ namespace MWF.Mobile.Core.Services
         /// Safety Check screen goes to main activity (manifest) if there are no profiles
         /// or odometer screen if odometer reading is required, safety check signature screen otherwise
         /// </summary>
-        public void SafetyCheck_CustomAction(Object parameters)
+        public void SafetyCheck_CustomAction(NavData navData)
         {
 
             if (VehicleSafetyProfile == null && TrailerSafetyProfile == null)
@@ -455,12 +483,12 @@ namespace MWF.Mobile.Core.Services
         /// Signature screen goes back to driver pass code screen if we have any safety check failures
         /// and to main acticity (manifest) otherwise
         /// </summary>
-        public void Signature_CustomAction_Login(Object parameters)
+        public void Signature_CustomAction_Login(NavData navData)
         {
 
             if (SafetyCheckStatus == Enums.SafetyCheckStatus.Failed)
             {
-                MoveTo(typeof(StartupViewModel), parameters);
+                MoveTo(typeof(StartupViewModel), navData);
             }
             else
             {
@@ -476,17 +504,17 @@ namespace MWF.Mobile.Core.Services
         /// Manifest screen goes back to to instruction screen if we get a mobile data nav item
         /// and to main acticity (manifest) otherwise
         /// </summary>
-        public void Manifest_CustomAction(Object parameters)
+        public void Manifest_CustomAction(NavData navData)
         {
 
-            if (parameters is NavItem<MobileData>)
+            if (navData is NavData<MobileData>)
             {
-                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                var mobileNavData = navData as NavData<MobileData>;
 
-                if (_mobileData.Order.Type == Enums.InstructionType.Collect || _mobileData.Order.Type == Enums.InstructionType.Deliver)
-                    this.ShowViewModel<InstructionViewModel>(parameters as NavItem<MobileData>);
-                else if (_mobileData.Order.Type == Enums.InstructionType.TrunkTo || _mobileData.Order.Type == Enums.InstructionType.ProceedFrom)
-                    this.ShowViewModel<InstructionTrunkProceedViewModel>(parameters);
+                if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect || mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)
+                    this.ShowViewModel<InstructionViewModel>(mobileNavData);
+                else if (mobileNavData.Data.Order.Type == Enums.InstructionType.TrunkTo || mobileNavData.Data.Order.Type == Enums.InstructionType.ProceedFrom)
+                    this.ShowViewModel<InstructionTrunkProceedViewModel>(mobileNavData);
             }
 
         }
@@ -497,24 +525,23 @@ namespace MWF.Mobile.Core.Services
         /// If we're getting a mobile data then move on to InstructionOnSiteViewModel
         /// </summary>
         /// <param name="parameters"></param>
-        public void Instruction_CustomAction(Object parameters)
+        public void Instruction_CustomAction(NavData navData)
         {
-            if (parameters is NavItem<Item>)
+            if (navData is NavData<Item>)
             {
-                ShowViewModel<OrderViewModel>(parameters);
+                ShowViewModel<OrderViewModel>(navData);
             }
-            else if (parameters is NavItem<Models.Instruction.Trailer>)
+            else if (navData is NavData<Models.Instruction.Trailer>)
             {
-                ShowViewModel<InstructionTrailerViewModel>(parameters);
+                ShowViewModel<InstructionTrailerViewModel>(navData);
             }
-            else if (parameters is NavItem<MobileData>)
+            else if (navData is NavData<MobileData>)
             {
-                var mobileDataNav = (NavItem<MobileData>)parameters;
-                var mobileData = _repositories.MobileDataRepository.GetByID(mobileDataNav.ID);
-                _mainService.CurrentMobileData = mobileData;
+                var mobileDataNav = (NavData<MobileData>)navData;
+                _mainService.CurrentMobileData = mobileDataNav.Data;
                 _dataChunkService.SendDataChunk(_mainService.CurrentMobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle);
 
-                ShowViewModel<InstructionOnSiteViewModel>(parameters);
+                ShowViewModel<InstructionOnSiteViewModel>(navData);
             }
         }
 
@@ -524,19 +551,19 @@ namespace MWF.Mobile.Core.Services
         /// else if trailer selection is not enabled and the bypass comment screen is enabled 
         /// and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public async void InstructionOnSite_CustomAction(Object parameters)
+        public async void InstructionOnSite_CustomAction(NavData navData)
         {
-            if (parameters is NavItem<Item>)
+            if (navData is NavData<Item>)
             {
-                ShowViewModel<OrderViewModel>(parameters);
+                ShowViewModel<OrderViewModel>(navData);
             }
-            else if (parameters is NavItem<MobileData>)
+            else if (navData is NavData<MobileData>)
             {
 
-                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                var mobileNavData = navData as NavData<MobileData>;
 
-                var additionalContent = _mobileData.Order.Additional;
-                var itemAdditionalContent = _mobileData.Order.Items.First().Additional;
+                var additionalContent = mobileNavData.Data.Order.Additional;
+                var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
                 // Debug Code
                 //additionalContent.IsTrailerConfirmationEnabled = false;
@@ -545,29 +572,29 @@ namespace MWF.Mobile.Core.Services
                 //itemAdditionalContent.BypassCommentsScreen = true;
 
                 //Collection
-                if (_mobileData.Order.Type == Enums.InstructionType.Collect)
+                if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
                 {
                     if (additionalContent.IsTrailerConfirmationEnabled)
                     {
-                        this.ShowViewModel<InstructionTrailerViewModel>(_mobileDataNavItem);
+                        this.ShowViewModel<InstructionTrailerViewModel>(mobileNavData);
                         return;
                     }
                 }
 
                 if (!itemAdditionalContent.BypassCommentsScreen)
                 {
-                    bool hasAdvanced = await ConfirmCommentAccess(parameters);
+                    bool hasAdvanced = await ConfirmCommentAccess(mobileNavData);
                     if (hasAdvanced) return;
                 }
 
-                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && _mobileData.Order.Type == Enums.InstructionType.Deliver) ||
-                    ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && _mobileData.Order.Type == Enums.InstructionType.Collect))
+                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
+                    ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
                 {
-                    this.ShowViewModel<InstructionSignatureViewModel>(_mobileDataNavItem);
+                    this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
                     return;
                 }
 
-                CompleteInstruction(_mobileData);
+                CompleteInstruction(mobileNavData.Data);
 
             }
         }
@@ -577,56 +604,59 @@ namespace MWF.Mobile.Core.Services
         /// Instruction trailer screen, if the bypass comment screen is not then enabled then will it redirect to comment screen.
         /// else if the bypass comment screen is enabled and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public async void InstructionTrailer_CustomAction(Object parameters)
+        public async void InstructionTrailer_CustomAction(NavData navData)
         {
-            if (parameters is NavItem<MobileData>)
+            if (navData is NavData<MobileData>)
             {
-                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                var mobileNavData = navData as NavData<MobileData>;
 
-                var additionalContent = _mobileData.Order.Additional;
-                var itemAdditionalContent = _mobileData.Order.Items.First().Additional;
+                if (mobileNavData.Data.ProgressState == Enums.InstructionProgress.NotStarted)
+                {
+                    this.ShowViewModel<InstructionViewModel>(navData);
+                    return;
+                }
+
+                var additionalContent = mobileNavData.Data.Order.Additional;
+                var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
 
                 if (!itemAdditionalContent.BypassCommentsScreen)
                 {
-                    bool hasAdvanced = await ConfirmCommentAccess(parameters);
+                    bool hasAdvanced = await ConfirmCommentAccess(mobileNavData);
                     if (hasAdvanced) return;
                 }
 
                 if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
                 {
-                    this.ShowViewModel<InstructionSignatureViewModel>(_mobileDataNavItem);
+                    this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
                     return;
                 }
 
-                CompleteInstruction(_mobileData);
+                CompleteInstruction(mobileNavData.Data);
             }
-            else if (parameters is NavItem<Models.Instruction.Trailer>)
-            {
-                this.ShowViewModel<InstructionViewModel>(parameters);
-            }
+
         }
 
         /// <summary>
         /// Instruction comment screen, if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public void InstructionComment_CustomAction(Object parameters)
+        public void InstructionComment_CustomAction(NavData navData)
         {
-            if (parameters is NavItem<MobileData>)
+            if (navData is NavData<MobileData>)
             {
-                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                var mobileNavData = navData as NavData<MobileData>;
 
-                var additionalContent = _mobileData.Order.Additional;
-                var itemAdditionalContent = _mobileData.Order.Items.First().Additional;
+                var additionalContent = mobileNavData.Data.Order.Additional;
+                var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
-                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && _mobileData.Order.Type == Enums.InstructionType.Deliver) ||
-                   ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && _mobileData.Order.Type == Enums.InstructionType.Collect))
+                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
+                   ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
                 {
-                    this.ShowViewModel<InstructionSignatureViewModel>(_mobileDataNavItem);
+                    this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
                     return;
                 }
 
-                CompleteInstruction(_mobileData);
+                CompleteInstruction(mobileNavData.Data);
 
 
             }
@@ -635,24 +665,24 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Instruction signature screen, complete instruction and go back to manifest screen
         /// </summary>
-        public void InstructionSignature_CustomAction(Object parameters)
+        public void InstructionSignature_CustomAction(NavData navData)
         {
-            if (parameters is NavItem<MobileData>)
+            if (navData is NavData<MobileData>)
             {
-                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
-                CompleteInstruction(_mobileData);
+                var mobileNavData = navData as NavData<MobileData>;
+                CompleteInstruction(mobileNavData.Data);
             }
         }
 
         /// <summary>
         /// Instruction TrunkTo/Proceed screens, completes the instruction and goes back to manifest screen
         /// </summary>
-        public void InstructionTrunkProceed_CustomAction(Object parameters)
+        public void InstructionTrunkProceed_CustomAction(NavData navData)
         {
-            if(parameters is NavItem<MobileData>)
+            if (navData is NavData<MobileData>)
             {
-                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
-                CompleteInstruction(_mobileData);
+                var mobileNavData = navData as NavData<MobileData>;
+                CompleteInstruction(mobileNavData.Data);
             }
         }
 
@@ -660,7 +690,7 @@ namespace MWF.Mobile.Core.Services
 
         #region CustomBackActions
 
-        public void Instruction_CustomBackAction(Object parameters)
+        public void Instruction_CustomBackAction(NavData navData)
         {
             this.ShowViewModel<ManifestViewModel>();
         }
@@ -669,59 +699,59 @@ namespace MWF.Mobile.Core.Services
         /// Order screen depending on the state of the instruction then it will go to the instruction on site screen if its
         /// Progress: Onsite, else it will go to the instruction screen the other times.
         /// </summary>
-        public void Order_CustomBackAction(Object parameters)
+        public void Order_CustomBackAction(NavData navData)
         {
-            if (parameters is NavItem<MobileData>)
+            if (navData is NavData<MobileData>)
             {
-                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                var navMobileData = navData as NavData<MobileData>;
 
-                switch (_mobileData.ProgressState)
+                switch (navMobileData.Data.ProgressState)
                 {
                     case MWF.Mobile.Core.Enums.InstructionProgress.NotStarted:
-                        this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                        this.ShowViewModel<InstructionViewModel>(navMobileData);
                         break;
                     case MWF.Mobile.Core.Enums.InstructionProgress.Driving:
-                        this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                        this.ShowViewModel<InstructionViewModel>(navMobileData);
                         break;
                     case MWF.Mobile.Core.Enums.InstructionProgress.OnSite:
-                        this.ShowViewModel<InstructionOnSiteViewModel>(_mobileDataNavItem);
+                        this.ShowViewModel<InstructionOnSiteViewModel>(navMobileData);
                         break;
                 }
             }
         }
 
-        public void InstructionOnSite_CustomBackAction(Object parameters)
+        public void InstructionOnSite_CustomBackAction(NavData navData)
         {
-            if (parameters is NavItem<MobileData>)
+            if (navData is NavData<MobileData>)
             {
-                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
-                this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                var navMobileData = navData as NavData<MobileData>;
+                this.ShowViewModel<InstructionViewModel>(navMobileData);
             }
         }
 
-        public void SidebarNavigation_CustonAction(Object parameters)
+        public void SidebarNavigation_CustomAction(NavData navData)
         {
-            if (parameters is NavItem<MobileData>)
+            if (navData is NavData<MobileData>)
             {
-                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                var navMobileData = navData as NavData<MobileData>;
 
-                if (_mobileData == null)
+                if (navMobileData.Data == null)
                 {
                     this.ShowViewModel<ManifestViewModel>();
                 }
                 else
                 {
 
-                    switch (_mobileData.ProgressState)
+                    switch (navMobileData.Data.ProgressState)
                     {
                         case MWF.Mobile.Core.Enums.InstructionProgress.NotStarted:
-                            this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                            this.ShowViewModel<InstructionViewModel>(navMobileData);
                             break;
                         case MWF.Mobile.Core.Enums.InstructionProgress.Driving:
-                            this.ShowViewModel<InstructionViewModel>(_mobileDataNavItem);
+                            this.ShowViewModel<InstructionViewModel>(navMobileData);
                             break;
                         case MWF.Mobile.Core.Enums.InstructionProgress.OnSite:
-                            this.ShowViewModel<InstructionOnSiteViewModel>(_mobileDataNavItem);
+                            this.ShowViewModel<InstructionOnSiteViewModel>(navMobileData);
                             break;
                     }
                 }

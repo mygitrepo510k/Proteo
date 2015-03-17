@@ -17,6 +17,6 @@ namespace MWF.Mobile.Core.Services
         Driver CurrentDriver { get; set; }
         Vehicle CurrentVehicle { get; set; }
         Models.Trailer CurrentTrailer { get; set; }
-        bool OnManifestPage { get; set; }
+
     }
 }

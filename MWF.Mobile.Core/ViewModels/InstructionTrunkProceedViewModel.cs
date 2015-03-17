@@ -41,7 +41,7 @@ namespace MWF.Mobile.Core.ViewModels
         public void Init(NavItem<MobileData> item)
         {
             GetMobileDataFromRepository(item.ID);
-            _mainService.OnManifestPage = false;
+            _navigationService.OnManifestPage = false;
         }
 
         #endregion Construction

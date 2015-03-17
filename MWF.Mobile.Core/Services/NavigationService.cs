@@ -240,6 +240,15 @@ namespace MWF.Mobile.Core.Services
             this.ShowViewModel<ManifestViewModel>();
         }
 
+        public void Logout_Action(Object parameters)
+        {
+            // Stop the gateway polling service before we "logout" the user.
+            _gatewayPollingService.StopPollingTimer();
+            MoveTo(typeof(StartupViewModel), parameters);
+        }
+
+        public bool OnManifestPage { get; set; }
+
         #endregion INavigationService
 
         #region Private Properties
@@ -372,7 +381,7 @@ namespace MWF.Mobile.Core.Services
             InsertCustomBackNavAction<StartupViewModel, PasscodeViewModel>(CloseApplication);               //Back from passcode closes app
 
             // Main Activity
-            InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomBackAction); // Back from manifest sends back to startup activity
+            InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Logout_Action); // Back from manifest sends back to startup activity
             InsertCustomNavAction<MainViewModel, ManifestViewModel>(Manifest_CustomAction);
 
             InsertCustomBackNavAction<MainViewModel, InstructionViewModel>(Instruction_CustomBackAction);
@@ -650,13 +659,6 @@ namespace MWF.Mobile.Core.Services
         #endregion Custom Mapping Actions
 
         #region CustomBackActions
-
-        public void Manifest_CustomBackAction(Object parameters)
-        {
-            // Stop the gateway polling service before we "logout" the user.
-            _gatewayPollingService.StopPollingTimer();
-            MoveTo(typeof(StartupViewModel), parameters);
-        }
 
         public void Instruction_CustomBackAction(Object parameters)
         {

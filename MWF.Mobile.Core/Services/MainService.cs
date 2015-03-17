@@ -33,8 +33,6 @@ namespace MWF.Mobile.Core.Services
         public MobileData CurrentMobileData { get; set; }
         public MobileApplicationDataChunkContentActivity CurrentDataChunkActivity { get; set; }
 
-        public bool OnManifestPage { get; set; }
-
         #endregion Public Members
 
     }

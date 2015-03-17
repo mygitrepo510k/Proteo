@@ -82,6 +82,16 @@ namespace MWF.Mobile.Core.Models.Instruction
         [XmlIgnore]
         public int LatestDataChunkSequence { get; set; }
 
+        [XmlIgnore]
+        public string MessageText 
+        {
+            get
+            {
+                return (this.Order.Addresses == null)
+                    ? string.Format("{0} ({1})", this.Order.Items[0].Description, "Message")
+                    : string.Format("{0} ({1})", this.Order.Description, "Message with Point");
+            }
+        }
 
         public override string ToString()
         {

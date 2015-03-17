@@ -42,6 +42,9 @@ namespace MWF.Mobile.Core.Repositories
 
             }
 
+            parentItems = parentItems.Where(pi =>
+                pi.Order.Type != Enums.InstructionType.OrderMessage).ToList();
+
             return parentItems;
         }
 
@@ -61,21 +64,34 @@ namespace MWF.Mobile.Core.Repositories
                 PopulateChildrenRecursive(parentItems, connection);
             }
 
+            parentItems = parentItems.Where(pi =>
+                pi.Order.Type != Enums.InstructionType.OrderMessage).ToList();
+
             return parentItems;
         }
 
-        /**
-         * TODO: Implement GetMessageWithPointInstructions
-        public IEnumerable<MobileData> GetMessageWithPointInstructions()
+
+
+
+        public IEnumerable<MobileData> GetMessages(Guid driverID)
         {
-            var parentItems = _connection
-                .Table<MobileData>()
-                .Where(m => m.Order.Type == Enums.InstructionType.MessageWithPoint).ToList();
+            List<MobileData> parentItems;
 
-            PopulateChildrenRecursive(parentItems);
+            using (var connection = _dataService.GetDBConnection())
+            {
+
+                parentItems = connection
+                    .Table<MobileData>()
+                    .Where(m =>
+                           m.DriverId == driverID).ToList();
+
+                PopulateChildrenRecursive(parentItems, connection);
+            }
+
+            parentItems = parentItems.Where(pi => 
+                pi.Order.Type == Enums.InstructionType.OrderMessage).ToList();
 
             return parentItems;
         }
-         */ 
     }
 }

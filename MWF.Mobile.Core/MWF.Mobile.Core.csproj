@@ -248,6 +248,7 @@
     <Compile Include="ViewModels\DisplaySafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\InstructionOnSiteViewModel.cs" />
     <Compile Include="ViewModels\InstructionTrunkProceedViewModel.cs" />
+    <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\InstructionSignatureViewModel.cs" />
     <Compile Include="ViewModels\InstructionCommentViewModel.cs" />

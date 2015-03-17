@@ -28,7 +28,7 @@
             local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=ProceedFrom" />
         <imageView
             android:src="@drawable/MessageWithPoint"
-            local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=MessageWithPoint" />
+            local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=OrderMessage" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="0dp"
@@ -40,6 +40,8 @@
             android:gravity="left"
             android:id="@+id/clientTitle"
             android:textSize="15dp"
+            android:singleLine="true"
+            android:ellipsize="end"
             local:MvxBind="Text PointDescripion" />
         <TextView
             android:gravity="left"

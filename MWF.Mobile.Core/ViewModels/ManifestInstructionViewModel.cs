@@ -35,12 +35,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string RunID
         {
-            get { return _mobileData.Order.RouteTitle; }        
+            get { return (InstructionType == Enums.InstructionType.OrderMessage) ? GenerateMessageTypeText() : _mobileData.Order.RouteTitle; }
         }
 
         public string PointDescripion
         {
-            get { return _mobileData.Order.Description; }
+            get { return (InstructionType == Enums.InstructionType.OrderMessage) ? GenerateMessageDescription() : _mobileData.Order.Description; }
         }
 
         public DateTime ArrivalDate
@@ -72,6 +72,22 @@ namespace MWF.Mobile.Core.ViewModels
         {
             NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
             _navigationService.MoveToNext(navItem);
+        }
+
+        private string GenerateMessageDescription()
+        {
+            if (_mobileData.Order.Addresses.Count > 0)
+                return _mobileData.Order.Description;
+            else
+                return _mobileData.Order.Items.First().Description;
+        }
+
+        private string GenerateMessageTypeText()
+        {
+            if (_mobileData.Order.Addresses.Count > 0)
+                return "Message with a Point";
+            else
+                return "Message";
         }
     }
 }

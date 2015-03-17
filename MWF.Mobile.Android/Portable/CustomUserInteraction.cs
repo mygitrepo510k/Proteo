@@ -28,6 +28,11 @@ namespace MWF.Mobile.Android.Portable
         public Vibrate Vibrate = new Vibrate();
         public Sound Sound = new Sound();
 
+        public CustomUserInteraction()
+        {
+            CurrentPopInstructions = new List<MobileData>();
+        }
+
         protected Activity CurrentActivity
         {
             get { return Mvx.Resolve<IMvxAndroidCurrentTopActivity>().Activity; }
@@ -58,15 +63,16 @@ namespace MWF.Mobile.Android.Portable
                     Sound.Play();
                 }
 
-
                 var customView = CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_InstructionNotification, null);
 
                 InstructionGroupedListObject addInstructions = new InstructionGroupedListObject();
                 InstructionGroupedListObject updateInstructions = new InstructionGroupedListObject();
                 InstructionGroupedListObject deleteInstructions = new InstructionGroupedListObject();
 
+                CurrentPopInstructions.AddRange(alteredInstructions);
+
                 //Filter the instructions into SyncStates (Added, Updated, Deleted)
-                foreach (var instruction in alteredInstructions)
+                foreach (var instruction in CurrentPopInstructions)
                 {
                     switch (instruction.SyncState)
                     {
@@ -128,7 +134,10 @@ namespace MWF.Mobile.Android.Portable
                             .SetPositiveButton(okButton, delegate
                             {
                                 if (done != null)
+                                {
+                                    CurrentPopInstructions.Clear();
                                     done();
+                                }
                             });
 
                     InstructionNotificationDialog = notificationDialog.Create();
@@ -308,7 +317,7 @@ namespace MWF.Mobile.Android.Portable
 
         #endregion
 
-
+        private List<MobileData> CurrentPopInstructions { get; set; }
 
 
     }

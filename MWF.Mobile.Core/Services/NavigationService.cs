@@ -405,6 +405,8 @@ namespace MWF.Mobile.Core.Services
 
             InsertCustomNavAction<MainViewModel, InstructionTrunkProceedViewModel>(InstructionTrunkProceed_CustomAction);
 
+            InsertCustomNavAction<MainViewModel, MessageViewModel>(Message_CustomAction);
+
             // Side bar Activity
             InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustonAction);
             InsertCustomBackNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustonAction);
@@ -487,6 +489,8 @@ namespace MWF.Mobile.Core.Services
                     this.ShowViewModel<InstructionViewModel>(parameters as NavItem<MobileData>);
                 else if (_mobileData.Order.Type == Enums.InstructionType.TrunkTo || _mobileData.Order.Type == Enums.InstructionType.ProceedFrom)
                     this.ShowViewModel<InstructionTrunkProceedViewModel>(parameters);
+                else if (_mobileData.Order.Type == Enums.InstructionType.OrderMessage)
+                    this.ShowViewModel<MessageViewModel>(parameters);
             }
 
         }
@@ -650,6 +654,18 @@ namespace MWF.Mobile.Core.Services
         public void InstructionTrunkProceed_CustomAction(Object parameters)
         {
             if(parameters is NavItem<MobileData>)
+            {
+                GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
+                CompleteInstruction(_mobileData);
+            }
+        }
+
+        /// <summary>
+        ///  Message screen, completes messages with and without points and goes back to manifest screen
+        /// </summary>
+        public void Message_CustomAction(Object parameters)
+        {
+            if (parameters is NavItem<MobileData>)
             {
                 GetMobileDataContent(parameters, out _mobileDataNavItem, out _mobileData);
                 CompleteInstruction(_mobileData);

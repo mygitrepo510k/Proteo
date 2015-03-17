@@ -12,5 +12,6 @@ namespace MWF.Mobile.Core.Repositories.Interfaces
         bool InstructionExists(Guid id);
         IEnumerable<MobileData> GetInProgressInstructions(Guid driverID);
         IEnumerable<MobileData> GetNotStartedInstructions(Guid driverID);
+        IEnumerable<MobileData> GetMessages(Guid driverID);
     }
 }

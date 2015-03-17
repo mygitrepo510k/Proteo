@@ -37,7 +37,7 @@ namespace MWF.Mobile.Core.Services
             IHttpService httpService,
             Portable.IReachability reachability,
             IRepositories repositories,
-            ILoggingService loggingService )
+            ILoggingService loggingService)
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
@@ -146,19 +146,13 @@ namespace MWF.Mobile.Core.Services
                 {
                     var submitted = true;
 
-                    try
-                    {
-                        if (await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent))
-                            _queueItemRepository.Delete(queuedItem);
-                        else
-                            //TODO: write failure to error log or report in some other way?
-                            submitted = false;
-                    }
-                    catch (Exception e)
-                    {
-                        _loggingService.LogEvent(e);
+
+                    if (await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent))
+                        _queueItemRepository.Delete(queuedItem);
+                    else
+                        //TODO: write failure to error log or report in some other way?
                         submitted = false;
-                    }
+
 
                     //TODO: should we attempt remaining items if one fails or bail out at this point?
                     if (!submitted)

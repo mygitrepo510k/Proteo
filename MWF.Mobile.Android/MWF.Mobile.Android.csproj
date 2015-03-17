@@ -212,6 +212,7 @@
     <Compile Include="Views\ExpandableListAdapter.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\BaseActivityView.cs" />
+    <Compile Include="Views\Fragments\MessageFragment.cs" />
     <Compile Include="Views\StartupView.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -324,6 +325,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_InstructionTrunkProceed.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_Message.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

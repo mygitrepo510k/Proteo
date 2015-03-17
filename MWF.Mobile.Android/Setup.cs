@@ -12,6 +12,8 @@ using MWF.Mobile.Core.Services;
 using System.Collections.Generic;
 using Android.Support;
 using Cirrious.CrossCore.IoC;
+using System;
+using Android.Runtime;
 
 namespace MWF.Mobile.Android
 {
@@ -19,9 +21,19 @@ namespace MWF.Mobile.Android
     public class Setup : MvxAndroidSetup
     {
 
-        public Setup(Context applicationContext) : base(applicationContext)
+        public Setup(Context applicationContext)
+            : base(applicationContext)
         {
         }
+
+        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Exception topLevelException = (Exception)e.ExceptionObject;
+            PublishExceptionToLog(topLevelException);
+        }
+
+     
+
 
         protected override IMvxApplication CreateApp()
         {
@@ -51,6 +63,8 @@ namespace MWF.Mobile.Android
             Mvx.RegisterSingleton<IVibrate>(() => new Portable.Vibrate());
             Mvx.RegisterSingleton<ICloseApplication>(() => new Portable.CloseApplication());
             Mvx.RegisterSingleton<ICustomUserInteraction>(() => new Portable.CustomUserInteraction());
+
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
 
         protected override System.Collections.Generic.List<System.Reflection.Assembly> ValueConverterAssemblies
@@ -78,6 +92,11 @@ namespace MWF.Mobile.Android
                 assemblies.Add(typeof(global::Android.Support.V4.Widget.DrawerLayout).Assembly);
                 return assemblies;
             }
+        }
+
+        private void PublishExceptionToLog(Exception exception)
+        {
+            Mvx.Resolve<Cirrious.MvvmCross.Plugins.Messenger.IMvxMessenger>().Publish(new MWF.Mobile.Core.Messages.TopLevelExceptionHandlerMessage(this, exception));
         }
 
     }

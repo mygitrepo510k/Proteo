@@ -1,4 +1,5 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using MWF.Mobile.Core;
@@ -49,6 +50,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockLogMessageRepo = new Mock<ILogMessageRepository>();
             _fixture.Inject<ILogMessageRepository>(_mockLogMessageRepo.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+
+            Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
 
             _mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
 

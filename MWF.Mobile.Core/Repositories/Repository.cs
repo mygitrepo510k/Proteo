@@ -358,26 +358,15 @@ namespace MWF.Mobile.Core.Repositories
 
                 List<object> queryResults;
 
-                try
+                if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
                 {
-                    if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
-                    {
-                        queryResults = connection.Query(tableMapping, query, parent.ID, childIdentifyingPropertyValue);
-                    }
-                    else
-                    {
-                        queryResults = connection.Query(tableMapping, query, parent.ID);
-                    }
-
-                   
+                    queryResults = connection.Query(tableMapping, query, parent.ID, childIdentifyingPropertyValue);
                 }
-                catch (Exception ex)
+                else
                 {
-                    
-                    throw;
+                    queryResults = connection.Query(tableMapping, query, parent.ID);
                 }
 
-                
 
                 // Create a typed generic list we can assign back to parent element
                 IList genericList = (IList) Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));

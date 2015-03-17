@@ -59,7 +59,7 @@ namespace MWF.Mobile.Core.Models.Instruction
         [JsonProperty("depart")]
         public DateTime Depart { get; set; }
 
-        [ChildRelationship(typeof(Additional), RelationshipCardinality.OneToOne)]
+        [ChildRelationship(typeof(Additional), RelationshipCardinality.OneToZeroOrOne)]
         [JsonProperty("additional")]
         public Additional Additional { get; set; }
 

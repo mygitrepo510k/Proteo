@@ -60,7 +60,7 @@ namespace MWF.Mobile.Core.Models.Instruction
         [JsonIgnore]
         public Guid OrderId { get; set; }
 
-        [ChildRelationship(typeof(ItemAdditional), RelationshipCardinality.OneToOne)]
+        [ChildRelationship(typeof(ItemAdditional), RelationshipCardinality.OneToZeroOrOne)]
         [JsonProperty("additional")]
         [XmlElement("additional")]
         public ItemAdditional Additional { get; set; }

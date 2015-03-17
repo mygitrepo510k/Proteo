@@ -184,6 +184,7 @@ namespace MWF.Mobile.Core.ViewModels
             // get instruction data models from repository and order them
             var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
             var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
+            var messageDataModels = _mobileDataRepository.GetMessages(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
 
             if (activeInstructionsDataModels.ToList().Count == 0)
             {
@@ -201,16 +202,25 @@ namespace MWF.Mobile.Core.ViewModels
                 nonActiveInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
             }
 
+            if (messageDataModels.ToList().Count == 0)
+            {
+                List<MobileData> noneShowingList = new List<MobileData>();
+                noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Messages" } });
+                IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
+                messageDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
+            }
+
 
             // Create the view models
             var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
             var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
-
+            var messageViewModels = messageDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
 
 
             // Update the observable collections in each section
             _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels.OrderBy(ivm => ivm.ArrivalDate));
             _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels.OrderBy(ivm => ivm.ArrivalDate));
+            _messageSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(messageViewModels.OrderBy(ivm => ivm.ArrivalDate));
 
             // Let the UI know the number of instructions has changed
             RaisePropertyChanged(() => InstructionsCount);

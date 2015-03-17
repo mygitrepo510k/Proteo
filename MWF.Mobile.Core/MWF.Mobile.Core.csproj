@@ -108,6 +108,7 @@
     <Compile Include="Messages\GatewayQueueTimerElapsedMessage.cs" />
     <Compile Include="Messages\GatewayPollTimerElapsedMessage.cs" />
     <Compile Include="Messages\ModalNavigationResultMessage.cs" />
+    <Compile Include="Messages\TopLevelExceptionHandlerMessage.cs" />
     <Compile Include="Models\Attributes\ChildRelationshipAttribute.cs" />
     <Compile Include="Models\Attributes\ForeignKeyAttribute.cs" />
     <Compile Include="Models\CurrentDriver.cs" />
@@ -247,6 +248,7 @@
     <Compile Include="ViewModels\DisplaySafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\InstructionOnSiteViewModel.cs" />
     <Compile Include="ViewModels\InstructionTrunkProceedViewModel.cs" />
+    <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\InstructionSignatureViewModel.cs" />
     <Compile Include="ViewModels\InstructionCommentViewModel.cs" />

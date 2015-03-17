@@ -1,6 +1,7 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.GatewayServiceRequest;
 using MWF.Mobile.Core.Portable;
@@ -23,17 +24,27 @@ namespace MWF.Mobile.Core.Services
         private readonly IDeviceInfo _deviceInfo = null;
         private readonly IGatewayService _gatewayService = null;
         private readonly IReachability _reachability = null;
+        private readonly ICloseApplication _closeApplication = null;
+        
+        private MvxSubscriptionToken _notificationToken;
+
 
         public LoggingService(
             IRepositories repositories, 
             IGatewayService gatewayService, 
             IDeviceInfo deviceInfo,
-            IReachability reachability)
+            IReachability reachability,
+            ICloseApplication closeApplication)
         {
             _loggedRepository = repositories.LogMessageRepository;
             _gatewayService = gatewayService;
             _deviceInfo = deviceInfo;
             _reachability = reachability;
+            _closeApplication = closeApplication;
+
+            _notificationToken = Mvx.Resolve<IMvxMessenger>().Subscribe<Messages.TopLevelExceptionHandlerMessage>(m =>
+                LogAndClose(m.TopLevelException)
+                );
         }
 
         public void LogEvent(Exception exception)
@@ -94,6 +105,12 @@ namespace MWF.Mobile.Core.Services
                     }
                 }
             }
+        }
+
+        private void LogAndClose(Exception ex)
+        {
+            LogEvent(ex);
+            _closeApplication.CloseApp();
         }
     }
 }

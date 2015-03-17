@@ -23,23 +23,17 @@ namespace MWF.Mobile.Core.Helpers
             //83 04 2209E7F2 2E0CB787 2 5332519500149116 409 003 8
 
             string SMPMessage = string.Empty;
-            try
-            {
-                SMPMessage = "83"; // MTC 
-                SMPMessage += ((int)this.Reason).ToString("X2"); // ReasonCode
-                SMPMessage += DateTimeToSMP(this.ReportDateTime).ToString("X8"); // Last Resp
-                SMPMessage += DateTimeToSMP(this.LastFixDateTime).ToString("X8"); // Last Pos
-                SMPMessage += string.Format("{0:X1}", (byte)Math.Min(this.Quality, 9)); // Quality
-                SMPMessage += ConvertLatLonToSMP(this.Latitude, this.Longitude); // Signs Lat Lon 
-                SMPMessage += string.Format("{0:000}", this.Heading); // Heading
-                SMPMessage += string.Format("{0:000}", this.Speed); // Speed
+
+            SMPMessage = "83"; // MTC 
+            SMPMessage += ((int)this.Reason).ToString("X2"); // ReasonCode
+            SMPMessage += DateTimeToSMP(this.ReportDateTime).ToString("X8"); // Last Resp
+            SMPMessage += DateTimeToSMP(this.LastFixDateTime).ToString("X8"); // Last Pos
+            SMPMessage += string.Format("{0:X1}", (byte)Math.Min(this.Quality, 9)); // Quality
+            SMPMessage += ConvertLatLonToSMP(this.Latitude, this.Longitude); // Signs Lat Lon 
+            SMPMessage += string.Format("{0:000}", this.Heading); // Heading
+            SMPMessage += string.Format("{0:000}", this.Speed); // Speed
 
 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
             return SMPMessage;
         }
 

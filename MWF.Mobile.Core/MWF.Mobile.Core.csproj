@@ -108,6 +108,7 @@
     <Compile Include="Messages\GatewayQueueTimerElapsedMessage.cs" />
     <Compile Include="Messages\GatewayPollTimerElapsedMessage.cs" />
     <Compile Include="Messages\ModalNavigationResultMessage.cs" />
+    <Compile Include="Messages\TopLevelExceptionHandlerMessage.cs" />
     <Compile Include="Models\Attributes\ChildRelationshipAttribute.cs" />
     <Compile Include="Models\Attributes\ForeignKeyAttribute.cs" />
     <Compile Include="Models\CurrentDriver.cs" />

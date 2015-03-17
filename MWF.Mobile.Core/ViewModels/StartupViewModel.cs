@@ -21,7 +21,6 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IGatewayService _gatewayService = null; 
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IReachability _reachableService;
-        private readonly Portable.IReachability _reachability = null;
         private readonly Portable.ICloseApplication _closeApplication = null;
         private readonly IDataService _dataService = null; 
         private readonly IRepositories _repositories = null; 
@@ -29,7 +28,6 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IStartupService _startupService = null;
         private readonly INavigationService _navigationService = null; 
         private readonly IUserInteraction _userInteraction = null;
-        private readonly ICurrentDriverRepository _currentDriver;
         private readonly IGpsService _gpsService;
         private readonly ILoggingService _loggingService = null;
         

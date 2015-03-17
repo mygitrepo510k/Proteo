@@ -11,10 +11,10 @@
     <Button
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/ButtonNoTrailer"
-        local:MvxBind="Text TrailerButtonLabel; Click NoTrailerSelectorCommand" />
+        local:MvxBind="Text TrailerButtonLabel; Click NoTrailerSelectCommand" />
     <Mvx.MvxListView
         android:layout_above="@id/ButtonNoTrailer"
         android:layout_below="@id/trailerText"
-        local:MvxBind="ItemsSource Trailers; ItemClick TrailerSelectorCommand"
+        local:MvxBind="ItemsSource Trailers; ItemClick TrailerSelectCommand"
         local:MvxItemTemplate="@layout/item_trailer" />
 </RelativeLayout>

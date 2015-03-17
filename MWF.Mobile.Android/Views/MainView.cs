@@ -35,7 +35,7 @@ namespace MWF.Mobile.Android.Views
                 { typeof(Core.ViewModels.InstructionCommentViewModel), typeof(Fragments.InstructionCommentFragment)},
                 { typeof(Core.ViewModels.InstructionOnSiteViewModel), typeof(Fragments.InstructionOnSiteFragment)},
                 { typeof(Core.ViewModels.InstructionSignatureViewModel), typeof(Fragments.InstructionSignatureFragment) },
-                { typeof(Core.ViewModels.InstructionTrailerViewModel), typeof(Fragments.InstructionTrailerFragment)},
+                { typeof(Core.ViewModels.InstructionTrailerViewModel), typeof(Fragments.TrailerListFragment)},
                 { typeof(Core.ViewModels.InstructionTrunkProceedViewModel), typeof(Fragments.InstructionTrunkProceedFragment)},
                 { typeof(Core.ViewModels.OdometerViewModel), typeof(Fragments.OdometerFragment)},
                 { typeof(Core.ViewModels.OrderViewModel), typeof(Fragments.OrderFragment)},

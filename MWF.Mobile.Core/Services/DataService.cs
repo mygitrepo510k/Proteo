@@ -98,29 +98,6 @@ namespace MWF.Mobile.Core.Services
 
         #endregion
 
-        //#region IDisposable
-
-        //public void Dispose()
-        //{
-        //    Dispose(true);
-        //    GC.SuppressFinalize(this);
-        //}
-
-        //protected virtual void Dispose(bool disposing)
-        //{
-        //    if (!disposed)
-        //    {
-        //        if (disposing)
-        //        {
-        //            _connection.Close();
-        //        }
-
-        //        disposed = true;
-        //    }
-        //}
-
-        //#endregion
-
 
     }
 

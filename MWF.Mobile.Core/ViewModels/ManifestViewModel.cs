@@ -62,6 +62,7 @@ namespace MWF.Mobile.Core.ViewModels
             _mainService.CurrentDataChunkActivity = new MobileApplicationDataChunkContentActivity();
             _mainService.CurrentDriver = _startupService.LoggedInDriver;
             _mainService.CurrentVehicle = _startupService.CurrentVehicle;
+            _mainService.CurrentTrailer = _startupService.CurrentTrailer;
 
             _initialised = true;
 

@@ -484,6 +484,7 @@ namespace MWF.Mobile.Core.Services
 
         /// <summary>
         /// Instruction screen. If we're getting an "item" (order) then show the order in question
+        /// If we're getting a trailer then show the select trailer screen
         /// If we're getting a mobile data then move on to InstructionOnSiteViewModel
         /// </summary>
         /// <param name="parameters"></param>

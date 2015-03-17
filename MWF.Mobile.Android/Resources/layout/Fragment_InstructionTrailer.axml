@@ -5,15 +5,17 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <TextView
-        android:text="Trailer Screen"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1" />
-    <Button
+        style="@style/Proteo.TextView.ListHeadingNoSections"
+        android:id="@+id/trailerText"
+        local:MvxBind="Text TrailerSelectText" />
+    <Mvx.MvxListView
+        android:layout_below="@id/trailerText"
+        local:MvxBind="ItemsSource Trailers; ItemClick TrailerSelectCommand"
+        local:MvxItemTemplate="@layout/item_trailer" />
+<!--<Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ButtonAdvanceInstructionTrailer"
         local:MvxBind="Text InstructionTrailerButtonLabel; Click SelectTrailerCommand"
-        style="@style/Proteo.Button" />
+        style="@style/Proteo.Button" />-->
 </LinearLayout>

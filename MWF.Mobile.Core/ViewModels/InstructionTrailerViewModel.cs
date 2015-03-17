@@ -11,83 +11,112 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Cirrious.MvvmCross.Plugins.Messenger;
 
 namespace MWF.Mobile.Core.ViewModels
 {
     public class InstructionTrailerViewModel
-        : BaseInstructionNotificationViewModel
+        : BaseTrailerListViewModel
     {
         #region Private Fields
 
-        private readonly INavigationService _navigationService;
-        private readonly IRepositories _repositories;
+
         private MobileData _mobileData;
-        private IEnumerable<Models.Trailer> _trailers;
-        private MvxCommand _selectTrailerCommand;
         private IMainService _mainService;
+        private object _navItem;
+
+
+        private MvxSubscriptionToken _notificationToken;
+        private IMvxMessenger _messenger;
 
 
         #endregion
 
         #region Construction
 
-        public InstructionTrailerViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
+        public InstructionTrailerViewModel(IGatewayService gatewayService,
+                                            INavigationService navigationService, 
+                                            IRepositories repositories,
+                                            IReachability reachabiity,
+                                            IToast toast,
+                                            IStartupService startUpService,
+                                            IMainService mainService) : base(gatewayService, repositories, reachabiity, toast, startUpService, navigationService )
         {
-            _navigationService = navigationService;
             _mainService = mainService;
-            _repositories = repositories;
-            Trailers = _repositories.TrailerRepository.GetAll();
 
+            _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(m =>
+                CheckInstructionNotification(m.Command, m.InstructionID)
+                );
         }
 
         public void Init(NavItem<MobileData> item)
         {
+            _navItem = item;
             GetMobileDataFromRepository(item.ID);
         }
 
         public void Init(NavItem<Models.Instruction.Trailer> item)
         {
+            _navItem = item;
             GetMobileDataFromRepository(item.ID);
         }
 
 
         #endregion
 
-        #region Public Properties
+        #region Private Properties
 
-        
-        public IEnumerable<Models.Trailer> Trailers
-        {
-            get { return _trailers; }
-            set { _trailers = value; RaisePropertyChanged(() => Trailers); }
-        }
-
-        public ICommand SelectTrailerCommand
+        protected new IMvxMessenger Messenger
         {
             get
             {
-                return (_selectTrailerCommand = _selectTrailerCommand ?? new MvxCommand(() => SelectTrailer()));
+                return (_messenger = _messenger ?? Mvx.Resolve<IMvxMessenger>());
             }
         }
 
-        public string InstructionTrailerButtonLabel { get { return "Move on"; } }
+        private bool IsInstructionInProgress
+        {
+            get { return _mobileData.ProgressState != Enums.InstructionProgress.NotStarted; }
+        }
 
         #endregion
 
-        #region Private Methods
+        #region Protected/Private Methods
 
-        private void SelectTrailer()
+        protected override void ConfirmTrailer(Models.Trailer trailer, string title, string message)
         {
-            if(_mobileData.ProgressState == Enums.InstructionProgress.NotStarted)
+
+            //This will take to the next view model with a trailer value of null.
+            Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm(message, async isConfirmed =>
             {
-                NavItem<Models.Instruction.Trailer> navItem = new NavItem<Models.Instruction.Trailer>() { ID = _mobileData.ID };
-                _navigationService.MoveToNext(navItem);
-            }
-            else if(_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
-            {
-                NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
-                _navigationService.MoveToNext(navItem);
-            }            
+                if (isConfirmed)
+                {
+                    // if a trailer has been selected it differs from the current trailer then we need to update
+                    // everything requirede to update safety profiles is readiness for the next step
+                    if (trailer!=null && trailer.ID != _mainService.CurrentTrailer.ID)
+                    {
+                          //This will take to the next view model with a trailer value of null.
+                        Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm("Perform a safety check for the new trailer now?", async isConfirmedUpdate =>
+                        {
+                            this.IsBusy = true;
+
+                            await UpdateVehicleListAsync();
+
+                            await UpdateTrailerListAsync();
+                            // Try and update safety profiles before continuing
+                            await UpdateSafetyProfilesAsync();
+
+                            this.IsBusy = false;
+                        }, "Perform Safety Check");
+                   
+                    }
+
+                    _navigationService.MoveToNext(_navItem);
+
+                }
+            }, title, "Confirm");
+
+        
         }
 
         private void GetMobileDataFromRepository(Guid ID)
@@ -97,19 +126,7 @@ namespace MWF.Mobile.Core.ViewModels
             _mainService.CurrentMobileData = _mobileData;
         }
 
-        #endregion
-
-        #region BaseFragmentViewModel Overrides
-        public override string FragmentTitle
-        {
-            get { return "Trailer"; }
-        }
-
-        #endregion
-
-        #region BaseInstructionNotificationViewModel
-
-        public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        private void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             if (instructionID == _mainService.CurrentMobileData.ID)
             {
@@ -120,7 +137,8 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        #endregion BaseInstructionNotificationViewModel
+        #endregion
+
 
     }
 }

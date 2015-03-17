@@ -28,6 +28,7 @@ namespace MWF.Mobile.Core.Services
 
         public Driver CurrentDriver { get; set; }
         public Vehicle CurrentVehicle { get; set; }
+        public Models.Trailer CurrentTrailer { get; set; }
 
         public MobileData CurrentMobileData { get; set; }
         public MobileApplicationDataChunkContentActivity CurrentDataChunkActivity { get; set; }

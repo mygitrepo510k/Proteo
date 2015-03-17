@@ -16,6 +16,7 @@ namespace MWF.Mobile.Core.Services
         MobileApplicationDataChunkContentActivity CurrentDataChunkActivity { get; set; }
         Driver CurrentDriver { get; set; }
         Vehicle CurrentVehicle { get; set; }
+        Models.Trailer CurrentTrailer { get; set; }
         bool OnManifestPage { get; set; }
     }
 }

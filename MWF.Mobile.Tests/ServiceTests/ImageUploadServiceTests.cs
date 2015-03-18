@@ -79,7 +79,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a driver uploading
         /// a photo and comment for an instruction.
         /// </summary>
-        [Fact(Skip = "This end-to-end test is fragile (calls through to HE)")]
+        [Fact]
         public async Task ImageUploadService_SendCommentAndImageAttachedToInstruction()
         {
             base.ClearAll();
@@ -108,7 +108,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a driver uploading
         /// a photo and comment (not attached to an instruction).
         /// </summary>
-        [Fact(Skip = "This end-to-end test is fragile (calls through to HE)")]
+        [Fact]
         public async Task ImageUploadService_SendCommentAndImageAttachedToNothing()
         {
             base.ClearAll();

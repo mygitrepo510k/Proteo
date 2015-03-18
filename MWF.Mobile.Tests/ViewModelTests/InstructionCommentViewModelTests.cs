@@ -45,9 +45,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
-            _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
-
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
@@ -66,7 +63,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var InstructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
 
-            InstructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
+            navData.OtherData["DataChunk"] = dataChunk;
+
+            InstructionCommentVM.Init(navData);
 
             var inputText = "This is a test comment";
 
@@ -75,11 +76,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var mockDataChunkActivity = _fixture.Create<MobileApplicationDataChunkContentActivity>();
             mockDataChunkActivity.Comment = inputText;
 
-            _mockMainService.Setup(ms => ms.CurrentDataChunkActivity).Returns(mockDataChunkActivity);
 
             InstructionCommentVM.AdvanceInstructionCommentCommand.Execute(null);
 
-            Assert.Equal(_mockMainService.Object.CurrentDataChunkActivity.Comment, InstructionCommentVM.CommentText);   
+            Assert.Equal(dataChunk.Comment, InstructionCommentVM.CommentText);   
         }
 
         [Fact]

@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -25,7 +26,9 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IMainService _mainService;
         private readonly IDataChunkService _dataChunkService;
 
+        private MobileApplicationDataChunkContentActivity _dataChunk;
         private MobileData _mobileData;
+        private NavData<Item> _navData;
         private Item _order;
 
         #endregion Private Fields
@@ -47,8 +50,10 @@ namespace MWF.Mobile.Core.ViewModels
         public void Init(NavData<Item> navData)
         {
             navData.Reinflate();
-            _mobileData = navData.OtherData["MobileData"] as MobileData;
+            _navData = navData;
             _order = navData.Data;
+            _mobileData = navData.OtherData["MobileData"] as MobileData;
+            _dataChunk = navData.OtherData["DataChunk"] as MobileApplicationDataChunkContentActivity;
             OrderQuantity = _order.Quantity;
         }
 
@@ -95,17 +100,12 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     order.Quantity = OrderQuantity;
                     order.Additional.ConfirmQuantity.Value = OrderQuantity;
-                    _mainService.CurrentDataChunkActivity.Order.Add(order);
+                    _dataChunk.Order.Add(order);
                 }
             }
-
-            _mainService.CurrentMobileData = _mobileData;
             //This value gets updated in HE.
-            _dataChunkService.SendDataChunk(_mainService.CurrentMobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle, true);
-
-            NavData<Item> navItem = new NavData<Item>() { Data = _order};
-            navItem.OtherData["MobileData"] = _mobileData;
-            _navigationService.MoveToNext(navItem);
+            _dataChunkService.SendDataChunk(_dataChunk, _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle, true);
+            _navigationService.MoveToNext(_navData);
 
         }
 
@@ -113,9 +113,9 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(parentID);
             _order = _mobileData.Order.Items.First(i => i.ID == childID);
+            _navData.OtherData["MobileData"] = _mobileData;
             OrderQuantity = _order.Quantity;
             RaiseAllPropertiesChanged();
-            _mainService.CurrentMobileData = _mobileData;  
         }
 
         #endregion Private Methods
@@ -133,7 +133,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+            if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID, _order.ID), "This instruction has been Updated", "OK");

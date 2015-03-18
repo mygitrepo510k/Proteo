@@ -46,7 +46,6 @@ namespace MWF.Mobile.Core.Services
             string comment, 
             List<Image> photos, 
             Driver currentDriver, 
-            bool onManifestPage, 
             MobileData currentMobileData)
         {
 
@@ -76,7 +75,7 @@ namespace MWF.Mobile.Core.Services
             imageUpload.DateTimeOfUpload = DateTime.Now;
 
             //If the user is not on the manifest screen they should be on an instruction page
-            if (!onManifestPage)
+            if (currentMobileData!=null)
             {
                 imageUpload.MobileApplicationID = currentMobileData.ID;
                 imageUpload.OrderIDs = string.Join(",", currentMobileData.Order.Items.Select(i => i.ItemIdFormatted));

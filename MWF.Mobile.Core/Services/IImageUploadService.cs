@@ -9,6 +9,6 @@ namespace MWF.Mobile.Core.Services
 {
     public interface IImageUploadService
     {
-        Task SendPhotoAndCommentAsync(string comment, List<Image> photos, Driver currentDriver, bool onManifestPage, MWF.Mobile.Core.Models.Instruction.MobileData currentMobileData);
+        Task SendPhotoAndCommentAsync(string comment, List<Image> photos, Driver currentDriver, MWF.Mobile.Core.Models.Instruction.MobileData currentMobileData);
     }
 }

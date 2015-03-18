@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -22,6 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
+        private NavData<MobileData> _navData;
         private IMainService _mainService;
 
 
@@ -39,8 +41,8 @@ namespace MWF.Mobile.Core.ViewModels
         public void Init(NavData<MobileData> navData)
         {
             navData.Reinflate();
+            _navData = navData;
             _mobileData = navData.Data;
-            _mainService.CurrentMobileData = _mobileData;
         }
 
 
@@ -86,17 +88,15 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AdvanceInstructionComment()
         {
-            _mainService.CurrentDataChunkActivity.Comment = CommentText;
-
-            NavData<MobileData> navItem = new NavData<MobileData>() { Data = _mobileData };
-            _navigationService.MoveToNext(navItem);
+            _navData.GetDataChunk().Comment = CommentText;
+            _navigationService.MoveToNext(_navData);
         }
 
         private void RefreshPage(Guid ID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
-            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion
@@ -113,7 +113,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+            if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been Updated", "OK");

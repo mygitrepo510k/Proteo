@@ -46,8 +46,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
-            _mockMainService.Setup(m => m.CurrentDataChunkActivity).Returns(_fixture.Create<MobileApplicationDataChunkContentActivity>());
 
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 

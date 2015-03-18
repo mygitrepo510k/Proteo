@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -38,10 +39,8 @@ namespace MWF.Mobile.Core.ViewModels
             if (_latestSafetyCheckData.VehicleSafetyCheck == null && _latestSafetyCheckData.TrailerSafetyCheck == null)
             {
 
-                NavData<MobileData> navData = new NavData<MobileData>() { Data = (_navigationService.OnManifestPage) ? null : _mainService.CurrentMobileData };
-
                 Mvx.Resolve<IUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been completed - Refer to your manual safety check.",
-                    () => { _navigationService.MoveToNext(navData); });
+                    () => { _navigationService.MoveToNext(_navigationService.CurrentNavData); });
             }
 
             if (_latestSafetyCheckData.VehicleSafetyCheck != null)
@@ -161,7 +160,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+
+            if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData.GetMobileData() != null && _navigationService.CurrentNavData.GetMobileData().ID == instructionID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Data may have changed.", null, "This instruction has been Updated", "OK");
@@ -187,8 +187,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var task = new Task<bool>(() => false);
 
-            NavData<MobileData> navItem = new NavData<MobileData>() { Data = (_navigationService.OnManifestPage) ? null : _mainService.CurrentMobileData };
-            _navigationService.GoBack(navItem);
+            _navigationService.GoBack(_navigationService.CurrentNavData);
 
             return task;
         }

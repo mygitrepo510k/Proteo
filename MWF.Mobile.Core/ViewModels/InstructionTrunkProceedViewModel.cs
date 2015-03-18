@@ -44,9 +44,6 @@ namespace MWF.Mobile.Core.ViewModels
             _navData = navData;
             navData.Reinflate();
             _mobileData = navData.Data;
-            RaiseAllPropertiesChanged();
-            _mainService.CurrentMobileData = _mobileData;
-            _navigationService.OnManifestPage = false;
         }
 
         #endregion Construction
@@ -87,8 +84,8 @@ namespace MWF.Mobile.Core.ViewModels
         private void RefreshPage(Guid ID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
-            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion Private Methods

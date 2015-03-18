@@ -14,6 +14,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
+
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -132,11 +134,14 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 images.Add(viewModel.Image);
             }
+            _navigationService.MoveToNext(_navigationService.CurrentNavData);
 
-            NavData<MobileData> navItem = new NavData<MobileData>() { Data = (_navigationService.OnManifestPage) ? null : _mainService.CurrentMobileData };
-            _navigationService.MoveToNext(navItem);
+            MobileData mobileData = null; ;
+            if (_navigationService.CurrentNavData != null) {
+                mobileData = _navigationService.CurrentNavData.GetMobileData();
+            }
 
-            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, _navigationService.OnManifestPage, _mainService.CurrentMobileData);
+            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, mobileData);
         }
 
         private void TakePicture()
@@ -196,8 +201,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var task = new Task<bool>(() => false);
 
-            NavData<MobileData> navItem = new NavData<MobileData>() { Data = (_navigationService.OnManifestPage) ? null : _mainService.CurrentMobileData };
-            _navigationService.GoBack(navItem);
+            _navigationService.GoBack(_navigationService.CurrentNavData);
 
             return task;
         }
@@ -207,7 +211,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+            if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData.GetMobileData() != null && _navigationService.CurrentNavData.GetMobileData().ID == instructionID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Data may have changed.", null, "This instruction has been Updated", "OK");

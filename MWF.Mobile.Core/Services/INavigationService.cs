@@ -14,7 +14,7 @@ namespace MWF.Mobile.Core.Services
         void GoToManifest();
         void Logout_Action(NavData navData);
         void PopulateNavData(NavData navData);
-        bool OnManifestPage { get; set; }
+        NavData CurrentNavData { get; }
 
     }
 }

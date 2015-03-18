@@ -46,8 +46,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
-            _mockMainService.Setup(m => m.CurrentDataChunkActivity).Returns(_fixture.Create<MobileApplicationDataChunkContentActivity>());
 
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
@@ -71,6 +69,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
             navData.OtherData["MobileData"] = _mobileData;
+            navData.OtherData["DataChunk"] = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
             reviseQuantityVM.Init(navData);
 
@@ -95,6 +94,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
             navData.OtherData["MobileData"] = _mobileData;
+            navData.OtherData["DataChunk"] = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
             reviseQuantityVM.Init(navData);
 
@@ -120,6 +120,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
             navData.OtherData["MobileData"] = _mobileData;
+            navData.OtherData["DataChunk"] = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
             reviseQuantityVM.Init(navData);
 

@@ -107,7 +107,7 @@ namespace MWF.Mobile.Core.Services
         /// this is called for when the instruction goes into Drive, OnSite and is Completed
         /// </summary>
         /// <param name="updateQuantity"></param>
-        public void SendDataChunk(MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false)
+        public void SendDataChunk(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false)
         {
             var mobileData = currentMobileData;
             mobileData.LatestDataChunkSequence++;
@@ -116,19 +116,12 @@ namespace MWF.Mobile.Core.Services
             string smp = "";
 
             //These variables make up the Data variable in the MobileApplicationDataChunk object.
-            MobileApplicationDataChunkContentActivity dataChunkActivity = _mainService.CurrentDataChunkActivity;
             MobileApplicationDataChunkContentActivities dataChunkActivities = new MobileApplicationDataChunkContentActivities { MobileApplicationDataChunkContentActivitiesObject = new List<MobileApplicationDataChunkContentActivity>() };
             MobileApplicationDataChunkContentOrder dataChunkOrder = new MobileApplicationDataChunkContentOrder { MobileApplicationDataChunkContentOrderActivities = new List<MobileApplicationDataChunkContentActivities>() };
 
             //The data chunk to be sent.
             MobileApplicationDataChunk dataChunk = new MobileApplicationDataChunk();
             MobileApplicationDataChunkCollection dataChunkCollection = new MobileApplicationDataChunkCollection { MobileApplicationDataChunkCollectionObject = new List<MobileApplicationDataChunk>() };
-
-            if (dataChunkActivity == null)
-            {
-                dataChunkActivity = new MobileApplicationDataChunkContentActivity();
-                _mainService.CurrentDataChunkActivity = dataChunkActivity;
-            }
 
             dataChunkActivity.Activity = 10;
             dataChunkActivity.DriverId = currentDriver.ID;
@@ -189,8 +182,6 @@ namespace MWF.Mobile.Core.Services
             dataChunk.Sequence = mobileData.Sequence;
 
             dataChunkCollection.MobileApplicationDataChunkCollectionObject.Add(dataChunk);
-
-            _mainService.CurrentDataChunkActivity = dataChunkActivity;
 
             _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
 

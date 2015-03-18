@@ -53,7 +53,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
             _mockMainService.Setup(m => m.CurrentDriver).Returns(_fixture.Create<Driver>());
 
             _mockUserInteraction = new Mock<IUserInteraction>();
@@ -117,7 +116,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             cameraVM.DoneCommand.Execute(null);
 
             _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Once);
-            _mockImageUploadService.Verify(mis => mis.SendPhotoAndCommentAsync(It.IsAny<string>(), It.IsAny<List<Image>>(), It.IsAny<Driver>(), It.IsAny<bool>(), It.IsAny<MobileData>()), Times.Once);
+            _mockImageUploadService.Verify(mis => mis.SendPhotoAndCommentAsync(It.IsAny<string>(), It.IsAny<List<Image>>(), It.IsAny<Driver>(), It.IsAny<MobileData>()), Times.Once);
 
         }
 
@@ -206,6 +205,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockCustomUserInteraction.Setup(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
             .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
 
+            _navigationService.SetupGet( x=> x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData});
+
             var cameraVM = _fixture.Create<CameraViewModel>();
 
             cameraVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
@@ -224,6 +225,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var cameraVM = _fixture.Create<CameraViewModel>();
+
+            _navigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
             cameraVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 

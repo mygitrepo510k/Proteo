@@ -7,6 +7,7 @@ using MWF.Mobile.Core.Models;
 using Cirrious.CrossCore;
 using MWF.Mobile.Core.Services;
 
+
 namespace MWF.Mobile.Core.ViewModels
 {
 
@@ -58,4 +59,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
     }
+
+   
 }

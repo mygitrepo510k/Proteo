@@ -45,7 +45,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData = _fixture.Create<MobileData>();
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
             _mockMainService.Setup(m => m.CurrentDriver).Returns(_fixture.Create<Driver>());
 
             _mockLatestSafetyCheckRepository = _fixture.InjectNewMock<ILatestSafetyCheckRepository>();
@@ -234,13 +233,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _latestSafetyCheck.TrailerSafetyCheck = null;
             _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriver(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
 
-            _mockNavigationService.Setup(mms => mms.OnManifestPage).Returns(true);
-
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
 
             _mockUserInteraction.Verify(mui => mui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(ni => ni.Data == null)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(ni => ni == null)), Times.Once);
         }
 
         [Fact]
@@ -253,6 +250,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+
+            _mockNavigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
             displaySafetyCheckVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
@@ -271,6 +270,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+
+            _mockNavigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
             displaySafetyCheckVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 

@@ -44,7 +44,6 @@ namespace MWF.Mobile.Core.ViewModels
             navData.Reinflate();
             _navData = navData;
             _mobileData = navData.Data;
-            _navigationService.OnManifestPage = false;
         }
 
         #endregion Construction
@@ -85,8 +84,8 @@ namespace MWF.Mobile.Core.ViewModels
         private void GetMobileDataFromRepository(Guid ID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
-            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion Private Methods
@@ -96,7 +95,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+            if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");

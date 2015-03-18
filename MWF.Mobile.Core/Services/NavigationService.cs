@@ -10,6 +10,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Presentation;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 using Chance.MvvmCross.Plugins.UserInteraction;
 using System.Threading.Tasks;
 
@@ -30,8 +31,8 @@ namespace MWF.Mobile.Core.Services
         private Dictionary<Tuple<Type, Type>, Action<NavData>> _forwardNavActionDictionary;
         private Dictionary<Tuple<Type, Type>, Action<NavData>> _backwardNavActionDictionary;
         private Dictionary<Guid, Tuple<Object, Dictionary<string, Object>>> _navDataDictionary;
-        //private NavData<MobileData> _mobileDataNavItem;
-        //private MobileData _mobileData;
+        private NavData _currentNavData;
+
 
         private readonly IGatewayPollingService _gatewayPollingService;
         private IMainService _mainService;
@@ -40,6 +41,7 @@ namespace MWF.Mobile.Core.Services
         IRepositories _repositories;
         ICloseApplication _closeApplication;
         private IDataChunkService _dataChunkService;
+
 
         #endregion
 
@@ -181,6 +183,7 @@ namespace MWF.Mobile.Core.Services
             Action<NavData> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownNavigationMappingException(currentActivityType, currentFragmentType);
+            _currentNavData = null;
 
             navAction.Invoke(null);
 
@@ -188,6 +191,12 @@ namespace MWF.Mobile.Core.Services
 
         public void MoveToNext(NavData navData)
         {
+
+            if (navData == null)
+            {
+                MoveToNext();
+                return;
+            }
 
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
@@ -197,6 +206,7 @@ namespace MWF.Mobile.Core.Services
             if (navAction == null) throw new UnknownNavigationMappingException(currentActivityType, currentFragmentType);
 
             AddNavDataToDictionary(navData);
+            _currentNavData = navData;
 
             navAction.Invoke(navData);
 
@@ -212,6 +222,7 @@ namespace MWF.Mobile.Core.Services
             Action<NavData> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownBackNavigationMappingException(currentActivityType, currentFragmentType);
+            _currentNavData = null;
 
             navAction.Invoke(null);
 
@@ -220,6 +231,12 @@ namespace MWF.Mobile.Core.Services
         public void GoBack(NavData navData)
         {
 
+            if (navData == null)
+            { 
+                GoBack();
+                return;
+            }
+
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
@@ -227,8 +244,8 @@ namespace MWF.Mobile.Core.Services
 
             if (navAction == null) throw new UnknownBackNavigationMappingException(currentActivityType, currentFragmentType);
 
-
             AddNavDataToDictionary(navData);
+            _currentNavData = navData;
 
             navAction.Invoke(navData);
 
@@ -266,7 +283,11 @@ namespace MWF.Mobile.Core.Services
 
         }
 
-        public bool OnManifestPage { get; set; }
+        public NavData CurrentNavData
+        {
+            get { return _currentNavData; }
+        }
+
 
         #endregion INavigationService
 
@@ -370,15 +391,15 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Once the user confirms the prompt it updates the instruction to complete and then sends off the Complete chunk to Bluesphere.
         /// </summary>
-        private void CompleteInstruction(MobileData mobileDataContent)
+        private void CompleteInstruction(NavData<MobileData> navData)
         {
             Mvx.Resolve<IUserInteraction>().Confirm("Do you wish to complete?", isConfirmed =>
             {
                 if (isConfirmed)
                 {
-                    mobileDataContent.ProgressState = Enums.InstructionProgress.Complete;
-                    _mainService.CurrentMobileData = mobileDataContent;
-                    _dataChunkService.SendDataChunk(_mainService.CurrentMobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+
+                    navData.Data.ProgressState = Enums.InstructionProgress.Complete;
+                    _dataChunkService.SendDataChunk(navData.GetDataChunk(), navData.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle);
                     this.ShowViewModel<ManifestViewModel>();
                 }
             }, "Complete Instruction", "Confirm", "Cancel");
@@ -544,10 +565,9 @@ namespace MWF.Mobile.Core.Services
             else if (navData is NavData<MobileData>)
             {
                 var mobileDataNav = (NavData<MobileData>)navData;
-                _mainService.CurrentMobileData = mobileDataNav.Data;
-                _dataChunkService.SendDataChunk(_mainService.CurrentMobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+                _dataChunkService.SendDataChunk(mobileDataNav.GetDataChunk(), mobileDataNav.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle);
 
-                ShowViewModel<InstructionOnSiteViewModel>(navData);
+                ShowViewModel<InstructionOnSiteViewModel>(mobileDataNav);
             }
         }
 
@@ -600,7 +620,7 @@ namespace MWF.Mobile.Core.Services
                     return;
                 }
 
-                CompleteInstruction(mobileNavData.Data);
+                CompleteInstruction(mobileNavData);
 
             }
         }
@@ -638,7 +658,7 @@ namespace MWF.Mobile.Core.Services
                     return;
                 }
 
-                CompleteInstruction(mobileNavData.Data);
+                CompleteInstruction(mobileNavData);
             }
 
         }
@@ -662,7 +682,7 @@ namespace MWF.Mobile.Core.Services
                     return;
                 }
 
-                CompleteInstruction(mobileNavData.Data);
+                CompleteInstruction(mobileNavData);
 
 
             }
@@ -676,7 +696,7 @@ namespace MWF.Mobile.Core.Services
             if (navData is NavData<MobileData>)
             {
                 var mobileNavData = navData as NavData<MobileData>;
-                CompleteInstruction(mobileNavData.Data);
+                CompleteInstruction(mobileNavData);
             }
         }
 
@@ -688,7 +708,7 @@ namespace MWF.Mobile.Core.Services
             if (navData is NavData<MobileData>)
             {
                 var mobileNavData = navData as NavData<MobileData>;
-                CompleteInstruction(mobileNavData.Data);
+                CompleteInstruction(mobileNavData);
             }
         }
 
@@ -700,7 +720,7 @@ namespace MWF.Mobile.Core.Services
             if (navData is NavData<MobileData>)
             {
                 var mobileData = navData as NavData<MobileData>;
-                CompleteInstruction(mobileData.Data);
+                CompleteInstruction(mobileData);
             }
         }
 
@@ -773,6 +793,10 @@ namespace MWF.Mobile.Core.Services
                             break;
                     }
                 }
+            }
+            else
+            {
+                this.ShowViewModel<ManifestViewModel>();
             }
         }
 

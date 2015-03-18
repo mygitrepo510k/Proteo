@@ -11,6 +11,6 @@ namespace MWF.Mobile.Core.Services
     public interface IDataChunkService
     {
         void SendReadChunk(IEnumerable<MobileData> instructions, Driver currentDriver, Vehicle currentVehicle);
-        void SendDataChunk(MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false);
+        void SendDataChunk(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false);
     }
 }

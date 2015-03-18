@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -27,6 +28,7 @@ namespace MWF.Mobile.Core.ViewModels
         private IMainService _mainService;
         private MobileData _mobileData;
         private Item _order;
+        private NavData<Item> _navData;
 
         #endregion Private Fields
 
@@ -42,9 +44,9 @@ namespace MWF.Mobile.Core.ViewModels
         public void Init(NavData<Item> navData)
         {
             navData.Reinflate();
+            _navData = navData;
             _order = navData.Data;
-            _mobileData = navData.OtherData["MobileData"] as MobileData;
-            _mainService.CurrentMobileData = _mobileData;
+            _mobileData = navData.GetMobileData();
 
         }
 
@@ -93,17 +95,15 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void ReviseQuantity(Item order)
         {
-            NavData<Item> navData = new NavData<Item>() { Data = _order};
-            navData.OtherData["MobileData"] = _mobileData;
-            _navigationService.MoveToNext(navData);
+            _navigationService.MoveToNext(_navData);
         }
 
         private void GetMobileDataFromRepository(Guid parentID, Guid childID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(parentID);
             _order = _mobileData.Order.Items.First(i => i.ID == childID);
+            _navData.OtherData["MobileData"] = _mobileData;
             RaiseAllPropertiesChanged();
-            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion Private Methods
@@ -122,8 +122,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var task = new Task<bool>(() => false);
 
-            NavData<MobileData> navItem = new NavData<MobileData>() { Data = _mobileData};
-            _navigationService.GoBack(navItem);
+            _navigationService.GoBack(_navData);
 
             return task;
         }
@@ -133,7 +132,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+            if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID, _order.ID), "This instruction has been Updated", "OK");

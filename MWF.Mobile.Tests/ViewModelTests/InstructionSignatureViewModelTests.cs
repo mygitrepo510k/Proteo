@@ -56,11 +56,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(m => m.CurrentDataChunkActivity).Returns(new MobileApplicationDataChunkContentActivity());
-            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
 
             _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
-            _mockDataChunkService.Setup(m => m.SendDataChunk(It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(),false));
+
+            _mockDataChunkService.Setup(m => m.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(),  It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(),false));
 
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
@@ -83,14 +82,19 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
-            instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
+            navData.OtherData["DataChunk"] = dataChunk;
+
+            instructionSignatureVM.Init(navData);
+
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
             _navigationService.Verify(ns => ns.MoveToNext(It.IsAny <NavData<MobileData>>()), Times.Once);
 
-            Assert.Same(instructionSignatureVM.CustomerSignatureEncodedImage, _mockMainService.Object.CurrentDataChunkActivity.Signature.EncodedImage);
-            Assert.Same(instructionSignatureVM.CustomerName, _mockMainService.Object.CurrentDataChunkActivity.Signature.Title);
+            Assert.Same(instructionSignatureVM.CustomerSignatureEncodedImage, dataChunk.Signature.EncodedImage);
+            Assert.Same(instructionSignatureVM.CustomerName, dataChunk.Signature.Title);
 
         }
 

@@ -14,6 +14,7 @@ using MWF.Mobile.Core.ViewModels.Interfaces;
 using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -54,8 +55,7 @@ namespace MWF.Mobile.Core.ViewModels
             navData.Reinflate();
             _navData = navData;
             _mobileData = _navData.Data;
-            _mainService.CurrentMobileData = _mobileData;
-            _navigationService.OnManifestPage = false;
+           
         }
 
         #endregion Construction
@@ -178,8 +178,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
             {
-                var navItem = new NavData<MobileData>() { Data = _mobileData };
-                _navigationService.MoveToNext(navItem);
+                _navigationService.MoveToNext(_navData);
             }
         }
 
@@ -188,7 +187,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (_mobileData.ProgressState == Enums.InstructionProgress.NotStarted)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.Driving;
-                _dataChunkService.SendDataChunk(_mainService.CurrentMobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+                _dataChunkService.SendDataChunk(_navData.GetDataChunk(), _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle);
             }
             else if (_mobileData.ProgressState == Enums.InstructionProgress.Driving)
             {
@@ -204,14 +203,15 @@ namespace MWF.Mobile.Core.ViewModels
         {
             NavData<Item> navItem = new NavData<Item>() { Data = order };
             navItem.OtherData["MobileData"] = _mobileData;
+            navItem.OtherData["DataChunk"] = _navData.GetDataChunk();
             _navigationService.MoveToNext(navItem);
         }
 
         private void GetMobileDataFromRepository(Guid ID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
-            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion Private Methods
@@ -242,7 +242,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+            if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");

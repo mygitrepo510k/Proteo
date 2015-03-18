@@ -23,7 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private MobileData _mobileData;
         private IMainService _mainService;
-        private NavData _navData;
+        private NavData<MobileData> _navData;
 
 
         private MvxSubscriptionToken _notificationToken;
@@ -54,7 +54,6 @@ namespace MWF.Mobile.Core.ViewModels
             _navData = navData;
             _navData.Reinflate();
             _mobileData = navData.Data;
-            _mainService.CurrentMobileData = _mobileData;
         }
 
 
@@ -118,13 +117,14 @@ namespace MWF.Mobile.Core.ViewModels
         private void GetMobileDataFromRepository(Guid ID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
-            _mainService.CurrentMobileData = _mobileData;
+
         }
 
         private void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+            if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");

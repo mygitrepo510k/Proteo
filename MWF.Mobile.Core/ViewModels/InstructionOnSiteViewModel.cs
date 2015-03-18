@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -26,7 +27,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
-        private NavData _navData;
+        private NavData<MobileData> _navData;
         private IMainService _mainService;
 
 
@@ -47,7 +48,6 @@ namespace MWF.Mobile.Core.ViewModels
             _navData = navData;
             _mobileData = navData.Data;
             _orderList = new ObservableCollection<Item>(_mobileData.Order.Items);
-            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion
@@ -109,6 +109,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             NavData<Item> navData = new NavData<Item>() { Data = order};
             navData.OtherData["MobileData"] = _mobileData;
+            navData.OtherData["DataChunk"] = navData.GetDataChunk();
             _navigationService.MoveToNext(navData);
         }
 
@@ -116,8 +117,8 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
             _orderList = new ObservableCollection<Item>(_mobileData.Order.Items);
+            _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
-            _mainService.CurrentMobileData = _mobileData;
         }
 
         #endregion
@@ -137,8 +138,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var task = new Task<bool>(() => false);
 
-            NavData<MobileData> navItem = new NavData<MobileData>() { Data = _mobileData };
-            _navigationService.GoBack(navItem);
+            _navigationService.GoBack(_navData);
 
             return task;
         }
@@ -148,7 +148,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mainService.CurrentMobileData.ID)
+            if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                     Mvx.Resolve<ICustomUserInteraction>().PopUpCurrentInstructionNotifaction("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been Updated", "OK");

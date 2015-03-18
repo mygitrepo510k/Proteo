@@ -86,7 +86,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var dataChunkService = _fixture.Create<DataChunkService>();
 
-            dataChunkService.SendDataChunk(mobileData, driver, vehicle, false);     
+            dataChunkService.SendDataChunk(new MobileApplicationDataChunkContentActivity(), mobileData, driver, vehicle, false);     
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
@@ -117,8 +117,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             Vehicle vehicle = _fixture.Create<Vehicle>();
 
             var dataChunkService = _fixture.Create<DataChunkService>();
+            var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
-            dataChunkService.SendDataChunk(mobileData, driver, vehicle, false);
+            dataChunkService.SendDataChunk(dataChunk, mobileData, driver, vehicle, false);
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
@@ -149,8 +150,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             Vehicle vehicle = _fixture.Create<Vehicle>();
 
             var dataChunkService = _fixture.Create<DataChunkService>();
+            var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
-            dataChunkService.SendDataChunk(mobileData, driver, vehicle, false);
+            dataChunkService.SendDataChunk(dataChunk, mobileData, driver, vehicle, false);
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);

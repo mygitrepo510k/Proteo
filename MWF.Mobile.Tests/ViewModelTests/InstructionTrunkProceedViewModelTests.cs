@@ -57,7 +57,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(m => m.CurrentMobileData).Returns(_mobileData);
 
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
 

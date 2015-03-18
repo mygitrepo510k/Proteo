@@ -136,7 +136,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
             _navigationService.MoveToNext(_navigationService.CurrentNavData);
 
-            MobileData mobileData = null; ;
+            MobileData mobileData = null;
             if (_navigationService.CurrentNavData != null) {
                 mobileData = _navigationService.CurrentNavData.GetMobileData();
             }

@@ -12,11 +12,8 @@ namespace MWF.Mobile.Core.Services
 {
     public interface IMainService
     {
-        //MobileData CurrentMobileData { get; set; }
-
         Driver CurrentDriver { get; set; }
         Vehicle CurrentVehicle { get; set; }
         Models.Trailer CurrentTrailer { get; set; }
-
     }
 }

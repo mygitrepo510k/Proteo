@@ -71,8 +71,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ChangeOrderQuantityButtonLabel { get { return "Change Quantity"; } }
 
-        //TODO: Find the variable to allow user to alter order quantity
-        public bool ChangeOrderQuantity { get { return true; } }
+        public bool ChangeOrderQuantity { get { return _mobileData.Order.Type != Enums.InstructionType.Deliver; } }
 
         #endregion Public Properties
 

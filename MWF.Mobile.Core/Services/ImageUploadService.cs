@@ -19,21 +19,21 @@ namespace MWF.Mobile.Core.Services
         private readonly IGpsService _gpsService = null;
         private readonly ILoggingService _loggingService = null;
         private readonly IReachability _reachability = null;
-        private readonly IToast _toast = null;
+        private readonly IHttpService _httpService = null;
 
 
-        public ImageUploadService (
+        public ImageUploadService(
             Repositories.IRepositories repositories,
             IGpsService gpsService,
             ILoggingService loggingService,
             IReachability reachability,
-            IToast toast)
+            IHttpService httpService)
         {
             _repositories = repositories;
             _gpsService = gpsService;
             _loggingService = loggingService;
             _reachability = reachability;
-            _toast = toast;
+            _httpService = httpService;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace MWF.Mobile.Core.Services
             if (!_reachability.IsConnected())
                 return;
 
-            _toast.Show("Now uploading images");
+            Mvx.Resolve<IToast>().Show("Now uploading images");
 
             Encoding encoding = Encoding.UTF8;
             int uploadedCount = 0;
@@ -99,7 +99,6 @@ namespace MWF.Mobile.Core.Services
 
                 using (var request = new HttpRequestMessage(HttpMethod.Post, postUrl.AbsoluteUri))
                 using (var fileContent = new ByteArrayContent(image.Bytes))
-                using (var client = new HttpClient())
                 {
                     var formContent = new MultipartFormDataContent();
 
@@ -117,25 +116,25 @@ namespace MWF.Mobile.Core.Services
 
                     request.Content = formContent;
 
-                    using (var response = await client.SendAsync(request))
+                    var response = await _httpService.SendAsync<HttpResponseMessage>(request);
+
+                    if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        if (response.StatusCode == HttpStatusCode.OK)
-                        {
-                            _loggingService.LogEvent("Image sent successfully.", Enums.LogType.Info);
-                            uploadedCount++;
-                        }
-                        else
-                            _loggingService.LogEvent(string.Format("Image failed to send, Status Code: {0}.", response.StatusCode), Enums.LogType.Error);
+                        _loggingService.LogEvent("Image sent successfully.", Enums.LogType.Info);
+                        uploadedCount++;
                     }
+                    else
+                        _loggingService.LogEvent(string.Format("Image failed to send, Status Code: {0}.", response.StatusCode), Enums.LogType.Error);
+
 
                 }
 
             }
 
             if (uploadedCount != imageUpload.Pictures.Count)
-                Mvx.Resolve<IUserInteraction>().Alert(string.Format("Only {0} of {1} were uploaded successful.", uploadedCount, imageUpload.Pictures.Count),null, "Upload Failed");
+                Mvx.Resolve<IUserInteraction>().Alert(string.Format("Only {0} of {1} were uploaded successful.", uploadedCount, imageUpload.Pictures.Count), null, "Upload Failed");
             else
-                _toast.Show("Successfully uploaded images");
+                Mvx.Resolve<IToast>().Show("Successfully uploaded images");
 
         }
     }

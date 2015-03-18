@@ -462,6 +462,7 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, InstructionTrunkProceedViewModel>(InstructionTrunkProceed_CustomAction);
 
             InsertCustomNavAction<MainViewModel, MessageViewModel>(Message_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, MessageViewModel>(Message_CustomBackAction);
 
             // Side bar Activity
             InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustomAction);
@@ -736,6 +737,11 @@ namespace MWF.Mobile.Core.Services
         #region CustomBackActions
 
         public void Instruction_CustomBackAction(NavData navData)
+        {
+            this.ShowViewModel<ManifestViewModel>();
+        }
+
+        public void Message_CustomBackAction(NavData navData)
         {
             this.ShowViewModel<ManifestViewModel>();
         }

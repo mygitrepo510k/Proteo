@@ -1847,6 +1847,39 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         }
 
+        [Fact]
+        public void NavigationService_Mappings_BackAction_Manifest_Message()
+        {
+            base.ClearAll();
+
+            _mobileData.Order.Type = InstructionType.OrderMessage;
+
+            var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+
+            // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<MessageViewModel>());
+
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var service = _fixture.Create<NavigationService>();
+
+            //Create a nav item for a mobile data model
+            NavData<MobileData> parametersObjectIn = new NavData<MobileData> { Data = _mobileData };
+            service.MoveToNext(parametersObjectIn);
+
+            //Check that the startup the instruction view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
+
+        }
+
+
+
+
         #endregion
 
         #region Helper Functions

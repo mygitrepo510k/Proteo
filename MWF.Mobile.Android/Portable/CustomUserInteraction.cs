@@ -68,24 +68,28 @@ namespace MWF.Mobile.Android.Portable
                 InstructionGroupedListObject addInstructions = new InstructionGroupedListObject();
                 InstructionGroupedListObject updateInstructions = new InstructionGroupedListObject();
                 InstructionGroupedListObject deleteInstructions = new InstructionGroupedListObject();
+                InstructionGroupedListObject messages = new InstructionGroupedListObject();
 
                 CurrentPopInstructions.AddRange(alteredInstructions);
 
                 //Filter the instructions into SyncStates (Added, Updated, Deleted)
                 foreach (var instruction in CurrentPopInstructions)
                 {
-                    switch (instruction.SyncState)
-                    {
-                        case SyncState.Add:
-                            addInstructions.Instructions.Add(instruction);
-                            break;
-                        case SyncState.Update:
-                            updateInstructions.Instructions.Add(instruction);
-                            break;
-                        case SyncState.Delete:
-                            deleteInstructions.Instructions.Add(instruction);
-                            break;
-                    }
+                    if (instruction.Order.Type == InstructionType.OrderMessage)
+                        messages.Instructions.Add(instruction);
+                    else
+                        switch (instruction.SyncState)
+                        {
+                            case SyncState.Add:
+                                addInstructions.Instructions.Add(instruction);
+                                break;
+                            case SyncState.Update:
+                                updateInstructions.Instructions.Add(instruction);
+                                break;
+                            case SyncState.Delete:
+                                deleteInstructions.Instructions.Add(instruction);
+                                break;
+                        }
                 }
 
 
@@ -108,6 +112,11 @@ namespace MWF.Mobile.Android.Portable
                 {
                     inoList.Add(deleteInstructions);
                     headers.Add("Instructions deleted (" + deleteInstructions.Instructions.Count + ")");
+                }
+                if(messages.Instructions.Count > 0)
+                {
+                    inoList.Add(messages);
+                    headers.Add("Messages added (" + messages.Instructions.Count + ")");
                 }
 
                 if (inoList.Count > 0)

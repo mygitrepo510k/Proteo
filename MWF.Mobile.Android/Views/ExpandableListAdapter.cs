@@ -32,7 +32,10 @@ namespace MWF.Mobile.Android.Views
         public override Java.Lang.Object GetChild(int groupPosition, int childPosition)
         {
             var child = Children[groupPosition].Instructions[childPosition];
-            return string.Format("{0} ({1})", child.Order.Description, child.Order.Description2);
+
+            return (child.Order.Type == Core.Enums.InstructionType.OrderMessage) 
+                ? child.MessageText 
+                : string.Format("{0} ({1})", child.Order.Description, child.Order.Description2);
         }
 
         public override long GetChildId(int groupPosition, int childPosition)

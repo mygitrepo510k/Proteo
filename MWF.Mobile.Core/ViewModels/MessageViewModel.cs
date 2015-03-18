@@ -59,7 +59,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string AddressLabelText { get { return "Address"; } }
 
-        public string ProgressButtonText { get { return "Complete"; } }
+        public string ProgressButtonText { get { return "Mark as read"; } }
 
         public bool isWithPoint { get { return _mobileData.Order.Addresses.Count > 0; } }
 

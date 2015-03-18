@@ -160,7 +160,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockHttpService.Setup(mhs => mhs.SendAsync<HttpResponseMessage>(It.IsAny<HttpRequestMessage>())).ReturnsAsync(response);
 
-            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, true, null);
+            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
 
             _mockConfigRepo.Verify(mcr => mcr.Get(), Times.Once);
 

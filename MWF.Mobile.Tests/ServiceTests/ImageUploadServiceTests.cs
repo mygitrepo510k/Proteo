@@ -1,4 +1,5 @@
-﻿using Cirrious.MvvmCross.Test.Core;
+﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
@@ -11,6 +12,7 @@ using Ploeh.AutoFixture.AutoMoq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -23,11 +25,14 @@ namespace MWF.Mobile.Tests.ServiceTests
         #region Private Members
 
         private IFixture _fixture;
-        private UploadCameraImageObject _uploadImageObject;
         private Mock<IGpsService> _mockGpsService;
         private Mock<IConfigRepository> _mockConfigRepo;
         private MWFMobileConfig _mockMobileConfig;
         private Mock<ILoggingService> _mockLoggingService;
+        private Mock<IHttpService> _mockHttpService;
+        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<IToast> _mockToast; 
+
 
         #endregion Private Members
 
@@ -50,7 +55,19 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
+            var response = new Core.HttpResult<HttpResponseMessage>
+            {
+                StatusCode = System.Net.HttpStatusCode.OK,
+            };
+
+            _mockHttpService = _fixture.InjectNewMock<Core.Services.IHttpService>();
+            _mockHttpService.Setup(mhs => mhs.SendAsync<HttpResponseMessage>(It.IsAny<HttpRequestMessage>())).ReturnsAsync(response);
+
             _mockLoggingService = _fixture.InjectNewMock<ILoggingService>();
+
+            _mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+
+            _mockToast = Ioc.RegisterNewMock<IToast>();
 
 
         }
@@ -62,7 +79,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a driver uploading
         /// a photo and comment for an instruction.
         /// </summary>
-        [Fact(Skip = "This end-to-end test is fragile (calls through to HE)")]
+        [Fact]
         public async Task ImageUploadService_SendCommentAndImageAttachedToInstruction()
         {
             base.ClearAll();
@@ -72,7 +89,6 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             MobileData mobileData = _fixture.Create<MobileData>();
             Driver driver = _fixture.Create<Driver>();
-
             var imageUploadService = _fixture.Create<ImageUploadService>();
 
             await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
@@ -84,13 +100,15 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             //This only gets logged when it has been successfully uploaded
             _mockLoggingService.Verify(mls => mls.LogEvent(It.IsAny<string>(), It.Is<MWF.Mobile.Core.Enums.LogType>(i => i == Core.Enums.LogType.Info)), Times.Exactly(3));
+
+            _mockToast.Verify(mt => mt.Show(It.IsAny<string>()), Times.Exactly(2));
         }
 
         /// <summary>
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a driver uploading
         /// a photo and comment (not attached to an instruction).
         /// </summary>
-        [Fact(Skip = "This end-to-end test is fragile (calls through to HE)")]
+        [Fact]
         public async Task ImageUploadService_SendCommentAndImageAttachedToNothing()
         {
             base.ClearAll();
@@ -112,6 +130,47 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             //This only gets logged when it has been successfully uploaded
             _mockLoggingService.Verify(mls => mls.LogEvent(It.IsAny<string>(), It.Is<MWF.Mobile.Core.Enums.LogType>(i => i == Core.Enums.LogType.Info)), Times.Exactly(3));
+
+            _mockToast.Verify(mt => mt.Show(It.IsAny<string>()), Times.Exactly(2));
+
+
+        }
+
+        /// <summary>
+        /// This test is to verify that the right content is added to the gatewayqueuedservice for a driver uploading
+        /// a photo and comment (not attached to an instruction).
+        /// </summary>
+        [Fact]
+        public async Task ImageUploadService_SendFails()
+        {
+            base.ClearAll();
+
+            string comment = _fixture.Create<string>();
+            List<Image> photos = _fixture.CreateMany<Image>().ToList();
+
+            var imageUploadService = _fixture.Create<ImageUploadService>();
+
+            MobileData mobileData = _fixture.Create<MobileData>();
+            Driver driver = _fixture.Create<Driver>();
+
+            var response = new Core.HttpResult<HttpResponseMessage>
+            {
+                StatusCode = System.Net.HttpStatusCode.InternalServerError,
+            };
+
+            _mockHttpService.Setup(mhs => mhs.SendAsync<HttpResponseMessage>(It.IsAny<HttpRequestMessage>())).ReturnsAsync(response);
+
+            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
+
+            _mockConfigRepo.Verify(mcr => mcr.Get(), Times.Once);
+
+            _mockGpsService.Verify(mgs => mgs.GetLongitude(), Times.Exactly(3));
+            _mockGpsService.Verify(mgs => mgs.GetLatitude(), Times.Exactly(3));
+
+            //This only gets logged when it has been successfully uploaded
+            _mockUserInteraction.Verify(mui => mui.Alert(It.IsAny<string>(), It.IsAny<System.Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+
+            _mockToast.Verify(mt => mt.Show(It.IsAny<string>()), Times.Once);
 
 
         }

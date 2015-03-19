@@ -69,6 +69,7 @@ namespace MWF.Mobile.Android.Portable
                 InstructionGroupedListObject updateInstructions = new InstructionGroupedListObject();
                 InstructionGroupedListObject deleteInstructions = new InstructionGroupedListObject();
                 InstructionGroupedListObject messages = new InstructionGroupedListObject();
+                InstructionGroupedListObject messagesWithPoints = new InstructionGroupedListObject();
 
                 CurrentPopInstructions.AddRange(alteredInstructions);
 
@@ -76,7 +77,10 @@ namespace MWF.Mobile.Android.Portable
                 foreach (var instruction in CurrentPopInstructions)
                 {
                     if (instruction.Order.Type == InstructionType.OrderMessage)
-                        messages.Instructions.Add(instruction);
+                        if (instruction.Order.Addresses == null)
+                            messages.Instructions.Add(instruction);
+                        else
+                            messagesWithPoints.Instructions.Add(instruction);
                     else
                         switch (instruction.SyncState)
                         {
@@ -113,10 +117,16 @@ namespace MWF.Mobile.Android.Portable
                     inoList.Add(deleteInstructions);
                     headers.Add("Instructions deleted (" + deleteInstructions.Instructions.Count + ")");
                 }
-                if(messages.Instructions.Count > 0)
+                if (messages.Instructions.Count > 0)
                 {
                     inoList.Add(messages);
                     headers.Add("Messages added (" + messages.Instructions.Count + ")");
+                }
+
+                if (messagesWithPoints.Instructions.Count > 0)
+                {
+                    inoList.Add(messagesWithPoints);
+                    headers.Add("Messages with points added (" + messagesWithPoints.Instructions.Count + ")");
                 }
 
                 if (inoList.Count > 0)

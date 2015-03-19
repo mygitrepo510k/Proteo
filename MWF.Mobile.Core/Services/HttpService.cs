@@ -32,7 +32,7 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        private static async Task<HttpResult<TResponse>> SendAsync<TResponse>(HttpRequestMessage request)
+        public async Task<HttpResult<TResponse>> SendAsync<TResponse>(HttpRequestMessage request)
         {
             var client = new HttpClient();
 

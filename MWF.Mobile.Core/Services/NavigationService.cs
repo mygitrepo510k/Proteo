@@ -48,11 +48,11 @@ namespace MWF.Mobile.Core.Services
         #region Construction
 
         public NavigationService(
-            ICustomPresenter presenter, 
-            IStartupService startupService, 
+            ICustomPresenter presenter,
+            IStartupService startupService,
             ICloseApplication closeApplication,
-            IRepositories repositories, 
-            IGatewayPollingService gatewayPollingService, 
+            IRepositories repositories,
+            IGatewayPollingService gatewayPollingService,
             IMainService mainService,
             IDataChunkService dataChunkService)
         {
@@ -232,7 +232,7 @@ namespace MWF.Mobile.Core.Services
         {
 
             if (navData == null)
-            { 
+            {
                 GoBack();
                 return;
             }
@@ -269,7 +269,7 @@ namespace MWF.Mobile.Core.Services
         {
             // Stop the gateway polling service before we "logout" the user.
             _gatewayPollingService.StopPollingTimer();
-            MoveTo(typeof(StartupViewModel),navData);
+            MoveTo(typeof(StartupViewModel), navData);
         }
 
         public void PopulateNavData(NavData navData)
@@ -385,7 +385,7 @@ namespace MWF.Mobile.Core.Services
 
             var tuple = Tuple.Create<object, Dictionary<string, object>>(navData.GetData(), navData.OtherData);
             _navDataDictionary.Add(navData.NavGUID, tuple);
-            
+
         }
 
         /// <summary>
@@ -396,13 +396,20 @@ namespace MWF.Mobile.Core.Services
             Mvx.Resolve<IUserInteraction>().Confirm("Do you wish to complete?", isConfirmed =>
             {
                 if (isConfirmed)
-                {
+                    SendMobileData(navData);
 
-                    navData.Data.ProgressState = Enums.InstructionProgress.Complete;
-                    _dataChunkService.SendDataChunk(navData.GetDataChunk(), navData.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle);
-                    this.ShowViewModel<ManifestViewModel>();
-                }
             }, "Complete Instruction", "Confirm", "Cancel");
+        }
+
+        /// <summary>
+        /// Updates the instruction/Message to complete and then sends off the Complete chunk to Bluesphere.
+        /// </summary>
+        private void SendMobileData(NavData<MobileData> navData)
+        {
+            navData.Data.ProgressState = Enums.InstructionProgress.Complete;
+            _dataChunkService.SendDataChunk(navData.GetDataChunk(), navData.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+            this.ShowViewModel<ManifestViewModel>();
+
         }
 
 
@@ -455,6 +462,7 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, InstructionTrunkProceedViewModel>(InstructionTrunkProceed_CustomAction);
 
             InsertCustomNavAction<MainViewModel, MessageViewModel>(Message_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, MessageViewModel>(Message_CustomBackAction);
 
             // Side bar Activity
             InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustomAction);
@@ -720,7 +728,7 @@ namespace MWF.Mobile.Core.Services
             if (navData is NavData<MobileData>)
             {
                 var mobileData = navData as NavData<MobileData>;
-                CompleteInstruction(mobileData);
+                SendMobileData(mobileData);
             }
         }
 
@@ -729,6 +737,11 @@ namespace MWF.Mobile.Core.Services
         #region CustomBackActions
 
         public void Instruction_CustomBackAction(NavData navData)
+        {
+            this.ShowViewModel<ManifestViewModel>();
+        }
+
+        public void Message_CustomBackAction(NavData navData)
         {
             this.ShowViewModel<ManifestViewModel>();
         }

@@ -3,7 +3,7 @@
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="16dp"
+    android:paddingLeft="8dp"
     android:paddingRight="16dp"
     android:paddingTop="4dp"
     android:paddingBottom="4dp"
@@ -11,22 +11,27 @@
     local:MvxBind="Click SelectInstructionCommand">
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="35dp"
         android:layout_weight=".1"
         android:orientation="vertical">
         <imageView
             android:src="@drawable/Collect"
+            android:scaleType="fitXY"
             local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=Collect" />
         <imageView
             android:src="@drawable/Deliver"
+            android:scaleType="fitXY"
             local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=Deliver" />
         <imageView
+            android:scaleType="fitXY"
             android:src="@drawable/TrunkTo"
             local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=TrunkTo" />
         <imageView
+            android:scaleType="fitXY"
             android:src="@drawable/ProceedFrom"
             local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=ProceedFrom" />
         <imageView
+            android:scaleType="fitXY"
             android:src="@drawable/MessageWithPoint"
             local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=OrderMessage" />
     </LinearLayout>

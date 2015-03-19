@@ -121,7 +121,11 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var task = new Task<bool>(() => false);
 
-            _navigationService.GoBack(_navData);
+            //Turn the nav data back to a NavData<MobileData> so (indicates we want to go back to an instruction)
+            NavData<MobileData> mobileData = new NavData<MobileData>() { Data = _navData.GetMobileData() };
+            mobileData.OtherData["DataChunk"] = _navData.GetDataChunk();
+
+            _navigationService.GoBack(mobileData);
 
             return task;
         }

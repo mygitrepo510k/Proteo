@@ -21,7 +21,8 @@ namespace MWF.Mobile.Core.ViewModels
         //the message id used to sync message passing is correct.
         public virtual void Init(Guid messageId)
         {
-            this.MessageId = messageId;
+            if (messageId != Guid.Empty)
+                this.MessageId = messageId;
         }
 
         #region Protected Methods

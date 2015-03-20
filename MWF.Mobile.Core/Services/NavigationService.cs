@@ -498,7 +498,7 @@ namespace MWF.Mobile.Core.Services
                 if (_presenter.CurrentActivityViewModel.GetType().Equals(typeof(ViewModels.StartupViewModel)))
                     this.DriverLogIn();
 
-                this.ShowViewModel<MainViewModel>();
+                MoveTo(typeof(MainViewModel), navData);
             }
             else
             {
@@ -526,7 +526,7 @@ namespace MWF.Mobile.Core.Services
                 if (_presenter.CurrentActivityViewModel.GetType().Equals(typeof(ViewModels.StartupViewModel)))
                     this.DriverLogIn();
 
-                this.ShowViewModel<MainViewModel>();
+                MoveTo(typeof(MainViewModel), navData);
             }
 
         }

@@ -15,6 +15,7 @@ using MWF.Mobile.Android.Views.Fragments;
 using Type = System.Type;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using Android.Support.V4.Widget;
+using Android.Content;
 
 
 namespace MWF.Mobile.Android.Views
@@ -57,6 +58,15 @@ namespace MWF.Mobile.Android.Views
 
             this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
 
+        }
+
+        public override void StartActivity(Intent intent)
+        {
+            //Close the current activity after you create a new one. Meaning you can close the app from anywhere.
+            intent.SetFlags(ActivityFlags.ClearTop);
+            intent.PutExtra("EXIT", true);
+            base.StartActivity(intent);
+            Finish();
         }
 
         #endregion

@@ -10,7 +10,8 @@ using System.Xml.Serialization;
 namespace MWF.Mobile.Core.Models
 {
     // Model class which holds an image associated with a safety check fault
-    public class Image: IBlueSphereEntity
+    [XmlType("image")]
+    public class Image : IBlueSphereEntity
     {
 
         private string _encodeImageData;
@@ -26,7 +27,7 @@ namespace MWF.Mobile.Core.Models
         public int Sequence { get; set; }
 
         [XmlAttribute("encoded")]
-        public string EncodeImageData 
+        public string EncodeImageData
         {
             get { return _encodeImageData; }
             set
@@ -44,7 +45,7 @@ namespace MWF.Mobile.Core.Models
 
         [ForeignKey(typeof(SafetyCheckFault))]
         [XmlIgnore]
-        public Guid SafetyCheckFaultID 
+        public Guid SafetyCheckFaultID
         { get; set; }
 
         [XmlIgnore]

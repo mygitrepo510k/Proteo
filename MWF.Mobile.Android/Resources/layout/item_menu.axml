@@ -11,5 +11,4 @@
     android:textColor="#fff"
     local:MvxBind="Text Text"
     android:singleLine="true"
-    android:background="?android:attr/activatedBackgroundIndicator"
     android:minHeight="?android:attr/listPreferredItemHeight" />

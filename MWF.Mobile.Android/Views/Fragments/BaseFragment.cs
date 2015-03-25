@@ -44,5 +44,13 @@ namespace MWF.Mobile.Android.Views.Fragments
             mgr.ShowSoftInput(this.View, ShowFlags.Forced);
             mgr.ToggleSoftInput(ShowFlags.Forced, HideSoftInputFlags.ImplicitOnly);
         }
+
+        public override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
+
+            //This closes the side menu when a new fragment is created
+            SetHasOptionsMenu(true);
+        }
     }
 }

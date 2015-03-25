@@ -52,13 +52,6 @@ namespace MWF.Mobile.Android.Views.Fragments
             return base.OnOptionsItemSelected(item);
         }
 
-        public override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
-
-            SetHasOptionsMenu(true);
-        }
-
         public override void OnResume()
         {
             base.OnResume();

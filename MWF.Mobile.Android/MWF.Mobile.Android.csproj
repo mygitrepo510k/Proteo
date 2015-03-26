@@ -405,6 +405,15 @@
     <AndroidResource Include="Resources\menu\trailer_activity_actions.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\drawable-hdpi\button_clicked.9.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\button_clicked.9.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\button_clicked.9.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\button_clicked.9.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\button_unfocus.9.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\button_unfocus.9.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\button_unfocus.9.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\button_unfocus.9.png" />
+    <AndroidResource Include="Resources\drawable\button_selector.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

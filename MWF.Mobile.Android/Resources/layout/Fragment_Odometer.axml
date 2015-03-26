@@ -26,6 +26,5 @@
     <Button
         style="@style/Proteo.Button"
         android:id="@+id/submit"
-        android:background="#ffcf7b"
         local:MvxBind="Text OdometerButtonLabel; Click StoreCommand;" />
 </LinearLayout>

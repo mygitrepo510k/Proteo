@@ -131,7 +131,7 @@
   <!-- ===================== Buttons ========================= -->
 
   <style name="Proteo.Button" parent="style/Proteo">
-    <item name = "android:background">#ffcf7b</item>
+    <item name = "android:background">@drawable/button_selector</item>
     <item name = "android:gravity">center</item>
   </style>
 

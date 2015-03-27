@@ -18,6 +18,7 @@ using Xunit;
 using MWF.Mobile.Tests.Helpers;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using Cirrious.MvvmCross.Plugins.Messenger;
+using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -28,6 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private MobileData _mobileData;
         private StartupService _startupService;
         private Mock<IMobileDataRepository> _mobileDataRepoMock;
+        private Mock<IApplicationProfileRepository> _mockApplicationProfile;
         
 
         protected override void AdditionalSetup()
@@ -38,12 +40,21 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData = _fixture.Create<MobileData>();
             _mobileData.GroupTitle = "Run1010";
 
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
-
             _startupService = _fixture.Create<StartupService>();
             _fixture.Inject<IStartupService>(_startupService);
 
+            _mockApplicationProfile = _fixture.InjectNewMock<IApplicationProfileRepository>();
+            List<ApplicationProfile> appProfiles = new List<ApplicationProfile>();
+            ApplicationProfile appProfile = new ApplicationProfile();
+            appProfile.DisplayRetention = 2;
+            appProfile.DisplaySpan = 2;
+            appProfiles.Add(appProfile);
+
+            _mockApplicationProfile.Setup(map => map.GetAll()).Returns(appProfiles);
+
             _mobileDataRepoMock = _fixture.InjectNewMock<IMobileDataRepository>();
+
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
         }
@@ -57,7 +68,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             List<MobileData> mobileDataStartedList = new List<MobileData>();
-            mobileDataStartedList.Add( _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite })); 
+            var mobileData = _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileData.EffectiveDate = DateTime.Now;
+            mobileDataStartedList.Add(mobileData);
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
@@ -83,7 +96,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             List<MobileData> mobileDataStartedList = new List<MobileData>();
-            mobileDataStartedList.Add(_fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite }));
+            var mobileData = _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileData.EffectiveDate = DateTime.Now.AddDays(-4);
+            mobileDataStartedList.Add(mobileData);
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
@@ -108,7 +123,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             List<MobileData> mobileDataStartedList = new List<MobileData>();
-            mobileDataStartedList.Add(_fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite }));
+            var mobileData = _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileData.EffectiveDate = DateTime.Now;
+            mobileDataStartedList.Add(mobileData);
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
@@ -119,6 +136,115 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal((mobileDataStartedList.Count + mobileDataNotStartedList.Count), viewModel.InstructionsCount);
         }
+
+        /// <summary>
+        /// This test make sure instructions are excluded when outside of the display retention
+        /// </summary>
+        [Fact]
+        public void ManifestVM_InstructionDisplayRetention_Exclude()
+        {
+            base.ClearAll();
+
+            List<MobileData> mobileDataStartedList = new List<MobileData>();
+            var mobileData = _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileData.EffectiveDate = DateTime.Now.AddDays(-4);
+            mobileDataStartedList.Add(mobileData);
+
+            List<MobileData> mobileDataNotStartedList = new List<MobileData>();
+
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+
+            Assert.Equal(0, viewModel.InstructionsCount);
+        }
+
+        /// <summary>
+        /// This test make sure instructions are included within the display retention
+        /// </summary>
+        [Fact]
+        public void ManifestVM_InstructionDisplayRetention_Include()
+        {
+            base.ClearAll();
+
+            List<ApplicationProfile> appProfiles = new List<ApplicationProfile>();
+            ApplicationProfile appProfile = new ApplicationProfile();
+            appProfile.DisplayRetention = 2;
+            appProfile.DisplaySpan = 2;
+            appProfiles.Add(appProfile);
+
+            _mockApplicationProfile.Setup(map => map.GetAll()).Returns(appProfiles);
+
+            List<MobileData> mobileDataStartedList = new List<MobileData>();
+            var mobileData = _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileData.EffectiveDate = DateTime.Now.AddDays(-1);
+            mobileDataStartedList.Add(mobileData);
+
+            List<MobileData> mobileDataNotStartedList = new List<MobileData>();
+
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+
+            Assert.Equal((mobileDataStartedList.Count + mobileDataNotStartedList.Count), viewModel.InstructionsCount);
+        }
+
+        /// <summary>
+        /// This test make sure instructions are excluded when outside of the display span
+        /// </summary>
+        [Fact]
+        public void ManifestVM_InstructionDisplaySpan_Exclude()
+        {
+            base.ClearAll();
+
+            List<MobileData> mobileDataStartedList = new List<MobileData>();
+            var mobileData = _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileData.EffectiveDate = DateTime.Now.AddDays(4);
+            mobileDataStartedList.Add(mobileData);
+
+            List<MobileData> mobileDataNotStartedList = new List<MobileData>();
+
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+
+            Assert.Equal(0, viewModel.InstructionsCount);
+        }
+
+        /// <summary>
+        /// This test make sure instructions are included within the display span
+        /// </summary>
+        [Fact]
+        public void ManifestVM_InstructionDisplaySpan_Include()
+        {
+            base.ClearAll();
+
+            List<ApplicationProfile> appProfiles = new List<ApplicationProfile>();
+            ApplicationProfile appProfile = new ApplicationProfile();
+            appProfile.DisplayRetention = 2;
+            appProfile.DisplaySpan = 2;
+            appProfiles.Add(appProfile);
+
+            _mockApplicationProfile.Setup(map => map.GetAll()).Returns(appProfiles);
+
+            List<MobileData> mobileDataStartedList = new List<MobileData>();
+            var mobileData = _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileData.EffectiveDate = DateTime.Now.AddDays(1);
+            mobileDataStartedList.Add(mobileData);
+
+            List<MobileData> mobileDataNotStartedList = new List<MobileData>();
+
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+
+            Assert.Equal((mobileDataStartedList.Count + mobileDataNotStartedList.Count), viewModel.InstructionsCount);
+        }
+
 
         /// <summary>
         /// Tests that the toast message appears when there is no internet connection

@@ -13,6 +13,8 @@ using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.Models.Instruction;
 using System.Collections.Specialized;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Models;
 
 
 namespace MWF.Mobile.Core.ViewModels
@@ -23,6 +25,8 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Members
 
         private readonly IMobileDataRepository _mobileDataRepository;
+        private readonly IApplicationProfileRepository _applicationProfileRepository;
+
         private readonly INavigationService _navigationService;
         private readonly IReachability _reachability;
         private readonly IToast _toast;
@@ -37,17 +41,19 @@ namespace MWF.Mobile.Core.ViewModels
         private ManifestSectionViewModel _nonActiveInstructionsSection;
         private ManifestSectionViewModel _activeInstructionsSection;
         private ManifestSectionViewModel _messageSection;
+        private ApplicationProfile _appProfile;
         private bool _initialised;
 
         #endregion
 
         #region Constructor
 
-        public ManifestViewModel(IMobileDataRepository mobileDataRepository, INavigationService navigationService, IReachability reachability, IToast toast,
+        public ManifestViewModel(IRepositories repositories, INavigationService navigationService, IReachability reachability, IToast toast,
                                  IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService, IMainService mainService)
         {
 
-            _mobileDataRepository = mobileDataRepository;
+            _mobileDataRepository = repositories.MobileDataRepository;
+            _applicationProfileRepository = repositories.ApplicationRepository;
 
 
             _navigationService = navigationService;
@@ -61,6 +67,8 @@ namespace MWF.Mobile.Core.ViewModels
             _mainService.CurrentDriver = _startupService.LoggedInDriver;
             _mainService.CurrentVehicle = _startupService.CurrentVehicle;
             _mainService.CurrentTrailer = _startupService.CurrentTrailer;
+
+            _appProfile = _applicationProfileRepository.GetAll().First();
 
             _initialised = true;
 
@@ -176,12 +184,15 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (!_initialised) return;
 
-            //TODO: Implement update message section
-
+            var today = DateTime.Now;
 
             // get instruction data models from repository and order them
-            var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
-            var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
+            var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_startupService.LoggedInDriver.ID);
+            var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_startupService.LoggedInDriver.ID);
+
+            activeInstructionsDataModels = activeInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
+            nonActiveInstructionsDataModels = nonActiveInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
+
             var messageDataModels = _mobileDataRepository.GetMessages(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
 
             if (activeInstructionsDataModels.ToList().Count == 0)

@@ -94,6 +94,12 @@ namespace MWF.Mobile.Core.Models
         [JsonProperty("@span")]
         public int DataSpan { get; set; }
 
+        [JsonProperty("@display_retention")]
+        public int DisplayRetention { get; set; }
+
+        [JsonProperty("@display_span")]
+        public int DisplaySpan { get; set; }
+
         [JsonProperty("@weekends")]
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool IncludeWeekends { get; set; }

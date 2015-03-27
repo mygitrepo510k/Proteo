@@ -40,6 +40,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
+        private Mock<IApplicationProfileRepository> _mockApplicationProfile;
 
            
 
@@ -63,6 +64,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
 
             _mobileData = _fixture.Create<MobileData>();
+
+
+            _mockApplicationProfile = _fixture.InjectNewMock<IApplicationProfileRepository>();
+            _mockApplicationProfile.Setup(map => map.GetAll()).Returns(_fixture.CreateMany<ApplicationProfile>());
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);

@@ -106,9 +106,6 @@ namespace MWF.Mobile.Android.Views
         {
             var drawerOpen = this._drawer.IsDrawerOpen(this._relativeLayout);
 
-            for (int i = 0; i < menu.Size(); i++)
-                menu.GetItem(i).SetVisible(!drawerOpen);
-
             return base.OnPrepareOptionsMenu(menu);
         }
 

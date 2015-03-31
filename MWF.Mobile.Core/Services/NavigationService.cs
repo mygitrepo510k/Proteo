@@ -267,9 +267,23 @@ namespace MWF.Mobile.Core.Services
 
         public void Logout_Action(NavData navData)
         {
-            // Stop the gateway polling service before we "logout" the user.
-            _gatewayPollingService.StopPollingTimer();
-            MoveTo(typeof(StartupViewModel), navData);
+            //TODO: Safety check on log out when profile dictates.
+
+            if ((VehicleSafetyProfile != null && VehicleSafetyProfile.DisplayAtLogoff)
+                || (TrailerSafetyProfile != null && TrailerSafetyProfile.DisplayAtLogoff))
+            {
+                Mvx.Resolve<IUserInteraction>().Alert("You would of done a safety check here! To be Implemented.", () =>
+                {
+                    _gatewayPollingService.StopPollingTimer();
+                    MoveTo(typeof(StartupViewModel), navData);
+                });
+            }
+            else
+            {
+                // Stop the gateway polling service before we "logout" the user.
+                _gatewayPollingService.StopPollingTimer();
+                MoveTo(typeof(StartupViewModel), navData);
+            }
         }
 
         public void PopulateNavData(NavData navData)

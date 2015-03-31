@@ -23,7 +23,7 @@ namespace MWF.Mobile.Android.Portable
     public class CustomUserInteraction : ICustomUserInteraction
     {
         public AlertDialog InstructionNotificationDialog;
-        public AlertDialog CurrentInstructionNotificationDialog;
+        public AlertDialog CurrentPopUpAlertDialog;
         public AlertDialog ConfirmDialog;
         public Vibrate Vibrate = new Vibrate();
         public Sound Sound = new Sound();
@@ -175,7 +175,7 @@ namespace MWF.Mobile.Android.Portable
         /// <param name="done">The action that is taken when the postive button is pressed</param>
         /// <param name="title">Title of the modal</param>
         /// <param name="okButton">The text of the positive button</param>
-        public void PopUpCurrentInstructionNotifaction(string message, Action done = null, string title = "", string okButton = "OK")
+        public void PopUpAlert(string message, Action done = null, string title = "", string okButton = "OK")
         {
 
             Application.SynchronizationContext.Post(ignored =>
@@ -184,11 +184,11 @@ namespace MWF.Mobile.Android.Portable
 
                //This closes the pop if its showing so it can reopen another, else it will play sound and vibrate first time.
 
-               if (CurrentInstructionNotificationDialog != null && CurrentInstructionNotificationDialog.IsShowing)
-                   CurrentInstructionNotificationDialog.Dismiss();
+               if (CurrentPopUpAlertDialog != null && CurrentPopUpAlertDialog.IsShowing)
+                   CurrentPopUpAlertDialog.Dismiss();
 
-               var customView = CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_CurrentInstructionNotification, null);
-               var textView = (TextView)customView.FindViewById(Resource.Id.currentInstructionUpdateText);
+               var customView = CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_Alert, null);
+               var textView = (TextView)customView.FindViewById(Resource.Id.popUpAlertText);
                textView.Text = message;
 
 
@@ -204,8 +204,8 @@ namespace MWF.Mobile.Android.Portable
                                    done();
                            });
 
-               CurrentInstructionNotificationDialog = notificationDialog.Create();
-               CurrentInstructionNotificationDialog.Show();
+               CurrentPopUpAlertDialog = notificationDialog.Create();
+               CurrentPopUpAlertDialog.Show();
 
            }, null);
 

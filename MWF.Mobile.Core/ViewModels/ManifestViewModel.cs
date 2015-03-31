@@ -257,7 +257,9 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (_navigationService.IsBackActionDefined())
                 {
-                    //todo: move this to base class
+                    //TODO: Update Safety Checks profile
+
+                    
                     _navigationService.GoBack();
                     return false;
                 }

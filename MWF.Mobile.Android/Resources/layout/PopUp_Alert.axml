@@ -6,7 +6,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/currentInstructionUpdateText"
+        android:id="@+id/popUpAlertText"
         android:textSize="18dp"
         android:gravity="left"
         android:paddingTop="8dp"

@@ -64,7 +64,8 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_startupService.CurrentTrailerSafetyCheckData == null && _startupService.CurrentVehicleSafetyCheckData == null)
             {
-                Mvx.Resolve<IUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { startupService.Commit(); _navigationService.MoveToNext(); });
+                //Mvx.Resolve<IUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { startupService.Commit(); _navigationService.MoveToNext(); });
+                Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { _navigationService.MoveToNext(); startupService.Commit(); });
             }
         }
 

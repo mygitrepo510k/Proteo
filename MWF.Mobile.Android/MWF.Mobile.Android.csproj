@@ -315,7 +315,7 @@
     <AndroidResource Include="Resources\layout\Item_InstructionNotifcationHeader.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\PopUp_CurrentInstructionNotification.axml">
+    <AndroidResource Include="Resources\layout\PopUp_Alert.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_DisplaySafetyCheck.axml">

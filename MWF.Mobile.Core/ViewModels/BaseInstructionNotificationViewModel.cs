@@ -35,6 +35,15 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+
+        public void UnsubscribeNotificationToken()
+        {
+            if (_notificationToken != null)
+                Messenger.Unsubscribe<Messages.GatewayInstructionNotificationMessage>(_notificationToken);
+        }
+
         abstract public void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID);
+
+
     }
 }

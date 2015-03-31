@@ -16,7 +16,9 @@ using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class InstructionSignatureViewModel : BaseInstructionNotificationViewModel
+    public class InstructionSignatureViewModel : 
+        BaseInstructionNotificationViewModel, 
+        IVisible
     {
 
         #region Private Fields
@@ -174,5 +176,18 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion BaseInstructionNotificationViewModel Overrides
+
+        #region IVisible
+
+        public void IsVisible(bool isVisible)
+        {
+            if (isVisible) { }
+            else
+            {
+                this.UnsubscribeNotificationToken();
+            }
+        }
+
+        #endregion IVisible
     }
 }

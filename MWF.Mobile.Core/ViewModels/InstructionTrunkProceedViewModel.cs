@@ -16,7 +16,8 @@ using Cirrious.MvvmCross.ViewModels;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class InstructionTrunkProceedViewModel
-        : BaseInstructionNotificationViewModel
+        : BaseInstructionNotificationViewModel,
+        IVisible
     {
         #region Private Members
 
@@ -62,7 +63,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressButtonText { get { return "Complete"; } }
 
-        public bool IsTrunkTo { get { return _mobileData.Order.Type == Enums.InstructionType.TrunkTo; }}
+        public bool IsTrunkTo { get { return _mobileData.Order.Type == Enums.InstructionType.TrunkTo; } }
 
         public ICommand CompleteInstructionCommand
         {
@@ -107,9 +108,22 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseFragmentViewModel Overrides
 
-        public override string FragmentTitle { get { return (IsTrunkTo) ? "Trunk To" : "Proceed From"; }}
+        public override string FragmentTitle { get { return (IsTrunkTo) ? "Trunk To" : "Proceed From"; } }
 
         #endregion  BaseFragmentViewModel Overrides
+
+        #region IVisible
+
+        public void IsVisible(bool isVisible)
+        {
+            if (isVisible) { }
+            else
+            {
+                this.UnsubscribeNotificationToken();
+            }
+        }
+
+        #endregion IVisible
 
     }
 }

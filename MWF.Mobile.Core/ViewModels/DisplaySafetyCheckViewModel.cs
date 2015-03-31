@@ -18,12 +18,21 @@ using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class DisplaySafetyCheckViewModel
-        : BaseInstructionNotificationViewModel, IBackButtonHandler
+        : BaseInstructionNotificationViewModel, 
+        IBackButtonHandler,
+        IVisible
     {
+
+        #region Private Members
+
         private IMainService _mainService;
         private INavigationService _navigationService;
         private Repositories.IRepositories _repositories;
         private LatestSafetyCheck _latestSafetyCheckData;
+
+        #endregion Private Members
+
+        #region Construction
 
         public DisplaySafetyCheckViewModel(IMainService mainService, INavigationService navigationService, Repositories.IRepositories repositories)
         {
@@ -50,6 +59,8 @@ namespace MWF.Mobile.Core.ViewModels
                 GenerateSafetyCheckFaultItems(_latestSafetyCheckData.TrailerSafetyCheck.Faults, true);
 
         }
+
+        #endregion Construction
 
         #region Public Properties
 
@@ -115,7 +126,6 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion Public Properties
-
 
         #region Private Methods
 
@@ -192,5 +202,18 @@ namespace MWF.Mobile.Core.ViewModels
             return task;
         }
         #endregion IBackButtonHandler Implementation
+
+        #region IVisible
+
+        public void IsVisible(bool isVisible)
+        {
+            if (isVisible) { }
+            else
+            {
+                this.UnsubscribeNotificationToken();
+            }
+        }
+
+        #endregion IVisible
     }
 }

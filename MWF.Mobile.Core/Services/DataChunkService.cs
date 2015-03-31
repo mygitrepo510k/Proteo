@@ -170,6 +170,11 @@ namespace MWF.Mobile.Core.Services
                         deleteMobileData = true;
 
                         break;
+
+                    default:
+                        _loggingService.LogEvent(string.Format("Mobile Application of state {0} attempted an uploaded.", mobileData.ProgressState), Enums.LogType.Warn);
+                        return;
+
                 }
             }
 

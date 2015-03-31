@@ -19,6 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class OrderViewModel
         : BaseInstructionNotificationViewModel,
+        IVisible,
         IBackButtonHandler
     {
         #region Private Fields
@@ -145,6 +146,19 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion BaseInstructionNotificationViewModel
+
+        #region IVisible
+
+        public void IsVisible(bool isVisible)
+        {
+            if (isVisible) { }
+            else
+            {
+                this.UnsubscribeNotificationToken();
+            }
+        }
+
+        #endregion IVisible
     }
 
 }

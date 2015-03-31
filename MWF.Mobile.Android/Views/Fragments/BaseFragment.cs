@@ -28,8 +28,14 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnPause()
         {
             this.HideKeyboard();
-
+            this.SetVisible(false);
             base.OnPause();
+        }
+
+        public override void OnResume()
+        {
+            this.SetVisible(true);
+            base.OnResume();
         }
 
         protected void HideKeyboard()
@@ -51,6 +57,14 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             //This closes the side menu when a new fragment is created
             SetHasOptionsMenu(true);
+        }
+
+        private void SetVisible(bool value)
+        {
+            var visibleViewModel = this.ViewModel as Core.Portable.IVisible;
+
+            if (visibleViewModel != null)
+                visibleViewModel.IsVisible(value);
         }
     }
 }

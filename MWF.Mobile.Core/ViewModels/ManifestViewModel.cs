@@ -20,7 +20,10 @@ using MWF.Mobile.Core.Models;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class ManifestViewModel : BaseInstructionNotificationViewModel, IBackButtonHandler
+    public class ManifestViewModel : 
+        BaseInstructionNotificationViewModel, 
+        IBackButtonHandler, 
+        IVisible
     {
         #region Private Members
 
@@ -243,7 +246,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
-
         #region IBackButtonHandler Implementation
 
         public async Task<bool> OnBackButtonPressed()
@@ -277,6 +279,19 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion BaseInstructionNotificationViewModel
+
+        #region IVisible
+
+        public void IsVisible(bool isVisible)
+        {
+            if (isVisible) { }
+            else
+            {
+                this.UnsubscribeNotificationToken();
+            }
+        }
+
+        #endregion IVisible
     }
 
     public class DummyMobileData : MobileData { }

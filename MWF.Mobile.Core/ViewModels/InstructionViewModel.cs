@@ -18,7 +18,10 @@ using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class InstructionViewModel : BaseInstructionNotificationViewModel, IBackButtonHandler
+    public class InstructionViewModel :
+        BaseInstructionNotificationViewModel,
+        IBackButtonHandler,
+        IVisible
     {
 
         #region Private Fields
@@ -39,8 +42,8 @@ namespace MWF.Mobile.Core.ViewModels
         #region Construction
 
         public InstructionViewModel(
-            INavigationService navigationService, 
-            IRepositories repositories, 
+            INavigationService navigationService,
+            IRepositories repositories,
             IMainService mainService,
             IDataChunkService dataChunkService)
         {
@@ -55,7 +58,7 @@ namespace MWF.Mobile.Core.ViewModels
             navData.Reinflate();
             _navData = navData;
             _mobileData = _navData.Data;
-           
+
         }
 
         #endregion Construction
@@ -253,6 +256,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion BaseInstructionNotificationViewModel
 
+        #region IVisible
 
+        public void IsVisible(bool isVisible)
+        {
+            if (isVisible) { }
+            else
+            {
+                this.UnsubscribeNotificationToken();
+            }
+        }
+
+        #endregion IVisible
     }
 }

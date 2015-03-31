@@ -19,7 +19,10 @@ using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class CameraViewModel : BaseInstructionNotificationViewModel, IBackButtonHandler
+    public class CameraViewModel : 
+        BaseInstructionNotificationViewModel, 
+        IBackButtonHandler,
+        IVisible
     {
         #region Private Members
 
@@ -230,5 +233,18 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion BaseFragmentViewModel Overrides
+
+        #region IVisible
+
+        public void IsVisible(bool isVisible)
+        {
+            if (isVisible) { }
+            else
+            {
+                this.UnsubscribeNotificationToken();
+            }
+        }
+
+        #endregion IVisible
     }
 }

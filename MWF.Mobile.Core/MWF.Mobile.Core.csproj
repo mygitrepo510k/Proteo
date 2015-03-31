@@ -175,6 +175,7 @@
     <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />
     <Compile Include="Portable\IVibrate.cs" />
+    <Compile Include="Portable\IVisible.cs" />
     <Compile Include="Presentation\CloseUpToViewPresentationHint.cs" />
     <Compile Include="Presentation\CloseToInitialViewPresentationHint.cs" />
     <Compile Include="Presentation\ICustomPresenter.cs" />

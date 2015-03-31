@@ -15,7 +15,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using MWF.Mobile.Tests.Helpers;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Models;
@@ -30,6 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private StartupService _startupService;
         private Mock<IMobileDataRepository> _mobileDataRepoMock;
         private Mock<IApplicationProfileRepository> _mockApplicationProfile;
+        private Mock<IMvxMessenger> _mockMessenger;
         
 
         protected override void AdditionalSetup()
@@ -56,7 +56,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
-            Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
+            _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
+            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
         }
 
         /// <summary>
@@ -322,6 +324,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructions(It.Is<Guid>(i => i == _startupService.LoggedInDriver.ID)), Times.Exactly(2));
             _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructions(It.Is<Guid>(i => i == _startupService.LoggedInDriver.ID)), Times.Exactly(2));
 
+        }
+
+        [Fact]
+        public void ManifestVM_IsVisible()
+        {
+            base.ClearAll();
+
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+
+            viewModel.IsVisible(false);
+
+            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
         }
     }
 }

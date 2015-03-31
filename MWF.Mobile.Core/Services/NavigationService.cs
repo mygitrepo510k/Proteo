@@ -409,7 +409,6 @@ namespace MWF.Mobile.Core.Services
             navData.Data.ProgressState = Enums.InstructionProgress.Complete;
             _dataChunkService.SendDataChunk(navData.GetDataChunk(), navData.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle);
             this.ShowViewModel<ManifestViewModel>();
-
         }
 
 

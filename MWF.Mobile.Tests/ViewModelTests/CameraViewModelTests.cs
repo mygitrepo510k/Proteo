@@ -35,6 +35,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IUserInteraction> _mockUserInteraction;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
         private Mock<IImageUploadService> _mockImageUploadService;
+        private Mock<IMvxMessenger> _mockMessenger;
 
         private byte[] _pictureBytes;
 
@@ -62,7 +63,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
-            Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
+            _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
+            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             _mockImageUploadService = _fixture.InjectNewMock<IImageUploadService>();
 
@@ -197,7 +200,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void InstructionVM_CheckInstructionNotification_Delete()
+        public void CameraVM_CheckInstructionNotification_Delete()
         {
 
             base.ClearAll();
@@ -219,7 +222,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void InstructionVM_CheckInstructionNotification_Update_Confirm()
+        public void CameraVM_CheckInstructionNotification_Update_Confirm()
         {
 
             base.ClearAll();
@@ -232,6 +235,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockCustomUserInteraction.Verify(cui => cui.PopUpCurrentInstructionNotifaction(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
+        }
+
+        [Fact]
+        public void CameraVM_IsVisible()
+        {
+            base.ClearAll();
+
+            var cameraVM = _fixture.Create<CameraViewModel>();
+
+            cameraVM.IsVisible(false);
+
+            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
         }
 
         #endregion Tests

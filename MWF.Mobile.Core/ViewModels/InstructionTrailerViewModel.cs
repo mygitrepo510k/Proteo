@@ -16,7 +16,8 @@ using Cirrious.MvvmCross.Plugins.Messenger;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class InstructionTrailerViewModel
-        : BaseTrailerListViewModel
+        : BaseTrailerListViewModel,
+        IVisible
     {
         #region Private Fields
 
@@ -72,6 +73,12 @@ namespace MWF.Mobile.Core.ViewModels
         private bool IsInstructionInProgress
         {
             get { return _mobileData.ProgressState != Enums.InstructionProgress.NotStarted; }
+        }
+
+        private void UnsubscribeNotificationToken()
+        {
+            if (_notificationToken != null)
+                Messenger.Unsubscribe<Messages.GatewayInstructionNotificationMessage>(_notificationToken);
         }
 
         #endregion
@@ -134,6 +141,19 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion
+
+        #region IVisible
+
+        public void IsVisible(bool isVisible)
+        {
+            if (isVisible) { }
+            else
+            {
+                this.UnsubscribeNotificationToken();
+            }
+        }
+
+        #endregion IVisible
 
 
     }

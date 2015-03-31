@@ -36,6 +36,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
         private Mock<IMainService> _mockMainService;
         private Mock<ILatestSafetyCheckRepository> _mockLatestSafetyCheckRepository;
+        private Mock<IMvxMessenger> _mockMessenger;
 
         protected override void AdditionalSetup()
         {
@@ -62,7 +63,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
-            Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
+            _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
+            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+
+
         }
 
         #endregion Setup
@@ -279,6 +284,19 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         }
+
+        [Fact]
+        public void DisplaySafetyCheckVM_IsVisible()
+        {
+            base.ClearAll();
+
+            var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+
+            displaySafetyCheckVM.IsVisible(false);
+
+            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
+        }
+
 
         #endregion Tests
     }

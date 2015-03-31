@@ -31,6 +31,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<INavigationService> _navigationService;
         private Mock<IMainService> _mockMainService;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+        private Mock<IMvxMessenger> _mockMessenger;
+
 
         protected override void AdditionalSetup()
         {
@@ -49,7 +51,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
-            Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
+            _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
+            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+            
             Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
 
         }
@@ -211,6 +216,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
 
+        }
+
+        [Fact]
+        public void OrderVM_IsVisible()
+        {
+            base.ClearAll();
+
+            var orderVM = _fixture.Create<OrderViewModel>();
+
+            orderVM.IsVisible(false);
+
+            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
         }
 
         #endregion Tests

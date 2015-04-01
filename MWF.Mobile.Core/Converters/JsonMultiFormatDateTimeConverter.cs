@@ -38,7 +38,7 @@ namespace MWF.Mobile.Core.Converters
             if (!success)
                 throw new Exception(string.Format("Unable to parse date/time string {0}", dateTimeString));
 
-            return value;
+            return value.ToLocalTime();
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

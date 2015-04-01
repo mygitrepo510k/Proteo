@@ -25,7 +25,7 @@ namespace MWF.Mobile.Core.Converters
                 return "Tomorrow";
             }
 
-            return value.Date.ToString("d");
+            return value.Date.ToLocalTime().ToString("d");
         }
 
     }

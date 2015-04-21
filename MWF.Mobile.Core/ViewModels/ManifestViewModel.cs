@@ -196,7 +196,7 @@ namespace MWF.Mobile.Core.ViewModels
             activeInstructionsDataModels = activeInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
             nonActiveInstructionsDataModels = nonActiveInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
 
-            var messageDataModels = _mobileDataRepository.GetMessages(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
+            var messageDataModels = _mobileDataRepository.GetNoneCompletedMessages(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
 
             if (activeInstructionsDataModels.ToList().Count == 0)
             {
@@ -224,9 +224,9 @@ namespace MWF.Mobile.Core.ViewModels
 
 
             // Create the view models
-            var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
-            var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
-            var messageViewModels = messageDataModels.Select(md => new ManifestInstructionViewModel(_navigationService, md));
+            var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this,_navigationService, md));
+            var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this,_navigationService, md));
+            var messageViewModels = messageDataModels.Select(md => new ManifestInstructionViewModel(this,_navigationService, md));
 
 
             // Update the observable collections in each section

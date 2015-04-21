@@ -55,8 +55,5 @@ namespace MWF.Mobile.Core.ViewModels
 
             return ShowViewModel<TViewModel>(navItem);
         }
-
-
-
     }
 }

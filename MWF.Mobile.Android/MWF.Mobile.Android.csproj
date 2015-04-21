@@ -193,6 +193,7 @@
     <Compile Include="Views\Fragments\CameraFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\DisplaySafetyCheckFragment.cs" />
+    <Compile Include="Views\Fragments\InboxFragment.cs" />
     <Compile Include="Views\Fragments\InstructionCommentFragment.cs" />
     <Compile Include="Views\Fragments\InstructionOnSiteFragment.cs" />
     <Compile Include="Views\Fragments\InstructionTrunkProceedFragment.cs" />
@@ -330,6 +331,12 @@
     <AndroidResource Include="Resources\layout\Fragment_Message.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_Inbox.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_Message.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
@@ -414,6 +421,14 @@
     <AndroidResource Include="Resources\drawable-xhdpi\button_unfocus.9.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\button_unfocus.9.png" />
     <AndroidResource Include="Resources\drawable\button_selector.xml" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_action_unread.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\ic_action_unread.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_action_unread.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_unread.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_action_read.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\ic_action_read.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_action_read.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_read.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

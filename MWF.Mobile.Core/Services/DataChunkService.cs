@@ -167,7 +167,10 @@ namespace MWF.Mobile.Core.Services
 
                         dataChunk.Title = "COMPLETE";
 
-                        deleteMobileData = true;
+                        //Delete all instruction types apart from Messages 
+                        //they need to be stored so they can be displayed in the Inbox
+                        if (mobileData.Order.Type != Enums.InstructionType.OrderMessage)
+                            deleteMobileData = true;
 
                         break;
 

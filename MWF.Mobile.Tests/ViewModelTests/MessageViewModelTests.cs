@@ -31,9 +31,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
-        private Mock<INavigationService> _mockNavigationService;
-        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
-        private Mock<IMainService> _mockMainService;
+        private Mock<IMvxMessenger> _mockMvxMessenger;
 
 
 
@@ -50,9 +48,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
-            _mockNavigationService = _fixture.InjectNewMock<INavigationService>();
-
-            Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
+            _mockMvxMessenger = _fixture.InjectNewMock<IMvxMessenger>();
+            Ioc.RegisterSingleton<IMvxMessenger>(_mockMvxMessenger.Object);
 
         }
 
@@ -71,7 +68,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
 
             Assert.Equal("Message with a Point", MessageVM.FragmentTitle);
             Assert.Equal(true, MessageVM.isWithPoint);
@@ -92,7 +89,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
 
             Assert.Equal("Message", MessageVM.FragmentTitle);
             Assert.Equal(false, MessageVM.isWithPoint);
@@ -109,11 +106,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
 
             MessageVM.ReadMessageCommand.Execute(null);
-
-            _mockNavigationService.Verify(mns => mns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Once);
 
         }
 
@@ -124,16 +119,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
 
             MessageVM.ReadMessageCommand.Execute(null);
 
-            _mockNavigationService.Verify(mns => mns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Once);
-
         }
 
-
         #endregion Test
-
     }
 }

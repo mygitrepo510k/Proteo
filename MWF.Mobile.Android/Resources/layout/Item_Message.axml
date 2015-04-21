@@ -15,26 +15,22 @@
         android:layout_height="35dp"
         android:layout_weight=".1"
         android:orientation="vertical">
-        <imageView
-            android:src="@drawable/Collect"
+        <ImageView
             android:scaleType="fitXY"
-            local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=Collect" />
-        <imageView
-            android:src="@drawable/Deliver"
+            android:src="@drawable/ic_action_read"
+            local:MvxBind="Visibility ProgressState, Converter=MessageStatus, ConverterParameter=Complete" />
+        <ImageView
             android:scaleType="fitXY"
-            local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=Deliver" />
-        <imageView
+            android:src="@drawable/ic_action_unread"
+            local:MvxBind="Visibility ProgressState, Converter=MessageStatus, ConverterParameter=OnSite" />
+        <ImageView
             android:scaleType="fitXY"
-            android:src="@drawable/TrunkTo"
-            local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=TrunkTo" />
-        <imageView
+            android:src="@drawable/ic_action_unread"
+            local:MvxBind="Visibility ProgressState, Converter=MessageStatus, ConverterParameter=Driving" />
+        <ImageView
             android:scaleType="fitXY"
-            android:src="@drawable/ProceedFrom"
-            local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=ProceedFrom" />
-        <imageView
-            android:scaleType="fitXY"
-            android:src="@drawable/MessageWithPoint"
-            local:MvxBind="Visibility InstructionType, Converter=InstructionTypeEnum, ConverterParameter=OrderMessage" />
+            android:src="@drawable/ic_action_unread"
+            local:MvxBind="Visibility ProgressState, Converter=MessageStatus, ConverterParameter=NotStarted" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="0dp"

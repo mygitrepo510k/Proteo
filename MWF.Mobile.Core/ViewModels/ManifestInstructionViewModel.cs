@@ -15,9 +15,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         private readonly INavigationService _navigationService;
         private readonly MobileData _mobileData;
+        private readonly BaseFragmentViewModel _baseViewModel;
 
-        public ManifestInstructionViewModel(INavigationService navigationService, MobileData mobileData)
+        public ManifestInstructionViewModel(BaseFragmentViewModel viewModel, INavigationService navigationService, MobileData mobileData)
         {
+            _baseViewModel = viewModel;
             _navigationService = navigationService;
             _mobileData = mobileData;
         }
@@ -40,7 +42,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string PointDescripion
         {
-            get { return (InstructionType == Enums.InstructionType.OrderMessage) ? GenerateMessageDescription() : _mobileData.Order.Description; }
+            get { return (InstructionType == Enums.InstructionType.OrderMessage) ? _mobileData.MessageText : _mobileData.Order.Description; }
         }
 
         public DateTime ArrivalDate
@@ -56,6 +58,14 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        public Enums.InstructionProgress ProgressState
+        {
+            get
+            {
+                return _mobileData.ProgressState;
+            }
+        }
+
 
         private MvxCommand _selectInstructionCommand;
         public ICommand SelectInstructionCommand
@@ -64,22 +74,31 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (InstructionType == default(Enums.InstructionType))
                     return _selectInstructionCommand;
+                else if (InstructionType == Enums.InstructionType.OrderMessage)
+                    return (_selectInstructionCommand = _selectInstructionCommand ?? new MvxCommand(OpenMessageModal));
+
                 return (_selectInstructionCommand = _selectInstructionCommand ?? new MvxCommand(SelectInstruction));
             }
         }
 
         private void SelectInstruction()
         {
-            NavData<MobileData> navItem = new NavData<MobileData>() { Data = _mobileData };
+            var navItem = new NavData<MobileData>() { Data = _mobileData };
             _navigationService.MoveToNext(navItem);
         }
 
-        private string GenerateMessageDescription()
+        private void OpenMessageModal()
         {
-            if (_mobileData.Order.Addresses.Count > 0)
-                return _mobileData.Order.Description;
-            else
-                return _mobileData.Order.Items.First().Description;
+            var navItem = new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = (_mobileData.ProgressState == Enums.InstructionProgress.Complete) };
+            _baseViewModel.ShowModalViewModel<MessageViewModel, bool>(navItem, (sendChunk) =>
+            {
+                //This is to update any read messages in the inbox.
+                //For some reason the Manifest screen doesn't need it because it just removes the items from the manifest.
+                var inboxVM = _baseViewModel as InboxViewModel;
+
+                if (inboxVM != null)
+                    inboxVM.RefreshMessagesCommand.Execute(null);
+            });
         }
 
         private string GenerateMessageTypeText()

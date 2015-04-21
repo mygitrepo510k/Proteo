@@ -26,7 +26,8 @@ namespace MWF.Mobile.Core.ViewModels
             Camera,
             ViewSafetyCheck,
             RunNewSafetyCheck,
-            Manifest
+            Manifest,
+            Inbox
         }
 
         #region Constructor
@@ -104,6 +105,11 @@ namespace MWF.Mobile.Core.ViewModels
                    Option = Option.RunNewSafetyCheck,
                    Text = "Run Safety Check"
                 },
+                new MenuViewModel
+                {
+                    Option = Option.Inbox,
+                    Text = "Inbox"
+                }
             };
         }
 
@@ -134,6 +140,9 @@ namespace MWF.Mobile.Core.ViewModels
                     break;
                 case Option.Manifest:
                     this.ShowViewModel<ManifestViewModel>();
+                    break;
+                case Option.Inbox:
+                    this.ShowViewModel<InboxViewModel>();
                     break;
                 default:
                     break;

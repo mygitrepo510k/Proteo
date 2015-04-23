@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using MWF.Mobile.Core.Enums;
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Portable
 {
@@ -30,7 +31,7 @@ namespace MWF.Mobile.Android.Portable
 
         public CustomUserInteraction()
         {
-            CurrentPopInstructions = new List<MobileData>();
+            CurrentPopInstructions = new List<ManifestInstructionViewModel>();
         }
 
         protected Activity CurrentActivity
@@ -48,7 +49,7 @@ namespace MWF.Mobile.Android.Portable
         /// <param name="done">The action that is taken when the postive button is pressed</param>
         /// <param name="title">Title of the modal</param>
         /// <param name="okButton">The text of the positive button</param>
-        public void PopUpInstructionNotifaction(List<MobileData> alteredInstructions, Action done = null, string title = "", string okButton = "OK")
+        public void PopUpInstructionNotifaction(List<ManifestInstructionViewModel> alteredInstructions, Action<List<ManifestInstructionViewModel>> done = null, string title = "", string okButton = "OK")
         {
             Application.SynchronizationContext.Post(ignored =>
             {
@@ -76,13 +77,16 @@ namespace MWF.Mobile.Android.Portable
                 //Filter the instructions into SyncStates (Added, Updated, Deleted)
                 foreach (var instruction in CurrentPopInstructions)
                 {
-                    if (instruction.Order.Type == InstructionType.OrderMessage)
-                        if (instruction.Order.Addresses == null)
+                    if (instruction.InstructionType == InstructionType.OrderMessage)
+                        if (instruction.MobileData.Order.Addresses == null)
+                        {
                             messages.Instructions.Add(instruction);
+
+                        }
                         else
                             messagesWithPoints.Instructions.Add(instruction);
                     else
-                        switch (instruction.SyncState)
+                        switch (instruction.MobileData.SyncState)
                         {
                             case SyncState.Add:
                                 addInstructions.Instructions.Add(instruction);
@@ -133,6 +137,9 @@ namespace MWF.Mobile.Android.Portable
                 {
                     //Create the expandableListView to be displayed
                     ExpandableListView expandableListView = (ExpandableListView)customView.FindViewById(Resource.Id.instuctionList);
+
+                    expandableListView.ChildClick += expandableListView_ChildClick;
+
                     ExpandableListAdapter expandableListAdapter = new ExpandableListAdapter(CurrentActivity, headers, inoList);
 
                     expandableListView.SetAdapter(expandableListAdapter);
@@ -154,8 +161,8 @@ namespace MWF.Mobile.Android.Portable
                             {
                                 if (done != null)
                                 {
+                                    done(CurrentPopInstructions);
                                     CurrentPopInstructions.Clear();
-                                    done();
                                 }
                             });
 
@@ -164,6 +171,32 @@ namespace MWF.Mobile.Android.Portable
                 }
 
             }, null);
+
+        }
+
+        void expandableListView_ChildClick(object sender, ExpandableListView.ChildClickEventArgs e)
+        {
+            InstructionNotificationDialog.Hide();
+
+            var childSelected = (InstructionGroupedListObject)e.Parent.ExpandableListAdapter.GetChild(e.GroupPosition, e.ChildPosition);
+            childSelected.Instructions[e.ChildPosition].OpenMessageModal((result) =>
+            {
+                if (result)
+                {
+                    var childList = (InstructionGroupedListObject)e.Parent.ExpandableListAdapter.GetChild(e.GroupPosition, e.ChildPosition);
+                    var child = childList.Instructions[e.ChildPosition];
+                    child.MobileData.ProgressState = InstructionProgress.Complete;
+
+                    CurrentPopInstructions.Remove(child);
+                }
+
+                    InstructionNotificationDialog.Show();
+            });
+
+        }
+
+        private void BuildInstructionDialog(List<ManifestInstructionViewModel> inst)
+        {
 
         }
 
@@ -336,19 +369,17 @@ namespace MWF.Mobile.Android.Portable
 
         #endregion
 
-        private List<MobileData> CurrentPopInstructions { get; set; }
-
-
+        private List<ManifestInstructionViewModel> CurrentPopInstructions { get; set; }
     }
 
     /// <summary>
     /// This object is used to display the grouped lists on the instruction notification Popup
     /// </summary>
-    public class InstructionGroupedListObject
+    public class InstructionGroupedListObject : Java.Lang.Object
     {
-        public InstructionGroupedListObject() { Instructions = new List<MobileData>(); }
+        public InstructionGroupedListObject() { Instructions = new List<ManifestInstructionViewModel>(); }
 
-        public List<MobileData> Instructions { get; set; }
+        public List<ManifestInstructionViewModel> Instructions { get; set; }
 
     }
 }

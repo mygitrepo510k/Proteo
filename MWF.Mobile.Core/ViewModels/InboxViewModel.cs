@@ -2,6 +2,7 @@
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
         IVisible
     {
 
-        private IRepositories _repositories;
+        private IMobileDataRepository _mobileDataRepository;
         private IMainService _mainService;
         private INavigationService _navigationService;
         private IGatewayPollingService _gatewayPollingService;
@@ -31,7 +32,7 @@ namespace MWF.Mobile.Core.ViewModels
             INavigationService navigationService,
             IGatewayPollingService gatewayPollingService)
         {
-            _repositories = repositories;
+            _mobileDataRepository = repositories.MobileDataRepository;
             _mainService = mainService;
             _navigationService = navigationService;
             _gatewayPollingService = gatewayPollingService;
@@ -73,7 +74,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void ReloadPage()
         {
-            Messages = new ObservableCollection<ManifestInstructionViewModel>(_repositories.MobileDataRepository.GetAllMessages(_mainService.CurrentDriver.ID).Select(m => new ManifestInstructionViewModel(this, _navigationService, m)).OrderBy(m => m.ProgressState).ThenBy(m => m.ArrivalDate));
+            Messages = new ObservableCollection<ManifestInstructionViewModel>(_mobileDataRepository.GetAllMessages(_mainService.CurrentDriver.ID).Select(m => new ManifestInstructionViewModel(this, _navigationService, m)).OrderBy(m => m.ProgressState).ThenBy(m => m.ArrivalDate));
             RaisePropertyChanged(() => MessagesCount);
             RaisePropertyChanged(() => InboxHeaderText);
         }

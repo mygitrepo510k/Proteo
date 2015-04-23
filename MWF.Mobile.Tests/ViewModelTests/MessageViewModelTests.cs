@@ -32,6 +32,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<IMvxMessenger> _mockMvxMessenger;
+        private Mock<IDataChunkService> _mockDataChunkService;
 
 
 
@@ -45,6 +46,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+
+            _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
+            _mockDataChunkService.Setup(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false)));
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -98,7 +102,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void MessageVM_Message_ReadButton()
+        public void MessageVM_Message_ReadButton_Unread()
         {
             base.ClearAll();
 
@@ -106,22 +110,64 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
+            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = false });
+
+            Assert.Equal("Mark as read", MessageVM.ReadButtonText);
 
             MessageVM.ReadMessageCommand.Execute(null);
+
+            _mockDataChunkService.Verify(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i==false) ), Times.Once);
+        }
+
+        [Fact]
+        public void MessageVM_Message_ReadButton_Read()
+        {
+            base.ClearAll();
+
+            _mobileData.Order.Addresses = new List<Address>();
+
+            var MessageVM = _fixture.Create<MessageViewModel>();
+
+            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = true });
+
+            Assert.Equal("Return", MessageVM.ReadButtonText);
+
+            MessageVM.ReadMessageCommand.Execute(null);
+
+            _mockDataChunkService.Verify(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false)), Times.Never);
 
         }
 
         [Fact]
-        public void MessageVM_MessageWithPoint_ReadButton()
+        public void MessageVM_MessageWithPoint_ReadButton_Unread()
         {
             base.ClearAll();
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
+            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = false });
+
+            Assert.Equal("Mark as read", MessageVM.ReadButtonText);
 
             MessageVM.ReadMessageCommand.Execute(null);
+
+            _mockDataChunkService.Verify(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false)), Times.Once);
+        }
+
+        [Fact]
+        public void MessageVM_MessageWithPoint_ReadButton_Read()
+        {
+            base.ClearAll();
+
+            var MessageVM = _fixture.Create<MessageViewModel>();
+
+            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = true });
+
+            Assert.Equal("Return", MessageVM.ReadButtonText);
+
+            MessageVM.ReadMessageCommand.Execute(null);
+
+            _mockDataChunkService.Verify(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false)), Times.Never);
 
         }
 

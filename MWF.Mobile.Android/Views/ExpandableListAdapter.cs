@@ -31,11 +31,7 @@ namespace MWF.Mobile.Android.Views
 
         public override Java.Lang.Object GetChild(int groupPosition, int childPosition)
         {
-            var child = Children[groupPosition].Instructions[childPosition];
-
-            return (child.Order.Type == Core.Enums.InstructionType.OrderMessage) 
-                ? child.MessageText 
-                : string.Format("{0} ({1})", child.Order.Description, child.Order.Description2);
+            return (Java.Lang.Object)Children[groupPosition];
         }
 
         public override long GetChildId(int groupPosition, int childPosition)
@@ -51,9 +47,14 @@ namespace MWF.Mobile.Android.Views
                 convertView = infaInflater.Inflate(Resource.Layout.Item_InstructionNotificationText, null);
             }
 
-            string child = (string)GetChild(groupPosition, childPosition);
+            var group = (InstructionGroupedListObject)GetChild(groupPosition, childPosition);
+            var child = group.Instructions[childPosition];
+            var text = (child.InstructionType == Core.Enums.InstructionType.OrderMessage)
+            ? child.MobileData.MessageText
+            : string.Format("{0} ({1})", child.MobileData.Order.Description, child.MobileData.Order.Description2);
+
             TextView tv = (TextView)convertView.FindViewById(Resource.Id.itemText);
-            tv.SetText(child, TextView.BufferType.Normal);
+            tv.SetText(text, TextView.BufferType.Normal);
 
             return convertView;
         }
@@ -75,12 +76,13 @@ namespace MWF.Mobile.Android.Views
 
         public override View GetGroupView(int groupPosition, bool isExpanded, View convertView, ViewGroup parent)
         {
-            string group = (string)GetGroup(groupPosition);
             if (convertView == null)
             {
                 LayoutInflater infalInflater = (LayoutInflater)Context.GetSystemService(Context.LayoutInflaterService);
                 convertView = infalInflater.Inflate(Resource.Layout.Item_InstructionNotifcationHeader, null);
             }
+
+            string group = (string)GetGroup(groupPosition);
             TextView tv = (TextView)convertView.FindViewById(Resource.Id.listHeader);
             tv.SetText(group, TextView.BufferType.Normal);
 
@@ -99,7 +101,9 @@ namespace MWF.Mobile.Android.Views
 
         public override bool IsChildSelectable(int groupPosition, int childPosition)
         {
-            return true;
+            var child = Children[groupPosition].Instructions[childPosition];
+
+            return child.InstructionType == Core.Enums.InstructionType.OrderMessage;
         }
     }
 

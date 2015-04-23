@@ -1,5 +1,7 @@
-﻿using MWF.Mobile.Core.Models;
+﻿using Cirrious.CrossCore;
+using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,6 +101,8 @@ namespace MWF.Mobile.Core.Services
             }
 
             _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
+
+            Mvx.Resolve<IToast>().Show("Acknowledgement sent");
 
         }
 

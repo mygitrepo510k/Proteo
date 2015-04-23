@@ -16,7 +16,8 @@ using System.Windows.Input;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class MessageViewModel
-        : BaseModalViewModel<bool>
+        : BaseModalViewModel<bool>,
+        IBackButtonHandler
     {
 
         #region Private Members
@@ -97,7 +98,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 _dataChunkService.SendDataChunk(new MobileApplicationDataChunkContentActivity(), _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle);
             }
-            ReturnResult(true);
+            ReturnResult(!_isMessageRead);
         }
 
         private void GetMobileDataFromRepository(Guid ID)
@@ -113,6 +114,20 @@ namespace MWF.Mobile.Core.ViewModels
         public override string FragmentTitle { get { return (isWithPoint) ? "Message with a Point" : "Message"; } }
 
         #endregion  BaseFragmentViewModel Overrides
+
+        #region IBackButtonHandler Implementation
+
+        public Task<bool> OnBackButtonPressed()
+        {
+
+            var task = new Task<bool>(() => false);
+
+            ReturnResult(false);
+
+            return task;
+        }
+
+        #endregion IBackButtonHandler Implementation
 
     }
 }

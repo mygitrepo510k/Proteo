@@ -17,6 +17,7 @@ using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
@@ -46,11 +47,11 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _applicationProfile = new ApplicationProfile();
             var applicationRepo = _fixture.InjectNewMock<IApplicationProfileRepository>();
-            applicationRepo.Setup(ar => ar.GetAll()).Returns(new List<ApplicationProfile>() { _applicationProfile});
+            applicationRepo.Setup(ar => ar.GetAll()).Returns(new List<ApplicationProfile>() { _applicationProfile });
 
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
-            _mockCustomUserInteraction.Setup(cui => cui.PopUpInstructionNotifaction(It.IsAny<List<MobileData>>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<List<MobileData>, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+            _mockCustomUserInteraction.Setup(cui => cui.PopUpInstructionNotifaction(It.IsAny<List<ManifestInstructionViewModel>>(), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<List<ManifestInstructionViewModel>, Action<List<ManifestInstructionViewModel>>, string, string>((s1, a, s2, s3) => a.Invoke(It.IsAny<List<ManifestInstructionViewModel>>()));
 
             var mockStartupService = Mock.Of<IStartupService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
                                                     && ssr.LoggedInDriver == _fixture.Create<Driver>());
@@ -184,11 +185,11 @@ namespace MWF.Mobile.Tests.ServiceTests
         public async Task GatewayPollingService_AddsMultipleInstructions()
         {
             base.ClearAll();
-            
+
             var id1 = new Guid();
             var id2 = new Guid();
             var id3 = new Guid();
-            Guid[] ids = {id1, id2, id3};
+            Guid[] ids = { id1, id2, id3 };
             CreateMultipleMobileDatas(SyncState.Add, ids);
 
             List<MobileData> insertList = new List<MobileData>();
@@ -358,7 +359,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Allow the timer to process the queue
             await Task.Delay(2000);
 
-            _mockGatewayQueuedService.Verify(mgqs => 
+            _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
 
             _mockDataChunkService.Verify(mms => mms.SendReadChunk(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()), Times.Once);
@@ -382,7 +383,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Allow the timer to process the queue
             await Task.Delay(2000);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpInstructionNotifaction(It.Is<List<MobileData>>(lmd => lmd.Count == 1), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpInstructionNotifaction(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == 1), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
@@ -420,7 +421,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Allow the timer to process the queue
             await Task.Delay(100);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpInstructionNotifaction(It.Is<List<MobileData>>(lmd => lmd.Count == ids.Count()), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockCustomUserInteraction.Verify(cui => cui.PopUpInstructionNotifaction(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == ids.Count()), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);

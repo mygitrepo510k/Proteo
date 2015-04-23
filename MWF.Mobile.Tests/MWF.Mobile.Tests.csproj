@@ -147,6 +147,7 @@
     <Compile Include="ViewModelTests\CustomerCodeViewModelTests.cs" />
     <Compile Include="ServiceTests\GatewayServiceTests.cs" />
     <Compile Include="ViewModelTests\DisplaySafetyCheckViewModelTests.cs" />
+    <Compile Include="ViewModelTests\InboxViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionCommentViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionOnSiteViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionSignatureViewModelTests.cs" />

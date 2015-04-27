@@ -44,8 +44,10 @@ namespace MWF.Mobile.Android.Views
                 { typeof(Core.ViewModels.MessageViewModel), typeof(Fragments.MessageFragment) },
                 { typeof(Core.ViewModels.ReviseQuantityViewModel), typeof(Fragments.ReviseQuantityFragment)},
                 { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
+                { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) },
+                { typeof(Core.ViewModels.InstructionSafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
 			    { typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
-                { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) }
+                { typeof(Core.ViewModels.InstructionSafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) }
             };
 
         #endregion

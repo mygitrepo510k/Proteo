@@ -61,6 +61,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
+
+
         #endregion Construction
 
         #region Public Properties
@@ -84,7 +86,32 @@ namespace MWF.Mobile.Core.ViewModels
 
         public IList<Item> Orders { get { return _mobileData.Order.Items; } }
 
-        public string TrailerReg { get { return (_mobileData.Order.Additional.Trailer == null) ? "No Trailer" : _mobileData.Order.Additional.Trailer.TrailerId; } }
+        public string TrailerReg
+        {
+            get
+            {
+                return string.Format("{0} {1}", OrderTrailerReg, CurrentTrailerReg);
+            }
+        }
+
+        public string OrderTrailerReg 
+        { 
+            get 
+            { 
+                return (_mobileData.Order.Additional.Trailer == null) ? "No trailer" : _mobileData.Order.Additional.Trailer.TrailerId; 
+            } 
+        }
+
+        public string CurrentTrailerReg 
+        { 
+            get 
+            {
+                var reg = (_mainService.CurrentTrailer == null) ? "No trailer" : _mainService.CurrentTrailer.Registration;
+                if (reg == OrderTrailerReg) return string.Empty;
+
+                return string.Format("(Current: {0})", reg);
+            } 
+        }
 
 
         public bool ChangeTrailerAllowed
@@ -172,6 +199,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void EditTrailer()
         {
+            _navData.OtherData["IsTrailerEditFromInstructionScreen"] = true;
             _navigationService.MoveToNext(_navData);
         }
 
@@ -181,6 +209,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
             {
+                _navData.OtherData["IsTrailerEditFromInstructionScreen"] = null;
                 _navigationService.MoveToNext(_navData);
             }
         }
@@ -260,7 +289,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void IsVisible(bool isVisible)
         {
-            if (isVisible) { }
+            if (isVisible) 
+            {
+
+            }
             else
             {
                 this.UnsubscribeNotificationToken();

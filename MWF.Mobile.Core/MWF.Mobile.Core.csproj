@@ -146,6 +146,7 @@
     <Compile Include="Models\Instruction\MobileApplicationDataChunk.cs" />
     <Compile Include="Models\Instruction\MobileApplicationDataChunkCollection.cs" />
     <Compile Include="Models\Instruction\MobileApplicationDataChunkContentActivities.cs" />
+    <Compile Include="Models\Instruction\MobileApplicationDataChunkContentActivityData.cs" />
     <Compile Include="Models\Instruction\MobileApplicationDataChunkContentActivity.cs" />
     <Compile Include="Models\Instruction\MobileApplicationDataChunkContentOrder.cs" />
     <Compile Include="Models\Instruction\MobileData.cs" />
@@ -269,7 +270,9 @@
     <Compile Include="ViewModels\SafetyCheckFaultImageViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />
+    <Compile Include="ViewModels\InstructionSafetyCheckSignatureViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckSignatureViewModel.cs" />
+    <Compile Include="ViewModels\InstructionSafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\OdometerViewModel.cs" />

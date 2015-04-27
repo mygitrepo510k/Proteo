@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.Repositories;
 using Chance.MvvmCross.Plugins.UserInteraction;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -14,12 +16,19 @@ namespace MWF.Mobile.Core.ViewModels
     public class SafetyCheckSignatureViewModel : BaseFragmentViewModel
     {
 
-        private readonly Services.IStartupService _startupService = null;
-        private readonly Services.IGatewayQueuedService _gatewayQueuedService = null;
-        private readonly IUserInteraction _userInteraction = null;
-        private readonly INavigationService _navigationService;
+        #region private/protected members
 
-        IEnumerable<Models.SafetyCheckData> _safetyCheckData;
+        protected Services.IStartupService _startupService = null;
+        protected Services.IGatewayQueuedService _gatewayQueuedService = null;
+        protected IUserInteraction _userInteraction = null;
+        protected INavigationService _navigationService;
+        protected IEnumerable<Models.SafetyCheckData> _safetyCheckData;
+        protected NavData<MobileData> _navData;
+        protected IRepositories _repositories;
+
+        #endregion
+
+        #region construction
 
         public SafetyCheckSignatureViewModel(Services.IStartupService startupService, Services.IGatewayQueuedService gatewayQueuedService, IUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService)
         {
@@ -27,6 +36,7 @@ namespace MWF.Mobile.Core.ViewModels
             _gatewayQueuedService = gatewayQueuedService;
             _userInteraction = userInteraction;
             _navigationService = navigationService;
+            _repositories = repositories;
 
             // Retrieve the vehicle and trailer safety check data from the startup info service
             _safetyCheckData = _startupService.GetCurrentSafetyCheckData();
@@ -79,6 +89,15 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        public SafetyCheckSignatureViewModel()
+        {
+
+        }
+
+        #endregion construction
+
+        #region properties
+
         private string _driverName;
         public string DriverName
         {
@@ -125,6 +144,13 @@ namespace MWF.Mobile.Core.ViewModels
             get { return (_doneCommand = _doneCommand ?? new MvxCommand(() => Done())); }
         }
 
+        public override string FragmentTitle
+        {
+            get { return "Signature"; }
+        }
+
+        #endregion properties
+
         private void Done()
         {
             if (string.IsNullOrWhiteSpace(SignatureEncodedImage))
@@ -139,15 +165,11 @@ namespace MWF.Mobile.Core.ViewModels
                 safetyCheckData.Signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
             }
 
-            // Complete the startup process
-            _startupService.Commit();
-            _navigationService.MoveToNext();
+
+            _navigationService.MoveToNext(_navData);
         }
 
-        public override string FragmentTitle
-        {
-            get { return "Signature"; }
-        }
+
     }
 
 }

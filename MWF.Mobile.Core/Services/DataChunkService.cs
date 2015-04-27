@@ -107,7 +107,7 @@ namespace MWF.Mobile.Core.Services
         /// this is called for when the instruction goes into Drive, OnSite and is Completed
         /// </summary>
         /// <param name="updateQuantity"></param>
-        public void SendDataChunk(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false)
+        public void SendDataChunk(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false, bool updateTrailer = false)
         {
             var mobileData = currentMobileData;
             mobileData.LatestDataChunkSequence++;
@@ -141,6 +141,13 @@ namespace MWF.Mobile.Core.Services
                 dataChunkActivity.Title = "REVISED QUANTITY";
 
                 dataChunk.Title = "REVISED QUANTITY";
+            }
+            else if (updateTrailer)
+            {
+                smp = _gpsService.GetSmpData(Enums.ReportReason.Trailer);
+                dataChunkActivity.Title = "REVISED TRAILER";
+                dataChunk.Title = "REVISED TRAILER";
+                dataChunkActivity.Data.Trailer = mobileData.Order.Additional.Trailer;
             }
             else
             {

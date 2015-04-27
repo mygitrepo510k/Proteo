@@ -1,6 +1,7 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
@@ -16,9 +17,14 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class SafetyCheckViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
-        private readonly IStartupService _startupService;
-        private readonly IRepositories _repositories;
-        private readonly INavigationService _navigationService;
+        #region private/protected members
+
+        protected IStartupService _startupService;
+        protected IRepositories _repositories;
+        protected INavigationService _navigationService;
+        protected NavData<MobileData> _navData;
+
+        #endregion
 
         #region Construction
 
@@ -29,7 +35,7 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
 
             Vehicle vehicle = null;
-            Trailer trailer = null;
+            Models.Trailer trailer = null;
 
             vehicle = _repositories.VehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID);
             _startupService.CurrentVehicle = vehicle;
@@ -64,12 +70,15 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_startupService.CurrentTrailerSafetyCheckData == null && _startupService.CurrentVehicleSafetyCheckData == null)
             {
-                //Mvx.Resolve<IUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { startupService.Commit(); _navigationService.MoveToNext(); });
-                Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { _navigationService.MoveToNext(); startupService.Commit(); });
+                Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { _navigationService.MoveToNext(); startupService.CommitSafetyCheckData(); });
             }
         }
 
-        private SafetyCheckData GenerateSafetyCheckData(SafetyProfile safetyProfile, Driver driver, BaseVehicle vehicle, bool isTrailer)
+        public SafetyCheckViewModel()
+        {
+        }
+
+        protected SafetyCheckData GenerateSafetyCheckData(SafetyProfile safetyProfile, Driver driver, BaseVehicle vehicle, bool isTrailer)
         {
             var faults = safetyProfile.Children
                 .OrderBy(scft => scft.Order)
@@ -187,7 +196,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void DoChecksDoneCommand()
         {
-            _navigationService.MoveToNext();
+            _navigationService.MoveToNext(_navData);
         }
 
         public override string FragmentTitle

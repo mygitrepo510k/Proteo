@@ -1,5 +1,6 @@
 ﻿using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.UI;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
@@ -14,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
+
 namespace MWF.Mobile.Core.ViewModels
 {
 
@@ -23,7 +25,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Protected Members
 
-        protected IEnumerable<Trailer> _originalTrailerList;
+        protected IEnumerable<TrailerItemViewModel> _originalTrailerList;
         protected readonly IRepositories _repositories;
         protected readonly IGatewayService _gatewayService;
         protected readonly IReachability _reachability;
@@ -43,7 +45,7 @@ namespace MWF.Mobile.Core.ViewModels
             _gatewayService = gatewayService;
 
             _repositories = repositories;
-            Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll();
+            GetTrailerModels();
         }
 
         #endregion
@@ -74,11 +76,15 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private IEnumerable<Trailer> _trailers;
-        public IEnumerable<Trailer> Trailers
+        private IEnumerable<TrailerItemViewModel> _trailers;
+        public IEnumerable<TrailerItemViewModel> Trailers
         {
             get { return _trailers; }
-            set { _trailers = value; RaisePropertyChanged(() => Trailers); }
+            set 
+            { 
+                _trailers = value;
+                RaisePropertyChanged(() => Trailers); 
+            }
         }
 
         //This is method associated with the search button in the action bar.
@@ -98,7 +104,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
             else
             {
-                Trailers = _originalTrailerList.Where(t => t.Registration != null && t.Registration.ToUpper().Contains(TrailerSearchText.ToUpper()));
+                Trailers = _originalTrailerList.Where(t => t.Trailer.Registration != null && t.Trailer.Registration.ToUpper().Contains(TrailerSearchText.ToUpper()));
             }
         }
 
@@ -112,13 +118,13 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private MvxCommand<Trailer> _trailerSelectCommand;
+        private MvxCommand<TrailerItemViewModel> _trailerSelectCommand;
         public ICommand TrailerSelectCommand
         {
             get
             {
                 var title = "Confirm your trailer";
-                return (_trailerSelectCommand = _trailerSelectCommand ?? new MvxCommand<Trailer>(t => ConfirmTrailer(t, title, t.Registration)));
+                return (_trailerSelectCommand = _trailerSelectCommand ?? new MvxCommand<TrailerItemViewModel>(t => ConfirmTrailer(t.Trailer, title, t.Trailer.Registration)));
             }
         }
 
@@ -151,10 +157,25 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private string _defaultTrailerReg;
+        public string DefaultTrailerReg
+        {
+            get
+            {
+                return _defaultTrailerReg;
+            }
+            set
+            {
+                _defaultTrailerReg = value;
+                if (_defaultTrailerReg!=null)
+                    GetTrailerModels();
+            }
+        }
+
 
         #endregion
 
-        #region Protected Methods
+        #region Protected/Private Methods
 
         protected abstract void ConfirmTrailer(Trailer trailer, string title, string message);
 
@@ -186,7 +207,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                     _repositories.TrailerRepository.Insert(trailers);
 
-                    Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll();
+                    GetTrailerModels();
 
                     //Recalls the filter text if there is text in the search field.
                     if (TrailerSearchText != null)
@@ -250,7 +271,47 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private void GetTrailerModels()
+        {
+
+            this.Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll().Select(x => new TrailerItemViewModel() 
+                                                                                                        { 
+                                                                                                            Trailer = x,
+                                                                                                            IsDefault = (string.IsNullOrEmpty(this.DefaultTrailerReg)) ? false : x.Registration == this.DefaultTrailerReg
+                                                                                                        });
+        }
+
         #endregion
+
+    }
+
+
+    public class TrailerItemViewModel : MvxViewModel
+    {
+
+        private bool _isDefault;
+
+
+
+        public Trailer Trailer { get; set; }
+        public bool IsDefault 
+        {
+            get { return _isDefault; }
+            set
+            {
+                _isDefault = value;
+                RaisePropertyChanged(() => TrailerText);
+            }
+        }
+
+        public string TrailerText
+        {
+            get
+            {
+                return (IsDefault) ? Trailer.Registration + " (as order)" : Trailer.Registration;
+            }
+        }
+
 
     }
 

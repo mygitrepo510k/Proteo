@@ -6,7 +6,7 @@
     android:layout_height="fill_parent">
     <TextView
         style="@style/Proteo.TextView.ItemText"
-        local:MvxBind="Text Registration" />
+        local:MvxBind="Text TrailerText" />
 <!--
  The arrow icon just in case we want it back.
  

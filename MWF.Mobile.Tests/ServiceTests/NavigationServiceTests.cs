@@ -808,10 +808,11 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavData<MWF.Mobile.Core.Models.Instruction.Trailer>>();
+            var navItem = new NavData<MWF.Mobile.Core.Models.Instruction.MobileData>();
+            navItem.OtherData["IsTrailerEditFromInstructionScreen"] = true;
 
             // Move to the next view model
-            service.MoveToNext(navItemMock);
+            service.MoveToNext(navItem);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -974,6 +975,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
 
+
+        // Tests the case when a user changes trailer via the "change trailer" button on the instruction screen and the trailer they select is the same
+        // as the current trailer. Since no safety check logic is required they should be deposited directly back to the instruction screen,
         [Fact]
         public void NavigationService_Mappings_Instructions_Collection_TrailerToInstruction()
         {
@@ -987,9 +991,18 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, InstructionProgress.NotStarted);
 
-            var service = _fixture.Create<NavigationService>();
+            var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
+            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
+            // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
+            navData.OtherData["UpdatedTrailer"] = trailer;
+            mobileData.Order.Additional.Trailer.TrailerId = trailer.Registration;
+
+            navData.OtherData["IsTrailerEditFromInstructionScreen"] = true;
+
+            var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
             service.MoveToNext(navData);
@@ -1000,6 +1013,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(InstructionViewModel), request.ViewModelType);
         }
 
+        //Tests the case where a trailer was selected but it was the same as the current trailer
+        //Since no safety check logic is required the user is moved directly onto the comment screen
         [Fact]
         public void NavigationService_Mappings_Instructions_Collection_TrailerToCommentScreen()
         {
@@ -1013,19 +1028,29 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData= _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, null);
 
-            var service = _fixture.Create<NavigationService>();
+            var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
+            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
+            // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
+            navData.OtherData["UpdatedTrailer"] = trailer;
+            mobileData.Order.Additional.Trailer.TrailerId = trailer.Registration;
 
+            var service = _fixture.Create<NavigationService>();
+           
             // Move to the next view model
             service.MoveToNext(navData);
 
-            //Check that the trailer list view model was navigated to
+            //Check that, since no safety check logic was required, the comment view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(InstructionCommentViewModel), request.ViewModelType);
         }
 
+
+        //Tests the case where a trailer was selected but it was the same as the current trailer, comment bypass is enabled and
+        //a signature is required
         [Fact]
         public void NavigationService_Mappings_Instructions_Collection_TrailerToSignatureScreen()
         {
@@ -1039,9 +1064,17 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, null);
 
+            var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
+            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+
+            // set the trailer the user has selected to be the same as current trailer and the one specified on the order
+            var navData = new NavData<MobileData>() { Data = mobileData };
+            navData.OtherData["UpdatedTrailer"] = trailer;
+            mobileData.Order.Additional.Trailer.TrailerId = trailer.Registration;
+
             var service = _fixture.Create<NavigationService>();
 
-            var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
             service.MoveToNext(navData);
@@ -1053,6 +1086,9 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
+
+        //Tests the case where a trailer was selected but it was the same as the current trailer (i.e no safety check logic)
+        //and the bypass comment option is enabled
         public void NavigationService_Mappings_Instructions_Collection_TrailerToComplete()
         {
             base.ClearAll();
@@ -1065,9 +1101,18 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, null);
 
+
+            var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
+            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+
+            // set the trailer the user has selected to be the same as current trailer and the one specified on the order
+            var navData = new NavData<MobileData>() { Data = mobileData };
+            navData.OtherData["UpdatedTrailer"] = trailer;
+            mobileData.Order.Additional.Trailer.TrailerId = trailer.Registration;
+
             var service = _fixture.Create<NavigationService>();
 
-            var navData = new NavData<MobileData>() { Data = mobileData };
             // Move to the next view model
             service.MoveToNext(navData);
 
@@ -1418,7 +1463,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction trailer view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
@@ -1428,9 +1473,16 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, null);
 
-            var service = _fixture.Create<NavigationService>();
+            var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
+            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
+            // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
+            navData.OtherData["UpdatedTrailer"] = trailer;
+            mobileData.Order.Additional.Trailer.TrailerId = trailer.Registration;
+
+            var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
             service.MoveToNext(navData);
@@ -1446,7 +1498,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            // presenter will report the current activity view model as MainView, current fragment model as a camera view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
@@ -1498,7 +1550,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            // presenter will report the current activity view model as MainView, current fragment model as a camera view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
@@ -1825,6 +1877,36 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
+        public void NavigationService_Mappings_TrunkTo_TrailerSelect()
+        {
+            base.ClearAll();
+
+            _mobileData.Order.Type = InstructionType.TrunkTo;
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrunkProceedViewModel>());
+
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var service = _fixture.Create<NavigationService>();
+
+            //Create a nav item for a mobile data model
+            NavData<MobileData> navData = new NavData<MobileData> { Data = _mobileData };
+            _mobileData.Order.Additional.IsTrailerConfirmationEnabled = true;
+
+            service.MoveToNext(navData);
+
+            //Check that the trailer select screen was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(InstructionTrailerViewModel), request.ViewModelType);
+
+        }
+
+        [Fact]
         public void NavigationService_Mappings_TrunkTo_Manifest()
         {
             base.ClearAll();
@@ -1842,10 +1924,12 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             //Create a nav item for a mobile data model
-            NavData<MobileData> parametersObjectIn = new NavData<MobileData> { Data = _mobileData };
-            service.MoveToNext(parametersObjectIn);
+            NavData<MobileData> navData = new NavData<MobileData> { Data = _mobileData };
+            _mobileData.Order.Additional.IsTrailerConfirmationEnabled = false;
 
-            //Check that the startup the instruction view model was navigated to
+            service.MoveToNext(navData);
+
+            //Check that the startup the manifest view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);

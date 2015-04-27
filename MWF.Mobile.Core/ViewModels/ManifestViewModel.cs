@@ -67,10 +67,6 @@ namespace MWF.Mobile.Core.ViewModels
             _startupService = startupService;
             _mainService = mainService;
 
-            _mainService.CurrentDriver = _startupService.LoggedInDriver;
-            _mainService.CurrentVehicle = _startupService.CurrentVehicle;
-            _mainService.CurrentTrailer = _startupService.CurrentTrailer;
-
             _appProfile = _applicationProfileRepository.GetAll().First();
 
             _initialised = true;

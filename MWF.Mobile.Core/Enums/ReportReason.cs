@@ -82,7 +82,7 @@ namespace MWF.Mobile.Core.Enums
         WaterAdded = 0xB7,
         Loaded = 0xB8,
         Tip = 0xB9,
-        DPIEvent = 0xBA,
+        Trailer = 0xBA,
     }
 
 }

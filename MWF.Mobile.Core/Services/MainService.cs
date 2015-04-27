@@ -23,12 +23,43 @@ namespace MWF.Mobile.Core.Services
         : MvxNavigatingObject, IMainService
     {
 
+        private IStartupService _startUpService;
+
+        public MainService(IStartupService startupService)
+        {
+            _startUpService = startupService;
+        }
 
         #region Public Members
 
-        public Driver CurrentDriver { get; set; }
-        public Vehicle CurrentVehicle { get; set; }
-        public Models.Trailer CurrentTrailer { get; set; }
+        public Driver CurrentDriver 
+        { 
+            get
+            {
+                return _startUpService.LoggedInDriver;
+            }
+
+        }
+
+        public Vehicle CurrentVehicle 
+        { 
+            get
+            {
+                return _startUpService.CurrentVehicle;
+            }
+        }
+
+        public Models.Trailer CurrentTrailer 
+        { 
+            get
+            {
+                return _startUpService.CurrentTrailer;
+            }
+            set
+            {
+                _startUpService.CurrentTrailer = value;
+            }
+        }
 
         #endregion Public Members
 

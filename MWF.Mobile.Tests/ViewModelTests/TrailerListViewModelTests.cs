@@ -26,6 +26,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private Driver _driver;
         private Trailer _trailer;
+        private TrailerItemViewModel _trailerItemViewModel;
         private IStartupService _startupService;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
 
@@ -43,11 +44,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<ICustomUserInteraction>(mockCustomUserInteraction.Object);
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _fixture.Customize<TrailerListViewModel>(tlvm => tlvm.Without(x => x.DefaultTrailerReg));
+
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
             _driver = new Core.Models.Driver() { LastName = "TestName", ID = new Guid() };
 
             _trailer = new Core.Models.Trailer() { Registration = "TestRegistration", ID = Guid.NewGuid() };
+            _trailerItemViewModel = new TrailerItemViewModel() { Trailer = _trailer };
 
             _startupService = _fixture.Create<StartupService>();
             _startupService.LoggedInDriver = _driver;
@@ -77,7 +81,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<TrailerListViewModel>();
 
-            vm.TrailerSelectCommand.Execute(_trailer);
+            vm.TrailerSelectCommand.Execute(_trailerItemViewModel);
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);
@@ -96,7 +100,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<TrailerListViewModel>();
 
-            vm.TrailerSelectCommand.Execute(_trailer);
+            vm.TrailerSelectCommand.Execute(_trailerItemViewModel);
 
             Assert.NotNull(_startupService.LoggedInDriver);
             Assert.Equal(_trailer.ID, _startupService.LoggedInDriver.LastSecondaryVehicleID);
@@ -152,17 +156,19 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            var trailerRepositry = new Mock<ITrailerRepository>();
+            var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Trailer>();
-            trailerRepositry.Setup(vr => vr.GetAll()).Returns(trailers);
+            trailerRepository.Setup(vr => vr.GetAll()).Returns(trailers);
 
-            _fixture.Inject<ITrailerRepository>(trailerRepositry.Object);
+            _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<TrailerListViewModel>();
-            vm.TrailerSearchText = "registration";
+            vm.TrailerSearchText = trailers.First().Registration;
 
-            Assert.Equal(trailers, vm.Trailers);
+            Assert.Equal(1, vm.Trailers.ToList().Count);
+
+            Assert.Equal(trailers.First(), vm.Trailers.First().Trailer);
 
         }
 
@@ -176,11 +182,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            var trailerRepositry = new Mock<ITrailerRepository>();
+            var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Trailer>();
-            trailerRepositry.Setup(vr => vr.GetAll()).Returns(trailers);
+            trailerRepository.Setup(vr => vr.GetAll()).Returns(trailers);
 
-            _fixture.Inject<ITrailerRepository>(trailerRepositry.Object);
+            _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<TrailerListViewModel>();
@@ -188,9 +194,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.RefreshListCommand.Execute(null);
 
-            Assert.Equal(trailers, vm.Trailers);
+            var trailerModels = vm.Trailers.Select(x => x.Trailer);
+
+            Assert.Equal(trailers, trailerModels);
             //Its get all twice because it calls it once on setup and another on refresh
-            trailerRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
+            trailerRepository.Verify(vr => vr.GetAll(), Times.Exactly(2));
 
         }
 
@@ -204,11 +212,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            var trailerRepositry = new Mock<ITrailerRepository>();
+            var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Trailer>(20);
-            trailerRepositry.Setup(vr => vr.GetAll()).Returns(trailers);
+            trailerRepository.Setup(vr => vr.GetAll()).Returns(trailers);
 
-            _fixture.Inject<ITrailerRepository>(trailerRepositry.Object);
+            _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<TrailerListViewModel>();
@@ -216,9 +224,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.RefreshListCommand.Execute(null);
 
-            Assert.Equal(trailers, vm.Trailers);
+            var trailerModels = vm.Trailers.Select(x => x.Trailer);
+
+            Assert.Equal(trailers, trailerModels);
             //Its get all twice because it calls it once on setup and another on refresh
-            trailerRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
+            trailerRepository.Verify(vr => vr.GetAll(), Times.Exactly(2));
 
         }
     }

@@ -35,13 +35,18 @@ namespace MWF.Mobile.Core.Services
 
         public IEnumerable<Models.SafetyCheckData> GetCurrentSafetyCheckData()
         {
+            return GetSafetyCheckData(this.CurrentVehicleSafetyCheckData, this.CurrentTrailerSafetyCheckData);
+        }
+
+        public IEnumerable<Models.SafetyCheckData> GetSafetyCheckData(Models.SafetyCheckData vehicleSafetyCheckData, Models.SafetyCheckData trailerSafetyCheckData)
+        {
             var retVal = new List<Models.SafetyCheckData>(2);
 
-            if (this.CurrentVehicleSafetyCheckData != null && this.CurrentVehicleSafetyCheckData.Faults.Any())
-                retVal.Add(this.CurrentVehicleSafetyCheckData);
+            if (vehicleSafetyCheckData != null && vehicleSafetyCheckData.Faults.Any())
+                retVal.Add(vehicleSafetyCheckData);
 
-            if (this.CurrentTrailerSafetyCheckData != null && this.CurrentTrailerSafetyCheckData.Faults.Any())
-                retVal.Add(this.CurrentTrailerSafetyCheckData);
+            if (trailerSafetyCheckData != null && trailerSafetyCheckData.Faults.Any())
+                retVal.Add(trailerSafetyCheckData);
 
             return retVal;
         }
@@ -52,7 +57,7 @@ namespace MWF.Mobile.Core.Services
             _gatewayQueuedService.StartQueueTimer();
         }
 
-        public void Commit()
+        public void CommitSafetyCheckData()
         {
             // Add the safety checks to the gateway queue
             var safetyCheckData = this.GetCurrentSafetyCheckData();

@@ -102,11 +102,11 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     order.Quantity = OrderQuantity;
                     order.Additional.ConfirmQuantity.Value = OrderQuantity;
-                    _dataChunk.Order.Add(order);
+                    _dataChunk.Data.Order.Add(order);
                 }
             }
             //This value gets updated in HE.
-            _dataChunkService.SendDataChunk(_dataChunk, _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle, true);
+            _dataChunkService.SendDataChunk(_dataChunk, _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle, updateQuantity: true);
             _navigationService.MoveToNext(_navData);
 
         }

@@ -44,5 +44,11 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
 
             return null;
         }
+
+        public static bool IsDefined(this Dictionary<string,object> dict, string key)
+        {
+            if (!dict.ContainsKey(key)) return false;
+            else return dict[key] != null;
+        }
     }
 }

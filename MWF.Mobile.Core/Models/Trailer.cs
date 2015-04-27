@@ -20,5 +20,25 @@ namespace MWF.Mobile.Core.Models
             this.SafetyCheckProfileIntLink = baseVehicle.SafetyCheckProfileIntLink;
             this.IsTrailer = IsTrailer;
         }
+
+        public static bool SameAs(Trailer trailer, Instruction.Trailer instructionTrailer)
+        {
+            if (trailer == null || instructionTrailer == null)
+            {
+                return (trailer == null && instructionTrailer == null);
+            }
+
+            return trailer.Registration == instructionTrailer.TrailerId;
+        }
+
+        public static bool SameAs(Trailer trailer1, Trailer trailer2)
+        {
+            if (trailer1 == null || trailer2 == null)
+            {
+                return (trailer1 == null && trailer2 == null);
+            }
+
+            return trailer1.ID == trailer2.ID;
+        }
     }
 }

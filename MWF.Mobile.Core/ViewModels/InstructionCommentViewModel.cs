@@ -129,7 +129,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void IsVisible(bool isVisible)
         {
-            if (isVisible) { }
+            if (isVisible) 
+            { 
+
+            }
             else
             {
                 this.UnsubscribeNotificationToken();

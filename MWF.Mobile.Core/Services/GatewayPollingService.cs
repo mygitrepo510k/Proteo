@@ -155,6 +155,7 @@ namespace MWF.Mobile.Core.Services
                                 var progress = instructionToUpdate.ProgressState;
                                 _repositories.MobileDataRepository.Delete(instructionToUpdate);
                                 instruction.ProgressState = progress;
+                                instruction.LatestDataChunkSequence = instructionToUpdate.LatestDataChunkSequence;
                             }
 
                             _repositories.MobileDataRepository.Insert(instruction);

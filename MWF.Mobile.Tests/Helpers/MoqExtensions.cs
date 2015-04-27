@@ -84,6 +84,24 @@ namespace MWF.Mobile.Tests.Helpers
             return userInteractionMock;
         }
 
+        // shortcut way of setting up a Mock UserInteraction to execute the "OK" logic of a Confirm call 
+        public static Mock<IUserInteraction> ConfirmAsyncReturnsTrueIfTitleStartsWith(this Mock<IUserInteraction> userInteractionMock, string messageStartsWith)
+        {
+            userInteractionMock.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
+                    .Returns(Task.FromResult(true));
+
+            return userInteractionMock;
+        }
+
+        // shortcut way of setting up a Mock UserInteraction to execute the "Cancel" logic of a Confirm call 
+        public static Mock<IUserInteraction> ConfirmAsyncReturnsFalseIfTitleStartsWith(this Mock<IUserInteraction> userInteractionMock, string messageStartsWith)
+        {
+            userInteractionMock.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
+                    .Returns(Task.FromResult(false));
+
+            return userInteractionMock;
+        }
+
 
         // shortcut way of setting up a Mock UserInteraction to execute the "Cancel" logic of a Confirm call 
         public static Mock<IUserInteraction> ConfirmReturnsFalseIfTitleStartsWith(this Mock<IUserInteraction> userInteractionMock, string messageStartsWith)

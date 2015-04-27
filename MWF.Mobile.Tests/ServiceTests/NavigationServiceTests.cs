@@ -882,6 +882,10 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
+            var mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+
+            mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Change Trailer?");
+
             var mobileData =_fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, false, false, null);
 
             var service = _fixture.Create<NavigationService>();
@@ -910,9 +914,15 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, null);
 
-            var service = _fixture.Create<NavigationService>();
+            var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
+            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
-            var navData = new NavData<MobileData>() { Data = mobileData}; 
+            // set the trailer the user has selected to be the same as current trailer and the one specified on the order
+            var navData = new NavData<MobileData>() { Data = mobileData };
+            mobileData.Order.Additional.Trailer.TrailerId = trailer.Registration;
+
+            var service = _fixture.Create<NavigationService>();       
 
             // Move to the next view model
             service.MoveToNext(navData);
@@ -936,9 +946,15 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, null);
 
-            var service = _fixture.Create<NavigationService>();
+            var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
+            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
+            // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
+            mobileData.Order.Additional.Trailer.TrailerId = trailer.Registration;
+
+            var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
             service.MoveToNext(navData);
@@ -962,9 +978,15 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, null);
 
-            var service = _fixture.Create<NavigationService>();
+            var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
+            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
+            // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
+            mobileData.Order.Additional.Trailer.TrailerId = trailer.Registration;
+
+            var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
             service.MoveToNext(navData);
@@ -1890,6 +1912,9 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
+            var mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+
+            mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Change Trailer?");
 
             var service = _fixture.Create<NavigationService>();
 

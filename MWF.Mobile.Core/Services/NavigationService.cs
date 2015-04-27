@@ -655,34 +655,23 @@ namespace MWF.Mobile.Core.Services
                 if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
                 {
 
-                    if (additionalContent.IsTrailerConfirmationEnabled)
+                    if (additionalContent.IsTrailerConfirmationEnabled || !Models.Trailer.SameAs(_startupService.CurrentTrailer, mobileNavData.Data.Order.Additional.Trailer))
                     {
-                        this.ShowViewModel<InstructionTrailerViewModel>(mobileNavData);
-                        return;
-                    }
-                    else
-                    {
-                        // if trailer confirmation is not explicitly enabled, still need to cater for ambiguous case
+                        // noteif trailer confirmation is not explicitly enabled, still need to cater for ambiguous case
                         // where the current trailer doesn't match the one specified on the order. Which one does the driver
                         // actually have attached and intend to use for the order?
-                        if (!Models.Trailer.SameAs(_mainService.CurrentTrailer, mobileNavData.Data.Order.Additional.Trailer))
+
+                        string message = string.Format("One specified on instruction is {0}. Current trailer is {1}.", mobileNavData.Data.Order.Additional.Trailer.TrailerId, _startupService.CurrentTrailer.Registration);
+                        var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
+
+                        if (isConfirmed)
                         {
-
-                            string message = string.Format("Trailer on instruction ({0}) doesn't match current trailer ({1}). Use current trailer for instruction?", mobileNavData.Data.Order.Additional.Trailer.TrailerId, _mainService.CurrentTrailer.Registration);
-
-                            var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync(message, "Confirm Trailer", "Use Current", "Select Trailer");
-
-                            if (isConfirmed)
-                            {
-                                UpdateTrailerForInstruction(mobileNavData, _startupService.CurrentTrailer);
-                            }
-                            else
-                            {
-                                this.ShowViewModel<InstructionTrailerViewModel>(mobileNavData);
-                                return;
-                            }
-                        
-
+                            this.ShowViewModel<InstructionTrailerViewModel>(mobileNavData);
+                            return;
+                        }
+                        else
+                        {
+                            UpdateTrailerForInstruction(mobileNavData, _startupService.CurrentTrailer);
                         }
                     }
                 }
@@ -905,7 +894,7 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Instruction TrunkTo/Proceed screens, completes the instruction and goes back to manifest screen
         /// </summary>
-        public void InstructionTrunkProceed_CustomAction(NavData navData)
+        public async void InstructionTrunkProceed_CustomAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
@@ -914,9 +903,20 @@ namespace MWF.Mobile.Core.Services
 
                 if (additionalContent.IsTrailerConfirmationEnabled)
                 {
-                    mobileNavData.OtherData["IsProceedFrom"] = true;
-                    this.ShowViewModel<InstructionTrailerViewModel>(mobileNavData);
-                    return;
+
+                    string message = string.Format("One specified on instruction is {0}. Current trailer is {1}.", mobileNavData.Data.Order.Additional.Trailer.TrailerId, _mainService.CurrentTrailer.Registration);
+                    var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync(message, "Change Trailer?",  "Select Trailer", "Use Current");
+
+                    if (isConfirmed)
+                    {
+                        mobileNavData.OtherData["IsProceedFrom"] = true;
+                        this.ShowViewModel<InstructionTrailerViewModel>(mobileNavData);
+                        return;
+                    }
+                    else
+                    {
+                        UpdateTrailerForInstruction(mobileNavData, _startupService.CurrentTrailer);                     
+                    }
                 }
           
                 CompleteInstruction(mobileNavData);

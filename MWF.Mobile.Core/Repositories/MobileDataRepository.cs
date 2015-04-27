@@ -73,7 +73,17 @@ namespace MWF.Mobile.Core.Repositories
 
 
 
-        public IEnumerable<MobileData> GetMessages(Guid driverID)
+        public IEnumerable<MobileData> GetNoneCompletedMessages(Guid driverID)
+        {
+            List<MobileData> parentItems;
+
+            parentItems = this.GetAllMessages(driverID).Where(m => m.ProgressState != Enums.InstructionProgress.Complete).ToList();
+
+            return parentItems;
+        }
+
+
+        public IEnumerable<MobileData> GetAllMessages(Guid driverID)
         {
             List<MobileData> parentItems;
 
@@ -88,7 +98,7 @@ namespace MWF.Mobile.Core.Repositories
                 PopulateChildrenRecursive(parentItems, connection);
             }
 
-            parentItems = parentItems.Where(pi => 
+            parentItems = parentItems.Where(pi =>
                 pi.Order.Type == Enums.InstructionType.OrderMessage).ToList();
 
             return parentItems;

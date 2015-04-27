@@ -485,8 +485,7 @@ namespace MWF.Mobile.Core.Services
 
             InsertCustomNavAction<MainViewModel, InstructionTrunkProceedViewModel>(InstructionTrunkProceed_CustomAction);
 
-            InsertCustomNavAction<MainViewModel, MessageViewModel>(Message_CustomAction);
-            InsertCustomBackNavAction<MainViewModel, MessageViewModel>(Message_CustomBackAction);
+            InsertCustomNavAction<MainViewModel, InboxViewModel>(Inbox_CustomAction);
 
             // safety check on logout sequence
             InsertCustomNavAction<MainViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);
@@ -503,6 +502,8 @@ namespace MWF.Mobile.Core.Services
 
 
         }
+
+
 
         #endregion Mappings Definitions
 
@@ -922,15 +923,13 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        /// <summary>
-        ///  Message screen, completes messages with and without points and goes back to manifest screen
-        /// </summary>
-        public void Message_CustomAction(NavData navData)
+        private void Inbox_CustomAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
-                var mobileData = navData as NavData<MobileData>;
-                SendMobileData(mobileData);
+                var mobileNavData = navData as NavData<MobileData>;
+
+                this.ShowViewModel<MessageViewModel>(mobileNavData);
             }
         }
 
@@ -945,10 +944,6 @@ namespace MWF.Mobile.Core.Services
             this.ShowViewModel<ManifestViewModel>();
         }
 
-        public void Message_CustomBackAction(NavData navData)
-        {
-            this.ShowViewModel<ManifestViewModel>();
-        }
 
         /// <summary>
         /// Order screen depending on the state of the instruction then it will go to the instruction on site screen if its

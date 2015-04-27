@@ -32,6 +32,7 @@ namespace MWF.Mobile.Android.Views
             {
                 { typeof(Core.ViewModels.CameraViewModel),typeof(Fragments.CameraFragment)},
                 { typeof(Core.ViewModels.DisplaySafetyCheckViewModel), typeof(Fragments.DisplaySafetyCheckFragment)},
+                { typeof(Core.ViewModels.InboxViewModel), typeof(Fragments.InboxFragment)},
                 { typeof(Core.ViewModels.InstructionViewModel), typeof(Fragments.InstructionFragment) },
                 { typeof(Core.ViewModels.InstructionCommentViewModel), typeof(Fragments.InstructionCommentFragment)},
                 { typeof(Core.ViewModels.InstructionOnSiteViewModel), typeof(Fragments.InstructionOnSiteFragment)},

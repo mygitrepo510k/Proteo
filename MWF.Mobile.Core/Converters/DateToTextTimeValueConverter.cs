@@ -16,7 +16,7 @@ namespace MWF.Mobile.Core.Converters
             {
                 return "";
             }
-            return value.ToLocalTime().ToString("HH:mm");
+            return value.ToString("HH:mm");
         }
 
     }

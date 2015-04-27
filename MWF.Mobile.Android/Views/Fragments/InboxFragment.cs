@@ -1,33 +1,35 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using Cirrious.MvvmCross.Binding.BindingContext;
+using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
-
-    public class ManifestFragment : BaseFragment
+    public class InboxFragment : BaseFragment
     {
         private IMenu optionsMenu;
 
-        public ManifestViewModel ManifestViewModel
+        public InboxViewModel InboxViewModel
         {
-            get { return (ManifestViewModel)ViewModel; }
+            get { return (InboxViewModel)ViewModel; }
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            return this.BindingInflate(Resource.Layout.Fragment_Manifest, null);
-        }
-
-        public override void OnViewCreated(View view, Bundle savedInstanceState)
-        {
-            
-            base.OnViewCreated(view, savedInstanceState);
+            return this.BindingInflate(Resource.Layout.Fragment_Inbox, null);
         }
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
@@ -44,26 +46,12 @@ namespace MWF.Mobile.Android.Views.Fragments
             {
                 case Resource.Id.action_refresh:
                     SetRefreshActionButtonState(true);
-                    ManifestViewModel.RefreshListCommand.Execute(null);
+                    InboxViewModel.RefreshMessagesCommand.Execute(null);
                     SetRefreshActionButtonState(false);
                     return true;
             }
 
             return base.OnOptionsItemSelected(item);
-        }
-
-        public override void OnResume()
-        {
-            base.OnResume();
-
-            // Refresh the view to ensure that any instructions that have changed status (e.g. not-started to in-progress)
-            // are shown in the correct section
-            ManifestViewModel viewModel = this.DataContext as ManifestViewModel;
-            if (viewModel!=null)
-            {
-                viewModel.RefreshStatusesCommand.Execute(null);
-            }
-
         }
 
         public void SetRefreshActionButtonState(bool refreshing)
@@ -84,6 +72,6 @@ namespace MWF.Mobile.Android.Views.Fragments
                 }
             }
         }
-    }
 
+    }
 }

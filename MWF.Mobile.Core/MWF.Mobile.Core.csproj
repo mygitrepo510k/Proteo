@@ -88,6 +88,7 @@
     <Compile Include="Converters\JsonMultiFormatDateTimeConverter.cs" />
     <Compile Include="Converters\JsonWrappedItemConverter.cs" />
     <Compile Include="Converters\JsonWrappedListConverter.cs" />
+    <Compile Include="Converters\MessageStatusValueConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
     <Compile Include="Converters\SingleObjectToListConverter.cs" />
     <Compile Include="Converters\StringHasLengthConverter.cs" />
@@ -248,10 +249,12 @@
     <Compile Include="ViewModels\CameraViewModel.cs" />
     <Compile Include="ViewModels\DisplaySafetyCheckFaultItemViewModel.cs" />
     <Compile Include="ViewModels\DisplaySafetyCheckViewModel.cs" />
+    <Compile Include="ViewModels\InboxViewModel.cs" />
     <Compile Include="ViewModels\InstructionOnSiteViewModel.cs" />
     <Compile Include="ViewModels\InstructionTrunkProceedViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavDataExtensions.cs" />
+    <Compile Include="ViewModels\Navigation\MessageModalNavItem.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\InstructionSignatureViewModel.cs" />
     <Compile Include="ViewModels\InstructionCommentViewModel.cs" />

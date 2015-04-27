@@ -87,9 +87,10 @@ namespace MWF.Mobile.Core.Models.Instruction
         {
             get
             {
-                return (this.Order.Addresses == null)
-                    ? this.Order.Items[0].Description
-                    : this.Order.Description;
+                if (this.Order.Addresses != null && this.Order.Addresses.Count > 0)
+                    return this.Order.Description;
+                else
+                    return this.Order.Items[0].Description;
             }
         }
 

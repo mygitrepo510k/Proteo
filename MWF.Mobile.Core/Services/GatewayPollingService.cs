@@ -16,6 +16,8 @@ using System.Xml.Linq;
 using MWF.Mobile.Core.Portable;
 using Chance.MvvmCross.Plugins.UserInteraction;
 using MWF.Mobile.Core.Utilities;
+using MWF.Mobile.Core.Presentation;
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -28,6 +30,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IReachability _reachability = null;
         private readonly IRepositories _repositories;
         private readonly IDeviceRepository _deviceRepository;
+        private readonly ICustomPresenter _customPresenter;
 
         private readonly IMvxMessenger _messenger = null;
         private readonly IGatewayService _gatewayService = null;
@@ -55,7 +58,9 @@ namespace MWF.Mobile.Core.Services
             IGatewayQueuedService gatewayQueuedService,
             IStartupService startupService,
             IMainService mainService,
-            IDataChunkService dataChunkService)
+            IDataChunkService dataChunkService,
+            ICustomPresenter customPresenter
+            )
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
@@ -67,6 +72,7 @@ namespace MWF.Mobile.Core.Services
             _startupService = startupService;
             _mainService = mainService;
             _dataChunkService = dataChunkService;
+            _customPresenter = customPresenter;
 
 
             //TODO: read this from config or somewhere?
@@ -186,9 +192,11 @@ namespace MWF.Mobile.Core.Services
 
                 Mvx.Trace("Successfully sent device acknowledgement.");
 
-                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instructions.ToList(), () =>
-                    _dataChunkService.SendReadChunk(instructions, _mainService.CurrentDriver, _mainService.CurrentVehicle), "Manifest Update", "Acknowledge");
+                var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
+                var instVM = instructions.Select(i => new ManifestInstructionViewModel(currentViewModel, null, i));
 
+                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instVM.ToList(), (instToSend) =>
+                    _dataChunkService.SendReadChunk(instToSend.Select(i => i.MobileData), _mainService.CurrentDriver, _mainService.CurrentVehicle), "Manifest Update", "Acknowledge");
             }
         }
 

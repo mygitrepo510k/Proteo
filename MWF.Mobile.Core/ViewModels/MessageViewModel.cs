@@ -16,33 +16,42 @@ using System.Windows.Input;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class MessageViewModel
-        : BaseFragmentViewModel, IBackButtonHandler
+        : BaseModalViewModel<bool>,
+        IBackButtonHandler
     {
 
         #region Private Members
 
         private MobileData _mobileData;
-        private NavData<MobileData> _navData;
+
         private IRepositories _repositories;
-        private INavigationService _navigationService;
+
+        private IDataChunkService _dataChunkService;
+        private IMainService _mainService;
 
         private MvxCommand _readMessageCommand;
+
+        private bool _isMessageRead;
 
         #endregion Private Members
 
         #region Construction
 
-        public MessageViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
+        public MessageViewModel(
+            IRepositories repositories, 
+            IMainService mainService, 
+            IDataChunkService dataChunkService)
         {
-            _navigationService = navigationService;
+            _dataChunkService = dataChunkService;
+            _mainService = mainService;
+
             _repositories = repositories;
         }
 
-        public void Init(NavData<MobileData> navData)
+        public void Init(MessageModalNavItem navData)
         {
-            navData.Reinflate();
-            _navData = navData;
-            _mobileData = navData.Data;
+            GetMobileDataFromRepository(navData.MobileDataID);
+            _isMessageRead = navData.IsRead;
         }
 
         #endregion Construction
@@ -65,7 +74,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string AddressLabelText { get { return "Address"; } }
 
-        public string ReadButtonText { get { return "Mark as read"; } }
+        public string ReadButtonText { get { return _isMessageRead ? "Return" : "Mark as read"; } }
 
         public bool isWithPoint { get { return _mobileData.Order.Addresses.Count > 0; } }
 
@@ -83,13 +92,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void ReadMessage()
         {
-            _navigationService.MoveToNext(_navData);
+            if (!_isMessageRead)
+            {
+                _mobileData.ProgressState = Enums.InstructionProgress.Complete;
+
+                _dataChunkService.SendDataChunk(new MobileApplicationDataChunkContentActivity(), _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+            }
+            ReturnResult(!_isMessageRead);
         }
 
         private void GetMobileDataFromRepository(Guid ID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(ID);
-            _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
         }
 
@@ -105,13 +119,15 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Task<bool> OnBackButtonPressed()
         {
+
             var task = new Task<bool>(() => false);
 
-            //NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
-            _navigationService.GoBack();
+            ReturnResult(false);
 
             return task;
         }
+
         #endregion IBackButtonHandler Implementation
+
     }
 }

@@ -50,11 +50,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             applicationRepo.Setup(ar => ar.GetAll()).Returns(new List<ApplicationProfile>() { _applicationProfile });
 
             _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
+
+            //Setup to skip the modal and call the action instead.
             _mockCustomUserInteraction.Setup(cui => cui.PopUpInstructionNotifaction(It.IsAny<List<ManifestInstructionViewModel>>(), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<List<ManifestInstructionViewModel>, Action<List<ManifestInstructionViewModel>>, string, string>((s1, a, s2, s3) => a.Invoke(It.IsAny<List<ManifestInstructionViewModel>>()));
+                .Callback<List<ManifestInstructionViewModel>, Action<List<ManifestInstructionViewModel>>, string, string>((s1, a, s2, s3) => _mockDataChunkService.Object.SendReadChunk(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()));
 
             var mockStartupService = Mock.Of<IStartupService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
                                                     && ssr.LoggedInDriver == _fixture.Create<Driver>());
+
             _fixture.Inject<IStartupService>(mockStartupService);
 
             _mockMainService = new Mock<IMainService>();

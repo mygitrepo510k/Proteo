@@ -3,6 +3,7 @@ using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Services;
@@ -74,12 +75,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             List<MobileData> messages = new List<MobileData>();
+            int validMessageCount = 0;
 
             for(var i = 0; i < 4; i++)
             {
                 var message = _fixture.Create<MobileData>();
                 message.Order.Type = Core.Enums.InstructionType.OrderMessage;
                 messages.Add(message);
+
+                if (message.EffectiveDate > DateTime.Today.AddDays(-7))
+                    validMessageCount++;
             }
 
             _mobileDataRepoMock.Setup(ms => ms.GetAllMessages(It.Is<Guid>(i => i == _driver.ID))).Returns(messages);
@@ -92,9 +97,28 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Verify(md => md.GetAllMessages(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));
             _mockGatewayPollingService.Verify(gp => gp.PollForInstructions(), Times.Exactly(2));
 
-            Assert.Equal(4, inboxVM.MessagesCount);
-            Assert.Equal("Showing 4 messages", inboxVM.InboxHeaderText);
+            Assert.Equal(validMessageCount, inboxVM.MessagesCount);
+            Assert.Equal("Showing " + validMessageCount + " messages", inboxVM.InboxHeaderText);
         
+        }
+
+        [Fact]
+        public void InboxVM_CheckInstructionNotification()
+        {
+
+            base.ClearAll();
+
+            var inboxVM = _fixture.Create<InboxViewModel>();
+
+            inboxVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, new Guid());
+
+            //Its twice because when the viewmodel is created then it calls refreshMessages()
+            _mobileDataRepoMock.Verify(md => md.GetAllMessages(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));
+
+            //Should only pull from the database because new instructions would of just been inserted
+            //Gets called once when the inbox is created.
+            _mockGatewayPollingService.Verify(gp => gp.PollForInstructions(), Times.Once);
+
         }
 
         #endregion Tests

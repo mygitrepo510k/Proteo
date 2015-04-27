@@ -102,8 +102,6 @@ namespace MWF.Mobile.Core.Services
 
             _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
 
-            Mvx.Resolve<IToast>().Show("Acknowledgement sent");
-
         }
 
         /// <summary>

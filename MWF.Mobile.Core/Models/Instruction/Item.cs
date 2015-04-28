@@ -4,14 +4,18 @@ using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Models.Attributes;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
+using MWF.Mobile.Core.Converters;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {   
     public class Item : IBlueSphereEntity
     {
+        private List<string> _barcodesList;
+
         public Item()
         {
             ID = Guid.NewGuid();
+            _barcodesList = new List<string>();
         }
 
         [Unique]
@@ -65,8 +69,11 @@ namespace MWF.Mobile.Core.Models.Instruction
         [XmlElement("additional")]
         public ItemAdditional Additional { get; set; }
 
-        [JsonProperty("Barcode")]
-        [XmlIgnore]
+        [JsonProperty("barcodes")]
+        [JsonConverter(typeof(JsonWrappedListConverter<string>))]
+        [Ignore]
+        public List<string> BarcodesList { get { return new List<string>(Barcodes.Split('\n')); } set { Barcodes = string.Join("\n", _barcodesList); } }
+
         public string Barcodes { get; set; }
 
     }

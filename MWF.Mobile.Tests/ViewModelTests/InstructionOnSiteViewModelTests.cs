@@ -68,7 +68,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), null);
+            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), null);
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
@@ -82,7 +82,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), null);
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
@@ -96,7 +96,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, null);
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
@@ -110,7 +110,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, false, false, null);
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
@@ -124,7 +124,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, false, null);
+            _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, false, false, false, null);
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
@@ -138,7 +138,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, true, false, null);
+            _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, true, false, false, false, null);
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 

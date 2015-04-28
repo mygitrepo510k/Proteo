@@ -140,6 +140,7 @@
     <Compile Include="Models\Instruction.cs" />
     <Compile Include="Models\Instruction\Additional.cs" />
     <Compile Include="Models\Instruction\Address.cs" />
+    <Compile Include="Models\Instruction\Barcode.cs" />
     <Compile Include="Models\Instruction\ConfirmQuantity.cs" />
     <Compile Include="Models\Instruction\DeliveryDescription.cs" />
     <Compile Include="Models\Instruction\Instruction.cs" />
@@ -243,6 +244,7 @@
     <Compile Include="Services\StartupService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="Utilities\Timer.cs" />
+    <Compile Include="ViewModels\BarcodeViewModel.cs" />
     <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />

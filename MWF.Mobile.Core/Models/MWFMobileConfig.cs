@@ -15,6 +15,7 @@ namespace MWF.Mobile.Core.Models
         public Guid ID { get; set; }
         public bool ShowConfirmTrailerScreen { get; set; }
         public bool TrailerIsEditable { get; set; }
+        public bool QuantityIsEditable { get; set; }
         public bool DeliveryAdd { get; set; }
         public string SafetyCheckPassText { get; set; }
         public string SafetyCheckFailText { get; set; }

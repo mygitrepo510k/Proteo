@@ -651,6 +651,14 @@ namespace MWF.Mobile.Core.Services
                 var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
 
+                if (mobileNavData.Data.Order.Items.Any(i =>
+                    (i.Additional.BarcodeScanRequiredForCollection && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
+                    || (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
+                {
+                    this.ShowViewModel<BarcodeViewModel>(mobileNavData);
+                    return;
+                }
+
                 //Collection
                 if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
                 {

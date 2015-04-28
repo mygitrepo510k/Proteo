@@ -49,7 +49,7 @@ namespace MWF.Mobile.Tests.Helpers
         }
 
         public static MobileData SetUpInstruction(this IFixture fixture, MWF.Mobile.Core.Enums.InstructionType instructionType,
-            bool isBypassCommentScreen, bool isTrailerConfirmationRequired, bool isCustomerNameRequired, bool isCustomerSignatureRequired, MWF.Mobile.Core.Enums.InstructionProgress? instructionProgress)
+            bool isBypassCommentScreen, bool isTrailerConfirmationRequired, bool isCustomerNameRequired, bool isCustomerSignatureRequired, bool isScanRequiredForCollection, bool isScanRequiredForDelivery, MWF.Mobile.Core.Enums.InstructionProgress? instructionProgress)
         {
             var mobileData = fixture.Create<MobileData>();
             mobileData.Order.Type = instructionType;
@@ -60,11 +60,13 @@ namespace MWF.Mobile.Tests.Helpers
             {
                 mobileData.Order.Additional.CustomerNameRequiredForCollection = isCustomerNameRequired;
                 mobileData.Order.Additional.CustomerSignatureRequiredForCollection = isCustomerSignatureRequired;
+                mobileData.Order.Items.ForEach(i => i.Additional.BarcodeScanRequiredForCollection = isScanRequiredForCollection);
             }
             else
             {
                 mobileData.Order.Additional.CustomerNameRequiredForDelivery = isCustomerNameRequired;
                 mobileData.Order.Additional.CustomerSignatureRequiredForDelivery = isCustomerSignatureRequired;
+                mobileData.Order.Items.ForEach(i => i.Additional.BarcodeScanRequiredForDelivery = isScanRequiredForDelivery);
             }
 
             if (instructionProgress != null)

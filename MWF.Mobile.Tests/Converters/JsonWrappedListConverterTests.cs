@@ -14,7 +14,7 @@ using Xunit;
 
 namespace MWF.Mobile.Tests.Converters
 {
-    public class SingleObjectToListConverterTests
+    public class JsonWrappedListConverterTests
         : MvxIoCSupportingTest
     {
         private IFixture _fixture;
@@ -25,33 +25,42 @@ namespace MWF.Mobile.Tests.Converters
 
         }
 
-
         [Fact]
-        public void SingleObjectToListConverter_SingleObject()
+        public void JsonWrappedListConverter_Primitive_SingleObject()
         {
             string jsonString = @"{""barcodes"":{""barcode"":""506010A032001855533201""}}";
 
             var deserializeJson = JsonConvert.DeserializeObject<TestItem>(jsonString);
+
+            Assert.Equal(1, deserializeJson.Barcodes.Count);
+            Assert.Equal("506010A032001855533201", deserializeJson.Barcodes.First());
         }
 
         [Fact]
-        public void SingleObjectToListConverter_ListObject()
+        public void JsonWrappedListConverter_Primitive_ListObject()
         {
             string jsonString = @"{""barcodes"": { ""barcode"": [   ""506012A076001852453401"",   ""506012A076001852453402"", ""506012A076001852453403""]}}";
 
             var deserializeJson = JsonConvert.DeserializeObject<TestItem>(jsonString);
+
+            Assert.Equal(3, deserializeJson.Barcodes.Count);
+            Assert.Equal("506012A076001852453401", deserializeJson.Barcodes[0]);
+            Assert.Equal("506012A076001852453402", deserializeJson.Barcodes[1]);
+            Assert.Equal("506012A076001852453403", deserializeJson.Barcodes[2]);
         }
 
         [Fact]
-        public void SingleObjectToListConverter_EmptyListObject()
+        public void JsonWrappedListConverter_Primitive_EmptyListObject()
         {
             string jsonString = @"{""barcodes"": { ""barcode"": [ ]}}";
 
             var deserializeJson = JsonConvert.DeserializeObject<TestItem>(jsonString);
+            Assert.Equal(0, deserializeJson.Barcodes.Count);
+
         }
 
         [Fact]
-        public void SingleObjectToListConverter_2LevelObject()
+        public void JsonWrappedListConverter_Class_SingleObject()
         {
             string jsonString = @"{""instructions"": { ""instruction"": { ""line"":""NEXT DAY\r\n      **CUSTOMERS PAPERWORK MUST BE USED***\r\n"" }}}";
 
@@ -63,7 +72,7 @@ namespace MWF.Mobile.Tests.Converters
 
 
         [Fact]
-        public void SingleObjectToListConverter_NullInstruction()
+        public void JsonWrappedListConverter_Class_NullObject()
         {
             string jsonString = @"{""instructions"": { ""instruction"": null}}";
 

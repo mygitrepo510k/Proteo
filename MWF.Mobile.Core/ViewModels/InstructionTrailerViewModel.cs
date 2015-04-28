@@ -133,7 +133,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        private void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             if (instructionID == _mobileData.ID)
             {

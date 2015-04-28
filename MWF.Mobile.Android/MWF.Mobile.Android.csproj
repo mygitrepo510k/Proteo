@@ -189,6 +189,7 @@
     <Compile Include="Views\BindableGroupListView.cs" />
     <Compile Include="Views\BindableProgress.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
+    <Compile Include="Views\Fragments\BarcodeFragment.cs" />
     <Compile Include="Views\Fragments\BaseFragment.cs" />
     <Compile Include="Views\Fragments\CameraFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
@@ -335,6 +336,12 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Message.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_Barcode.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_Barcode.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

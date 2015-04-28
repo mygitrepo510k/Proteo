@@ -67,6 +67,7 @@ namespace MWF.Mobile.Core.Services
             connection.CreateTable<Additional>();
             connection.CreateTable<Models.Instruction.Address>();
             connection.CreateTable<ApplicationProfile>();
+            connection.CreateTable<Models.Instruction.Barcode>();
             connection.CreateTable<ConfirmQuantity>();
             connection.CreateTable<CurrentDriver>();
             connection.CreateTable<Customer>();

@@ -26,10 +26,10 @@ namespace MWF.Mobile.Android.Views
         private DrawerLayout _drawer;
         private MvxListView _drawerList;
         private RelativeLayout _relativeLayout;
-        private MvxCommand _drawerClickCommand;
         private global::Android.Support.V4.App.ActionBarDrawerToggle _drawerToggle;
         protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
             {
+                { typeof(Core.ViewModels.BarcodeViewModel), typeof(Fragments.BarcodeFragment)},
                 { typeof(Core.ViewModels.CameraViewModel),typeof(Fragments.CameraFragment)},
                 { typeof(Core.ViewModels.DisplaySafetyCheckViewModel), typeof(Fragments.DisplaySafetyCheckFragment)},
                 { typeof(Core.ViewModels.InboxViewModel), typeof(Fragments.InboxFragment)},

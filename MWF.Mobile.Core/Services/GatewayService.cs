@@ -35,7 +35,8 @@ namespace MWF.Mobile.Core.Services
             _gatewayConfigRequestUrl = "http://87.117.243.226:7090/api/gateway/configrequest";
             _gatewayLogMessageUrl = "http://87.117.243.226:7090/api/gateway/logmessage";
 
-            //Local url will need to change the station number
+            //Local url, will need to change the station number
+            //gatewayDeviceRequestUrl = "http://proteo-dev3:17337/api/gateway/devicerequest";
             //_gatewayLogMessageUrl = "http://proteo-dev3:17337/api/gateway/logmessage";
             //_gatewayConfigRequestUrl = "http://proteo-dev3:17337/api/gateway/configrequest";
 
@@ -48,7 +49,7 @@ namespace MWF.Mobile.Core.Services
         public async Task<Models.ApplicationProfile> GetApplicationProfile()
         {
             //TODO: work out what BlueSphere's doing here with the MobileApplicationProfileIntLink parameter
-            var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "MobileApplicationProfileIntLink", Value = "0" }, };
+            var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "MobileApplicationProfileIntLink", Value = "306" }, };
             var data = await ServiceCallAsync<Core.Models.ApplicationProfile>("fwGetApplicationProfile", parameters);
             return data.Result;
         }

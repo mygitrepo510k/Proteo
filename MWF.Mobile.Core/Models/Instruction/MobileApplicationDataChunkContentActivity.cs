@@ -44,6 +44,8 @@ namespace MWF.Mobile.Core.Models.Instruction
         [XmlElement("signature")]
         public Signature Signature { get; set; }
 
+        //TODO: CREATE BARCODE OBJECT TO SEND BACK!!!
+
         //This is used for sending back the updated order to bluesphere
         [XmlElement("data")]
         public MobileApplicationDataChunkContentActivityData Data { get; set; }

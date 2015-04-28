@@ -122,6 +122,7 @@
   <ItemGroup>
     <Compile Include="Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="Bootstrap\MessengerPluginBootstrap.cs" />
+    <Compile Include="Converters\SingleObjectToListConverterTests.cs" />
     <Compile Include="Helpers\MockITableQuery.cs" />
     <Compile Include="Helpers\MoqExtensions.cs" />
     <Compile Include="MockDispatcher.cs" />

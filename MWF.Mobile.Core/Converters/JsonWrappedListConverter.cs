@@ -9,7 +9,6 @@ namespace MWF.Mobile.Core.Converters
 {
 
     public class JsonWrappedListConverter<T> : JsonConverter
-        where T: new()
     {
 
         public override bool CanConvert(Type objectType)
@@ -23,14 +22,18 @@ namespace MWF.Mobile.Core.Converters
             var target = new List<T>();
             var wrappedObject = jsonObject.Children().First().Children().First();
 
-            if (!wrappedObject.HasValues)
-                return target;
-
             if (wrappedObject.Type == JTokenType.Array)
                 serializer.Populate(wrappedObject.CreateReader(), target);
+            else if (!wrappedObject.HasValues)
+            {
+                if (wrappedObject.Type != JTokenType.Null)
+                {
+                    target.Add(wrappedObject.ToObject<T>());
+                }
+            }
             else
             {
-                var targetItem = new T();
+                var targetItem = Activator.CreateInstance<T>();
                 serializer.Populate(wrappedObject.CreateReader(), targetItem);
                 target.Add(targetItem);
             }

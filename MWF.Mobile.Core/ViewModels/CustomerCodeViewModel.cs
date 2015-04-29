@@ -138,7 +138,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     success = await this.SetupDevice();
                 }
-                catch
+                catch(Exception e)
                 {
                     //TODO: save to unhandled exceptions log
                     success = false;

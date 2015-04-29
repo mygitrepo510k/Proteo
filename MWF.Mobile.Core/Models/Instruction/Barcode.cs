@@ -1,6 +1,4 @@
-﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
-using MWF.Mobile.Core.Models.Attributes;
-using Newtonsoft.Json;
+﻿using MWF.Mobile.Core.Models.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,27 +8,25 @@ using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
-    public class Barcode : IBlueSphereEntity
+    public class Barcode
     {
-
-        public Barcode()
-        {
-            ID = Guid.NewGuid();
-        }
-
-        [Unique]
-        [PrimaryKey]
-        [XmlIgnore]
-        public Guid ID { get; set; }
-
-        [JsonProperty("#text")]
+        [XmlText]
         public string BarcodeText { get; set; }
 
+        [XmlAttribute("IsScanned")]
         public bool IsScanned { get; set; }
 
-        public int OrderID { get; set; }
+        [XmlAttribute("IsDelivered")]
+        public bool IsDelivered { get; set; }
 
+        [XmlAttribute("OrderId")]
+        public string OrderID { get; set; }
+
+        [XmlAttribute("DeliveryStatusCode")]
         public string DeliveryStatusCode { get; set; }
+
+        [XmlAttribute("DeliveryStatusNote")]
+        public string DeliveryStatusNote { get; set; }
 
         [ForeignKey(typeof(Item))]
         [XmlIgnore]

@@ -12,7 +12,7 @@
     <Button
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/ButtonCompleteScanning"
-        android:text="Done" />
+        local:MvxBind="Text CompleteButtonText; Click CompleteScanningCommand" />
     <Mvx.MvxListView
         android:layout_above="@id/ButtonCompleteScanning"
         android:layout_below="@id/BarcodeInput"

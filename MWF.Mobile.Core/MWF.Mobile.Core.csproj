@@ -143,6 +143,7 @@
     <Compile Include="Models\Instruction\Additional.cs" />
     <Compile Include="Models\Instruction\Address.cs" />
     <Compile Include="Models\Instruction\Barcode.cs" />
+    <Compile Include="Models\Instruction\ScannedDelivery.cs" />
     <Compile Include="Models\Instruction\ConfirmQuantity.cs" />
     <Compile Include="Models\Instruction\DeliveryDescription.cs" />
     <Compile Include="Models\Instruction\Instruction.cs" />

@@ -474,6 +474,8 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, InstructionSafetyCheckViewModel>(TrailerSafetyCheck_CustomAction);
             InsertCustomNavAction<MainViewModel, InstructionSafetyCheckSignatureViewModel>(InstructionSafetyCheckSignature_CustomAction);
 
+            InsertCustomNavAction<MainViewModel, BarcodeViewModel>(Barcode_CustomAction);
+
             InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomAction);
 
             InsertCustomNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomAction);
@@ -650,15 +652,6 @@ namespace MWF.Mobile.Core.Services
                 var additionalContent = mobileNavData.Data.Order.Additional;
                 var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
-
-                if (mobileNavData.Data.Order.Items.Any(i =>
-                    (i.Additional.BarcodeScanRequiredForCollection && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
-                    || (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
-                {
-                    this.ShowViewModel<BarcodeViewModel>(mobileNavData);
-                    return;
-                }
-
                 //Collection
                 if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
                 {
@@ -682,6 +675,14 @@ namespace MWF.Mobile.Core.Services
                             UpdateTrailerForInstruction(mobileNavData, _startupService.CurrentTrailer);
                         }
                     }
+                }
+
+                if (mobileNavData.Data.Order.Items.Any(i =>
+                    (i.Additional.BarcodeScanRequiredForCollection && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
+                    || (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
+                {
+                    this.ShowViewModel<BarcodeViewModel>(mobileNavData);
+                    return;
                 }
 
                 if (!itemAdditionalContent.BypassCommentsScreen)
@@ -751,6 +752,13 @@ namespace MWF.Mobile.Core.Services
             var additionalContent = mobileNavData.Data.Order.Additional;
             var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
+            if (mobileNavData.Data.Order.Items.Any(i =>
+                (i.Additional.BarcodeScanRequiredForCollection && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
+                || (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
+            {
+                this.ShowViewModel<BarcodeViewModel>(mobileNavData);
+                return;
+            }
 
             if (!itemAdditionalContent.BypassCommentsScreen)
             {
@@ -819,6 +827,29 @@ namespace MWF.Mobile.Core.Services
                 this.ShowViewModel<InstructionSafetyCheckSignatureViewModel>(navData);
             }
 
+        }
+
+        private async void Barcode_CustomAction(NavData navData)
+        {
+            var mobileNavData = navData as NavData<MobileData>;
+
+            var additionalContent = mobileNavData.Data.Order.Additional;
+            var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
+
+            if (!itemAdditionalContent.BypassCommentsScreen)
+            {
+                bool hasAdvanced = await ConfirmCommentAccess(mobileNavData);
+                if (hasAdvanced) return;
+            }
+
+            if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
+                ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
+            {
+                this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
+                return;
+            }
+
+            CompleteInstruction(mobileNavData);
         }
 
 

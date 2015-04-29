@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Xml.Serialization;
+using MWF.Mobile.Core.Models.Instruction;
 
 namespace MWF.Mobile.Core.Models
 {
@@ -99,13 +100,6 @@ namespace MWF.Mobile.Core.Models
         public string Sequance { get; set; }
     }
 
-    public class ScannedDelivery
-    {
-        public string CustomerName { get; set; }
-        public bool HasCustomerSigned { get; set; }
-        public List<Barcode> Barcodes { get; set; }
-    }
-
     public class Contacts
     {
         public string Name { get; set; }
@@ -117,14 +111,5 @@ namespace MWF.Mobile.Core.Models
     {
         [JsonProperty(@"line")]
         public string Line { get; set; }
-    }
-
-    public class Barcode
-    {
-        public string BarcodeData { get; set; }
-        public bool Scanned { get; set; }
-        public bool Delivered { get; set; }
-        public string OrderId { get; set; }
-        public object Tag { get; set; }
     }
 }

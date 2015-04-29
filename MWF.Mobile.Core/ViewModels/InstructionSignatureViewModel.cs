@@ -16,8 +16,8 @@ using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class InstructionSignatureViewModel : 
-        BaseInstructionNotificationViewModel, 
+    public class InstructionSignatureViewModel :
+        BaseInstructionNotificationViewModel,
         IVisible
     {
 
@@ -139,6 +139,13 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             _navData.GetDataChunk().Signature = new Models.Signature { Title = CustomerName, EncodedImage = CustomerSignatureEncodedImage };
+
+            //This indicates that the instruction has been scanned
+            if (_navData.GetDataChunk().ScannedDelivery != null)
+            {
+                _navData.GetDataChunk().ScannedDelivery.CustomerName = CustomerName;
+                _navData.GetDataChunk().ScannedDelivery.HasCustomerSigned = !string.IsNullOrWhiteSpace(CustomerSignatureEncodedImage);
+            }
 
             _navigationService.MoveToNext(_navData);
 

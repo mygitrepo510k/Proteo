@@ -1,6 +1,9 @@
-﻿using MWF.Mobile.Core.Models.Instruction;
+﻿using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,13 +18,16 @@ namespace MWF.Mobile.Core.ViewModels
         BaseInstructionNotificationViewModel,
         IVisible
     {
-        #region Construction 
+        #region Construction
 
         private MobileData _mobileData = null;
         private NavData<MobileData> _navData;
 
-        public BarcodeViewModel()
+        private INavigationService _navigationService;
+
+        public BarcodeViewModel(INavigationService navigationService)
         {
+            _navigationService = navigationService;
         }
 
         public void Init(NavData<MobileData> navData)
@@ -30,7 +36,7 @@ namespace MWF.Mobile.Core.ViewModels
             _navData = navData;
             _mobileData = navData.Data;
 
-            
+
             RefreshBarcodes();
 
         }
@@ -51,6 +57,23 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get { return _barcodeInput; }
             set { _barcodeInput = value; RaisePropertyChanged(() => BarcodeInput); CheckScanInput(); }
+        }
+
+        private MvxCommand _completeScanningCommand;
+        public ICommand CompleteScanningCommand
+        {
+            get
+            {
+                return (_completeScanningCommand = _completeScanningCommand ?? new MvxCommand(() => CompleteScanning()));
+            }
+        }
+
+        public string CompleteButtonText
+        {
+            get
+            {
+                return "Continue";
+            }
         }
 
         public bool CanScanningBeCompleted
@@ -83,9 +106,10 @@ namespace MWF.Mobile.Core.ViewModels
         {
             foreach (var barcode in Barcodes)
             {
-                if(barcode.BarcodeText.Equals(BarcodeInput))
+                if (barcode.BarcodeText.Equals(BarcodeInput))
                 {
                     barcode.ScanState = Enums.ScanState.Scanned;
+                    BarcodeInput = string.Empty;
                 }
             }
             RaisePropertyChanged(() => Barcodes);
@@ -93,8 +117,23 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void RefreshBarcodes()
         {
-            var items = _mobileData.Order.Items.Select(i => i.Barcodes);
-            Barcodes = new ObservableCollection<BarcodeItemViewModel>(items.Select(b => new BarcodeItemViewModel(this) { BarcodeText = b }));
+            List<BarcodeItemViewModel> newBarcodeVM = new List<BarcodeItemViewModel>();
+            var items = _mobileData.Order.Items;
+            foreach (var item in items)
+            {
+                newBarcodeVM.AddRange(item.BarcodesList.Select(b => new BarcodeItemViewModel(this) { BarcodeText = b, OrderID = item.ItemIdFormatted }));
+            }
+
+           Barcodes = new ObservableCollection<BarcodeItemViewModel>(newBarcodeVM);
+        }
+
+        private void CompleteScanning()
+        {
+           
+            var newScannedDelivery = new ScannedDelivery(){ Barcodes = this.Barcodes.Select(bvm => new Barcode { BarcodeText = bvm.BarcodeText, IsScanned = bvm.IsScanned, OrderID = bvm.OrderID }).ToList()};
+             _navData.GetDataChunk().ScannedDelivery = newScannedDelivery;
+
+            _navigationService.MoveToNext(_navData);
         }
 
         #endregion Private Methods

@@ -30,6 +30,12 @@ namespace MWF.Mobile.Core.ViewModels
             set { _isScanned = value; RaisePropertyChanged(() => IsScanned); }
         }
 
+        public string OrderID
+        {
+            get;
+            set;
+        }
+
         private Enums.ScanState _scanState;
         public Enums.ScanState ScanState
         {

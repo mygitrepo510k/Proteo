@@ -25,13 +25,22 @@ namespace MWF.Mobile.Android.Views.Fragments
             return this.BindingInflate(Resource.Layout.Fragment_Barcode, null);
         }
 
+        public override void OnResume()
+        {
+            base.OnResume();
+            EditText barcodeInput = (EditText)this.View.FindViewById(Resource.Id.BarcodeInput);
+            barcodeInput.RequestFocus();
+            this.ShowSoftKeyboard();
+        }
+
          public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             base.OnViewCreated(view, savedInstanceState);
-            //var barcodeItem = (TextView)view.FindViewById(Resource.Id.BarcodeItem);
-            //var set = this.CreateBindingSet<BarcodeFragment, BarcodeViewModel>();
-            //set.Bind(barcodeItem).For(b => b.Enabled).To(vm => vm.OdometerValue).WithConversion(new StringHasLengthConverter(), null);
-            //set.Apply();
+
+            var checksDoneButton = (Button)view.FindViewById(Resource.Id.ButtonCompleteScanning);
+            var set = this.CreateBindingSet<BarcodeFragment, BarcodeViewModel>();
+            set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.CanScanningBeCompleted);
+            set.Apply();
         }
     }
     

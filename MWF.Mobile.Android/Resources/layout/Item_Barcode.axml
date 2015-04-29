@@ -1,13 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    <TextView
-        android:id="@+id/BarcodeItem"
-        style="@style/Proteo.TextView.ItemText"
-        local:MvxBind="Text BarcodeText" />
+    android:layout_height="wrap_content"
+    android:paddingLeft="8dp"
+    android:paddingRight="16dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:weightSum="1.0"
+    android:background="?android:attr/selectableItemBackground">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:layout_weight=".1"
+        android:orientation="vertical">
+        <ImageView
+            android:scaleType="fitXY"
+            android:src="@drawable/empty_square"
+            local:MvxBind="Visibility ScanState, Converter=ScanStateEnum, ConverterParameter=NotScanned" />
+        <ImageView
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_action_accept"
+            local:MvxBind="Visibility ScanState, Converter=ScanStateEnum, ConverterParameter=Scanned" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".9"
+        android:paddingLeft="8dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/BarcodeItem"
+            style="@style/Proteo.TextView.ItemText"
+            local:MvxBind="Text BarcodeText" />
+    </LinearLayout>
 <!--
  The arrow icon just in case we want it back.
  

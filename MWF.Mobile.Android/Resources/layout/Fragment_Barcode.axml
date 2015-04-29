@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -9,7 +9,13 @@
         android:imeOptions="actionDone"
         android:singleLine="true"
         local:MvxBind="Text BarcodeInput" />
+    <Button
+        style="@style/Proteo.Button.Bottom"
+        android:id="@+id/ButtonCompleteScanning"
+        android:text="Done" />
     <Mvx.MvxListView
+        android:layout_above="@id/ButtonCompleteScanning"
+        android:layout_below="@id/BarcodeInput"
         local:MvxBind="ItemsSource Barcodes"
         local:MvxItemTemplate="@layout/item_barcode" />
-</LinearLayout>
+</RelativeLayout>

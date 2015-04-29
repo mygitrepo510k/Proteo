@@ -90,8 +90,10 @@
     <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\MessageStatusValueConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
+    <Compile Include="Converters\ScanStateEnumValueConverter.cs" />
     <Compile Include="Converters\SingleObjectToListConverter.cs" />
     <Compile Include="Converters\StringHasLengthConverter.cs" />
+    <Compile Include="Enums\ScanState.cs" />
     <Compile Include="Enums\DriverActivity.cs" />
     <Compile Include="Enums\InstructionProgress.cs" />
     <Compile Include="Enums\InstructionType.cs" />
@@ -244,6 +246,7 @@
     <Compile Include="Services\StartupService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="Utilities\Timer.cs" />
+    <Compile Include="ViewModels\BarcodeItemViewModel.cs" />
     <Compile Include="ViewModels\BarcodeViewModel.cs" />
     <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />

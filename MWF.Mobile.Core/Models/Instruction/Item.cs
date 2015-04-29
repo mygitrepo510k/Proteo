@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 using MWF.Mobile.Core.Converters;
 
 namespace MWF.Mobile.Core.Models.Instruction
-{   
+{
     public class Item : IBlueSphereEntity
     {
         private List<string> _barcodesList;
@@ -72,7 +72,15 @@ namespace MWF.Mobile.Core.Models.Instruction
         [JsonProperty("barcodes")]
         [JsonConverter(typeof(JsonWrappedListConverter<string>))]
         [Ignore]
-        public List<string> BarcodesList { get { return new List<string>(Barcodes.Split('\n')); } set { Barcodes = string.Join("\n", _barcodesList); } }
+        public List<string> BarcodesList
+        {
+            get
+            {
+                var cleanString = Barcodes ?? "";
+                return new List<string>(cleanString.Split('\n'));
+            }
+            set { Barcodes = string.Join("\n", value); }
+        }
 
         public string Barcodes { get; set; }
 

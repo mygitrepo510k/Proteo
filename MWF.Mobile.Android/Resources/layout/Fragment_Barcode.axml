@@ -4,18 +4,22 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <EditText
+    <MWF.Mobile.Android.Views.KeyboardlessEditText
         android:id="@+id/BarcodeInput"
-        android:imeOptions="actionDone"
         android:singleLine="true"
+        android:focusable="true"
         local:MvxBind="Text BarcodeInput" />
     <Button
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/ButtonCompleteScanning"
         local:MvxBind="Text CompleteButtonText; Click CompleteScanningCommand" />
-    <Mvx.MvxListView
+    <MWF.Mobile.Android.Views.BindableGroupListView
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_above="@id/ButtonCompleteScanning"
         android:layout_below="@id/BarcodeInput"
-        local:MvxBind="ItemsSource Barcodes"
-        local:MvxItemTemplate="@layout/item_barcode" />
+        local:MvxBind="ItemsSource BarcodeSections"
+        local:MvxItemTemplate="@layout/item_barcode"
+        local:GroupItemTemplate="@layout/item_section" />
 </RelativeLayout>

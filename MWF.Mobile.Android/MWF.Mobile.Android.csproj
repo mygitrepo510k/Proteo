@@ -188,6 +188,7 @@
     <Compile Include="Views\BindableGroupListAdapter.cs" />
     <Compile Include="Views\BindableGroupListView.cs" />
     <Compile Include="Views\BindableProgress.cs" />
+    <Compile Include="Views\KeyboardlessEditText.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\BarcodeFragment.cs" />
     <Compile Include="Views\Fragments\BaseFragment.cs" />

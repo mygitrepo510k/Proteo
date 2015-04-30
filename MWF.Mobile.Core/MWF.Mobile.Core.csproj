@@ -248,6 +248,7 @@
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="Utilities\Timer.cs" />
     <Compile Include="ViewModels\BarcodeItemViewModel.cs" />
+    <Compile Include="ViewModels\BarcodeSectionViewModel.cs" />
     <Compile Include="ViewModels\BarcodeViewModel.cs" />
     <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />

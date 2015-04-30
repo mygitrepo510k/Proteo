@@ -2525,9 +2525,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            var mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
 
-            mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Change Trailer?");
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Change Trailer?");
 
             var service = _fixture.Create<NavigationService>();
 
@@ -2585,6 +2584,8 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
+            //Skip trailer selection and go straight to barcode screen
+            _mockUserInteraction.ConfirmAsyncReturnsFalseIfTitleStartsWith("Change Trailer?");
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, true, true, Core.Enums.InstructionProgress.OnSite);
 
@@ -2600,6 +2601,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(BarcodeViewModel), request.ViewModelType);
         }
+
 
         #endregion
 

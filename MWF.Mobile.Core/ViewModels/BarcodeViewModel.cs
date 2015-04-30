@@ -1,4 +1,6 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
@@ -23,6 +25,9 @@ namespace MWF.Mobile.Core.ViewModels
         private MobileData _mobileData = null;
         private NavData<MobileData> _navData;
 
+        private BarcodeSectionViewModel _unprocessedBarcodes;
+        private BarcodeSectionViewModel _processedBarcodes;
+
         private INavigationService _navigationService;
 
         public BarcodeViewModel(INavigationService navigationService)
@@ -36,20 +41,53 @@ namespace MWF.Mobile.Core.ViewModels
             _navData = navData;
             _mobileData = navData.Data;
 
+            CreateSections();
+        }
 
-            RefreshBarcodes();
+        private void CreateSections()
+        {
+            BarcodeSections = new ObservableCollection<BarcodeSectionViewModel>();
 
+            _unprocessedBarcodes = new BarcodeSectionViewModel(this)
+            {
+                SectionHeader = "Unprocessed Barcodes",
+            };
+
+            BarcodeSections.Add(_unprocessedBarcodes);
+
+
+            _processedBarcodes = new BarcodeSectionViewModel(this)
+            {
+                SectionHeader = "Processed Barcodes",
+            };
+
+            BarcodeSections.Add(_processedBarcodes);
+
+
+            //Initalize the unprocessed collection
+            List<BarcodeItemViewModel> newBarcodeVM = new List<BarcodeItemViewModel>();
+            var items = _mobileData.Order.Items;
+            foreach (var item in items)
+            {
+                newBarcodeVM.AddRange(item.BarcodesList.Select(b => new BarcodeItemViewModel(this) { BarcodeText = b, OrderID = item.ItemIdFormatted }));
+            }
+
+            _unprocessedBarcodes.Barcodes = new ObservableCollection<BarcodeItemViewModel>(newBarcodeVM);
+            _processedBarcodes.Barcodes = new ObservableCollection<BarcodeItemViewModel>();
+
+            RaisePropertyChanged(() => BarcodeSections);
         }
 
         #endregion Construction
 
         #region Public Properties
 
-        private ObservableCollection<BarcodeItemViewModel> _barcodes;
-        public ObservableCollection<BarcodeItemViewModel> Barcodes
+
+        private ObservableCollection<BarcodeSectionViewModel> _barcodeSections;
+        public ObservableCollection<BarcodeSectionViewModel> BarcodeSections
         {
-            get { return _barcodes; }
-            set { _barcodes = value; RaisePropertyChanged(() => Barcodes); }
+            get { return _barcodeSections; }
+            set { _barcodeSections = value; RaisePropertyChanged(() => BarcodeSections); }
         }
 
         private string _barcodeInput;
@@ -80,17 +118,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                bool allScansCompleted = true;
-
-                foreach (var barcode in Barcodes)
-                {
-                    if (!allScansCompleted)
-                        return allScansCompleted;
-
-                    allScansCompleted = (barcode.ScanState != Enums.ScanState.NotScanned);
-                }
-
-                return allScansCompleted;
+                return _unprocessedBarcodes.Barcodes.Count() == 0;
             }
             set
             {
@@ -104,7 +132,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void CheckScanInput()
         {
-            foreach (var barcode in Barcodes)
+            foreach (var barcode in _unprocessedBarcodes.Barcodes)
             {
                 if (barcode.BarcodeText.Equals(BarcodeInput))
                 {
@@ -112,26 +140,40 @@ namespace MWF.Mobile.Core.ViewModels
                     BarcodeInput = string.Empty;
                 }
             }
-            RaisePropertyChanged(() => Barcodes);
+
+            UpdateBarcodes();
+
+            if (BarcodeInput != string.Empty)
+                Mvx.Resolve<IUserInteraction>().Alert("Invalid Barcode", () => BarcodeInput = string.Empty);
         }
 
-        private void RefreshBarcodes()
+        private void UpdateBarcodes()
         {
-            List<BarcodeItemViewModel> newBarcodeVM = new List<BarcodeItemViewModel>();
-            var items = _mobileData.Order.Items;
-            foreach (var item in items)
+
+            var unprocessBarcodes = _unprocessedBarcodes.Barcodes;
+            var processedBarcodes = _processedBarcodes.Barcodes;
+
+
+            foreach (var barcode in unprocessBarcodes)
             {
-                newBarcodeVM.AddRange(item.BarcodesList.Select(b => new BarcodeItemViewModel(this) { BarcodeText = b, OrderID = item.ItemIdFormatted }));
+                if (barcode.IsScanned)
+                {
+                    unprocessBarcodes.Remove(barcode);
+                    processedBarcodes.Add(barcode);
+                }
             }
 
-           Barcodes = new ObservableCollection<BarcodeItemViewModel>(newBarcodeVM);
+            _processedBarcodes.Barcodes = new ObservableCollection<BarcodeItemViewModel>(processedBarcodes);
+            _unprocessedBarcodes.Barcodes = new ObservableCollection<BarcodeItemViewModel>(unprocessBarcodes);
+
+
         }
 
         private void CompleteScanning()
         {
-           
-            var newScannedDelivery = new ScannedDelivery(){ Barcodes = this.Barcodes.Select(bvm => new Barcode { BarcodeText = bvm.BarcodeText, IsScanned = bvm.IsScanned, OrderID = bvm.OrderID }).ToList()};
-             _navData.GetDataChunk().ScannedDelivery = newScannedDelivery;
+
+            var newScannedDelivery = new ScannedDelivery() { Barcodes = _processedBarcodes.Barcodes.Select(bvm => new Barcode { BarcodeText = bvm.BarcodeText, IsScanned = bvm.IsScanned, OrderID = bvm.OrderID }).ToList() };
+            _navData.GetDataChunk().ScannedDelivery = newScannedDelivery;
 
             _navigationService.MoveToNext(_navData);
         }
@@ -148,6 +190,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion Public Methods
 
+        public class DummyMobileData : MobileData { }
 
 
 

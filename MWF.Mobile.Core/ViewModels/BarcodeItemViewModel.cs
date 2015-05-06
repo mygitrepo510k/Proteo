@@ -16,6 +16,14 @@ namespace MWF.Mobile.Core.ViewModels
             _barcodeVM = barcodeVM;
         }
 
+
+        private bool _isDummy;
+        public bool IsDummy
+        {
+            get { return _isDummy; }
+            set { _isDummy = value; RaisePropertyChanged(() => IsDummy); }
+        }
+
         private string _barcodeText;
         public string BarcodeText
         {
@@ -36,8 +44,8 @@ namespace MWF.Mobile.Core.ViewModels
             set;
         }
 
-        private Enums.ScanState _scanState;
-        public Enums.ScanState ScanState
+        private Enums.ScanState? _scanState;
+        public Enums.ScanState? ScanState
         {
             get { return _scanState; }
             set

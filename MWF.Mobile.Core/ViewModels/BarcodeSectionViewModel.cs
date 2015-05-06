@@ -15,6 +15,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public BarcodeSectionViewModel(BarcodeViewModel barcodeViewModel)
         {
+            _barcodes = new ObservableCollection<BarcodeItemViewModel>();
             _barcodeViewModel = barcodeViewModel;
 
         }

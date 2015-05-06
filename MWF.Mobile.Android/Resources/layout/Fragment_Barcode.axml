@@ -8,6 +8,7 @@
         android:id="@+id/BarcodeInput"
         android:singleLine="true"
         android:focusable="true"
+        android:layout_height="0dp"
         local:MvxBind="Text BarcodeInput" />
     <Button
         style="@style/Proteo.Button.Bottom"

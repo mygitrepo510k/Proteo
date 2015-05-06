@@ -38,7 +38,7 @@ namespace MWF.Mobile.Android.Views
 
         public override bool OnTouchEvent(MotionEvent e)
         {
-            var ret=base.OnTouchEvent(e);
+            var ret = base.OnTouchEvent(e);
 
             hideKeyboard();
 

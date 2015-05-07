@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
+using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -26,8 +27,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
+        private readonly IConfigRepository _configRepository;
+
         private IMainService _mainService;
         private MobileData _mobileData;
+        private MWFMobileConfig _mobileConfig;
         private Item _order;
         private NavData<Item> _navData;
 
@@ -40,6 +44,7 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
             _repositories = repositories;
             _mainService = mainService;
+            _configRepository = repositories.ConfigRepository;
         }
 
         public void Init(NavData<Item> navData)
@@ -48,7 +53,7 @@ namespace MWF.Mobile.Core.ViewModels
             _navData = navData;
             _order = navData.Data;
             _mobileData = navData.GetMobileData();
-
+            _mobileConfig = _configRepository.GetByID(_mobileData.CustomerId);
         }
 
 
@@ -74,7 +79,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ChangeOrderQuantityButtonLabel { get { return "Change Quantity"; } }
 
-        public bool ChangeOrderQuantity { get { return _mobileData.Order.Type != Enums.InstructionType.Deliver; } }
+        public bool ChangeOrderQuantity { get { return _mobileConfig.QuantityIsEditable && _mobileData.Order.Type != Enums.InstructionType.Deliver; } }
 
         #endregion Public Properties
 

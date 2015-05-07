@@ -66,7 +66,6 @@ namespace MWF.Mobile.Android.Views
             intent.SetFlags(ActivityFlags.ClearTop);
             intent.PutExtra("EXIT", true);
             base.StartActivity(intent);
-            Finish();
         }
 
         #endregion

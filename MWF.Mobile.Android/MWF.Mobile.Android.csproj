@@ -174,6 +174,7 @@
     <Compile Include="Portable\CloseApplication.cs" />
     <Compile Include="Portable\CustomUserInteraction.cs" />
     <Compile Include="Portable\DeviceInfo.cs" />
+    <Compile Include="Portable\LaunchPhone.cs" />
     <Compile Include="Portable\Reachability.cs" />
     <Compile Include="Portable\Sound.cs" />
     <Compile Include="Portable\Toast.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="Views\BindableGroupListAdapter.cs" />
     <Compile Include="Views\BindableGroupListView.cs" />
     <Compile Include="Views\BindableProgress.cs" />
+    <Compile Include="Views\Fragments\InstructionClausedFragment.cs" />
     <Compile Include="Views\KeyboardlessEditText.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\BarcodeFragment.cs" />
@@ -345,6 +347,9 @@
     <AndroidResource Include="Resources\layout\Item_Barcode.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_InstructionClaused.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />
@@ -437,6 +442,14 @@
     <AndroidResource Include="Resources\drawable-mdpi\ic_action_read.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\ic_action_read.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_read.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_action_camera.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\ic_action_camera.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_action_camera.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_camera.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_call.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_action_call.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\ic_action_call.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\ic_action_call.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

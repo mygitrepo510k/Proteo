@@ -4,6 +4,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,6 +93,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AdvanceInstruction()
         {
+            _navData.GetDataChunk().IsClaused = true;
             _navigationService.MoveToNext(_navData);
         }
 

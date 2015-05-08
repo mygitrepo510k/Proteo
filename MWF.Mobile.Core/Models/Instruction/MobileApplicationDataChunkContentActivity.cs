@@ -38,6 +38,9 @@ namespace MWF.Mobile.Core.Models.Instruction
         [XmlAttribute("MWFVersion")]
         public string MwfVersion { get; set; }
 
+        [XmlAttribute("IsClaused")]
+        public bool IsClaused { get; set; }
+
         [XmlAttribute("comment")]
         public string Comment { get; set; }
 

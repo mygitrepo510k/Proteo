@@ -30,13 +30,13 @@ namespace MWF.Mobile.Android.Views
         protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
             {
                 { typeof(Core.ViewModels.BarcodeViewModel), typeof(Fragments.BarcodeFragment)},
-                { typeof(Core.ViewModels.CameraViewModel),typeof(Fragments.CameraFragment)},
                 { typeof(Core.ViewModels.DisplaySafetyCheckViewModel), typeof(Fragments.DisplaySafetyCheckFragment)},
                 { typeof(Core.ViewModels.InboxViewModel), typeof(Fragments.InboxFragment)},
                 { typeof(Core.ViewModels.InstructionViewModel), typeof(Fragments.InstructionFragment) },
                 { typeof(Core.ViewModels.InstructionClausedViewModel), typeof(Fragments.InstructionClausedFragment)},
                 { typeof(Core.ViewModels.InstructionCommentViewModel), typeof(Fragments.InstructionCommentFragment)},
                 { typeof(Core.ViewModels.InstructionOnSiteViewModel), typeof(Fragments.InstructionOnSiteFragment)},
+                { typeof(Core.ViewModels.InstructionSafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
                 { typeof(Core.ViewModels.InstructionSignatureViewModel), typeof(Fragments.InstructionSignatureFragment) },
                 { typeof(Core.ViewModels.InstructionTrailerViewModel), typeof(Fragments.TrailerListFragment)},
                 { typeof(Core.ViewModels.InstructionTrunkProceedViewModel), typeof(Fragments.InstructionTrunkProceedFragment)},
@@ -44,10 +44,11 @@ namespace MWF.Mobile.Android.Views
                 { typeof(Core.ViewModels.OrderViewModel), typeof(Fragments.OrderFragment)},
                 { typeof(Core.ViewModels.ManifestViewModel), typeof(Fragments.ManifestFragment) },
                 { typeof(Core.ViewModels.MessageViewModel), typeof(Fragments.MessageFragment) },
+                { typeof(Core.ViewModels.ModalCameraViewModel),typeof(Fragments.ModalCameraFragment)},
                 { typeof(Core.ViewModels.ReviseQuantityViewModel), typeof(Fragments.ReviseQuantityFragment)},
                 { typeof(Core.ViewModels.SafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
                 { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) },
-                { typeof(Core.ViewModels.InstructionSafetyCheckViewModel), typeof(Fragments.SafetyCheckFragment)},
+                { typeof(Core.ViewModels.SidebarCameraViewModel),typeof(Fragments.SideBarCameraFragment)},
 			    { typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
                 { typeof(Core.ViewModels.InstructionSafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) }
             };

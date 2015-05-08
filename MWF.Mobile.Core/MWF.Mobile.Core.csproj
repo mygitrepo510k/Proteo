@@ -254,7 +254,7 @@
     <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />
-    <Compile Include="ViewModels\CameraViewModel.cs" />
+    <Compile Include="ViewModels\BaseCameraViewModel.cs" />
     <Compile Include="ViewModels\DisplaySafetyCheckFaultItemViewModel.cs" />
     <Compile Include="ViewModels\DisplaySafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\InboxViewModel.cs" />
@@ -263,6 +263,7 @@
     <Compile Include="ViewModels\InstructionTrunkProceedViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IModalViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
+    <Compile Include="ViewModels\ModalCameraViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavDataExtensions.cs" />
     <Compile Include="ViewModels\Navigation\MessageModalNavItem.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
@@ -290,6 +291,7 @@
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\OdometerViewModel.cs" />
     <Compile Include="ViewModels\BaseTrailerListViewModel.cs" />
+    <Compile Include="ViewModels\SidebarCameraViewModel.cs" />
     <Compile Include="ViewModels\VehicleListViewModel.cs" />
     <Compile Include="ViewModels\CustomerCodeViewModel.cs" />
     <Compile Include="ViewModels\ManifestViewModel.cs" />

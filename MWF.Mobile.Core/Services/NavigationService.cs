@@ -509,8 +509,8 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_Logout);
 
             // Side bar Activity
-            InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustomAction);
-            InsertCustomBackNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustomAction);
+            InsertCustomNavAction<MainViewModel, SidebarCameraViewModel>(SidebarNavigation_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, SidebarCameraViewModel>(SidebarNavigation_CustomAction);
 
             InsertCustomNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustomAction);
             InsertCustomBackNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustomAction);

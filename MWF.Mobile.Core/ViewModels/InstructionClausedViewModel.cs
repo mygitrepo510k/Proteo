@@ -1,5 +1,6 @@
 ﻿using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
@@ -69,6 +70,15 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private MvxCommand _openCameraScreenCommand;
+        public ICommand OpenCameraScreenCommand
+        {
+            get
+            {
+                return (_openCameraScreenCommand = _openCameraScreenCommand ?? new MvxCommand(() => OpenCameraScreen()));
+            }
+        }
+
         private MvxCommand _launchPhoneAppCommand;
         public ICommand LaunchPhoneAppCommand
         {
@@ -102,12 +112,25 @@ namespace MWF.Mobile.Core.ViewModels
             Mvx.Resolve<ILaunchPhone>().Launch();
         }
 
+        private void OpenCameraScreen()
+        {
+            var navItem = new MessageModalNavItem { MobileDataID = _mobileData.ID };
+            var modal = this.ShowModalViewModel<ModalCameraViewModel, bool>(navItem, (sendChunk) => {});
+        }
+
         #endregion Private Methods
 
         #region BaseInstructionNotificationViewModel
 
         public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
+            if (instructionID == _mobileData.ID)
+            {
+                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("", null, "This instruction has been Updated", "OK");
+                else
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+            }
         }
 
         #endregion BaseInstructionNotificationViewModel

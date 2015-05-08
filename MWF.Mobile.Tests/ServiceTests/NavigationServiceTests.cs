@@ -2306,7 +2306,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // presenter will report the current activity view model as MainView, current fragment model as a camera view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
@@ -2331,7 +2331,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
@@ -2358,7 +2358,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // presenter will report the current activity view model as MainView, current fragment model as a camera view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
@@ -2385,7 +2385,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
@@ -2415,7 +2415,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 
@@ -2442,7 +2442,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
                                                                 cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<CameraViewModel>());
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
 

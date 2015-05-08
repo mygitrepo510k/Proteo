@@ -81,7 +81,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var cameraVM = _fixture.Create<CameraViewModel>();
+            var cameraVM = _fixture.Create<SidebarCameraViewModel>();
 
             cameraVM.TakePictureCommand.Execute(null);
 
@@ -93,7 +93,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var cameraVM = _fixture.Create<CameraViewModel>();
+            var cameraVM = _fixture.Create<SidebarCameraViewModel>();
 
             Assert.Equal("Take a photo to enter a comment", cameraVM.CommentHintText);
         }
@@ -103,7 +103,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var cameraVM = _fixture.Build<CameraViewModel>().Without(p => p.CommentText).Create<CameraViewModel>();
+            var cameraVM = _fixture.Build<SidebarCameraViewModel>().Without(p => p.CommentText).Create<SidebarCameraViewModel>();
 
             int previousImageCount = cameraVM.ImagesVM.Count;
 
@@ -131,7 +131,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             base.ClearAll();
 
-            var cameraVM = _fixture.Build<CameraViewModel>().Without(p => p.CommentText).Create<CameraViewModel>();
+            var cameraVM = _fixture.Build<SidebarCameraViewModel>().Without(p => p.CommentText).Create<SidebarCameraViewModel>();
 
             CameraImageViewModel cameraImageVM = new CameraImageViewModel(_fixture.Create<Image>(), cameraVM);
             cameraVM.ImagesVM.Add(cameraImageVM);
@@ -156,7 +156,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             base.ClearAll();
 
-            var cameraVM = _fixture.Build<CameraViewModel>().Without(p => p.CommentText).Create<CameraViewModel>();
+            var cameraVM = _fixture.Build<SidebarCameraViewModel>().Without(p => p.CommentText).Create<SidebarCameraViewModel>();
 
             CameraImageViewModel cameraImageVM = new CameraImageViewModel(_fixture.Create<Image>(), cameraVM);
             cameraVM.ImagesVM.Add(cameraImageVM);
@@ -185,7 +185,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var customUI = new Mock<ICustomUserInteraction>();
             Ioc.RegisterSingleton<ICustomUserInteraction>(customUI.Object);
 
-            var CameraVM = _fixture.Build<CameraViewModel>().Without(p => p.CommentText).Create<CameraViewModel>();
+            var CameraVM = _fixture.Build<SidebarCameraViewModel>().Without(p => p.CommentText).Create<SidebarCameraViewModel>();
 
             CameraVM.TakePictureCommand.Execute(null);
 
@@ -210,7 +210,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService.SetupGet( x=> x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData});
 
-            var cameraVM = _fixture.Create<CameraViewModel>();
+            var cameraVM = _fixture.Create<SidebarCameraViewModel>();
 
             cameraVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
@@ -227,7 +227,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             base.ClearAll();
 
-            var cameraVM = _fixture.Create<CameraViewModel>();
+            var cameraVM = _fixture.Create<SidebarCameraViewModel>();
 
             _navigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
@@ -242,7 +242,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var cameraVM = _fixture.Create<CameraViewModel>();
+            var cameraVM = _fixture.Create<SidebarCameraViewModel>();
 
             cameraVM.IsVisible(false);
 

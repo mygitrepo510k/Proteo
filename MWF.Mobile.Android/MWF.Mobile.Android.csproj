@@ -190,11 +190,12 @@
     <Compile Include="Views\BindableGroupListView.cs" />
     <Compile Include="Views\BindableProgress.cs" />
     <Compile Include="Views\Fragments\InstructionClausedFragment.cs" />
+    <Compile Include="Views\Fragments\ModalCameraFragment.cs" />
     <Compile Include="Views\KeyboardlessEditText.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\BarcodeFragment.cs" />
     <Compile Include="Views\Fragments\BaseFragment.cs" />
-    <Compile Include="Views\Fragments\CameraFragment.cs" />
+    <Compile Include="Views\Fragments\SideBarCameraFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\DisplaySafetyCheckFragment.cs" />
     <Compile Include="Views\Fragments\InboxFragment.cs" />

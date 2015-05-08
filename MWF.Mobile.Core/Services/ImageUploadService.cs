@@ -43,9 +43,9 @@ namespace MWF.Mobile.Core.Services
         /// <param name="comment">The comment for the photos</param>
         /// <param name="photos">The collection of photos to be sent up</param>
         public async Task SendPhotoAndCommentAsync(
-            string comment, 
-            List<Image> photos, 
-            Driver currentDriver, 
+            string comment,
+            List<Image> photos,
+            Driver currentDriver,
             MobileData currentMobileData)
         {
 
@@ -75,7 +75,7 @@ namespace MWF.Mobile.Core.Services
             imageUpload.DateTimeOfUpload = DateTime.Now;
 
             //If the user is not on the manifest screen they should be on an instruction page
-            if (currentMobileData!=null)
+            if (currentMobileData != null)
             {
                 imageUpload.MobileApplicationID = currentMobileData.ID;
                 imageUpload.OrderIDs = string.Join(",", currentMobileData.Order.Items.Select(i => i.ItemIdFormatted));
@@ -116,7 +116,7 @@ namespace MWF.Mobile.Core.Services
 
                     request.Content = formContent;
 
-                    var response = await _httpService.SendAsync<HttpResponseMessage>(request);
+                    var response = await _httpService.SendAsyncPlainResponse<HttpResponseMessage>(request);
 
                     if (response.StatusCode == HttpStatusCode.OK)
                     {

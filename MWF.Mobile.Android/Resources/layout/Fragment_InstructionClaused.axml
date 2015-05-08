@@ -36,7 +36,8 @@
             android:width="0dp"
             style="@style/Proteo.Button.Secondary"
             android:id="@+id/takePictureButton"
-            android:src="@drawable/ic_action_camera" />
+            android:src="@drawable/ic_action_camera"
+            local:MvxBind="Click OpenCameraScreenCommand;" />
         <ImageButton
             android:layout_width="fill_parent"
             android:layout_weight="0.5"

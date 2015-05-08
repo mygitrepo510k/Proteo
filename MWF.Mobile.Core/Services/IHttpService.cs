@@ -13,6 +13,8 @@ namespace MWF.Mobile.Core.Services
         Task<HttpResult<TResponse>> PostJsonAsync<TResponse>(string jsonContent, string url);
         Task<HttpResult<TResponse>> PostAsJsonAsync<TRequest, TResponse>(TRequest content, string url);
         Task<HttpResult<TResponse>> SendAsync<TResponse>(HttpRequestMessage request);
+        Task<HttpResult<TResponse>> SendAsyncPlainResponse<TResponse>(HttpRequestMessage request);
+        
     }
 
 }

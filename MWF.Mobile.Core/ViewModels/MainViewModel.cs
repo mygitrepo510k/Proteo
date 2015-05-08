@@ -130,7 +130,7 @@ namespace MWF.Mobile.Core.ViewModels
             switch (item.Option)
             {
                 case Option.Camera:
-                    this.ShowViewModel<CameraViewModel>();
+                    this.ShowViewModel<SidebarCameraViewModel>();
                     break;
                 case Option.ViewSafetyCheck:
                     this.ShowViewModel<DisplaySafetyCheckViewModel>();

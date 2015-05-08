@@ -70,7 +70,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _startupService.LoggedInDriver = _driver;
 
 
-            _mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, null);
+            _mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false,true, null);
             _navData = new NavData<MobileData>() { Data = _mobileData };
 
             _startupService.CurrentVehicleSafetyCheckData= _vehicleSafetyCheckData = _fixture.Create<SafetyCheckData>();

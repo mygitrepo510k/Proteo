@@ -7,6 +7,7 @@ using Cirrious.CrossCore;
 using System.Threading.Tasks;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Messages;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -38,7 +39,7 @@ namespace MWF.Mobile.Core.ViewModels
         /// <param name="onResult"> Action to run when the modal view has closed, returning with a result</param>
         /// <returns></returns>
         public bool ShowModalViewModel<TViewModel, TResult>(IModalNavItem navItem, Action<TResult> onResult)
-        where TViewModel : BaseModalViewModel<TResult>
+        where TViewModel : IModalViewModel<TResult>
         {
 
             navItem.MessageID = Guid.NewGuid();

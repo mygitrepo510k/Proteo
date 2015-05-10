@@ -179,6 +179,7 @@
     <Compile Include="Models\ApplicationProfile.cs" />
     <Compile Include="Models\VerbProfileItem.cs" />
     <Compile Include="Portable\ICustomUserInteraction.cs" />
+    <Compile Include="Portable\ILaunchPhone.cs" />
     <Compile Include="Portable\IReachability.cs" />
     <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />
@@ -255,14 +256,17 @@
     <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />
-    <Compile Include="ViewModels\CameraViewModel.cs" />
     <Compile Include="ViewModels\DamageStatus.cs" />
+    <Compile Include="ViewModels\BaseCameraViewModel.cs" />
     <Compile Include="ViewModels\DisplaySafetyCheckFaultItemViewModel.cs" />
     <Compile Include="ViewModels\DisplaySafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\InboxViewModel.cs" />
+    <Compile Include="ViewModels\InstructionClausedViewModel.cs" />
     <Compile Include="ViewModels\InstructionOnSiteViewModel.cs" />
     <Compile Include="ViewModels\InstructionTrunkProceedViewModel.cs" />
+    <Compile Include="ViewModels\Interfaces\IModalViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
+    <Compile Include="ViewModels\ModalCameraViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavDataExtensions.cs" />
     <Compile Include="ViewModels\Navigation\MessageModalNavItem.cs" />
     <Compile Include="ViewModels\Navigation\BarcodeStatusNavItem.cs" />
@@ -292,6 +296,7 @@
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\OdometerViewModel.cs" />
     <Compile Include="ViewModels\BaseTrailerListViewModel.cs" />
+    <Compile Include="ViewModels\SidebarCameraViewModel.cs" />
     <Compile Include="ViewModels\VehicleListViewModel.cs" />
     <Compile Include="ViewModels\CustomerCodeViewModel.cs" />
     <Compile Include="ViewModels\ManifestViewModel.cs" />

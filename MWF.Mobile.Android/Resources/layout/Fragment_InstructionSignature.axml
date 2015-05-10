@@ -23,7 +23,8 @@
                 android:layout_weight="0.8"
                 android:id="@+id/InstructionCustomerName"
                 local:MvxBind="Text CustomerName"
-                android:singleLine="false"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
                 android:background="@drawable/border"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp" />

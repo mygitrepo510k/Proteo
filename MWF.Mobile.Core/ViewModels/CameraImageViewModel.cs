@@ -21,13 +21,13 @@ namespace MWF.Mobile.Core.ViewModels
         private Image _image;
         private MvxCommand _deleteCommand;
         private MvxCommand _displayCommand;
-        private CameraViewModel _parentCameraViewModel;
+        private BaseCameraViewModel _parentCameraViewModel;
 
         #endregion
 
         #region Construction
 
-        public CameraImageViewModel(Image image, CameraViewModel camera)
+        public CameraImageViewModel(Image image, BaseCameraViewModel camera)
         {
             _image = image;
             _parentCameraViewModel = camera;

@@ -133,7 +133,7 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _mobileData.Order.Type.ToString() + " On Site"; }
         }
 
-        #endregion
+        #endregion BaseFragmentViewModel Overrides
 
         #region IBackButtonHandler Implementation
 

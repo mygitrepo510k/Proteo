@@ -1,6 +1,7 @@
 ﻿using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
+using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
@@ -32,6 +33,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMainService> _mockMainService;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
+        private Mock<IConfigRepository> _mockConfigRepo;
 
 
         protected override void AdditionalSetup()
@@ -42,6 +44,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+
+            _mockConfigRepo = _fixture.InjectNewMock<IConfigRepository>();
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -54,7 +58,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
             _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
             _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
-            
+
             Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
 
         }
@@ -168,6 +172,69 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().GoodsType, orderVM.OrderGoodsType);
 
+        }
+
+        [Fact]
+        public void OrderVM_Collection_QuantityEditable()
+        {
+            base.ClearAll();
+
+            var orderVM = _fixture.Create<OrderViewModel>();
+
+            var config = _fixture.Create<MWFMobileConfig>();
+            config.QuantityIsEditable = true;
+
+            _mockConfigRepo.Setup(mcr => mcr.GetByID(It.IsAny<Guid>())).Returns(config);
+
+            _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
+            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
+            navData.OtherData["MobileData"] = _mobileData;
+
+            orderVM.Init(navData);
+
+            Assert.Equal(true, orderVM.ChangeOrderQuantity);
+        }
+
+        [Fact]
+        public void OrderVM_Collection_QuantityNotEditable()
+        {
+            base.ClearAll();
+
+            var orderVM = _fixture.Create<OrderViewModel>();
+
+            var config = _fixture.Create<MWFMobileConfig>();
+            config.QuantityIsEditable = false;
+
+            _mockConfigRepo.Setup(mcr => mcr.GetByID(It.IsAny<Guid>())).Returns(config);
+
+            _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
+            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
+            navData.OtherData["MobileData"] = _mobileData;
+
+            orderVM.Init(navData);
+
+            Assert.Equal(false, orderVM.ChangeOrderQuantity);
+        }
+
+
+        [Fact]
+        public void OrderVM_Delivery_QuantityNotEditable()
+        {
+            base.ClearAll();
+
+            var orderVM = _fixture.Create<OrderViewModel>();
+
+            var config = _fixture.Create<MWFMobileConfig>();
+
+            _mockConfigRepo.Setup(mcr => mcr.GetByID(It.IsAny<Guid>())).Returns(config);
+
+            _mobileData.Order.Type = Core.Enums.InstructionType.Deliver;
+            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
+            navData.OtherData["MobileData"] = _mobileData;
+
+            orderVM.Init(navData);
+
+            Assert.Equal(false, orderVM.ChangeOrderQuantity);
         }
 
         [Fact]

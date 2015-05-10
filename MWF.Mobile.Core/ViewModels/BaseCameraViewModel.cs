@@ -19,9 +19,8 @@ using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class CameraViewModel : 
+    public abstract class BaseCameraViewModel : 
         BaseInstructionNotificationViewModel, 
-        IBackButtonHandler,
         IVisible
     {
         #region Private Members
@@ -33,15 +32,15 @@ namespace MWF.Mobile.Core.ViewModels
         List<Image> _images;
         private string _commentText;
         private readonly IMvxPictureChooserTask _pictureChooserTask;
-        private IMainService _mainService;
-        private INavigationService _navigationService;
-        private IImageUploadService _imageUploadService;
+        protected IMainService _mainService;
+        protected INavigationService _navigationService;
+        protected IImageUploadService _imageUploadService;
 
         #endregion Private Members
 
         #region Construction
 
-        public CameraViewModel(
+        public BaseCameraViewModel(
             IMvxPictureChooserTask pictureChooserTask, 
             IMainService mainService, 
             INavigationService navigationService,
@@ -129,23 +128,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private async Task DoDoneCommand()
-        {
-            List<Image> images = new List<Image>();
-
-            foreach (var viewModel in ImagesVM)
-            {
-                images.Add(viewModel.Image);
-            }
-            _navigationService.MoveToNext(_navigationService.CurrentNavData);
-
-            MobileData mobileData = null;
-            if (_navigationService.CurrentNavData != null) {
-                mobileData = _navigationService.CurrentNavData.GetMobileData();
-            }
-
-            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, mobileData);
-        }
+        protected abstract Task DoDoneCommand();
 
         private void TakePicture()
         {
@@ -198,17 +181,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion Private Methods
 
-        #region IBackButtonHandler Implementation
-
-        public Task<bool> OnBackButtonPressed()
-        {
-            var task = new Task<bool>(() => false);
-
-            _navigationService.GoBack(_navigationService.CurrentNavData);
-
-            return task;
-        }
-        #endregion IBackButtonHandler Implementation
 
         #region BaseInstructionNotificationViewModel
 

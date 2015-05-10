@@ -49,12 +49,13 @@ namespace MWF.Mobile.Tests.Helpers
         }
 
         public static MobileData SetUpInstruction(this IFixture fixture, MWF.Mobile.Core.Enums.InstructionType instructionType,
-            bool isBypassCommentScreen, bool isTrailerConfirmationRequired, bool isCustomerNameRequired, bool isCustomerSignatureRequired, bool isScanRequiredForCollection, bool isScanRequiredForDelivery, MWF.Mobile.Core.Enums.InstructionProgress? instructionProgress)
+            bool isBypassCommentScreen, bool isTrailerConfirmationRequired, bool isCustomerNameRequired, bool isCustomerSignatureRequired, bool isScanRequiredForCollection, bool isScanRequiredForDelivery, bool BypassCleanClausedScreen, MWF.Mobile.Core.Enums.InstructionProgress? instructionProgress)
         {
             var mobileData = fixture.Create<MobileData>();
             mobileData.Order.Type = instructionType;
             mobileData.Order.Additional.IsTrailerConfirmationEnabled = isTrailerConfirmationRequired;
             mobileData.Order.Items.First().Additional.BypassCommentsScreen = isBypassCommentScreen;
+            mobileData.Order.Items.ForEach(i => i.Additional.BypassCleanClausedScreen = BypassCleanClausedScreen);
 
             if (instructionType == Core.Enums.InstructionType.Collect)
             {

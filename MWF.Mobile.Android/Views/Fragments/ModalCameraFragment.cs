@@ -16,7 +16,7 @@ using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
-    public class CameraFragment : BaseFragment
+    public class ModalCameraFragment : BaseFragment
     {
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -27,7 +27,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             var doneButton = (Button)view.FindViewById(Resource.Id.doneButton);
             var imageCommentBox = (EditText)view.FindViewById(Resource.Id.imageComment);
-            var set = this.CreateBindingSet<CameraFragment, CameraViewModel>();
+            var set = this.CreateBindingSet<ModalCameraFragment, ModalCameraViewModel>();
             set.Bind(doneButton).For(b => b.Enabled).To(vm => vm.HasPhotoBeenTaken);
             set.Bind(imageCommentBox).For(b => b.Enabled).To(vm => vm.HasPhotoBeenTaken);
             set.Apply();

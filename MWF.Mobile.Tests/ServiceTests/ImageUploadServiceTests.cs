@@ -61,7 +61,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             };
 
             _mockHttpService = _fixture.InjectNewMock<Core.Services.IHttpService>();
-            _mockHttpService.Setup(mhs => mhs.SendAsync<HttpResponseMessage>(It.IsAny<HttpRequestMessage>())).ReturnsAsync(response);
+            _mockHttpService.Setup(mhs => mhs.SendAsyncPlainResponse<HttpResponseMessage>(It.IsAny<HttpRequestMessage>())).ReturnsAsync(response);
 
             _mockLoggingService = _fixture.InjectNewMock<ILoggingService>();
 
@@ -158,7 +158,7 @@ namespace MWF.Mobile.Tests.ServiceTests
                 StatusCode = System.Net.HttpStatusCode.InternalServerError,
             };
 
-            _mockHttpService.Setup(mhs => mhs.SendAsync<HttpResponseMessage>(It.IsAny<HttpRequestMessage>())).ReturnsAsync(response);
+            _mockHttpService.Setup(mhs => mhs.SendAsyncPlainResponse<HttpResponseMessage>(It.IsAny<HttpRequestMessage>())).ReturnsAsync(response);
 
             await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
 

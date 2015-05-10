@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Messages;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -13,9 +14,9 @@ namespace MWF.Mobile.Core.ViewModels
     // when user has done interacting with it.
     // See http://www.gregshackles.com/2012/11/returning-results-from-view-models-in-mvvmcross/
 
-    public abstract class BaseModalViewModel<TResult> : BaseFragmentViewModel
+    public abstract class BaseModalViewModel<TResult> : BaseFragmentViewModel, IModalViewModel<TResult>
     {
-        protected Guid MessageId { get; private set; }
+        //protected Guid MessageId { get; private set; }
 
         //Subclasses should call this method during their init to ensure
         //the message id used to sync message passing is correct.
@@ -25,27 +26,19 @@ namespace MWF.Mobile.Core.ViewModels
                 this.MessageId = messageId;
         }
 
-        #region Protected Methods
+        public Guid MessageId { get; set; }
 
-        /// <summary>
-        /// User cancel
-        /// </summary>
-        protected void Cancel()
+        public void Cancel()
         {
             ReturnResult(default(TResult));
         }
 
-        protected void ReturnResult(TResult result)
+        public void ReturnResult(TResult result)
         {
             var message = new ModalNavigationResultMessage<TResult>(this, MessageId, result);
 
             this.Messenger.Publish(message);
             this.Close(this);
         }
-
-        #endregion
     }
-
-
-
 }

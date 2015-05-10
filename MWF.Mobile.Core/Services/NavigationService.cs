@@ -404,6 +404,18 @@ namespace MWF.Mobile.Core.Services
             return advanceToCommentScreen;
         }
 
+        private async Task<bool> IsCleanInstruction(NavData navData)
+        {
+            var isClean = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Is the delivery clean?", "", "Yes", "No");
+
+            if (!isClean)
+            {
+                this.ShowViewModel<InstructionClausedViewModel>(navData);
+            }
+
+            return isClean;
+        }
+
         /// <summary>
         /// Adds navigation data object to our dictionary so it can be retreived by a view model after a navigation action has completed
         /// MVVM cross only allows passing of simple objects via serialization. Navigation improves this by having MVVM Cross pass a GUID
@@ -487,6 +499,8 @@ namespace MWF.Mobile.Core.Services
 
             InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomAction);
 
+            InsertCustomNavAction<MainViewModel, InstructionClausedViewModel>(InstructionClaused_CustomAction);
+
             InsertCustomNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomAction);
 
             InsertCustomBackNavAction<MainViewModel, OrderViewModel>(Order_CustomBackAction);
@@ -504,8 +518,8 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_Logout);
 
             // Side bar Activity
-            InsertCustomNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustomAction);
-            InsertCustomBackNavAction<MainViewModel, CameraViewModel>(SidebarNavigation_CustomAction);
+            InsertCustomNavAction<MainViewModel, SidebarCameraViewModel>(SidebarNavigation_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, SidebarCameraViewModel>(SidebarNavigation_CustomAction);
 
             InsertCustomNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustomAction);
             InsertCustomBackNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustomAction);
@@ -696,6 +710,16 @@ namespace MWF.Mobile.Core.Services
                     return;
                 }
 
+                //Delivery Clean/Clause Prompt
+                if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver &&
+                    mobileNavData.Data.Order.Items.Any(i =>
+                    (!i.Additional.BypassCleanClausedScreen)))
+                {
+                    bool isClean = await IsCleanInstruction(mobileNavData);
+
+                    if (!isClean) return;
+                }
+
                 if (!itemAdditionalContent.BypassCommentsScreen)
                 {
                     bool hasAdvanced = await ConfirmCommentAccess(mobileNavData);
@@ -769,6 +793,16 @@ namespace MWF.Mobile.Core.Services
             {
                 this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
                 return;
+            }
+
+            //Delivery Clean/Clause Prompt
+            if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver &&
+                mobileNavData.Data.Order.Items.Any(i =>
+                (!i.Additional.BypassCleanClausedScreen)))
+            {
+                bool isClean = await IsCleanInstruction(mobileNavData);
+
+                if (!isClean) return;
             }
 
             if (!itemAdditionalContent.BypassCommentsScreen)
@@ -847,6 +881,16 @@ namespace MWF.Mobile.Core.Services
             var additionalContent = mobileNavData.Data.Order.Additional;
             var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
+            //Delivery Clean/Clause Prompt
+            if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver &&
+                mobileNavData.Data.Order.Items.Any(i =>
+                (!i.Additional.BypassCleanClausedScreen)))
+            {
+                bool isClean = await IsCleanInstruction(mobileNavData);
+
+                if (!isClean) return;
+            }
+
             if (!itemAdditionalContent.BypassCommentsScreen)
             {
                 bool hasAdvanced = await ConfirmCommentAccess(mobileNavData);
@@ -903,6 +947,29 @@ namespace MWF.Mobile.Core.Services
 
         }
 
+
+        public async void InstructionClaused_CustomAction(NavData navData)
+        {
+            var mobileNavData = navData as NavData<MobileData>;
+
+            var additionalContent = mobileNavData.Data.Order.Additional;
+            var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
+
+            if (!itemAdditionalContent.BypassCommentsScreen)
+            {
+                bool hasAdvanced = await ConfirmCommentAccess(mobileNavData);
+                if (hasAdvanced) return;
+            }
+
+            if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
+                ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
+            {
+                this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
+                return;
+            }
+
+            CompleteInstruction(mobileNavData);
+        }
 
         /// <summary>
         /// Instruction comment screen, if either either name required or signature required are enabled then redirect to signature screen.

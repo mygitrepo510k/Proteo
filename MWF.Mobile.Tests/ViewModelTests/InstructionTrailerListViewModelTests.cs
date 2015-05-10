@@ -87,7 +87,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<InstructionTrailerViewModel>();
 
-            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             var navData = new NavData<MobileData>() { Data = mobileData };
             //set the trailer in the current order to have the same registration as first trailer
             mobileData.Order.Additional.Trailer.TrailerId = trailers.First().Registration;
@@ -120,7 +120,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<InstructionTrailerViewModel>();
 
-            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             vm.Init(navData);
@@ -150,7 +150,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockCustomUserInteraction.Setup(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
             .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
 
-            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
 
@@ -174,7 +174,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             base.ClearAll();
 
-            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, null);
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
 
 
             var mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();

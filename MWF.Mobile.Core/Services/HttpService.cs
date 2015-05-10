@@ -47,6 +47,20 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
+        /// <summary>
+        /// This is for when the response is a plain type i.e html or text.
+        /// This would cause an error when you did readAsAsync on it.
+        /// </summary>
+        public async Task<HttpResult<TResponse>> SendAsyncPlainResponse<TResponse>(HttpRequestMessage request)
+        {
+            var client = new HttpClient();
+
+            using (var response = await client.SendAsync(request))
+            {
+                return new HttpResult<TResponse> { StatusCode = response.StatusCode };
+            }
+        }
+
         static MediaTypeFormatter GetJsonFormatter()
         {
             var formatter = new JsonMediaTypeFormatter();

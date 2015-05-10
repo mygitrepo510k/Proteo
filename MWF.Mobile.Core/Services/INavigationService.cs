@@ -15,6 +15,7 @@ namespace MWF.Mobile.Core.Services
         void Logout_Action(NavData navData);
         void PopulateNavData(NavData navData);
         NavData CurrentNavData { get; }
+        bool ShowModalViewModel<TViewModel, TResult>(BaseFragmentViewModel viewModel, NavData navData, Action<TResult> onResult) where TViewModel : BaseModalViewModel<TResult>;
 
     }
 }

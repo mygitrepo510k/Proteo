@@ -87,6 +87,10 @@
     <item name = "android:textSize">20dp</item>
   </style>
 
+  <style name ="Proteo.TextView.ItemText.Small" parent="style/Proteo.TextView.ItemText">
+    <item name = "android:textSize">16dp</item>
+  </style>
+
   <style name ="Proteo.TextView.ItemSectionHeading" parent="Proteo.TextView.ItemText">
     <item name = "android:layout_marginLeft">0dp</item>
     <item name = "android:layout_marginRight">0dp</item>
@@ -214,6 +218,31 @@
     <item name="android:layout_height">200dp</item>
     <item name = "android:layout_marginLeft">8dp</item>
     <item name = "android:layout_marginRight">8dp</item>
+  </style>
+
+  <!-- ===================== Switches ========================= -->
+  <style name = "Proteo.Switch.Text" parent="style/Proteo">
+    <item name = "android:textSize">20dp</item>
+  </style>
+
+  <!-- ===================== Spinners ========================= -->
+
+  <style name = "Proteo.Spinner" parent="style/Proteo">
+    <item name = "android:layout_marginTop">2dp</item>
+    <item name = "android:layout_marginLeft">10dp</item>
+    <item name = "android:layout_marginRight">10dp</item>
+  </style>
+
+  <style name = "Proteo.Spinner.Text" parent="style/Proteo">
+    <item name = "android:textSize">18dp</item>
+    <item name = "android:layout_marginTop">2dp</item>
+    <item name = "android:layout_marginLeft">2dp</item>
+  </style>
+
+  <style name = "Proteo.SpinnerDropdown.Text" parent="style/Proteo">
+    <item name = "android:textSize">15dp</item>
+    <item name = "android:layout_marginTop">10dp</item>
+    <item name = "android:layout_marginBottom">10dp</item>
   </style>
   
 </resources>

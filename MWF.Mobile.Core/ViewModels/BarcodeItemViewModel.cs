@@ -1,28 +1,47 @@
 ﻿using Cirrious.MvvmCross.ViewModels;
 using System;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.Portable;
+using System.Windows.Input;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class BarcodeItemViewModel : MvxViewModel
+    public class BarcodeItemViewModel : BaseFragmentViewModel
     {
-        private BarcodeViewModel _barcodeVM;
 
-        public BarcodeItemViewModel(BarcodeViewModel barcodeVM)
+        private const string NOT_DELIVERED_CODE = "XPODX";
+
+        #region private members
+
+        private BarcodeScanningViewModel _barcodeScanningViewModel;
+        private INavigationService _navigationService;
+        private List<DamageStatus> _damageStatuses;
+        private DamageStatus _damageStatus;
+        private string _deliveryComments;
+
+        #endregion
+
+        #region construction
+
+        public BarcodeItemViewModel(INavigationService navigationService, List<DamageStatus> damageStatuses, BarcodeScanningViewModel barcodeScanningViewModel)
         {
-            _barcodeVM = barcodeVM;
+            _navigationService = navigationService;
+            _barcodeScanningViewModel = barcodeScanningViewModel;
+
+            this.DamageStatuses = damageStatuses;
+            if (damageStatuses != null)
+                this.DamageStatus = damageStatuses[0];
         }
 
+        #endregion
 
-        private bool _isDummy;
-        public bool IsDummy
-        {
-            get { return _isDummy; }
-            set { _isDummy = value; RaisePropertyChanged(() => IsDummy); }
-        }
+        #region public properties
 
         private string _barcodeText;
         public string BarcodeText
@@ -35,7 +54,23 @@ namespace MWF.Mobile.Core.ViewModels
         public bool IsScanned
         {
             get { return _isScanned; }
-            set { _isScanned = value; RaisePropertyChanged(() => IsScanned); }
+            set 
+            {
+                _isScanned = value; 
+                RaisePropertyChanged(() => IsScanned);
+            }
+        }
+
+        private bool? _isDelivered = null;
+        public bool? IsDelivered
+        {
+            get { return _isDelivered; }
+            set 
+            { 
+                _isDelivered = value; 
+                RaisePropertyChanged(() => IsDelivered);
+                RaisePropertyChanged(() => ValidComments);
+            }
         }
 
         public string OrderID
@@ -44,20 +79,181 @@ namespace MWF.Mobile.Core.ViewModels
             set;
         }
 
-        private Enums.ScanState? _scanState;
-        public Enums.ScanState? ScanState
+        public List<DamageStatus> DamageStatuses
         {
-            get { return _scanState; }
+            get
+            {
+                return _damageStatuses;
+            }
             set
             {
-                if (value == Enums.ScanState.Scanned)
-                {
-                    this.IsScanned = true;
-                    _scanState = value;
-                    _barcodeVM.CheckBarcodeItemsStatus();
-                }
-                RaisePropertyChanged(() => ScanState);
+                _damageStatuses = value;
+                RaisePropertyChanged(() => DamageStatuses);
+            }
+
+        }
+        
+        public DamageStatus DamageStatus
+        {
+            get
+            {
+                return _damageStatus;
+            }
+            set
+            {
+                _damageStatus = value;
+                RaisePropertyChanged(() => DamageStatus);
+                RaisePropertyChanged(() => ValidComments);
             }
         }
+
+        public string DeliveryComments
+        {
+            get
+            {
+                return _deliveryComments;
+            }
+            set
+            {
+                _deliveryComments = value;
+                RaisePropertyChanged(() => DeliveryComments);
+                RaisePropertyChanged(() => ValidComments);
+            }
+        }
+
+        // translates delivery and damage status into single field for pallet force
+        public string PalletforceDeliveryStatus
+        {
+            get
+            {
+                return (IsDelivered.Value) ? DamageStatus.Code : NOT_DELIVERED_CODE;
+            }
+        }
+
+        public bool ValidComments
+        {
+            get
+            {
+                return ((this.IsDelivered.Value && this.DamageStatus.Text == "Clean") || !string.IsNullOrEmpty(this.DeliveryComments));
+            }
+        }
+
+        public virtual bool IsDummy
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        private bool _isSelected ;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                _isSelected = value;
+                RaisePropertyChanged(() => IsSelected);            
+            }
+        }
+
+        
+
+        private MvxCommand _selectBarcodeCommand;
+        public ICommand SelectBarcodeCommand
+        {
+            get
+            {
+                return _selectBarcodeCommand ?? new MvxCommand(SelectBarcode);
+            }
+        }
+
+        public override string FragmentTitle
+        {
+            get { return ""; }
+        }
+
+        #endregion
+
+        #region public methods
+
+        public BarcodeItemViewModel Clone()
+        {
+            BarcodeItemViewModel clone = new BarcodeItemViewModel(_navigationService, this.DamageStatuses, _barcodeScanningViewModel)
+            {
+                DamageStatus = this.DamageStatus,
+                BarcodeText = this.BarcodeText,
+                IsDelivered = this.IsDelivered,
+                DeliveryComments = this.DeliveryComments
+            };
+
+            return clone;
+        }
+
+        #endregion
+
+        #region private methods
+
+
+        private void SelectBarcode()
+        {
+
+            if (this.IsDummy)
+                return; 
+            
+            if (!this.IsDelivered.HasValue) 
+            {
+                string message = string.Format("Barcodes should be scanned if possible. Confirm the pallet with barcode {0} has been manually processed.", _barcodeText);
+                string title = "Mark Barcode as Manually Processed?";
+
+                Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm(message, async isConfirmed =>
+                {
+                    if (isConfirmed)
+                    {
+                        _barcodeScanningViewModel.MarkBarcodeAsProcessed(this, false);
+                    }
+                }, title);
+
+                
+                return;
+            }
+
+            var navItem = new NavData<BarcodeItemViewModel>() { Data = this };
+            navItem.NavGUID = Guid.NewGuid();
+
+            // if there are multiple barcodes selected then add them to the nav item
+            if (_barcodeScanningViewModel.SelectedBarcodes.Any())
+            {
+                navItem.OtherData["SelectedBarcodes"] = _barcodeScanningViewModel.SelectedBarcodes.ToList();
+            }
+
+            _navigationService.ShowModalViewModel<BarcodeStatusViewModel, bool>(this, navItem, (modified) =>
+            {
+                if (modified)
+                {
+                    // need to do anything here?
+                }
+            });
+        }
     }
+
+
+        public class DummyBarcodeItemViewModel : BarcodeItemViewModel
+        {
+            public DummyBarcodeItemViewModel()
+                : base(null, null, null)
+            { }
+
+            public override bool IsDummy
+            {
+                get
+                {
+                    return true;
+                }
+            }
+        }
+
+        #endregion
+
+
 }

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public interface IModalNavItem
+    public class BarcodeStatusNavItem : IModalNavItem
     {
-        Guid NavGUID { get; set; }
+        public Guid NavGUID { get; set; }
+
     }
 }

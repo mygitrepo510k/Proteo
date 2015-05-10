@@ -29,7 +29,8 @@ namespace MWF.Mobile.Android.Views
         private global::Android.Support.V4.App.ActionBarDrawerToggle _drawerToggle;
         protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
             {
-                { typeof(Core.ViewModels.BarcodeViewModel), typeof(Fragments.BarcodeFragment)},
+                { typeof(Core.ViewModels.BarcodeScanningViewModel), typeof(Fragments.BarcodeFragment)},
+                { typeof(Core.ViewModels.BarcodeStatusViewModel), typeof(Fragments.BarcodeStatusFragment)},
                 { typeof(Core.ViewModels.CameraViewModel),typeof(Fragments.CameraFragment)},
                 { typeof(Core.ViewModels.DisplaySafetyCheckViewModel), typeof(Fragments.DisplaySafetyCheckFragment)},
                 { typeof(Core.ViewModels.InboxViewModel), typeof(Fragments.InboxFragment)},

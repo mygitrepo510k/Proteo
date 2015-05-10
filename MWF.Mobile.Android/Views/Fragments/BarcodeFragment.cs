@@ -47,8 +47,8 @@ namespace MWF.Mobile.Android.Views.Fragments
             _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
 
             var checksDoneButton = (Button)view.FindViewById(Resource.Id.ButtonCompleteScanning);
-            var set = this.CreateBindingSet<BarcodeFragment, BarcodeViewModel>();
-            set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.CanScanningBeCompleted);
+            var set = this.CreateBindingSet<BarcodeFragment, BarcodeScanningViewModel>();
+            //set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.CanScanningBeCompleted);
             set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsBusy);
             set.Bind(_bindableProgress).For(p => p.Message).To(vm => vm.ScanMessage);
             set.Bind(_bindableProgress).For(p => p.Title).To(vm => vm.ScanTitle);

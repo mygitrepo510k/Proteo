@@ -11,11 +11,13 @@ using MWF.Mobile.Core.Services;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public abstract class NavData
+    public abstract class NavData : IModalNavItem
     {
         public NavData()
         {
             OtherData = new Dictionary<string, object>();
+            NavGUID = Guid.NewGuid();
+
         }
 
         public abstract object GetData();
@@ -34,7 +36,7 @@ namespace MWF.Mobile.Core.ViewModels
         }
     }
 
-    public class NavData<T>: NavData where T: class, IBlueSphereEntity
+    public class NavData<T>: NavData where T: class
     {
 
         #region public properties

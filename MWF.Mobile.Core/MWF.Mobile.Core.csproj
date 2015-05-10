@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Converters\NullableBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\DateToTextTimeValueConverter.cs" />
     <Compile Include="Converters\DateToTextMessageValueConverter.cs" />
     <Compile Include="Converters\InstructionTypeEnumValueConverter.cs" />
@@ -90,7 +91,8 @@
     <Compile Include="Converters\JsonWrappedListConverter.cs" />
     <Compile Include="Converters\MessageStatusValueConverter.cs" />
     <Compile Include="Converters\SafetyCheckEnumValueConverter.cs" />
-    <Compile Include="Converters\ScanStateEnumValueConverter.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\BarcodeDeliveredConverter.cs" />
     <Compile Include="Converters\SingleObjectToListConverter.cs" />
     <Compile Include="Converters\StringHasLengthConverter.cs" />
     <Compile Include="Enums\ScanState.cs" />
@@ -249,11 +251,12 @@
     <Compile Include="Utilities\Timer.cs" />
     <Compile Include="ViewModels\BarcodeItemViewModel.cs" />
     <Compile Include="ViewModels\BarcodeSectionViewModel.cs" />
-    <Compile Include="ViewModels\BarcodeViewModel.cs" />
+    <Compile Include="ViewModels\BarcodeScanningViewModel.cs" />
     <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />
     <Compile Include="Portable\ICloseApplication.cs" />
     <Compile Include="ViewModels\CameraViewModel.cs" />
+    <Compile Include="ViewModels\DamageStatus.cs" />
     <Compile Include="ViewModels\DisplaySafetyCheckFaultItemViewModel.cs" />
     <Compile Include="ViewModels\DisplaySafetyCheckViewModel.cs" />
     <Compile Include="ViewModels\InboxViewModel.cs" />
@@ -262,6 +265,7 @@
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavDataExtensions.cs" />
     <Compile Include="ViewModels\Navigation\MessageModalNavItem.cs" />
+    <Compile Include="ViewModels\Navigation\BarcodeStatusNavItem.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\InstructionSignatureViewModel.cs" />
     <Compile Include="ViewModels\InstructionCommentViewModel.cs" />
@@ -278,6 +282,7 @@
     <Compile Include="ViewModels\ReviseQuantityViewModel.cs" />
     <Compile Include="ViewModels\CameraImageViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultImageViewModel.cs" />
+    <Compile Include="ViewModels\BarcodeStatusViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckItemViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultViewModel.cs" />
     <Compile Include="ViewModels\InstructionSafetyCheckSignatureViewModel.cs" />

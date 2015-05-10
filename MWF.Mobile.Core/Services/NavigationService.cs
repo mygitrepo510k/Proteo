@@ -189,6 +189,15 @@ namespace MWF.Mobile.Core.Services
 
         }
 
+
+        public bool ShowModalViewModel<TViewModel, TResult>(BaseFragmentViewModel viewModel, NavData navData, Action<TResult> onResult)
+        where TViewModel : BaseModalViewModel<TResult>
+        {
+            AddNavDataToDictionary(navData);
+            return viewModel.ShowModalViewModel<TViewModel, TResult>(navData, onResult);
+        }
+
+
         public void MoveToNext(NavData navData)
         {
 
@@ -404,7 +413,7 @@ namespace MWF.Mobile.Core.Services
         /// <param name="navData"></param>
         private void AddNavDataToDictionary(NavData navData)
         {
-            navData.NavGUID = Guid.NewGuid();
+            //navData.NavGUID = Guid.NewGuid();
 
             var tuple = Tuple.Create<object, Dictionary<string, object>>(navData.GetData(), navData.OtherData);
             _navDataDictionary.Add(navData.NavGUID, tuple);
@@ -474,7 +483,7 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, InstructionSafetyCheckViewModel>(TrailerSafetyCheck_CustomAction);
             InsertCustomNavAction<MainViewModel, InstructionSafetyCheckSignatureViewModel>(InstructionSafetyCheckSignature_CustomAction);
 
-            InsertCustomNavAction<MainViewModel, BarcodeViewModel>(Barcode_CustomAction);
+            InsertCustomNavAction<MainViewModel, BarcodeScanningViewModel>(Barcode_CustomAction);
 
             InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomAction);
 
@@ -683,7 +692,7 @@ namespace MWF.Mobile.Core.Services
                     (i.Additional.BarcodeScanRequiredForCollection && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
                     || (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
                 {
-                    this.ShowViewModel<BarcodeViewModel>(mobileNavData);
+                    this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
                     return;
                 }
 
@@ -758,7 +767,7 @@ namespace MWF.Mobile.Core.Services
                 (i.Additional.BarcodeScanRequiredForCollection && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
                 || (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
             {
-                this.ShowViewModel<BarcodeViewModel>(mobileNavData);
+                this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
                 return;
             }
 

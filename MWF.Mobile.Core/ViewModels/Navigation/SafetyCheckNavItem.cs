@@ -8,7 +8,12 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class SafetyCheckNavItem : IModalNavItem
     {
-        public Guid MessageID { get; set; }
+        public SafetyCheckNavItem()
+        {
+            NavGUID = Guid.NewGuid();
+        }
+
+        public Guid NavGUID { get; set; }
         public Guid FaultID { get; set; }
         public bool IsVehicle { get; set; }
         public string FaultTypeText { get; set; }

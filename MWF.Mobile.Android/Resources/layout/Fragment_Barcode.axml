@@ -10,16 +10,20 @@
         android:focusable="true"
         android:layout_height="0dp"
         local:MvxBind="Text BarcodeInput" />
+    <TextView
+      android:id="@+id/InstructionsLabel"
+      style="@style/Proteo.TextView.ListHeadingNoSections"
+      local:MvxBind="Text InstructionsText" />
     <Button
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/ButtonCompleteScanning"
-        local:MvxBind="Text CompleteButtonText; Click CompleteScanningCommand" />
+        local:MvxBind="Text CompleteButtonText; Click CompleteScanningCommand; Enabled CanScanningBeCompleted" />
     <MWF.Mobile.Android.Views.BindableGroupListView
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@id/ButtonCompleteScanning"
-        android:layout_below="@id/BarcodeInput"
+        android:layout_below="@id/InstructionsLabel"
         local:MvxBind="ItemsSource BarcodeSections"
         local:MvxItemTemplate="@layout/item_barcode"
         local:GroupItemTemplate="@layout/item_section" />

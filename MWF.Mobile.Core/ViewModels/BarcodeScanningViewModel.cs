@@ -3,6 +3,7 @@ using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
@@ -16,7 +17,7 @@ using System.Windows.Input;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class BarcodeViewModel :
+    public class BarcodeScanningViewModel :
         BaseInstructionNotificationViewModel,
         IVisible
     {
@@ -27,12 +28,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         private BarcodeSectionViewModel _unprocessedBarcodes;
         private BarcodeSectionViewModel _processedBarcodes;
+        private IRepositories _repositories;
+        private List<DamageStatus> _damageStatuses;
 
         private INavigationService _navigationService;
 
-        public BarcodeViewModel(INavigationService navigationService)
+        public BarcodeScanningViewModel(INavigationService navigationService, IRepositories repositories)
         {
             _navigationService = navigationService;
+            _repositories = repositories;
+
+            BuildDamageStatuses();
+
         }
 
         public void Init(NavData<MobileData> navData)
@@ -69,7 +76,7 @@ namespace MWF.Mobile.Core.ViewModels
             var items = _mobileData.Order.Items;
             foreach (var item in items)
             {
-                barcodeItemsViewModels.AddRange(item.BarcodesList.Select(b => new BarcodeItemViewModel(this) { BarcodeText = b, OrderID = item.ItemIdFormatted }));
+                barcodeItemsViewModels.AddRange(item.BarcodesList.Select(b => new BarcodeItemViewModel(_navigationService, _damageStatuses, this) { BarcodeText = b, OrderID = item.ItemIdFormatted }));
             }
 
 
@@ -93,11 +100,25 @@ namespace MWF.Mobile.Core.ViewModels
             set { _barcodeSections = value; RaisePropertyChanged(() => BarcodeSections); }
         }
 
-        private string _barcodeInput;
+        public IEnumerable<BarcodeItemViewModel> SelectedBarcodes
+        {
+            get
+            {
+                return _processedBarcodes.Where(x => x.IsSelected);
+            }
+        }
+
+
+        private string _barcodeInput = string.Empty;
         public string BarcodeInput
         {
             get { return _barcodeInput; }
-            set { _barcodeInput = value; CheckScanInput(); }
+            set 
+            {
+
+                _barcodeInput = value; 
+                CheckScanInput(); 
+            }
         }
 
         private MvxCommand _completeScanningCommand;
@@ -108,6 +129,15 @@ namespace MWF.Mobile.Core.ViewModels
                 return (_completeScanningCommand = _completeScanningCommand ?? new MvxCommand(() => CompleteScanning()));
             }
         }
+
+        public string InstructionsText
+        {
+            get
+            {
+                return "Scan barcodes or select them from the unprocessed list to process them.";
+            }
+        }
+
 
         public string CompleteButtonText
         {
@@ -151,26 +181,61 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion Public Properties
 
+        #region Public Methods
+
+        public void MarkBarcodeAsProcessed(BarcodeItemViewModel barcodeItem, bool wasScanned = true)
+        {
+            barcodeItem.IsScanned = wasScanned;
+            barcodeItem.IsDelivered = true;
+
+            _unprocessedBarcodes.Barcodes.Remove(barcodeItem);
+            _processedBarcodes.Barcodes.Add(barcodeItem);
+
+            if (_unprocessedBarcodes.Barcodes.Count == 0)
+            {
+                _unprocessedBarcodes.Barcodes.Add(new DummyBarcodeItemViewModel());
+                this.CanScanningBeCompleted = true;
+            }
+
+            RaisePropertyChanged(() => BarcodeSections);
+
+        }
+
+        #endregion
+
         #region Private Methods
+
+
+        private void BuildDamageStatuses()
+        {
+            _damageStatuses = new List<DamageStatus>();
+
+            _damageStatuses.Add(new DamageStatus() { Text = "Clean", Code = "POD" });
+
+            var palletForceVerbProfile = _repositories.VerbProfileRepository.GetAll().Where(vp => vp.Code == "PFORCE").FirstOrDefault();
+
+            if (palletForceVerbProfile != null)
+            {
+                var customDamageStatuses = palletForceVerbProfile.Children.Select(vp => new DamageStatus() { Text = vp.Title, Code = vp.Category });
+                _damageStatuses.AddRange(customDamageStatuses);
+            }
+        }
 
         private async void CheckScanInput()
         {
+            var barcode = _unprocessedBarcodes.FirstOrDefault(bc => bc.BarcodeText == this.BarcodeInput);
 
-            foreach (var barcode in _unprocessedBarcodes.Barcodes)
+            if (barcode !=null)
             {
-                if (barcode.BarcodeText.Equals(BarcodeInput))
-                {
-                    barcode.ScanState = Enums.ScanState.Scanned;
-                    ClearBarcode();
-                }
-            }
-
-            UpdateBarcodes();
-
-            if (BarcodeInput != string.Empty)
-                ShowErrorAlert();
-            else
+                MarkBarcodeAsProcessed(barcode);
+                ClearBarcode();
                 RegainFocusViaHack();
+            }
+            else
+            {
+                ShowErrorAlert();
+            }
+               
         }
 
         private void ShowErrorAlert()
@@ -191,40 +256,25 @@ namespace MWF.Mobile.Core.ViewModels
             RequestBarcodeFocus();
         }
 
-        private void UpdateBarcodes()
-        {
-
-            List<BarcodeItemViewModel> newlyProcessedBarcodes = new List<BarcodeItemViewModel>();
-
-
-            foreach (var barcode in _unprocessedBarcodes.Barcodes)
-            {
-                if (barcode.IsScanned)
-                {
-                    newlyProcessedBarcodes.Add(barcode);
-                }
-            }
-
-            foreach (var barcode in newlyProcessedBarcodes)
-            {
-                _unprocessedBarcodes.Barcodes.Remove(barcode);
-                _processedBarcodes.Barcodes.Add(barcode);
-            }
-
-            if (_unprocessedBarcodes.Barcodes.Count == 0)
-            {
-                _unprocessedBarcodes.Barcodes.Add(new BarcodeItemViewModel(this) { BarcodeText = "", ScanState = null });
-                    _canScanningBeCompleted = true;
-            }
-
-            RaisePropertyChanged(() => BarcodeSections);
-
-        }
-
+       
         private void CompleteScanning()
         {
 
-            var newScannedDelivery = new ScannedDelivery() { Barcodes = _processedBarcodes.Barcodes.Select(bvm => new Barcode { BarcodeText = bvm.BarcodeText, IsScanned = bvm.IsScanned, OrderID = bvm.OrderID }).ToList() };
+            var newScannedDelivery = new ScannedDelivery()
+            { Barcodes = _processedBarcodes.Barcodes.Select(bvm => 
+                            new Barcode 
+                            { 
+                                BarcodeText = bvm.BarcodeText, 
+                                IsScanned = bvm.IsScanned, 
+                                OrderID = bvm.OrderID,
+                                IsDelivered = bvm.IsDelivered.Value,
+                                DamageStatusCode = bvm.DamageStatus.Code,
+                                DeliveryStatusCode = bvm.PalletforceDeliveryStatus,
+                                DeliveryStatusNote = bvm.DeliveryComments
+                                
+                            }).ToList() 
+            };
+
             _navData.GetDataChunk().ScannedDelivery = newScannedDelivery;
 
             _navigationService.MoveToNext(_navData);
@@ -236,22 +286,15 @@ namespace MWF.Mobile.Core.ViewModels
             RaisePropertyChanged(() => BarcodeInput);
         }
 
-        #endregion Private Methods
-
-        #region Public Methods
-
-
-        public void RequestBarcodeFocus()
+        private void RequestBarcodeFocus()
         {
             RaisePropertyChanged("RequestBarcodeFocus");
         }
 
-        public void CheckBarcodeItemsStatus()
-        {
-            RaisePropertyChanged(() => CanScanningBeCompleted);
-        }
 
-        #endregion Public Methods
+        #endregion Private Methods
+
+
 
         #region IVisible
 
@@ -284,4 +327,5 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion BaseFragmentViewModel Overrides
     }
+
 }

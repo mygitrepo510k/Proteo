@@ -44,7 +44,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void Init(SafetyCheckNavItem item)
         {
-            base.Init(item.MessageID);
+            base.Init(item.NavGUID);
 
             // Get the safety check fault to display
             if (item.IsVehicle)

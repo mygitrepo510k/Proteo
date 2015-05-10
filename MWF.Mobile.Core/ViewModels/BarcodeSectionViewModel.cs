@@ -11,12 +11,12 @@ namespace MWF.Mobile.Core.ViewModels
     public class BarcodeSectionViewModel: MvxViewModel, IEnumerable<BarcodeItemViewModel>
     {
 
-        private BarcodeViewModel _barcodeViewModel;
+        private BarcodeScanningViewModel _barcodeScanningViewModel;
 
-        public BarcodeSectionViewModel(BarcodeViewModel barcodeViewModel)
+        public BarcodeSectionViewModel(BarcodeScanningViewModel barcodeScanningViewModel)
         {
             _barcodes = new ObservableCollection<BarcodeItemViewModel>();
-            _barcodeViewModel = barcodeViewModel;
+            _barcodeScanningViewModel = barcodeScanningViewModel;
 
         }
 

@@ -41,13 +41,13 @@ namespace MWF.Mobile.Core.ViewModels
         where TViewModel : BaseModalViewModel<TResult>
         {
 
-            navItem.MessageID = Guid.NewGuid();
+            //navItem.NavGUID = Guid.NewGuid();
 
             MvxSubscriptionToken token = null;
             token = Messenger.Subscribe<ModalNavigationResultMessage<TResult>>(msg =>
             {
                 //make sure message ids match up
-                if (token != null && msg.MessageId == navItem.MessageID)
+                if (token != null && msg.MessageId == navItem.NavGUID)
                     Messenger.Unsubscribe<ModalNavigationResultMessage<TResult>>(token);
 
                 onResult(msg.Result);

@@ -25,6 +25,9 @@ namespace MWF.Mobile.Core.Models.Instruction
         [XmlAttribute("DeliveryStatusCode")]
         public string DeliveryStatusCode { get; set; }
 
+        [XmlAttribute("DamageStatusCode")]
+        public string DamageStatusCode { get; set; }
+
         [XmlAttribute("DeliveryStatusNote")]
         public string DeliveryStatusNote { get; set; }
 

@@ -2599,7 +2599,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(BarcodeViewModel), request.ViewModelType);
+            Assert.Equal(typeof(BarcodeScanningViewModel), request.ViewModelType);
         }
 
 

@@ -188,6 +188,7 @@
     <Compile Include="Views\BindableGroupListAdapter.cs" />
     <Compile Include="Views\BindableGroupListView.cs" />
     <Compile Include="Views\BindableProgress.cs" />
+    <Compile Include="Views\Fragments\BarcodeStatusFragment.cs" />
     <Compile Include="Views\KeyboardlessEditText.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\BarcodeFragment.cs" />
@@ -255,7 +256,7 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_About.axml">
-      <SubType>AndroidResource</SubType>
+      <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_Odometer.axml">
       <SubType>AndroidResource</SubType>
@@ -340,9 +341,18 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_Barcode.axml">
-      <SubType>AndroidResource</SubType>
+      <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_Barcode.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_BarcodeStatus.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_Spinner.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_SpinnerDropDown.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -437,6 +447,10 @@
     <AndroidResource Include="Resources\drawable-mdpi\ic_action_read.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\ic_action_read.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\ic_action_read.png" />
+    <AndroidResource Include="Resources\drawable\switch_bg_selector.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\switch_thumb_selector.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MWF.Mobile.Core\MWF.Mobile.Core.csproj">

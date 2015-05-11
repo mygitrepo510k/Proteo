@@ -702,9 +702,7 @@ namespace MWF.Mobile.Core.Services
                     }
                 }
 
-                if (mobileNavData.Data.Order.Items.Any(i =>
-                    (i.Additional.BarcodeScanRequiredForCollection && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
-                    || (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
+                if (mobileNavData.Data.Order.Items.Any(i => (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
                 {
                     this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
                     return;
@@ -787,9 +785,7 @@ namespace MWF.Mobile.Core.Services
             var additionalContent = mobileNavData.Data.Order.Additional;
             var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
-            if (mobileNavData.Data.Order.Items.Any(i =>
-                (i.Additional.BarcodeScanRequiredForCollection && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
-                || (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
+            if (mobileNavData.Data.Order.Items.Any(i => (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
             {
                 this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
                 return;
@@ -838,6 +834,7 @@ namespace MWF.Mobile.Core.Services
             }
 
             _startupService.CurrentTrailer = trailer;
+            _startupService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
         }
 
 

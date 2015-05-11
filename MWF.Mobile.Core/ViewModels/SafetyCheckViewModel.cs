@@ -106,7 +106,7 @@ namespace MWF.Mobile.Core.ViewModels
             };
 
             // Add the safety check item view models
-            this.SafetyCheckItemViewModels.AddRange(faults.Select(scf => new SafetyCheckItemViewModel(this)
+            this.SafetyCheckItemViewModels.AddRange(faults.Select(scf => new SafetyCheckItemViewModel(this, _navigationService)
             {
                 ID = scf.ID,
                 SafetyCheckFault = scf,

@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class SafetyCheckNavItem : IModalNavItem
-    {
-        public SafetyCheckNavItem()
-        {
-            NavGUID = Guid.NewGuid();
-        }
+    //public class SafetyCheckNavItem : IModalNavItem
+    //{
+    //    public SafetyCheckNavItem()
+    //    {
+    //        NavGUID = Guid.NewGuid();
+    //    }
 
-        public Guid NavGUID { get; set; }
-        public Guid FaultID { get; set; }
-        public bool IsVehicle { get; set; }
-        public string FaultTypeText { get; set; }
-    }
+    //    public Guid NavGUID { get; set; }
+    //    public Guid FaultID { get; set; }
+    //    public bool IsVehicle { get; set; }
+    //    public string FaultTypeText { get; set; }
+    //}
 }

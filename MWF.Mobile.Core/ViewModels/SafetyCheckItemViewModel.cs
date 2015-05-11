@@ -7,15 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
 {
     public class SafetyCheckItemViewModel : MvxViewModel
     {
-        public SafetyCheckItemViewModel(SafetyCheckViewModel safetyCheckViewModel)
+
+        private INavigationService _navigationService;
+
+        public SafetyCheckItemViewModel(SafetyCheckViewModel safetyCheckViewModel, INavigationService navigationService)
         {
             _safetyCheckViewModel = safetyCheckViewModel;
             _checkStatus = Enums.SafetyCheckStatus.NotSet;
+            _navigationService = navigationService;
         }
 
         private SafetyCheckViewModel _safetyCheckViewModel;
@@ -75,8 +80,14 @@ namespace MWF.Mobile.Core.ViewModels
                     if (value == Enums.SafetyCheckStatus.DiscretionaryPass || value == Enums.SafetyCheckStatus.Failed)
                     {
                         string faultTypeText = (value == Enums.SafetyCheckStatus.DiscretionaryPass) ? "Discretionary Pass" : "Failure";
-                        var navItem = new SafetyCheckNavItem() { FaultID = this.SafetyCheckFault.ID, IsVehicle = this.IsVehicle, FaultTypeText = faultTypeText };
-                        _safetyCheckViewModel.ShowModalViewModel<SafetyCheckFaultViewModel, bool>(navItem, (faultLogged) =>
+
+
+                        //var navItem = new SafetyCheckNavItem() { FaultID = this.SafetyCheckFault.ID, IsVehicle = this.IsVehicle, FaultTypeText = faultTypeText };
+
+                        NavData<SafetyCheckFault> safetyCheckNavItem = new NavData<SafetyCheckFault>() { Data = this.SafetyCheckFault };
+                        safetyCheckNavItem.OtherData["FaultTypeText"] = faultTypeText;
+
+                        _navigationService.ShowModalViewModel<SafetyCheckFaultViewModel, bool>(_safetyCheckViewModel, safetyCheckNavItem, (faultLogged) =>
                         {
                             if (faultLogged)
                             {
@@ -87,7 +98,7 @@ namespace MWF.Mobile.Core.ViewModels
                                 RaisePropertyChanged(() => CheckStatus);
                             }
 
-                        });
+                        });                      
 
                     }
                     else

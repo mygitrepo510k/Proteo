@@ -42,21 +42,15 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
 
-        public void Init(SafetyCheckNavItem item)
+        public void Init(NavData<SafetyCheckFault> navData)
         {
-            base.Init(item.NavGUID);
+            navData.Reinflate();
 
-            // Get the safety check fault to display
-            if (item.IsVehicle)
-            {
-                _originalSafetyCheckFault = _startupService.CurrentVehicleSafetyCheckData.Faults.SingleOrDefault(f => f.ID == item.FaultID);
-            }
-            else
-            {
-                _originalSafetyCheckFault = _startupService.CurrentTrailerSafetyCheckData.Faults.SingleOrDefault(f => f.ID == item.FaultID);
-            }
+            base.Init(navData.NavGUID);
 
-            _faultTypeText = item.FaultTypeText;
+            _originalSafetyCheckFault = navData.Data;
+
+            _faultTypeText = (string) navData.OtherData["FaultTypeText"];
 
             _safetyCheckFault = _originalSafetyCheckFault.Clone();
 

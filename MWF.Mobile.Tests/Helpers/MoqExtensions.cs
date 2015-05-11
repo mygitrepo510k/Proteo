@@ -87,6 +87,7 @@ namespace MWF.Mobile.Tests.Helpers
             return userInteractionMock;
         }
 
+
         // shortcut way of setting up a Mock UserInteraction to execute the "OK" logic of a Confirm call 
         public static Mock<IUserInteraction> ConfirmAsyncReturnsTrueIfTitleStartsWith(this Mock<IUserInteraction> userInteractionMock, string messageStartsWith)
         {
@@ -115,8 +116,10 @@ namespace MWF.Mobile.Tests.Helpers
             return userInteractionMock;
         }
 
+
+
         // shortcut way of setting up a Mock CustomUserInteraction to execute the "OK" logic of a Confirm call 
-        public static Mock<ICustomUserInteraction> ConfirmReturnsTrueIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
+        public static Mock<ICustomUserInteraction> PopUpConfirmReturnsTrueIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
         {
             userInteractionMock.Setup(ui => ui.PopUpConfirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
                     .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
@@ -126,7 +129,7 @@ namespace MWF.Mobile.Tests.Helpers
 
 
         // shortcut way of setting up a Mock CustomUserInteraction to execute the "Cancel" logic of a Confirm call 
-        public static Mock<ICustomUserInteraction> ConfirmReturnsFalseIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
+        public static Mock<ICustomUserInteraction> PopUpConfirmReturnsFalseIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
         {
             userInteractionMock.Setup(ui => ui.PopUpConfirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
                     .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(false));

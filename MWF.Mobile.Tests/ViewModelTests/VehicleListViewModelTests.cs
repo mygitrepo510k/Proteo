@@ -39,7 +39,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
 
             _mockCustomUserInteraction = new Mock<ICustomUserInteraction>();
-            _mockCustomUserInteraction.ConfirmReturnsFalseIfTitleStartsWith("Last Used Vehicle");
+            _mockCustomUserInteraction.PopUpConfirmReturnsFalseIfTitleStartsWith("Last Used Vehicle");
             Ioc.RegisterSingleton<ICustomUserInteraction>(_mockCustomUserInteraction.Object);
 
             _mockUserInteraction = new Mock<IUserInteraction>();
@@ -72,7 +72,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockCustomUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockCustomUserInteraction.PopUpConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var navigationServiceMock = new Mock<INavigationService>();
             navigationServiceMock.Setup(ns => ns.MoveToNext());
@@ -95,7 +95,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockCustomUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockCustomUserInteraction.PopUpConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var vm = _fixture.Create<VehicleListViewModel>();
 
@@ -114,7 +114,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockCustomUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockCustomUserInteraction.PopUpConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var vm = _fixture.Create<VehicleListViewModel>();
 

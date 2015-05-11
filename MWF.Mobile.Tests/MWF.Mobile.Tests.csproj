@@ -153,6 +153,7 @@
     <Compile Include="ViewModelTests\InstructionOnSiteViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionSafetyCheckSignatureViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionSignatureViewModelTests.cs" />
+    <Compile Include="ViewModelTests\BarcodeScanningViewModelTests.cs" />
     <Compile Include="ViewModelTests\MessageViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionTrunkProceedViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionViewModelTests.cs" />

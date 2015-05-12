@@ -75,8 +75,14 @@
   </style>
 
   <style name = "Proteo.TextView.SectionContentLarge" parent="style/Proteo.TextView.SectionContent">
-    <item name = "android:textSize">15dp</item>
+    <item name = "android:textSize">18dp</item>
+    <item name = "android:layout_marginTop">8dp</item>
     <item name = "android:layout_marginBottom">1dp</item>
+  </style>
+
+  <style name = "Proteo.TextView.MessageContent" parent="style/Proteo.TextView.SectionContentLarge">
+    <item name = "android:layout_marginTop">8dp</item>
+    <item name = "android:layout_marginBottom">5dp</item>
   </style>
 
   <style name ="Proteo.TextView.ItemText" parent="style/Proteo">

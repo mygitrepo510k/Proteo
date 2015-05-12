@@ -23,10 +23,8 @@
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp">
             <TextView
-                style="@style/Proteo.TextView.SectionContent"
-                local:MvxBind="Text MessageContentText"
-                android:layout_marginBottom="16dp"
-                android:textSize="18dp" />
+                style="@style/Proteo.TextView.MessageContent"
+                local:MvxBind="Text MessageContentText" />
             <TextView
                 style="@style/Proteo.TextView.SectionHeading"
                 local:MvxBind="Text AddressLabelText; Visible isWithPoint" />

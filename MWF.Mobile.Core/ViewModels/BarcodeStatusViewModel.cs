@@ -81,7 +81,25 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return "Pallet ID";
+                return (AreMultipleBarcodes) ? "Pallet IDs" : "Pallet ID";
+            }
+        }
+
+        public string PalletIDText
+        {
+            get
+            {
+                if (!_navData.OtherData.IsDefined("SelectedBarcodes")) return Barcode.BarcodeText;
+                
+                List<BarcodeItemViewModel> selectedBarcodes = _navData.OtherData["SelectedBarcodes"] as List<BarcodeItemViewModel>;
+
+                List<BarcodeItemViewModel> selectedBarcodesPlusThisBarcode = new List<BarcodeItemViewModel>(selectedBarcodes);
+                if (!selectedBarcodesPlusThisBarcode.Contains(this.Barcode))
+                    selectedBarcodesPlusThisBarcode.Add(this.Barcode);
+
+
+                var barcodes = selectedBarcodes.Select(x => x.BarcodeText);
+                return barcodes.Aggregate((i, j) => i + "\n" + j);
             }
         }
 
@@ -106,6 +124,24 @@ namespace MWF.Mobile.Core.ViewModels
             get
             {
                 return "Delivery Comments";
+            }
+        }
+
+
+
+        public bool AreMultipleBarcodes
+        {
+            get
+            {
+                if (!_navData.OtherData.IsDefined("SelectedBarcodes")) return false;
+                
+                List<BarcodeItemViewModel> barcodes = _navData.OtherData["SelectedBarcodes"] as List<BarcodeItemViewModel>;
+
+                if (barcodes.Count > 1) return true;
+
+                if (barcodes.Count == 1 && barcodes[0].BarcodeText != Barcode.BarcodeText) return true;
+
+                return false;
             }
         }
 

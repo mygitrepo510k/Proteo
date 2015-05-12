@@ -4,60 +4,60 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-  <ScrollView
+    <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-      <LinearLayout
-          android:orientation="vertical"
-          android:layout_height="wrap_content">
-          <TextView
-              style="@style/Proteo.TextView.ListHeadingNoSections"
-              local:MvxBind="Text InstructionsText" />
-          <TextView
-              style="@style/Proteo.TextView.SectionHeading"
-              local:MvxBind="Text PalletIDLabel" />
-          <TextView
-              style="@style/Proteo.TextView.SectionContentLarge"
-              local:MvxBind="Text Barcode.BarcodeText" />
-          <TextView
-              style="@style/Proteo.TextView.SectionHeading"
-              local:MvxBind="Text DeliveryStatusLabel" />
-          <Switch
-              android:id="@+id/swDelivered"
-              android:layout_width="wrap_content"
-              android:layout_height="48dp"
-              android:switchTextAppearance="@style/Proteo.Switch.Text"
-              android:textOn="  Delivered  "
-              android:textOff="  Not Delivered  "
-              android:layout_marginTop="5dp"
-              android:layout_marginBottom="2dp"
-              android:thumb="@drawable/switch_thumb_selector"
-              android:track="@drawable/switch_bg_selector"
-              local:MvxBind="Checked Barcode.IsDelivered;" />
-          <TextView
-              style="@style/Proteo.TextView.SectionHeading"
-              local:MvxBind="Text DamageStatusLabel" />
-          <MvxSpinner
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+            <TextView
+                style="@style/Proteo.TextView.ListHeadingNoSections"
+                local:MvxBind="Text InstructionsText" />
+            <TextView
+                style="@style/Proteo.TextView.SectionHeading"
+                local:MvxBind="Text PalletIDLabel" />
+            <TextView
+                style="@style/Proteo.TextView.SectionContentLarge"
+                local:MvxBind="Text PalletIDText" />
+            <TextView
+                style="@style/Proteo.TextView.SectionHeading"
+                local:MvxBind="Text DeliveryStatusLabel" />
+            <Switch
+                android:id="@+id/swDelivered"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:switchTextAppearance="@style/Proteo.Switch.Text"
+                android:textOn="  Delivered  "
+                android:textOff="  Not Delivered  "
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="2dp"
+                android:thumb="@drawable/switch_thumb_selector"
+                android:track="@drawable/switch_bg_selector"
+                local:MvxBind="Checked Barcode.IsDelivered;" />
+            <TextView
+                style="@style/Proteo.TextView.SectionHeading"
+                local:MvxBind="Text DamageStatusLabel" />
+            <MvxSpinner
                 style="@style/Proteo.Spinner"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 local:MvxItemTemplate="@layout/item_spinner"
                 local:MvxDropDownItemTemplate="@layout/item_spinnerdropdown"
                 local:MvxBind="ItemsSource Barcode.DamageStatuses; SelectedItem Barcode.DamageStatus;" />
-          <TextView
+            <TextView
                 style="@style/Proteo.TextView.SectionHeading"
                 local:MvxBind="Text DeliveryCommentsLabel" />
-          <EditText
-                  style="@style/Proteo.Multiline"
-                  android:scrollbars="vertical"
-                  android:layout_width="fill_parent"
-                  android:layout_height="fill_parent"
-                  android:layout_marginTop="3dp"
-                  local:MvxBind="Text Barcode.DeliveryComments; Hint CommentHintText" />
-          <Button
-           style="@style/Proteo.Button.NonBottom"
-           android:id="@+id/doneButton"
-           local:MvxBind="Text DoneButtonLabel; Click DoneCommand; Enabled Barcode.ValidComments;" />
+            <EditText
+                style="@style/Proteo.Multiline"
+                android:scrollbars="vertical"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="3dp"
+                local:MvxBind="Text Barcode.DeliveryComments; Hint CommentHintText" />
+            <Button
+                style="@style/Proteo.Button.NonBottom"
+                android:id="@+id/doneButton"
+                local:MvxBind="Text DoneButtonLabel; Click DoneCommand; Enabled Barcode.ValidComments;" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

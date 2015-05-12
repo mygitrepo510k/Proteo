@@ -14,6 +14,7 @@
                 style="@style/Proteo.TextView.ListHeadingNoSections"
                 local:MvxBind="Text InstructionsText" />
             <TextView
+                android:layout_marginTop="0dp"
                 style="@style/Proteo.TextView.SectionHeading"
                 local:MvxBind="Text PalletIDLabel" />
             <TextView

@@ -56,12 +56,12 @@
             android:layout_alignParentRight="true"
             android:layout_marginTop="3.5dp"
             android:layout_marginLeft="1dp"
-            local:MvxBind="Click SelectBarcodeCommand; Visibility IsDelivered, Converter=NullableBoolToVisibility, ConverterParameter=True" />
+            local:MvxBind="Click SelectBarcodeCommand; Visibility IsDelivered, Converter=NullableBoolToVisibility, ConverterParameter=NotNull" />
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="35dp"
-            local:MvxBind="Checked IsSelected; Visibility IsDelivered, Converter=NullableBoolToVisibility, ConverterParameter=True"
+            local:MvxBind="Checked IsSelected; Visibility IsDelivered, Converter=NullableBoolToVisibility, ConverterParameter=NotNull"
             android:layout_alignParentRight="true" />
     </RelativeLayout>
 </LinearLayout>

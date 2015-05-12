@@ -1015,11 +1015,14 @@ namespace MWF.Mobile.Core.Services
                 var mobileNavData = navData as NavData<MobileData>;
                 var additionalContent = mobileNavData.Data.Order.Additional;
 
-                if (additionalContent.IsTrailerConfirmationEnabled)
+                if (additionalContent.IsTrailerConfirmationEnabled && mobileNavData.Data.Order.Type == Enums.InstructionType.ProceedFrom)
                 {
 
-                    string message = string.Format("One specified on instruction is {0}. Current trailer is {1}.", mobileNavData.Data.Order.Additional.Trailer.TrailerId, _mainService.CurrentTrailer.Registration);
-                    var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync(message, "Change Trailer?",  "Select Trailer", "Use Current");
+                    string orderTrailerMessage = (mobileNavData.Data.Order.Additional.Trailer.TrailerId == null) ? "No trailer specified on instruction." : string.Format("Trailer specified on instruction is {0}.", mobileNavData.Data.Order.Additional.Trailer.TrailerId);
+                    string currentTrailerMessage = (_startupService.CurrentTrailer == null) ? " Currently have no trailer." : string.Format(" Current trailer is {0}.", _startupService.CurrentTrailer.Registration);
+
+                    string message = orderTrailerMessage + currentTrailerMessage;
+                    var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
 
                     if (isConfirmed)
                     {

@@ -19,7 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class BarcodeScanningViewModel :
         BaseInstructionNotificationViewModel,
-        IVisible
+        IVisible, IBackButtonHandler
     {
         #region Construction
 
@@ -326,6 +326,15 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion BaseFragmentViewModel Overrides
+
+        #region IBackButtonHandler Implementation
+
+        public Task<bool> OnBackButtonPressed()
+        {
+            return Mvx.Resolve<IUserInteraction>().ConfirmAsync("The changes you have made will be lost, do you wish to continue?", "Changes will be lost!", "Continue");
+        }
+
+        #endregion
     }
 
 }

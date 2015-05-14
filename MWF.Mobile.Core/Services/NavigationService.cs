@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
+using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
-using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
-using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Presentation;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Utilities;
+using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
-using Chance.MvvmCross.Plugins.UserInteraction;
-using System.Threading.Tasks;
 
 
 namespace MWF.Mobile.Core.Services
@@ -41,6 +42,7 @@ namespace MWF.Mobile.Core.Services
         IRepositories _repositories;
         ICloseApplication _closeApplication;
         private IDataChunkService _dataChunkService;
+        private Timer _loginSessionTimer;
 
 
         #endregion
@@ -292,6 +294,8 @@ namespace MWF.Mobile.Core.Services
         {
             // Stop the gateway polling service before we "logout" the user.
             _gatewayPollingService.StopPollingTimer();
+            this.StopLoginSessionTimer();
+            _startupService.DriverLogOut();
             MoveTo(typeof(StartupViewModel), navData);
         }
 
@@ -455,11 +459,31 @@ namespace MWF.Mobile.Core.Services
             this.ShowViewModel<ManifestViewModel>();
         }
 
-
         private void DriverLogIn()
         {
             _startupService.DriverLogIn();
+            this.StartLoginSessionTimer();
             _gatewayPollingService.StartPollingTimer();
+        }
+
+        private void StartLoginSessionTimer()
+        {
+            if (_loginSessionTimer == null)
+            {
+                var appProfile = _repositories.ApplicationRepository.GetAll().First();
+                var sessionTimeoutInSeconds = appProfile.Timeout;
+
+                if (sessionTimeoutInSeconds > 0)
+                    _loginSessionTimer = new Timer(state => this.DoLogout(null), null, sessionTimeoutInSeconds * 1000);
+            }
+            else
+                _loginSessionTimer.Reset();
+        }
+
+        private void StopLoginSessionTimer()
+        {
+            _loginSessionTimer.Dispose();
+            _loginSessionTimer = null;
         }
 
         #endregion Private Methods

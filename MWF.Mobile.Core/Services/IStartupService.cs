@@ -18,5 +18,6 @@ namespace MWF.Mobile.Core.Services
         void StartGatewayQueueTimer();
         void CommitSafetyCheckData();
         void DriverLogIn();
+        void DriverLogOut();
     }
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
-using System.Xml;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -125,6 +125,15 @@ namespace MWF.Mobile.Core.Services
             _gatewayQueuedService.AddToQueue("fwSetDriverActivity", currentDriver);
         }
 
+        /// <summary>
+        /// Clear the current logged in driver details
+        /// </summary>
+        public void DriverLogOut()
+        {
+            this.CurrentVehicle = null;
+            this.CurrentTrailer = null;
+            this.LoggedInDriver = null;
+        }
 
     }
 

@@ -54,7 +54,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_marginTop="3dp"
-                local:MvxBind="Text Barcode.DeliveryComments; Hint CommentHintText" />
+                android:maxLength="30"
+                local:MvxBind="Text Barcode.DeliveryComments; Hint CommentHintText;" />
             <Button
                 style="@style/Proteo.Button.NonBottom"
                 android:id="@+id/doneButton"

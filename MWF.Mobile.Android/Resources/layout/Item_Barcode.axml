@@ -46,6 +46,7 @@
             style="@style/Proteo.TextView.ItemText.Small"
             android:gravity="center_vertical"
             local:MvxBind="Text BarcodeText"
+            android:layout_marginTop="5dp"
             android:layout_alignParentLeft="true" />
         <ImageView
             android:id="@+id/skinnyHamburger"
@@ -60,8 +61,19 @@
         <CheckBox
             android:layout_width="wrap_content"
             android:layout_marginLeft="0dp"
-            android:layout_marginRight="35dp"
+            android:layout_marginRight="25dp"
             local:MvxBind="Checked IsSelected; Visibility IsDelivered, Converter=NullableBoolToVisibility, ConverterParameter=NotNull"
             android:layout_alignParentRight="true" />
+        <TextView
+            android:id="@+id/BarcodeDamageStatus"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="43dp"
+            style="@style/Proteo.TextView.ItemText.Small"
+            android:gravity="center_vertical"
+            android:textColor="#f00"
+            local:MvxBind="Text DamageIndicatorText"
+            android:layout_toLeftOf="@+id/skinnyHamburger" />
     </RelativeLayout>
 </LinearLayout>

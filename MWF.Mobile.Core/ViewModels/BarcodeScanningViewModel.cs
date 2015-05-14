@@ -63,7 +63,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             _unprocessedBarcodes = new BarcodeSectionViewModel(this)
             {
-                SectionHeader = "Unprocessed Barcodes",
+                SectionHeader = "To Do",
             };
 
             BarcodeSections.Add(_unprocessedBarcodes);
@@ -71,7 +71,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             _processedBarcodes = new BarcodeSectionViewModel(this)
             {
-                SectionHeader = "Processed Barcodes",
+                SectionHeader = "Done",
             };
 
             BarcodeSections.Add(_processedBarcodes);
@@ -140,7 +140,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return "Scan barcodes or select them from the unprocessed list to process them.";
+                return "Scan barcodes or select them from the To Do list.";
             }
         }
 

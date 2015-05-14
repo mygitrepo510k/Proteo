@@ -108,8 +108,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             // Check the section headers are corrrect
-            Assert.Equal("Unprocessed Barcodes", barcodeScanningVM.BarcodeSections[0].SectionHeader);
-            Assert.Equal("Processed Barcodes", barcodeScanningVM.BarcodeSections[1].SectionHeader);
+            Assert.Equal("To Do", barcodeScanningVM.BarcodeSections[0].SectionHeader);
+            Assert.Equal("Done", barcodeScanningVM.BarcodeSections[1].SectionHeader);
 
             // Check the unprocessed section contains the barcodes specified on the delivery
             int totalBarcodesInOrder = _mobileData.Order.Items.Sum(x => x.BarcodesList.Count());

@@ -40,20 +40,6 @@
                     android:layout_width="wrap_content"
                     local:MvxBind="Text ArriveDateTime" />
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_gravity="left"
-                android:layout_marginLeft="0dp"
-                android:orientation="horizontal">
-                <TextView
-                    style="@style/Proteo.TextView.SectionContent"
-                    android:layout_width="50dp"
-                    local:MvxBind="Text DepartLabelText" />
-                <TextView
-                    style="@style/Proteo.TextView.SectionContent"
-                    android:layout_width="wrap_content"
-                    local:MvxBind="Text DepartDateTime" />
-            </LinearLayout>
             <TextView
                 style="@style/Proteo.TextView.SectionHeading"
                 local:MvxBind="Text AddressLabelText" />

@@ -25,9 +25,15 @@ namespace MWF.Mobile.Android.Portable
 
         public void Launch()
         {
-            Intent i = new Intent(Intent.ActionDial);
+            
+            // Launches phone app with contacts tab selected
 
-            this.CurrentActivity.StartActivity(i);
+            Intent intent = new Intent();
+            intent.SetComponent(new ComponentName("com.android.contacts", "com.android.contacts.DialtactsContactsEntryActivity"));
+            intent.SetAction("android.intent.action.MAIN");
+            intent.AddCategory("android.intent.category.LAUNCHER");
+            intent.AddCategory("android.intent.category.DEFAULT");
+            this.CurrentActivity.StartActivity(intent);
             
         }
     }

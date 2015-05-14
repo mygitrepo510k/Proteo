@@ -79,6 +79,14 @@ namespace MWF.Mobile.Core.ViewModels
             set;
         }
 
+        public string DamageIndicatorText
+        {
+            get
+            {
+                return (DamageStatus.Code == "POD") ? string.Empty : DamageStatus.Text.Substring(0, 1); ;
+            }
+        }
+
         public List<DamageStatus> DamageStatuses
         {
             get
@@ -104,6 +112,7 @@ namespace MWF.Mobile.Core.ViewModels
                 _damageStatus = value;
                 RaisePropertyChanged(() => DamageStatus);
                 RaisePropertyChanged(() => ValidComments);
+                RaisePropertyChanged(() =>  DamageIndicatorText);
             }
         }
 

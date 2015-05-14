@@ -94,7 +94,7 @@ namespace MWF.Mobile.Core.ViewModels
                 List<BarcodeItemViewModel> selectedBarcodes = _navData.OtherData["SelectedBarcodes"] as List<BarcodeItemViewModel>;
 
                 List<BarcodeItemViewModel> selectedBarcodesPlusThisBarcode = new List<BarcodeItemViewModel>(selectedBarcodes);
-                if (!selectedBarcodesPlusThisBarcode.Contains(this.Barcode))
+                if (!selectedBarcodesPlusThisBarcode.Contains(_originalBarcodeItemViewModel))
                     selectedBarcodesPlusThisBarcode.Insert(0, this.Barcode);
 
 

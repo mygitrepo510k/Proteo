@@ -148,11 +148,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public string HeaderText
-        {
-            get { return "Select instruction - Showing " + InstructionsCount; }
-        }
-
         #endregion
 
         #region Private Methods
@@ -233,7 +228,6 @@ namespace MWF.Mobile.Core.ViewModels
             // Let the UI know the number of instructions has changed
             RaisePropertyChanged(() => InstructionsCount);
             RaisePropertyChanged(() => Sections);
-            RaisePropertyChanged(() => HeaderText);
 
             Mvx.Trace("finished refreshing manifest screen");
 

@@ -26,10 +26,15 @@ namespace MWF.Mobile.Core.ViewModels
         private MobileData _mobileData = null;
         private NavData<MobileData> _navData;
 
-        private BarcodeSectionViewModel _unprocessedBarcodes;
-        private BarcodeSectionViewModel _processedBarcodes;
+        protected BarcodeSectionViewModel _unprocessedBarcodes;
+        protected BarcodeSectionViewModel _processedBarcodes;
         private IRepositories _repositories;
         private List<DamageStatus> _damageStatuses;
+
+        public List<DamageStatus> DamageStatuses
+        {
+            get { return _damageStatuses; }
+        }
 
         private INavigationService _navigationService;
 
@@ -41,6 +46,7 @@ namespace MWF.Mobile.Core.ViewModels
             BuildDamageStatuses();
 
         }
+
 
         public void Init(NavData<MobileData> navData)
         {
@@ -183,7 +189,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Methods
 
-        public void MarkBarcodeAsProcessed(BarcodeItemViewModel barcodeItem, bool wasScanned = true)
+        public virtual void MarkBarcodeAsProcessed(BarcodeItemViewModel barcodeItem, bool wasScanned = true)
         {
             barcodeItem.IsScanned = wasScanned;
             barcodeItem.IsDelivered = true;
@@ -293,8 +299,6 @@ namespace MWF.Mobile.Core.ViewModels
 
 
         #endregion Private Methods
-
-
 
         #region IVisible
 

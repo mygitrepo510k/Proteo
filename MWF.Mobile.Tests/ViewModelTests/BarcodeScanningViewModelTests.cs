@@ -33,11 +33,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
+        private Mock<IVerbProfileRepository> _mockVerbProfileRepo;
         private Mock<INavigationService> _mockNavigationService;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
         private Mock<IMainService> _mockMainService;
         private Mock<IMvxMessenger> _mockMessenger;
         private Mock<IUserInteraction> _mockUserInteraction;
+        private VerbProfile _verbProfile;
 
 
         protected override void AdditionalSetup()
@@ -49,6 +51,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+
+            _verbProfile = _fixture.Create<VerbProfile>();
+            List<VerbProfile> verbProfiles = new List<VerbProfile>() { _verbProfile };
+            _mockVerbProfileRepo = _fixture.InjectNewMock<IVerbProfileRepository>();
+            _mockVerbProfileRepo.Setup(mvpr => mvpr.GetAll()).Returns(verbProfiles);
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -91,7 +98,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        // Checks that when the view model is initialised the sections are correcly constructed
+        // Checks that when the view model is initialised the sections are correctly constructed
         public void BarcodeScanningVM_Init_Sections()
         {
             base.ClearAll();
@@ -133,6 +140,38 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         }
+
+
+        [Fact]
+        // Checks that when the view model is initialised the damage statuses are correctly constructed
+        public void BarcodeScanningVM_Init_DamageStatuses()
+        {
+            base.ClearAll();
+
+            _verbProfile.Code = "PFORCE";
+
+            var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
+
+            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+
+            var barcodeItemViewModel = barcodeScanningVM.BarcodeSections[0].Barcodes[0];
+
+            // check that an item view model has the right damage statuses
+            // i.e. clean, plus whatever is specified under "PFORCE" verb profile
+            Assert.Equal(_verbProfile.Children.Count + 1, barcodeItemViewModel.DamageStatuses.Count);
+
+            Assert.Equal("Clean", barcodeItemViewModel.DamageStatuses[0].Text);
+            Assert.Equal("POD", barcodeItemViewModel.DamageStatuses[0].Code);
+
+            for (int i = 0; i < _verbProfile.Children.Count; i++)
+            {
+                Assert.Equal(_verbProfile.Children[i].Title, barcodeItemViewModel.DamageStatuses[i+1].Text);
+                Assert.Equal(_verbProfile.Children[i].Category, barcodeItemViewModel.DamageStatuses[i + 1].Code);
+            }
+
+        }
+
+
 
         [Fact]
         public void BarcodeScanningVM_CanBeCompleted()
@@ -297,6 +336,34 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.False(barcodeToInput.IsScanned);
             Assert.True(barcodeToInput.IsDelivered);
 
+        }
+
+
+        [Fact]
+        public void BarcodeScanningVM_SelectedBarcodes()
+        {
+            base.ClearAll();
+
+            var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
+
+            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+
+            // shouldn't have any selected barcodes to start with
+            Assert.Equal(0, barcodeScanningVM.SelectedBarcodes.Count());
+
+            // mark all three barcodes as processed (they need to be processed to be be counted as "selected")
+            barcodeScanningVM.MarkBarcodeAsProcessed(barcodeScanningVM.BarcodeSections[0].Barcodes[0]);
+            barcodeScanningVM.MarkBarcodeAsProcessed(barcodeScanningVM.BarcodeSections[0].Barcodes[0]);
+            barcodeScanningVM.MarkBarcodeAsProcessed(barcodeScanningVM.BarcodeSections[0].Barcodes[0]);
+
+            // select the first and third barcodes from the processed list
+            barcodeScanningVM.BarcodeSections[1].Barcodes[0].IsSelected = true;
+            barcodeScanningVM.BarcodeSections[1].Barcodes[2].IsSelected = true;
+
+            // //check the "selected" list contains only the first and third barcodes
+            Assert.Equal(2, barcodeScanningVM.SelectedBarcodes.Count());
+            Assert.Contains(barcodeScanningVM.BarcodeSections[1].Barcodes[0], barcodeScanningVM.SelectedBarcodes);
+            Assert.Contains(barcodeScanningVM.BarcodeSections[1].Barcodes[2], barcodeScanningVM.SelectedBarcodes);
         }
 
         #endregion Test

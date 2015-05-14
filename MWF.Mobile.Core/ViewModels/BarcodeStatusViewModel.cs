@@ -95,10 +95,10 @@ namespace MWF.Mobile.Core.ViewModels
 
                 List<BarcodeItemViewModel> selectedBarcodesPlusThisBarcode = new List<BarcodeItemViewModel>(selectedBarcodes);
                 if (!selectedBarcodesPlusThisBarcode.Contains(this.Barcode))
-                    selectedBarcodesPlusThisBarcode.Add(this.Barcode);
+                    selectedBarcodesPlusThisBarcode.Insert(0, this.Barcode);
 
 
-                var barcodes = selectedBarcodes.Select(x => x.BarcodeText);
+                var barcodes = selectedBarcodesPlusThisBarcode.Select(x => x.BarcodeText);
                 return barcodes.Aggregate((i, j) => i + "\n" + j);
             }
         }
@@ -197,6 +197,9 @@ namespace MWF.Mobile.Core.ViewModels
             vm.IsDelivered = _barcodeItemViewModel.IsDelivered;
             vm.DamageStatus = _barcodeItemViewModel.DamageStatus;
             vm.DeliveryComments = _barcodeItemViewModel.DeliveryComments;
+
+            // clear the selected flag
+            vm.IsSelected = false;
         }
 
         #endregion

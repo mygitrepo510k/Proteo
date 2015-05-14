@@ -144,6 +144,8 @@
     <Compile Include="ServiceTests\AuthenticationServiceTests.cs" />
     <Compile Include="ServiceTests\GatewayPollingServiceTests.cs" />
     <Compile Include="ServiceTests\GatewayQueuedServiceTests.cs" />
+    <Compile Include="ViewModelTests\BarcodeStatusViewModelTests.cs" />
+    <Compile Include="ViewModelTests\BarcodeItemViewModelTests.cs" />
     <Compile Include="ViewModelTests\CameraViewModelTests.cs" />
     <Compile Include="ViewModelTests\CustomerCodeViewModelTests.cs" />
     <Compile Include="ServiceTests\GatewayServiceTests.cs" />

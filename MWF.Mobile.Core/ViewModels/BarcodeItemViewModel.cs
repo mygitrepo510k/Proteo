@@ -126,6 +126,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
+                if (!IsDelivered.HasValue) return DamageStatus.Code;
                 return (IsDelivered.Value) ? DamageStatus.Code : NOT_DELIVERED_CODE;
             }
         }
@@ -134,7 +135,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return ((this.IsDelivered.Value && this.DamageStatus.Text == "Clean") || !string.IsNullOrEmpty(this.DeliveryComments));
+                return ((this.IsDelivered.Value && this.DamageStatus.Code == "POD") || !string.IsNullOrEmpty(this.DeliveryComments));
             }
         }
 

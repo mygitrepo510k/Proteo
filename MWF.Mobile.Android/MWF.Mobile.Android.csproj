@@ -170,6 +170,7 @@
     <Compile Include="Bootstrap\VisibilityPluginBootstrap.cs" />
     <Compile Include="DebugTrace.cs" />
     <Compile Include="Helpers\CustomActionBarDrawerToggle.cs" />
+    <Compile Include="Helpers\ListViewChildMeasurer.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
     <Compile Include="Portable\CloseApplication.cs" />
     <Compile Include="Portable\CustomUserInteraction.cs" />
@@ -356,7 +357,7 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Item_SpinnerDropDown.axml">
-	 <SubType>AndroidResource</SubType>
+      <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_InstructionClaused.axml">
       <SubType>AndroidResource</SubType>

@@ -55,16 +55,12 @@
             <TextView
                 style="@style/Proteo.TextView.SectionHeading"
                 local:MvxBind="Text OrdersLabelText" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:minHeight="48dp">
-                <Mvx.MvxListView
-                    android:id="@+id/orderListView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    local:MvxBind="ItemsSource Orders; ItemClick ShowOrderCommand"
-                    local:MvxItemTemplate="@layout/item_instruction_order" />
-            </LinearLayout>
+            <Mvx.MvxListView
+                android:id="@+id/orderListView"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                local:MvxBind="ItemsSource Orders; ItemClick ShowOrderCommand"
+                local:MvxItemTemplate="@layout/item_instruction_order" />
             <TextView
                 style="@style/Proteo.TextView.SectionHeading"
                 local:MvxBind="Text TrailersLabelText" />

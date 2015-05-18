@@ -10,7 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace MWF.Mobile.Android.Views
+namespace MWF.Mobile.Android.Controls
 {
     public class BindableProgress
     {

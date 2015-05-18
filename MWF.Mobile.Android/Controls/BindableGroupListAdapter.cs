@@ -8,7 +8,7 @@ using Cirrious.MvvmCross.Binding.Droid.Views;
 
 //From http://deapsquatter.blogspot.co.uk/2013/02/mvvmcrossdeapextensions.html
 
-namespace MWF.Mobile.Android.Views
+namespace MWF.Mobile.Android.Controls
 {
 	public class BindableGroupListAdapter : MvxAdapter
 	{

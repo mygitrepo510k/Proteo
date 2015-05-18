@@ -5,7 +5,7 @@ using System.Windows.Input;
 using Cirrious.MvvmCross.Binding.Droid.Views;
 using Cirrious.MvvmCross.Binding.Droid.ResourceHelpers;
 
-namespace MWF.Mobile.Android.Views
+namespace MWF.Mobile.Android.Controls
 {
 	public class BindableGroupListView : MvxListView
 	{

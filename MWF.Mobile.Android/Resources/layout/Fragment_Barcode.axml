@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <MWF.Mobile.Android.Views.KeyboardlessEditText
+    <mwf.KeyboardlessEditText
         android:id="@+id/BarcodeInput"
         android:singleLine="true"
         android:focusable="true"
@@ -18,7 +18,7 @@
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/ButtonCompleteScanning"
         local:MvxBind="Text CompleteButtonText; Click CompleteScanningCommand; Enabled CanScanningBeCompleted" />
-    <MWF.Mobile.Android.Views.BindableGroupListView
+    <mwf.BindableGroupListView
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

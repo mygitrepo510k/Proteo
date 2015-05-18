@@ -13,7 +13,7 @@ using System.Collections;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Android.Portable;
 
-namespace MWF.Mobile.Android.Views
+namespace MWF.Mobile.Android.Controls
 {
     public class ExpandableListAdapter : BaseExpandableListAdapter
     {

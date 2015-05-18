@@ -12,7 +12,7 @@ using Android.Widget;
 using Android.Util;
 using Android.Views.InputMethods;
 
-namespace MWF.Mobile.Android.Views
+namespace MWF.Mobile.Android.Controls
 {
     /// <summary>
     /// 

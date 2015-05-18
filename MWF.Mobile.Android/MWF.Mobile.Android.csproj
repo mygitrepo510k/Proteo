@@ -187,13 +187,13 @@
     <Compile Include="Services\GatewayPollTimerService.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="SplashScreen.cs" />
-    <Compile Include="Views\BindableGroupListAdapter.cs" />
-    <Compile Include="Views\BindableGroupListView.cs" />
-    <Compile Include="Views\BindableProgress.cs" />
+    <Compile Include="Controls\BindableGroupListAdapter.cs" />
+    <Compile Include="Controls\BindableGroupListView.cs" />
+    <Compile Include="Controls\BindableProgress.cs" />
     <Compile Include="Views\Fragments\BarcodeStatusFragment.cs" />
     <Compile Include="Views\Fragments\InstructionClausedFragment.cs" />
     <Compile Include="Views\Fragments\ModalCameraFragment.cs" />
-    <Compile Include="Views\KeyboardlessEditText.cs" />
+    <Compile Include="Controls\KeyboardlessEditText.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\BarcodeFragment.cs" />
     <Compile Include="Views\Fragments\BaseFragment.cs" />
@@ -217,7 +217,7 @@
     <Compile Include="Views\Fragments\TrailerListFragment.cs" />
     <Compile Include="Views\Fragments\VehicleListFragment.cs" />
     <Compile Include="Views\Fragments\PasscodeFragment.cs" />
-    <Compile Include="Views\ExpandableListAdapter.cs" />
+    <Compile Include="Controls\ExpandableListAdapter.cs" />
     <Compile Include="Views\MainView.cs" />
     <Compile Include="Views\BaseActivityView.cs" />
     <Compile Include="Views\Fragments\MessageFragment.cs" />

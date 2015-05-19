@@ -55,6 +55,8 @@ namespace MWF.Mobile.Core.ViewModels
             _configRepository = repositories.ConfigRepository;
 
 #if DEBUG
+            this.ClearAllData();
+
             //Firmin
             //_userInteraction.Confirm("DEBUGGING: use the Firmin customer code?", (bool ok) => { if (ok) this.CustomerCode = "A2A67DE7-DC95-49D9-BF53-34829CF865C9"; });
             //Demo.ProteoMobile Customer Code
@@ -214,13 +216,23 @@ namespace MWF.Mobile.Core.ViewModels
                 _configRepository.Insert(config, connection);
             });
 
-
-
             //TODO: call fwRegisterDevice - what does this actually do?
 
             return true;
         }
 
+        private void ClearAllData()
+        {
+            _customerRepository.DeleteAll();
+            _deviceRepository.DeleteAll();
+            _verbProfileRepository.DeleteAll();
+            _applicationProfileRepository.DeleteAll();
+            _driverRepository.DeleteAll();
+            _vehicleRepository.DeleteAll();
+            _trailerRepository.DeleteAll();
+            _safetyProfileRepository.DeleteAll();
+            _configRepository.DeleteAll();
+        }
 
     }
 }

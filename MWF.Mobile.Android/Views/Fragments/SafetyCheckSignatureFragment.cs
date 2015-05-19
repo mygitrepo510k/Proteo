@@ -35,6 +35,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             signaturePad.StrokeColor = AndroidGraphics.Color.Black;
             signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209); // Match the color of an EditText
             signaturePad.SignaturePrompt.Text = string.Empty;
+            signaturePad.ClearLabel.TextSize = 20.0f;
             
             var doneButton = view.FindViewById<Button>(Resource.Id.button_done);
             doneButton.Click += this.DoneButton_Click;

@@ -52,10 +52,11 @@ namespace MWF.Mobile.Android.Views.Fragments
             var viewModel = (InstructionSignatureViewModel)ViewModel;
             signaturePad.Clear();
 
-            SetStrokeColor(viewModel);
+            this.MimicSignaturePadDisabled(!viewModel.IsSignaturePadEnabled);
 
             signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209); // Match the color of an EditText
             signaturePad.SignaturePrompt.Text = string.Empty;
+            signaturePad.ClearLabel.TextSize = 20.0f;
         }
 
         void SignatureToggleButton_Click(object sender, EventArgs e)
@@ -64,7 +65,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             signaturePad.Clear();
 
             viewModel.IsSignaturePadEnabled = !viewModel.IsSignaturePadEnabled;
-            SetStrokeColor(viewModel);
+            this.MimicSignaturePadDisabled(!viewModel.IsSignaturePadEnabled);
             
             viewModel.RaisePropertyChanged(() => viewModel.SignatureToggleButtonLabel);
         }
@@ -93,12 +94,22 @@ namespace MWF.Mobile.Android.Views.Fragments
         /// This method changes the stroke color to the same as the background to make it seem
         /// like the signature pad is deactivated. (I was unable to disable the signature pad)
         /// </summary>
-        private void SetStrokeColor(InstructionSignatureViewModel viewModel)
+        private void MimicSignaturePadDisabled(bool isDisabled)
         {
-            if (viewModel.IsSignaturePadEnabled)
-                signaturePad.StrokeColor = AndroidGraphics.Color.Black;
-            else
+            if (isDisabled)
+            {
                 signaturePad.StrokeColor = AndroidGraphics.Color.Rgb(204, 207, 209);
+                signaturePad.ClearLabel.Text = string.Empty;
+                signaturePad.Caption.Text = string.Empty;
+                signaturePad.SignatureLine.Visibility = ViewStates.Invisible;
+            }
+            else
+            {
+                signaturePad.StrokeColor = AndroidGraphics.Color.Black;
+                signaturePad.ClearLabel.Text = "Clear";
+                signaturePad.Caption.Text = "Sign Here";
+                signaturePad.SignatureLine.Visibility = ViewStates.Visible;
+            }
         }
           
     }

@@ -962,7 +962,7 @@ namespace MWF.Mobile.Core.Services
             _startupService.CurrentTrailerSafetyCheckData = navData.OtherData["UpdatedTrailerSafetyCheckData"] as SafetyCheckData;
 
             // commit safety check data to repositories and bluesphere
-            _startupService.CommitSafetyCheckData();
+            _startupService.CommitSafetyCheckData(trailerOnly: true);
 
             // clear all nav item data related to trailer selection flow
             mobileNavData.OtherData["UpdatedTrailer"] = null;

@@ -34,7 +34,7 @@ namespace MWF.Mobile.Core.ViewModels
             _repositories = repositories;
             _navigationService = navigationService;
 
-            Vehicle vehicle = null;
+            Models.Vehicle vehicle = null;
             Models.Trailer trailer = null;
 
             vehicle = _repositories.VehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID);

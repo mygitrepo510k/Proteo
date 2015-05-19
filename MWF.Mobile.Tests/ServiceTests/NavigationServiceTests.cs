@@ -1244,7 +1244,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(updatedSafetyCheckData, startUpServiceMock.Object.CurrentTrailerSafetyCheckData);
 
             // check the safety check data was commited
-            startUpServiceMock.Verify(ss => ss.CommitSafetyCheckData());
+            startUpServiceMock.Verify(ss => ss.CommitSafetyCheckData(true));
         }
 
         #endregion
@@ -1778,7 +1778,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(updatedSafetyCheckData, startUpServiceMock.Object.CurrentTrailerSafetyCheckData);
 
             // check the safety check data was commited
-            startUpServiceMock.Verify(ss => ss.CommitSafetyCheckData());
+            startUpServiceMock.Verify(ss => ss.CommitSafetyCheckData(true));
         }
 
         // Tests that that when the instruction safety check signature screen is completed and there are faults the user is directed 
@@ -1846,7 +1846,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(updatedSafetyCheckData, startUpServiceMock.Object.CurrentTrailerSafetyCheckData);
 
             // check the safety check data was commited
-            startUpServiceMock.Verify(ss => ss.CommitSafetyCheckData());
+            startUpServiceMock.Verify(ss => ss.CommitSafetyCheckData(true));
         }
 
         #endregion

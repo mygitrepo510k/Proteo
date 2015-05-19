@@ -57,7 +57,7 @@ namespace MWF.Mobile.Core.Services
             _gatewayQueuedService.StartQueueTimer();
         }
 
-        public void CommitSafetyCheckData()
+        public void CommitSafetyCheckData(bool trailerOnly = false)
         {
             // Add the safety checks to the gateway queue
             var safetyCheckData = this.GetCurrentSafetyCheckData();
@@ -82,7 +82,9 @@ namespace MWF.Mobile.Core.Services
                 if (this.CurrentVehicleSafetyCheckData != null && this.CurrentVehicleSafetyCheckData.Faults.Any())
                 {
                     latestSafetyCheck.VehicleSafetyCheck = this.CurrentVehicleSafetyCheckData;
-                    latestSafetyCheck.VehicleSafetyCheck.EffectiveDate = effectiveDateTime;
+
+                    if (!trailerOnly)
+                        latestSafetyCheck.VehicleSafetyCheck.EffectiveDate = effectiveDateTime;
                 }
 
                 if (this.CurrentTrailerSafetyCheckData != null && this.CurrentTrailerSafetyCheckData.Faults.Any())
@@ -93,19 +95,30 @@ namespace MWF.Mobile.Core.Services
 
                 _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
 
-                foreach (var safetyCheck in safetyCheckData)
+                // Submit the safety check data to BlueSphere
+                var safetyCheckDataToSubmit = new List<SafetyCheckData>(safetyCheckData.Count());
+
+                foreach (var scd in safetyCheckData)
                 {
+                    if (trailerOnly && !scd.IsTrailer)
+                        continue;
+
+                    var safetyCheck = Models.SafetyCheckData.ShallowCopy(scd);
+
                     // Passed safety check items shouldn't be submitted to the gateway service, only Fails and Discretionary Passes.
-                    safetyCheck.Faults.RemoveAll(scf => scf.Status == Enums.SafetyCheckStatus.Passed);
+                    safetyCheck.Faults = scd.Faults.Where(scf => scf.Status != Enums.SafetyCheckStatus.Passed).ToList();
 
                     // Add the SMP, mileage and effective-date to the safety check
                     safetyCheck.SMP = smp;
                     safetyCheck.Mileage = this.Mileage;
                     safetyCheck.EffectiveDate = effectiveDateTime;
                 }
-                
-                var actions = safetyCheckData.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
-                _gatewayQueuedService.AddToQueue(actions);
+
+                if (safetyCheckDataToSubmit.Any())
+                {
+                    var actions = safetyCheckDataToSubmit.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
+                    _gatewayQueuedService.AddToQueue(actions);
+                }
             }
             else
             {

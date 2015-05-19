@@ -16,7 +16,7 @@ namespace MWF.Mobile.Core.Services
         IEnumerable<SafetyCheckData> GetCurrentSafetyCheckData();
         IEnumerable<Models.SafetyCheckData> GetSafetyCheckData(Models.SafetyCheckData vehicleSafetyCheckData, Models.SafetyCheckData trailerSafetyCheckData);
         void StartGatewayQueueTimer();
-        void CommitSafetyCheckData();
+        void CommitSafetyCheckData(bool trailerOnly = false);
         void DriverLogIn();
         void DriverLogOut();
     }

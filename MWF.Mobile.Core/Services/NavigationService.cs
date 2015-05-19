@@ -726,10 +726,15 @@ namespace MWF.Mobile.Core.Services
                     }
                 }
 
-                if (mobileNavData.Data.Order.Items.Any(i => (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
+                if (mobileNavData.Data.Order.IsBarcodeScanRequired())
                 {
-                    this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
-                    return;
+                    if (mobileNavData.Data.Order.HasBarcodes())
+                    {
+                        this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
+                        return;
+                    }
+
+                    await Mvx.Resolve<IUserInteraction>().AlertAsync("There are no barcodes to be scanned on this instruction.");
                 }
 
                 //Delivery Clean/Clause Prompt
@@ -809,10 +814,15 @@ namespace MWF.Mobile.Core.Services
             var additionalContent = mobileNavData.Data.Order.Additional;
             var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
-            if (mobileNavData.Data.Order.Items.Any(i => (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
+            if (mobileNavData.Data.Order.IsBarcodeScanRequired())
             {
-                this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
-                return;
+                if (mobileNavData.Data.Order.HasBarcodes())
+                {
+                    this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
+                    return;
+                }
+
+                await Mvx.Resolve<IUserInteraction>().AlertAsync("There are no barcodes to be scanned on this instruction.");
             }
 
             //Delivery Clean/Clause Prompt

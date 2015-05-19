@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Core.Converters;
 using MWF.Mobile.Core.Enums;
@@ -8,9 +9,11 @@ using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models.Instruction
 {
+
     [Table("InstructionOrder")]
     public class Order : IBlueSphereEntity
     {
+        
         public Order()
         {
             ID = Guid.NewGuid();
@@ -80,5 +83,17 @@ namespace MWF.Mobile.Core.Models.Instruction
 
         [ForeignKey(typeof(MobileData))]
         public Guid MobileDataId { get; set; }
+
+        public bool IsBarcodeScanRequired()
+        {
+            return this.Type == Enums.InstructionType.Deliver && this.Items.Any(i => i.Additional.BarcodeScanRequiredForDelivery);
+        }
+
+        public bool HasBarcodes()
+        {
+            return this.Items.Any(i => i.BarcodesList.Any());
+        }
+
     }
+
 }

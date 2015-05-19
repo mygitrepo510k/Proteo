@@ -76,10 +76,13 @@ namespace MWF.Mobile.Core.Models.Instruction
         {
             get
             {
-                var cleanString = Barcodes ?? "";
-                return new List<string>(cleanString.Split('\n'));
+                var cleanString = this.Barcodes ?? "";
+                return new List<string>(cleanString.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries));
             }
-            set { Barcodes = string.Join("\n", value); }
+            set
+            {
+                this.Barcodes = string.Join("\n", value);
+            }
         }
 
         public string Barcodes { get; set; }

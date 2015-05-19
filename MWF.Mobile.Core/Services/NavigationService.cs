@@ -851,7 +851,12 @@ namespace MWF.Mobile.Core.Services
                 if (trailer == null)
                     mobileNavData.Data.Order.Additional.Trailer = null;
                 else
+                {
+                    if (mobileNavData.Data.Order.Additional.Trailer == null)
+                        mobileNavData.Data.Order.Additional.Trailer = new Models.Instruction.Trailer();
+
                     mobileNavData.Data.Order.Additional.Trailer.TrailerId = trailer.Registration;
+                }
 
                 // send the revised trailer data chunk
                 _dataChunkService.SendDataChunk(mobileNavData.GetDataChunk(), mobileNavData.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle, updateTrailer: true);

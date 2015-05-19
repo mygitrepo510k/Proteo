@@ -125,16 +125,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Task<bool> OnBackButtonPressed()
         {
-            var task = new Task<bool>(() => false);
-
             //Turn the nav data back to a NavData<MobileData> so (indicates we want to go back to an instruction)
             NavData<MobileData> mobileData = new NavData<MobileData>() { Data = _navData.GetMobileData() };
             mobileData.OtherData["DataChunk"] = _navData.GetDataChunk();
 
             _navigationService.GoBack(mobileData);
-
-            return task;
+            return Task.FromResult(false);
         }
+
         #endregion IBackButtonHandler Implementation
 
         #region BaseInstructionNotificationViewModel

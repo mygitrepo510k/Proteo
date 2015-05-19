@@ -159,7 +159,7 @@ namespace MWF.Mobile.Core.ViewModels
         public Task<bool> OnBackButtonPressed()
         {
             _closeApplication.CloseApp();
-            return new Task<bool>(() => false);
+            return Task.FromResult(false);
         }
 
         #endregion IBackButtonHandler Implementation

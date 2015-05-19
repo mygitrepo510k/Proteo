@@ -424,16 +424,12 @@ namespace MWF.Mobile.Core.Services
         /// Adds navigation data object to our dictionary so it can be retreived by a view model after a navigation action has completed
         /// MVVM cross only allows passing of simple objects via serialization. Navigation improves this by having MVVM Cross pass a GUID
         /// linked to the full objects that can be retrieved after the navigated to ViewModel is shown
-        /// a 
         /// </summary>
         /// <param name="navData"></param>
         private void AddNavDataToDictionary(NavData navData)
         {
-            //navData.NavGUID = Guid.NewGuid();
-
             var tuple = Tuple.Create<object, Dictionary<string, object>>(navData.GetData(), navData.OtherData);
-            _navDataDictionary.Add(navData.NavGUID, tuple);
-
+            _navDataDictionary[navData.NavGUID] = tuple;
         }
 
         /// <summary>

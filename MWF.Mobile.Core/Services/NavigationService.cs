@@ -478,6 +478,9 @@ namespace MWF.Mobile.Core.Services
 
         private void StopLoginSessionTimer()
         {
+            if (_loginSessionTimer == null)
+                return;
+
             _loginSessionTimer.Dispose();
             _loginSessionTimer = null;
         }

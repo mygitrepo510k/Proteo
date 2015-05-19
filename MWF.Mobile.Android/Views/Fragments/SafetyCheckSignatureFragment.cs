@@ -51,7 +51,7 @@ namespace MWF.Mobile.Android.Views.Fragments
                 viewModel.SignatureEncodedImage = null;
             else
             {
-                var image = signaturePad.GetImage(AndroidGraphics.Color.Black, AndroidGraphics.Color.White, false);
+                var image = signaturePad.GetImage(AndroidGraphics.Color.Black, AndroidGraphics.Color.White, 0.5f, shouldCrop: false);
 
                 using (var ms = new MemoryStream())
                 {

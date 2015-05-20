@@ -13,11 +13,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
     public class ReviseQuantityViewModel : 
         BaseInstructionNotificationViewModel,
+        IModalViewModel<bool>,
+        IBackButtonHandler,
         IVisible
     {
 
@@ -30,7 +33,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private MobileApplicationDataChunkContentActivity _dataChunk;
         private MobileData _mobileData;
-        private NavData<Item> _navData;
+        private NavData<MobileData> _navData;
         private Item _order;
 
         #endregion Private Fields
@@ -49,13 +52,14 @@ namespace MWF.Mobile.Core.ViewModels
             _dataChunkService = dataChunkService;
         }
 
-        public void Init(NavData<Item> navData)
+        public void Init(NavData<MobileData> navData)
         {
             navData.Reinflate();
+            this.MessageId = navData.NavGUID;
             _navData = navData;
-            _order = navData.Data;
-            _mobileData = navData.OtherData["MobileData"] as MobileData;
-            _dataChunk = navData.OtherData["DataChunk"] as MobileApplicationDataChunkContentActivity;
+            _order = navData.OtherData["Order"] as Item;
+            _mobileData = navData.Data;
+            _dataChunk = navData.GetAdditionalDataChunk(_mobileData);
             OrderQuantity = _order.Quantity;
         }
 
@@ -107,7 +111,8 @@ namespace MWF.Mobile.Core.ViewModels
             }
             //This value gets updated in HE.
             _dataChunkService.SendDataChunk(_dataChunk, _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle, updateQuantity: true);
-            _navigationService.MoveToNext(_navData);
+
+            this.ReturnResult(true);
 
         }
 
@@ -115,12 +120,46 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(parentID);
             _order = _mobileData.Order.Items.First(i => i.ID == childID);
-            _navData.OtherData["MobileData"] = _mobileData;
+            _navData.Data = _mobileData;
+            _navData.OtherData["Order"] = _order;
             OrderQuantity = _order.Quantity;
             RaiseAllPropertiesChanged();
         }
 
         #endregion Private Methods
+
+        #region IBackButtonHandler Implementation
+
+        public Task<bool> OnBackButtonPressed()
+        {
+            var task = new Task<bool>(() => false);
+
+            this.Cancel();
+
+            return task;
+
+        }
+
+        #endregion IBackButtonHandler Implementation
+
+        #region IModalViewModel
+
+        public Guid MessageId { get; set; }
+
+        public void Cancel()
+        {
+            ReturnResult(default(bool));
+        }
+
+        public void ReturnResult(bool result)
+        {
+            var message = new ModalNavigationResultMessage<bool>(this, MessageId, result);
+
+            this.Messenger.Publish(message);
+            this.Close(this);
+        }
+
+        #endregion
 
         #region BaseFragmentViewModel Overrides
 

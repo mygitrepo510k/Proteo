@@ -64,12 +64,14 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
+                var deliveryOptions = _navData.GetWorseCaseDeliveryOptions();
+
                 return ((_mobileData.Order.Type == Enums.InstructionType.Collect
                     && (_mobileData.Order.Additional.CustomerNameRequiredForCollection
                     || _mobileData.Order.Additional.CustomerSignatureRequiredForCollection))
                     || (_mobileData.Order.Type == Enums.InstructionType.Deliver
-                    && (_mobileData.Order.Additional.CustomerNameRequiredForDelivery
-                    || _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))) ? "Continue" : "Complete";
+                    && (deliveryOptions.CustomerNameRequiredForDelivery
+                    || deliveryOptions.CustomerSignatureRequiredForDelivery))) ? "Continue" : "Complete";
             }
         }
 
@@ -89,14 +91,20 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AdvanceInstructionComment()
         {
-            _navData.GetDataChunk().Comment = CommentText;
+            
+            var dataChunks = _navData.GetAllDataChunks();
+            foreach (var dataChunk in dataChunks)
+            {
+                dataChunk.Comment = CommentText;
+            }
+
             _navigationService.MoveToNext(_navData);
         }
 
         private void RefreshPage(Guid ID)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(ID);
-            _navData.Data = _mobileData;
+            _navData.ReloadInstruction(ID, _repositories);
+            _mobileData = _navData.Data;
             RaiseAllPropertiesChanged();
         }
 
@@ -114,12 +122,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mobileData.ID)
+            if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been Updated", "OK");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been updated.", "OK");
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been deleted.");
             }
         }
 

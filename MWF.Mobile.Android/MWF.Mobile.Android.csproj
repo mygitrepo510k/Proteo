@@ -192,6 +192,7 @@
     <Compile Include="Views\BindableProgress.cs" />
     <Compile Include="Views\Fragments\BarcodeStatusFragment.cs" />
     <Compile Include="Views\Fragments\InstructionClausedFragment.cs" />
+    <Compile Include="Views\Fragments\InstructionAddDeliveriesFragment.cs" />
     <Compile Include="Views\Fragments\ModalCameraFragment.cs" />
     <Compile Include="Views\KeyboardlessEditText.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
@@ -360,6 +361,12 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_InstructionClaused.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_InstructionAddDeliveries.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_AddDelivery_Instruction.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

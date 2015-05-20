@@ -20,6 +20,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class OrderViewModel
         : BaseInstructionNotificationViewModel,
+        IModalViewModel<bool>,
         IVisible,
         IBackButtonHandler
     {
@@ -33,7 +34,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MobileData _mobileData;
         private MWFMobileConfig _mobileConfig;
         private Item _order;
-        private NavData<Item> _navData;
+        private NavData<MobileData> _navData;
 
         #endregion Private Fields
 
@@ -47,12 +48,13 @@ namespace MWF.Mobile.Core.ViewModels
             _configRepository = repositories.ConfigRepository;
         }
 
-        public void Init(NavData<Item> navData)
+        public void Init(NavData<MobileData> navData)
         {
             navData.Reinflate();
+            this.MessageId = navData.NavGUID;
             _navData = navData;
-            _order = navData.Data;
-            _mobileData = navData.GetMobileData();
+            _order = navData.OtherData["Order"] as Item;
+            _mobileData = navData.Data;
             _mobileConfig = _configRepository.GetByID(_mobileData.CustomerId);
         }
 
@@ -100,14 +102,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void ReviseQuantity(Item order)
         {
-            _navigationService.MoveToNext(_navData);
+            _navigationService.ShowModalViewModel<ReviseQuantityViewModel, bool>(this, _navData, (confirmed) => {});
+
+            //_navigationService.MoveToNext(_navData);
         }
 
         private void GetMobileDataFromRepository(Guid parentID, Guid childID)
         {
             _mobileData = _repositories.MobileDataRepository.GetByID(parentID);
             _order = _mobileData.Order.Items.First(i => i.ID == childID);
-            _navData.OtherData["MobileData"] = _mobileData;
+            _navData.OtherData["Order"] = _order;
+            _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
         }
 
@@ -127,15 +132,32 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var task = new Task<bool>(() => false);
 
-            //Turn the nav data back to a NavData<MobileData> so (indicates we want to go back to an instruction)
-            NavData<MobileData> mobileData = new NavData<MobileData>() { Data = _navData.GetMobileData() };
-            mobileData.OtherData["DataChunk"] = _navData.GetDataChunk();
-
-            _navigationService.GoBack(mobileData);
+            this.Cancel();
 
             return task;
+
         }
+
         #endregion IBackButtonHandler Implementation
+
+        #region IModalViewModel
+
+        public Guid MessageId { get; set; }
+
+        public void Cancel()
+        {
+            ReturnResult(default(bool));
+        }
+
+        public void ReturnResult(bool result)
+        {
+            var message = new ModalNavigationResultMessage<bool>(this, MessageId, result);
+
+            this.Messenger.Publish(message);
+            this.Close(this);
+        }
+
+        #endregion
 
         #region BaseInstructionNotificationViewModel
 

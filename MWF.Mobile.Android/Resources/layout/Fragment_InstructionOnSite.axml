@@ -27,10 +27,15 @@
         android:layout_above="@id/InstructionOnSiteListHeader"
         android:layout_alignParentTop="true" />
     <Mvx.MvxListView
-        android:layout_below="@id/InstructionOnSiteListHeader"
-        android:layout_above="@id/ButtonAdvanceInstructionComment"
+        android:layout_below="@+id/InstructionOnSiteListHeader"
+        android:layout_above="@+id/ButtonAddDeliveries"
         local:MvxBind="ItemsSource OrderList; ItemClick ShowInstructionOrderCommand"
         local:MvxItemTemplate="@layout/item_instructiononsite_order" />
+    <Button
+        android:id="@+id/ButtonAddDeliveries"
+        style="@style/Proteo.Button"
+        local:MvxBind="Text AddDeliveriesButtonLabel; Click AddDeliveriesCommand; Visible IsDelivery"
+        android:layout_above="@+id/ButtonAdvanceInstructionComment" />
     <Button
         android:id="@+id/ButtonAdvanceInstructionComment"
         local:MvxBind="Text InstructionCommentButtonLabel; Click AdvanceInstructionOnSiteCommand"

@@ -13,6 +13,7 @@ using MWF.Mobile.Core.Presentation;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Utilities;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 
@@ -193,9 +194,14 @@ namespace MWF.Mobile.Core.Services
 
 
         public bool ShowModalViewModel<TViewModel, TResult>(BaseFragmentViewModel viewModel, NavData navData, Action<TResult> onResult)
-        where TViewModel : BaseModalViewModel<TResult>
+        where TViewModel : IModalViewModel<TResult>
         {
+            Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
+            Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
+
             AddNavDataToDictionary(navData);
+            _currentNavData = navData;
+
             return viewModel.ShowModalViewModel<TViewModel, TResult>(navData, onResult);
         }
 
@@ -429,10 +435,18 @@ namespace MWF.Mobile.Core.Services
         /// <param name="navData"></param>
         private void AddNavDataToDictionary(NavData navData)
         {
-            //navData.NavGUID = Guid.NewGuid();
 
             var tuple = Tuple.Create<object, Dictionary<string, object>>(navData.GetData(), navData.OtherData);
-            _navDataDictionary.Add(navData.NavGUID, tuple);
+
+            if (_navDataDictionary.Keys.Contains(navData.NavGUID))
+            {
+                _navDataDictionary[navData.NavGUID] = tuple;
+            }
+            else
+            {
+                _navDataDictionary.Add(navData.NavGUID, tuple);
+            }
+            
 
         }
 
@@ -456,6 +470,18 @@ namespace MWF.Mobile.Core.Services
         {
             navData.Data.ProgressState = Enums.InstructionProgress.Complete;
             _dataChunkService.SendDataChunk(navData.GetDataChunk(), navData.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+
+            // send any datachunks for addiotional instructions
+            var additionalInstructions = navData.GetAdditionalInstructions();
+            foreach (var additionalInstruction in additionalInstructions)
+            {
+
+                additionalInstruction.ProgressState = Enums.InstructionProgress.Complete;
+                _dataChunkService.SendDataChunk(navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+
+            }
+
+
             this.ShowViewModel<ManifestViewModel>();
         }
 
@@ -655,11 +681,7 @@ namespace MWF.Mobile.Core.Services
         public void Instruction_CustomAction(NavData navData)
         {
 
-            if (navData is NavData<Item>)
-            {
-                ShowViewModel<OrderViewModel>(navData);
-            }
-            else if (navData is NavData<Models.Instruction.Trailer>)
+            if (navData is NavData<Models.Instruction.Trailer>)
             {
                 
             }
@@ -672,6 +694,7 @@ namespace MWF.Mobile.Core.Services
                 else
                 {
                     var mobileDataNav = (NavData<MobileData>)navData;
+                    // send "onsite" data chunk 
                     _dataChunkService.SendDataChunk(mobileDataNav.GetDataChunk(), mobileDataNav.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle);
 
                     ShowViewModel<InstructionOnSiteViewModel>(mobileDataNav);
@@ -687,17 +710,14 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public async void InstructionOnSite_CustomAction(NavData navData)
         {
-            if (navData is NavData<Item>)
-            {
-                ShowViewModel<OrderViewModel>(navData);
-            }
-            else if (navData is NavData<MobileData>)
+        if (navData is NavData<MobileData>)
             {
 
                 var mobileNavData = navData as NavData<MobileData>;
 
                 var additionalContent = mobileNavData.Data.Order.Additional;
                 var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
+                var deliveryOptions = mobileNavData.GetWorseCaseDeliveryOptions();
 
                 //Collection
                 if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
@@ -732,23 +752,23 @@ namespace MWF.Mobile.Core.Services
                     return;
                 }
 
-                //Delivery Clean/Clause Prompt
+                // Delivery Clean/Clause Prompt
                 if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver &&
-                    mobileNavData.Data.Order.Items.Any(i =>
-                    (!i.Additional.BypassCleanClausedScreen)))
+                    !deliveryOptions.BypassCleanClausedScreen)
                 {
                     bool isClean = await IsCleanInstruction(mobileNavData);
 
                     if (!isClean) return;
                 }
 
-                if (!itemAdditionalContent.BypassCommentsScreen)
+                if ((mobileNavData.Data.Order.Type == Enums.InstructionType.Collect && !itemAdditionalContent.BypassCommentsScreen) ||
+                     (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver &&  !deliveryOptions.BypassCommentsScreen))
                 {
                     bool hasAdvanced = await ConfirmCommentAccess(mobileNavData);
                     if (hasAdvanced) return;
                 }
 
-                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
+                if (((deliveryOptions.CustomerNameRequiredForDelivery || deliveryOptions.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
                     ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
                 {
                     this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
@@ -797,6 +817,7 @@ namespace MWF.Mobile.Core.Services
                 }
         }
 
+
         private async Task CompleteInstructionTrailerSelection(NavData<MobileData> mobileNavData)
         {
             if (mobileNavData.OtherData.IsDefined("IsProceedFrom"))
@@ -809,21 +830,6 @@ namespace MWF.Mobile.Core.Services
             var additionalContent = mobileNavData.Data.Order.Additional;
             var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
-            if (mobileNavData.Data.Order.Items.Any(i => (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
-            {
-                this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
-                return;
-            }
-
-            //Delivery Clean/Clause Prompt
-            if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver &&
-                mobileNavData.Data.Order.Items.Any(i =>
-                (!i.Additional.BypassCleanClausedScreen)))
-            {
-                bool isClean = await IsCleanInstruction(mobileNavData);
-
-                if (!isClean) return;
-            }
 
             if (!itemAdditionalContent.BypassCommentsScreen)
             {
@@ -901,25 +907,26 @@ namespace MWF.Mobile.Core.Services
 
             var additionalContent = mobileNavData.Data.Order.Additional;
             var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
+            var deliveryOptions = mobileNavData.GetWorseCaseDeliveryOptions();
 
-            //Delivery Clean/Clause Prompt
+            // Delivery Clean/Clause Prompt
             if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver &&
-                mobileNavData.Data.Order.Items.Any(i =>
-                (!i.Additional.BypassCleanClausedScreen)))
+                !deliveryOptions.BypassCleanClausedScreen)
             {
                 bool isClean = await IsCleanInstruction(mobileNavData);
 
                 if (!isClean) return;
             }
 
-            if (!itemAdditionalContent.BypassCommentsScreen)
+            if ((mobileNavData.Data.Order.Type == Enums.InstructionType.Collect && !itemAdditionalContent.BypassCommentsScreen) ||
+                    (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver && !deliveryOptions.BypassCommentsScreen))
             {
                 bool hasAdvanced = await ConfirmCommentAccess(mobileNavData);
                 if (hasAdvanced) return;
             }
 
-            if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
-                ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
+            if (((deliveryOptions.CustomerNameRequiredForDelivery || deliveryOptions.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
+                               ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
             {
                 this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
                 return;
@@ -975,15 +982,17 @@ namespace MWF.Mobile.Core.Services
 
             var additionalContent = mobileNavData.Data.Order.Additional;
             var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
+            var deliveryOptions = mobileNavData.GetWorseCaseDeliveryOptions();
 
-            if (!itemAdditionalContent.BypassCommentsScreen)
+            if ((mobileNavData.Data.Order.Type == Enums.InstructionType.Collect && !itemAdditionalContent.BypassCommentsScreen) ||
+                 (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver && !deliveryOptions.BypassCommentsScreen))
             {
                 bool hasAdvanced = await ConfirmCommentAccess(mobileNavData);
                 if (hasAdvanced) return;
             }
 
-            if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
-                ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
+            if (((deliveryOptions.CustomerNameRequiredForDelivery || deliveryOptions.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
+                    ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
             {
                 this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
                 return;
@@ -1003,6 +1012,7 @@ namespace MWF.Mobile.Core.Services
 
                 var additionalContent = mobileNavData.Data.Order.Additional;
                 var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
+                var deliveryOptions = mobileNavData.GetWorseCaseDeliveryOptions();
 
                 if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
                    ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))

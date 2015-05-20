@@ -66,6 +66,16 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set 
+            { 
+                _isSelected = value;
+                RaisePropertyChanged(() => IsSelected);
+            }
+        }
 
         private MvxCommand _selectInstructionCommand;
         public ICommand SelectInstructionCommand
@@ -81,10 +91,24 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private MvxCommand _toggleIsSelectedInstructionCommand;
+        public ICommand ToggleIsSelectedInstructionCommand
+        {
+            get
+            {
+                return (_toggleIsSelectedInstructionCommand = _toggleIsSelectedInstructionCommand ?? new MvxCommand(ToggleIsSelectedInstruction));
+            }
+        }
+
         private void SelectInstruction()
         {
             var navItem = new NavData<MobileData>() { Data = _mobileData };
             _navigationService.MoveToNext(navItem);
+        }
+
+        private void ToggleIsSelectedInstruction()
+        {
+            this.IsSelected = !this.IsSelected;
         }
 
         public void OpenMessageModal(Action<bool> callback)

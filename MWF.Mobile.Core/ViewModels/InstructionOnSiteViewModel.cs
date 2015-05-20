@@ -32,17 +32,19 @@ namespace MWF.Mobile.Core.ViewModels
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
         private IMainService _mainService;
+        private IDataChunkService _dataChunkService;
 
 
         #endregion
 
         #region Construction
 
-        public InstructionOnSiteViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
+        public InstructionOnSiteViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService, IDataChunkService dataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
             _mainService = mainService;
+            _dataChunkService = dataChunkService;
         }
 
         public void Init(NavData<MobileData> navData)
@@ -75,6 +77,15 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        private MvxCommand _addDeliveriesCommand;
+        public ICommand AddDeliveriesCommand
+        {
+            get
+            {
+                return (_addDeliveriesCommand = _addDeliveriesCommand ?? new MvxCommand(() => AddDeliveries()));
+            }
+        }
+
         private ObservableCollection<Item> _orderList;
         public ObservableCollection<Item> OrderList
         {
@@ -86,18 +97,38 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
+                var deliveryOptions = _navData.GetWorseCaseDeliveryOptions();
+
                 return ((_mobileData.Order.Type == Enums.InstructionType.Collect
                     && (_mobileData.Order.Additional.CustomerNameRequiredForCollection
                     || _mobileData.Order.Additional.CustomerSignatureRequiredForCollection 
                     || _mobileData.Order.Additional.IsTrailerConfirmationEnabled))
                     || (_mobileData.Order.Type == Enums.InstructionType.Deliver
-                    && (_mobileData.Order.Additional.CustomerNameRequiredForDelivery
-                    || _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))
-                    || !_mobileData.Order.Items.FirstOrDefault().Additional.BypassCommentsScreen) ? "Continue" : "Complete";
+                    && (deliveryOptions.CustomerNameRequiredForDelivery
+                    || deliveryOptions.CustomerSignatureRequiredForDelivery
+                    || deliveryOptions.BarcodeScanRequiredForDelivery
+                    || !deliveryOptions.BypassCommentsScreen
+                    || !deliveryOptions.BypassCleanClausedScreen))) ? "Continue" : "Complete";
             }
         }
 
         public string HeaderText { get { return "Select an order for further details"; } }
+
+        public string AddDeliveriesButtonLabel
+        {
+            get
+            {
+                return "Add/Remove Deliveries";
+            }
+        }
+
+        public bool IsDelivery
+        {
+            get
+            {
+                return _mobileData.Order.Type == Enums.InstructionType.Deliver;
+            }
+        }
 
         #endregion
 
@@ -105,22 +136,87 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AdvanceInstructionOnSite()
         {
+            SendAdditionalInstructionOnSiteDataChunks();
             _navigationService.MoveToNext(_navData);
         }
 
         private void ShowOrder(Item order)
         {
-            NavData<Item> navData = new NavData<Item>() { Data = order};
-            navData.OtherData["MobileData"] = _mobileData;
-            navData.OtherData["DataChunk"] = navData.GetDataChunk();
-            _navigationService.MoveToNext(navData);
+            NavData<MobileData> navData = new NavData<MobileData>();
+
+            if (order.OrderId == _navData.Data.Order.ID)
+            {
+                navData.Data = _mobileData;
+                navData.OtherData["DataChunk"] = navData.GetDataChunk();
+            }
+            else
+            {
+                navData.Data = _navData.GetAdditionalInstructions().FirstOrDefault(md => md.Order.ID == order.OrderId);
+                navData.OtherData["DataChunk"] = navData.GetAdditionalDataChunk(navData.Data);
+            }
+
+            navData.OtherData["Order"] = order;
+
+            _navigationService.ShowModalViewModel<OrderViewModel, bool>(this, navData, (modified) =>
+                {
+                    if (modified)
+                    {
+                       
+                    }
+                }               
+            );
+        }
+
+
+        /// <summary>
+        /// Ensures that all the additional instructions added send "onSite" data chunks
+        /// </summary>
+        private void SendAdditionalInstructionOnSiteDataChunks()
+        {
+            var additionalInstructions = _navData.GetAdditionalInstructions();
+
+            foreach (var additionalInstruction in additionalInstructions)
+            {
+                if (additionalInstruction.ProgressState != Enums.InstructionProgress.OnSite)
+                {
+                    additionalInstruction.ProgressState = Enums.InstructionProgress.OnSite;
+                    _dataChunkService.SendDataChunk(_navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+                }
+            }
+
+        }
+
+        private void AddDeliveries()
+        {
+
+            _navigationService.ShowModalViewModel<InstructionAddDeliveriesViewModel, bool>(this, _navData, (modified) =>
+            {
+                if (modified)
+                {
+                    RefreshOrders();
+                }
+            });
+        }
+
+        private void RefreshOrders()
+        {
+            List<Item> newOrderList = new List<Item>(_mobileData.Order.Items);
+            var additionalInstructions = _navData.GetAdditionalInstructions();
+            foreach (var additionalInstruction in additionalInstructions)
+            {
+                newOrderList.AddRange(additionalInstruction.Order.Items);
+            }
+
+            this.OrderList = new ObservableCollection<Item>(newOrderList);
         }
 
         private void RefreshPage(Guid ID)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(ID);
-            _orderList = new ObservableCollection<Item>(_mobileData.Order.Items);
-            _navData.Data = _mobileData;
+
+            _navData.ReloadInstruction(ID, _repositories);
+            _mobileData = _navData.Data;
+
+            RefreshOrders();
             RaiseAllPropertiesChanged();
         }
 
@@ -151,12 +247,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mobileData.ID)
+            if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been Updated", "OK");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been updated.", "OK");
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been deleted.");
             }
         }
 

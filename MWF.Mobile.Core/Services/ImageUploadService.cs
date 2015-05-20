@@ -46,7 +46,7 @@ namespace MWF.Mobile.Core.Services
             string comment,
             List<Image> photos,
             Driver currentDriver,
-            MobileData currentMobileData)
+            List<MobileData> mobileDatas)
         {
 
             if (!_reachability.IsConnected())
@@ -75,10 +75,10 @@ namespace MWF.Mobile.Core.Services
             imageUpload.DateTimeOfUpload = DateTime.Now;
 
             //If the user is not on the manifest screen they should be on an instruction page
-            if (currentMobileData != null)
+            if (mobileDatas != null)
             {
-                imageUpload.MobileApplicationID = currentMobileData.ID;
-                imageUpload.OrderIDs = string.Join(",", currentMobileData.Order.Items.Select(i => i.ItemIdFormatted));
+                imageUpload.MobileApplicationIDs = mobileDatas.Select(md => md.ID).ToList(); 
+                imageUpload.OrderIDs = string.Join(",", mobileDatas.SelectMany( md => md.Order.Items.Select(i => i.ItemIdFormatted)));
             }
 
             foreach (var image in imageUpload.Pictures)
@@ -92,7 +92,7 @@ namespace MWF.Mobile.Core.Services
                 postParameters.Add("PhotoDateTime", imageUpload.DateTimeOfUpload.ToString());
                 postParameters.Add("Latitude", _gpsService.GetLatitude().ToString());
                 postParameters.Add("Longitude", _gpsService.GetLongitude().ToString());
-                postParameters.Add("MobileApplicationDataIds", imageUpload.MobileApplicationID.Equals(Guid.Empty) ? string.Empty : imageUpload.MobileApplicationID.ToString());
+                postParameters.Add("MobileApplicationDataIds", (imageUpload.MobileApplicationIDs == null) ? string.Empty : string.Join(",", imageUpload.MobileApplicationIDs.Select( x => x.ToString())));
                 postParameters.Add("HEOrderIds", string.IsNullOrWhiteSpace(imageUpload.OrderIDs) ? string.Empty : imageUpload.OrderIDs.ToString());
 
                 Uri postUrl = new Uri(string.Format("{0}/Mwf/ReceiveMwfPhoto.aspx", config.HEUrl));

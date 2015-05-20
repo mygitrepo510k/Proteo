@@ -2,6 +2,7 @@
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
@@ -30,6 +31,7 @@ namespace MWF.Mobile.Core.ViewModels
         protected BarcodeSectionViewModel _processedBarcodes;
         private IRepositories _repositories;
         private List<DamageStatus> _damageStatuses;
+        List<MobileData> _additionalInstructions;
 
         public List<DamageStatus> DamageStatuses
         {
@@ -53,6 +55,7 @@ namespace MWF.Mobile.Core.ViewModels
             navData.Reinflate();
             _navData = navData;
             _mobileData = navData.Data;
+            _additionalInstructions = navData.GetAdditionalInstructions();
 
             CreateSections();
         }
@@ -82,7 +85,16 @@ namespace MWF.Mobile.Core.ViewModels
             var items = _mobileData.Order.Items;
             foreach (var item in items)
             {
-                barcodeItemsViewModels.AddRange(item.BarcodesList.Select(b => new BarcodeItemViewModel(_navigationService, _damageStatuses, this) { BarcodeText = b, OrderID = item.ItemIdFormatted }));
+                barcodeItemsViewModels.AddRange(item.BarcodesList.Select(b => new BarcodeItemViewModel(_navigationService, _damageStatuses, this) { BarcodeText = b, OrderID = item.ItemIdFormatted, MobileDataID = _mobileData.ID}));
+            }
+
+            // additional instructions
+            foreach (var additionalInstruction in _additionalInstructions)
+            {
+                foreach (var item in additionalInstruction.Order.Items)
+                {
+                    barcodeItemsViewModels.AddRange(item.BarcodesList.Select(b => new BarcodeItemViewModel(_navigationService, _damageStatuses, this) { BarcodeText = b, OrderID = item.ItemIdFormatted, MobileDataID = additionalInstruction.ID }));
+                }
             }
 
 
@@ -266,24 +278,39 @@ namespace MWF.Mobile.Core.ViewModels
         private void CompleteScanning()
         {
 
-            var newScannedDelivery = new ScannedDelivery()
-            { Barcodes = _processedBarcodes.Barcodes.Select(bvm => 
-                            new Barcode 
-                            { 
-                                BarcodeText = bvm.BarcodeText, 
-                                IsScanned = bvm.IsScanned, 
-                                OrderID = bvm.OrderID,
-                                IsDelivered = bvm.IsDelivered.Value,
-                                DamageStatusCode = bvm.DamageStatus.Code,
-                                DeliveryStatusCode = bvm.PalletforceDeliveryStatus,
-                                DeliveryStatusNote = bvm.DeliveryComments
-                                
-                            }).ToList() 
-            };
-
+            // Update datachunk for this order
+            var newScannedDelivery = GetScannedDelivery(_mobileData.ID);
             _navData.GetDataChunk().ScannedDelivery = newScannedDelivery;
 
+            // Do the same for all additional orders
+            foreach (var additionalInstruction in _additionalInstructions)
+            {
+                newScannedDelivery = GetScannedDelivery(additionalInstruction.ID);
+                _navData.GetAdditionalDataChunk(additionalInstruction).ScannedDelivery = newScannedDelivery;
+            }
+
             _navigationService.MoveToNext(_navData);
+        }
+
+
+        private ScannedDelivery GetScannedDelivery(Guid Id)
+        {
+            var newScannedDelivery = new ScannedDelivery()
+            {
+                Barcodes = _processedBarcodes.Barcodes.Where(bc => bc.MobileDataID == Id).Select(bvm =>
+                              new Barcode
+                              {
+                                  BarcodeText = bvm.BarcodeText,
+                                  IsScanned = bvm.IsScanned,
+                                  OrderID = bvm.OrderID,
+                                  IsDelivered = bvm.IsDelivered.Value,
+                                  DamageStatusCode = bvm.DamageStatus.Code,
+                                  DeliveryStatusCode = bvm.PalletforceDeliveryStatus,
+                                  DeliveryStatusNote = bvm.DeliveryComments
+
+                              }).ToList()
+            };
+            return newScannedDelivery;
         }
 
         private void ClearBarcode()
@@ -295,6 +322,16 @@ namespace MWF.Mobile.Core.ViewModels
         private void RequestBarcodeFocus()
         {
             RaisePropertyChanged("RequestBarcodeFocus");
+        }
+
+        private void RefreshPage(Guid ID)
+        {
+            _navData.ReloadInstruction(ID, _repositories);
+            _mobileData = _navData.Data;
+            _additionalInstructions = _navData.GetAdditionalInstructions();
+
+            CreateSections();
+            RaiseAllPropertiesChanged();
         }
 
 
@@ -317,7 +354,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-
+            if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
+            {
+                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been updated.", "OK");
+                else
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been deleted.");
+            }
         }
 
         #endregion BaseInstructionNotificationViewModel Overrides

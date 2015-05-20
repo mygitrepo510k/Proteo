@@ -227,25 +227,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-        [Fact]
-        public void InstructionVM_ProgressButton_SelectOrder()
-        {
-            base.ClearAll();
-
-            var instructionVM = _fixture.Create<InstructionViewModel>();
-
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
-
-            Item order = _mobileData.Order.Items[0];
-
-            instructionVM.ShowOrderCommand.Execute(order);
-
-            // Should have told navigation service to move on
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<Item>>(ni => ni.Data == order && ni.OtherData["MobileData"] == _mobileData)), Times.Once);
-
-
-        }
-
 
         [Fact]
         public void InstructionVM_ChangeTrailerAllowed_DeliveryInstruction()

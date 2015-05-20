@@ -79,6 +79,12 @@ namespace MWF.Mobile.Core.ViewModels
             set;
         }
 
+        public Guid MobileDataID
+        {
+            get;
+            set;
+        }
+
         public string DamageIndicatorText
         {
             get

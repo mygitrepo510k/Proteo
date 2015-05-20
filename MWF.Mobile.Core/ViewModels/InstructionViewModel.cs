@@ -233,10 +233,23 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void ShowOrder(Item order)
         {
-            NavData<Item> navItem = new NavData<Item>() { Data = order };
-            navItem.OtherData["MobileData"] = _mobileData;
-            navItem.OtherData["DataChunk"] = _navData.GetDataChunk();
-            _navigationService.MoveToNext(navItem);
+
+            NavData<MobileData> navData = new NavData<MobileData>();
+
+            navData.Data = _mobileData;
+            navData.OtherData["DataChunk"] = navData.GetDataChunk();
+
+            navData.OtherData["Order"] = order;
+
+            _navigationService.ShowModalViewModel<OrderViewModel, bool>(this, navData, (modified) =>
+            {
+                if (modified)
+                {
+
+                }
+            }
+            );
+
         }
 
         private void GetMobileDataFromRepository(Guid ID)

@@ -35,15 +35,17 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 images.Add(viewModel.Image);
             }
+
             _navigationService.MoveToNext(_navigationService.CurrentNavData);
 
-            MobileData mobileData = null;
-            if (_navigationService.CurrentNavData != null)
+
+            List<MobileData> mobileDatas = null;
+            if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData is NavData<MobileData>)
             {
-                mobileData = _navigationService.CurrentNavData.GetMobileData();
+                mobileDatas = (_navigationService.CurrentNavData as NavData<MobileData>).GetAllInstructions();
             }
 
-            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, mobileData);
+            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, mobileDatas);
         }
 
         #region IBackButtonHandler Implementation

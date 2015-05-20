@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels.Interfaces
 {
-    public interface IModalViewModel<TResult>: IMvxViewModel 
+    public interface IModalViewModel: IMvxViewModel 
     {
         Guid MessageId { get; set; }
 
         void Cancel();
+
+    }
+
+    public interface IModalViewModel<TResult> : IModalViewModel
+    {
         void ReturnResult(TResult result);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -15,7 +16,7 @@ namespace MWF.Mobile.Core.Services
         void Logout_Action(NavData navData);
         void PopulateNavData(NavData navData);
         NavData CurrentNavData { get; }
-        bool ShowModalViewModel<TViewModel, TResult>(BaseFragmentViewModel viewModel, NavData navData, Action<TResult> onResult) where TViewModel : BaseModalViewModel<TResult>;
+        bool ShowModalViewModel<TViewModel, TResult>(BaseFragmentViewModel viewModel, NavData navData, Action<TResult> onResult) where TViewModel : IModalViewModel<TResult>;
 
     }
 }

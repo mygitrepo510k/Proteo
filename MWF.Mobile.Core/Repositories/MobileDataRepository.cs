@@ -24,6 +24,30 @@ namespace MWF.Mobile.Core.Repositories
 
         }
 
+        public IEnumerable<MobileData> GetNonCompletedInstructions(Guid driverID)
+        {
+
+            List<MobileData> parentItems;
+
+            using (var connection = _dataService.GetDBConnection())
+            {
+
+                parentItems = connection
+                   .Table<MobileData>()
+                   .Where(m =>
+                          m.DriverId == driverID &&
+                         (m.ProgressState != Enums.InstructionProgress.Complete)).ToList();
+
+                PopulateChildrenRecursive(parentItems, connection);
+
+            }
+
+            parentItems = parentItems.Where(pi =>
+                pi.Order.Type != Enums.InstructionType.OrderMessage).ToList();
+
+            return parentItems;
+        }
+
         public IEnumerable<MobileData> GetInProgressInstructions(Guid driverID)
         {
 
@@ -73,7 +97,7 @@ namespace MWF.Mobile.Core.Repositories
 
 
 
-        public IEnumerable<MobileData> GetNoneCompletedMessages(Guid driverID)
+        public IEnumerable<MobileData> GetNonCompletedMessages(Guid driverID)
         {
             List<MobileData> parentItems;
 

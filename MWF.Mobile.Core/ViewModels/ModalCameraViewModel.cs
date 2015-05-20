@@ -18,6 +18,18 @@ namespace MWF.Mobile.Core.ViewModels
         , IModalViewModel<bool>,
         IBackButtonHandler
     {
+
+
+        #region private members
+
+
+        private MobileData _mobileData;
+        private NavData<MobileData> _navData;
+
+        #endregion
+
+        #region construction
+
         public ModalCameraViewModel(
             IMvxPictureChooserTask pictureChooserTask, 
             IMainService mainService, 
@@ -27,6 +39,8 @@ namespace MWF.Mobile.Core.ViewModels
         {
 
         }
+
+        #endregion
 
         protected override async Task DoDoneCommand()
         {
@@ -39,16 +53,19 @@ namespace MWF.Mobile.Core.ViewModels
 
             this.ReturnResult(true);
 
-            MobileData mobileData = null;
-            if (_navigationService.CurrentNavData != null)
+            List<MobileData> mobileDatas = null;
+            if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData is NavData<MobileData>)
             {
-                mobileData = _navigationService.CurrentNavData.GetMobileData();
+                mobileDatas = (_navigationService.CurrentNavData as NavData<MobileData>).GetAllInstructions();
             }
 
-            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, mobileData);
+            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, mobileDatas);
         }
 
-        public Guid MessageId { get; set; }
+
+        #region IModalViewModel
+
+        public Guid MessageId { get; set; }  
 
         public void Cancel()
         {
@@ -62,6 +79,8 @@ namespace MWF.Mobile.Core.ViewModels
             this.Messenger.Publish(message);
             this.Close(this);
         }
+
+        #endregion
 
         #region IBackButtonHandler Implementation
 

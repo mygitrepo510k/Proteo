@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.Models.Instruction;
 
 namespace MWF.Mobile.Core.Services
 {
     public interface IImageUploadService
     {
-        Task SendPhotoAndCommentAsync(string comment, List<Image> photos, Driver currentDriver, MWF.Mobile.Core.Models.Instruction.MobileData currentMobileData);
+        Task SendPhotoAndCommentAsync(string comment, List<Image> photos, Driver currentDriver, List<MobileData> currentMobileData);
     }
 }

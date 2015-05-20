@@ -6,6 +6,7 @@ using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
+using MWF.Mobile.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,14 +26,16 @@ namespace MWF.Mobile.Core.ViewModels
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
         private readonly INavigationService _navigationService;
+        private readonly IRepositories _repositories;
 
         #endregion Private Properties
 
         #region Construction
 
-        public InstructionClausedViewModel(INavigationService navigationService)
+        public InstructionClausedViewModel(INavigationService navigationService, IRepositories repositories)
         {
             _navigationService = navigationService;
+            _repositories = repositories;
         }
 
         public void Init(NavData<MobileData> navData)
@@ -103,7 +106,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AdvanceInstruction()
         {
-            _navData.GetDataChunk().IsClaused = true;
+            var dataChunks = _navData.GetAllDataChunks();
+            foreach (var datachunk in dataChunks)
+            {
+                datachunk.IsClaused = true;
+            }
+
             _navigationService.MoveToNext(_navData);
         }
 
@@ -114,9 +122,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void OpenCameraScreen()
         {
-            var navItem = new MessageModalNavItem { MobileDataID = _mobileData.ID };
-            var modal = this.ShowModalViewModel<ModalCameraViewModel, bool>(navItem, (sendChunk) => {});
+
+            var modal = _navigationService.ShowModalViewModel<ModalCameraViewModel, bool>(this, _navData, (sendChunk) => {});
         }
+
+        private void RefreshPage(Guid ID)
+        {
+            _navData.ReloadInstruction(ID, _repositories);
+            _mobileData = _navData.Data;
+            RaiseAllPropertiesChanged();
+        }
+
 
         #endregion Private Methods
 
@@ -124,10 +140,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mobileData.ID)
+            if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("", null, "This instruction has been Updated", "OK");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been updated.", "OK");
                 else
                     Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
             }

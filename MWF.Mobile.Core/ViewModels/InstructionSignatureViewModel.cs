@@ -69,8 +69,10 @@ namespace MWF.Mobile.Core.ViewModels
             get
             {
 
+                var deliveryOptions = _navData.GetWorseCaseDeliveryOptions();
+
                 if ((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerSignatureRequiredForCollection)
-                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && deliveryOptions.CustomerSignatureRequiredForDelivery))
                 {
                     IsSignaturePadEnabled = true;
                     RaisePropertyChanged(() => SignatureToggleButtonLabel);
@@ -122,8 +124,10 @@ namespace MWF.Mobile.Core.ViewModels
         private void InstructionDone()
         {
 
+            var deliveryOptions = _navData.GetWorseCaseDeliveryOptions();
+
             if (((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerSignatureRequiredForCollection)
-                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerSignatureRequiredForDelivery))
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && deliveryOptions.CustomerSignatureRequiredForDelivery))
                     && string.IsNullOrWhiteSpace(CustomerSignatureEncodedImage))
             {
                 _userInteraction.Alert("Signature is required");
@@ -131,20 +135,24 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             if (((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerNameRequiredForCollection)
-                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && _mobileData.Order.Additional.CustomerNameRequiredForDelivery))
+                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver && deliveryOptions.CustomerNameRequiredForDelivery))
                     && string.IsNullOrWhiteSpace(CustomerName))
             {
                 _userInteraction.Alert("The signers name is required");
                 return;
             }
 
-            _navData.GetDataChunk().Signature = new Models.Signature { Title = CustomerName, EncodedImage = CustomerSignatureEncodedImage };
 
-            //This indicates that the instruction has been scanned
-            if (_navData.GetDataChunk().ScannedDelivery != null)
+            var dataChunks = _navData.GetAllDataChunks();
+            foreach (var dataChunk in dataChunks)
             {
-                _navData.GetDataChunk().ScannedDelivery.CustomerName = CustomerName;
-                _navData.GetDataChunk().ScannedDelivery.HasCustomerSigned = !string.IsNullOrWhiteSpace(CustomerSignatureEncodedImage);
+                dataChunk.Signature = new Models.Signature { Title = CustomerName, EncodedImage = CustomerSignatureEncodedImage };
+
+                if (dataChunk.ScannedDelivery != null)
+                {
+                    dataChunk.ScannedDelivery.CustomerName = CustomerName;
+                    dataChunk.ScannedDelivery.HasCustomerSigned = !string.IsNullOrWhiteSpace(CustomerSignatureEncodedImage);
+                }
             }
 
             _navigationService.MoveToNext(_navData);
@@ -153,8 +161,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void RefreshPage(Guid ID)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(ID);
-            _navData.Data = _mobileData;
+            _navData.ReloadInstruction(ID, _repositories);
+            _mobileData = _navData.Data;
             RaiseAllPropertiesChanged();
         }
 
@@ -173,12 +181,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            if (instructionID == _mobileData.ID)
+            if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been Updated", "OK");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been updated.", "OK");
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been deleted.");
             }
         }
 

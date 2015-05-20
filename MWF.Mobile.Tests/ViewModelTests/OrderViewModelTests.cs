@@ -73,8 +73,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var orderVM = _fixture.Create<OrderViewModel>();
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -88,8 +88,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var orderVM = _fixture.Create<OrderViewModel>();
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -102,8 +102,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
             var orderVM = _fixture.Create<OrderViewModel>();
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -117,8 +117,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var orderVM = _fixture.Create<OrderViewModel>();
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -133,8 +133,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var orderVM = _fixture.Create<OrderViewModel>();
 
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -149,8 +149,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var orderVM = _fixture.Create<OrderViewModel>();
 
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -165,8 +165,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var orderVM = _fixture.Create<OrderViewModel>();
 
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -187,8 +187,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockConfigRepo.Setup(mcr => mcr.GetByID(It.IsAny<Guid>())).Returns(config);
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -208,8 +208,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockConfigRepo.Setup(mcr => mcr.GetByID(It.IsAny<Guid>())).Returns(config);
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -229,8 +229,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockConfigRepo.Setup(mcr => mcr.GetByID(It.IsAny<Guid>())).Returns(config);
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Deliver;
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 
@@ -248,8 +248,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var orderVM = _fixture.Create<OrderViewModel>();
 
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
             orderVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
@@ -272,8 +272,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var orderVM = _fixture.Create<OrderViewModel>();
 
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
             orderVM.Init(navData);
 

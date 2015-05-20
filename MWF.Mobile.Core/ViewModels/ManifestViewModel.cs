@@ -187,7 +187,7 @@ namespace MWF.Mobile.Core.ViewModels
             activeInstructionsDataModels = activeInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
             nonActiveInstructionsDataModels = nonActiveInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
 
-            var messageDataModels = _mobileDataRepository.GetNoneCompletedMessages(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
+            var messageDataModels = _mobileDataRepository.GetNonCompletedMessages(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
 
             if (activeInstructionsDataModels.ToList().Count == 0)
             {

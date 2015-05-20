@@ -72,8 +72,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             int newQuantity = 123;
 
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
             navData.OtherData["DataChunk"] = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
             reviseQuantityVM.Init(navData);
@@ -97,8 +97,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var reviseQuantityVM = _fixture.Create<ReviseQuantityViewModel>();
 
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
             navData.OtherData["DataChunk"] = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
             reviseQuantityVM.Init(navData);
@@ -123,8 +123,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var reviseQuantityVM = _fixture.Create<ReviseQuantityViewModel>();
 
-            var navData = new NavData<Item>() { Data = _mobileData.Order.Items.FirstOrDefault() };
-            navData.OtherData["MobileData"] = _mobileData;
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
             navData.OtherData["DataChunk"] = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
             reviseQuantityVM.Init(navData);

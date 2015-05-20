@@ -119,7 +119,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             cameraVM.DoneCommand.Execute(null);
 
             _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Once);
-            _mockImageUploadService.Verify(mis => mis.SendPhotoAndCommentAsync(It.IsAny<string>(), It.IsAny<List<Image>>(), It.IsAny<Driver>(), It.IsAny<MobileData>()), Times.Once);
+            _mockImageUploadService.Verify(mis => mis.SendPhotoAndCommentAsync(It.IsAny<string>(), It.IsAny<List<Image>>(), It.IsAny<Driver>(), It.IsAny<List<MobileData>>()), Times.Once);
 
         }
 

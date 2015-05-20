@@ -63,37 +63,25 @@ namespace MWF.Mobile.Core.Models
 
     }
 
-    [XmlRoot("activity")]
+
     public class UploadCameraImageObject : IBlueSphereEntity
     {
-        [Unique]
-        [PrimaryKey]
-        [XmlAttribute("id")]
         public Guid ID { get; set; }
 
-        [XmlAttribute("driverid")]
         public Guid DriverId { get; set; }
 
-        [XmlAttribute("drivertitle")]
         public string DriverTitle { get; set; }
 
-        [XmlAttribute("smp")]
         public string Smp { get; set; }
 
-        [XmlAttribute("mobileapplicationid")]
-        public Guid MobileApplicationID { get; set; }
+        public List<Guid> MobileApplicationIDs { get; set; }
 
-        [XmlAttribute("orderid")]
         public string OrderIDs { get; set; }
 
-        [XmlAttribute("comment")]
         public string Comment { get; set; }
 
-        [XmlAttribute("datetimeofupload")]
         public DateTime DateTimeOfUpload { get; set; }
 
-        [XmlArray("images")]
-        [XmlArrayItem(typeof(Image), ElementName = "image")]
         public List<Image> Pictures { get; set; }
     }
 }

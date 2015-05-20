@@ -163,11 +163,6 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 // Force a poll for instructions             
                 await _gatewayPollingService.PollForInstructionsAsync();
-
-                RefreshInstructions();
-
-                // Force a upload of the queue
-                //await _gatewayQueuedService.UploadQueue();
             }
         }
 

@@ -20,15 +20,10 @@ using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
-    enum MenuOption
-    {
-        Passed = 0,
-        DiscretionaryPass = 1,
-        Failed = 2
-    }
 
     public class SafetyCheckFragment : BaseFragment
     {
+
         private ListView _itemList;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -49,15 +44,13 @@ namespace MWF.Mobile.Android.Views.Fragments
             set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.CanSafetyChecksBeCompleted);
             set.Apply();
 
-
             base.OnViewCreated(view, savedInstanceState);
         }
 
-        void itemList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
+        private void itemList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             ((ListView)sender).ShowContextMenuForChild(e.View);
         }
-
 
         public override void OnCreateContextMenu(IContextMenu menu, View v, IContextMenuContextMenuInfo info)
         {
@@ -65,31 +58,20 @@ namespace MWF.Mobile.Android.Views.Fragments
             var safetyCheckItem = ((SafetyCheckItemViewModel)((MvxListItemView)menuInfo.TargetView).DataContext);
 
             menu.SetHeaderTitle(safetyCheckItem.Title);
-            menu.Add(0, (int)MenuOption.Passed, 0, "Pass");
-            if (safetyCheckItem.IsDiscretionaryQuestion)
-                menu.Add(0, (int)MenuOption.DiscretionaryPass, 0, "Discretionary Pass");
-            menu.Add(0, (int)MenuOption.Failed, 0, "Fail");
+
+            foreach (var status in safetyCheckItem.AvailableStatuses)
+            {
+                menu.Add(0, (int)status.Key, 0, status.Value);
+            }
         }
 
         public override bool OnContextItemSelected(IMenuItem item)
         {
-            var safetyCheckViewModel = (SafetyCheckItemViewModel)((MvxListItemView)((AdapterView.AdapterContextMenuInfo)item.MenuInfo).TargetView).DataContext;
-
-            if (item.ItemId.Equals((int)MenuOption.Passed))
-            {
-                safetyCheckViewModel.CheckStatus = Core.Enums.SafetyCheckStatus.Passed;
-            }
-            else if (item.ItemId.Equals((int)MenuOption.DiscretionaryPass))
-            {
-                safetyCheckViewModel.CheckStatus = Core.Enums.SafetyCheckStatus.DiscretionaryPass;
-            }
-            else if (item.ItemId.Equals((int)MenuOption.Failed))
-            {
-                safetyCheckViewModel.CheckStatus = Core.Enums.SafetyCheckStatus.Failed;
-            }
-
+            var safetyCheckItemViewModel = (SafetyCheckItemViewModel)((MvxListItemView)((AdapterView.AdapterContextMenuInfo)item.MenuInfo).TargetView).DataContext;
+            safetyCheckItemViewModel.CheckStatus = (Core.Enums.SafetyCheckStatus)item.ItemId;
             return base.OnOptionsItemSelected(item);
         }
 
     }
+
 }

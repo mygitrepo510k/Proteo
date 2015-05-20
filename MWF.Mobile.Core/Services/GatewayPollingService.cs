@@ -40,13 +40,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IMainService _mainService;
         IDataChunkService _dataChunkService;
 
-        private readonly string _gatewayDeviceRequestUrl = null;
-
-        private MvxSubscriptionToken _pollTimerMessageToken = null;
-        private bool _isSubmitting = false;
-        private bool _submitAgainOnCompletion = false;
         private int _dataSpan = -1;
-
 
         public GatewayPollingService(
             IDeviceInfo deviceInfo,
@@ -74,10 +68,6 @@ namespace MWF.Mobile.Core.Services
             _dataChunkService = dataChunkService;
             _customPresenter = customPresenter;
 
-
-            //TODO: read this from config or somewhere?
-            _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
-
             _deviceRepository = repositories.DeviceRepository;
 
         }
@@ -104,12 +94,7 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        public async Task PollForInstructions()
-        {
-            await PollForInstructionsAsync();
-        }
-
-        private async Task PollForInstructionsAsync()
+        public async Task PollForInstructionsAsync()
         {
             Mvx.Trace("Begin Polling For Instructions");
 

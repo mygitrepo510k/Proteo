@@ -12,7 +12,6 @@ using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Collections;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using MWF.Mobile.Tests.Helpers;
 
 namespace MWF.Mobile.Tests.RepositoryTests

@@ -26,7 +26,6 @@ namespace MWF.Mobile.Tests.ServiceTests
         private IFixture _fixture;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<IGatewayQueuedService> _mockGatewayQueuedService;
-        private MvxSubscriptionToken _pollTimerToken;
         private ApplicationProfile _applicationProfile;
         private Mock<IGatewayService> _gatewayMock;
         private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
@@ -85,7 +84,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<GatewayPollingService>();
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(2000);
@@ -119,7 +118,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(2000);
@@ -143,7 +142,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<GatewayPollingService>();
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(100);
@@ -170,7 +169,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<GatewayPollingService>();
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(100);
@@ -205,7 +204,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<GatewayPollingService>();
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(100);
@@ -248,7 +247,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<GatewayPollingService>();
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(100);
@@ -312,7 +311,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<GatewayPollingService>();
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(100);
@@ -357,7 +356,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<GatewayPollingService>();
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(2000);
@@ -381,7 +380,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<GatewayPollingService>();
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(2000);
@@ -419,7 +418,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<GatewayPollingService>();
 
             service.StartPollingTimer();
-            service.PollForInstructions();
+            await service.PollForInstructionsAsync();
 
             // Allow the timer to process the queue
             await Task.Delay(100);

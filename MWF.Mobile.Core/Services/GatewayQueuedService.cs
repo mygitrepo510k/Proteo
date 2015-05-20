@@ -28,7 +28,6 @@ namespace MWF.Mobile.Core.Services
 
         private Timer _timer;
 
-        private MvxSubscriptionToken _queueTimerMessageToken = null;
         private bool _isSubmitting = false;
         private bool _submitAgainOnCompletion = false;
 

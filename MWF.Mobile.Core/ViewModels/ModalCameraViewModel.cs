@@ -19,15 +19,6 @@ namespace MWF.Mobile.Core.ViewModels
         IBackButtonHandler
     {
 
-
-        #region private members
-
-
-        private MobileData _mobileData;
-        private NavData<MobileData> _navData;
-
-        #endregion
-
         #region construction
 
         public ModalCameraViewModel(

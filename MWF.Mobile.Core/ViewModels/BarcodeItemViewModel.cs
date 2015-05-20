@@ -1,5 +1,4 @@
-﻿using Cirrious.MvvmCross.ViewModels;
-using System;
+﻿using System;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using System.Collections.Generic;
@@ -173,15 +172,10 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        
-
         private MvxCommand _selectBarcodeCommand;
         public ICommand SelectBarcodeCommand
         {
-            get
-            {
-                return _selectBarcodeCommand ?? new MvxCommand(SelectBarcode);
-            }
+            get { return (_selectBarcodeCommand = _selectBarcodeCommand ?? new MvxCommand(SelectBarcode)); }
         }
 
         public override string FragmentTitle
@@ -222,7 +216,7 @@ namespace MWF.Mobile.Core.ViewModels
                 string message = string.Format("Barcodes should be scanned if possible. Confirm the pallet with barcode {0} has been manually processed.", _barcodeText);
                 string title = "Mark Barcode as Manually Processed?";
 
-                Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm(message, async isConfirmed =>
+                Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm(message, isConfirmed =>
                 {
                     if (isConfirmed)
                     {

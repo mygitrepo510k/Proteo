@@ -95,7 +95,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             //Its twice because when the viewmodel is created then it calls refreshMessages()
             _mobileDataRepoMock.Verify(md => md.GetAllMessages(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));
-            _mockGatewayPollingService.Verify(gp => gp.PollForInstructions(), Times.Exactly(2));
+            _mockGatewayPollingService.Verify(gp => gp.PollForInstructionsAsync(), Times.Exactly(2));
 
             Assert.Equal(validMessageCount, inboxVM.MessagesCount);
             Assert.Equal("Showing " + validMessageCount + " messages", inboxVM.InboxHeaderText);
@@ -117,7 +117,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             //Should only pull from the database because new instructions would of just been inserted
             //Gets called once when the inbox is created.
-            _mockGatewayPollingService.Verify(gp => gp.PollForInstructions(), Times.Once);
+            _mockGatewayPollingService.Verify(gp => gp.PollForInstructionsAsync(), Times.Once);
 
         }
 

@@ -14,9 +14,10 @@ using Android.Widget;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Binding.BindingContext;
+using Cirrious.MvvmCross.Droid.Views;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.ViewModels;
-using Cirrious.MvvmCross.Droid.Views;
+using MWF.Mobile.Android.Controls;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {

@@ -15,12 +15,13 @@ using Cirrious.MvvmCross.Binding.BindingContext;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using MWF.Mobile.Core.ViewModels;
 using Android.Views.InputMethods;
+using MWF.Mobile.Android.Controls;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
     public class BarcodeFragment : BaseFragment
     {
-        KeyboardlessEditText _barcodeInput;
+        private KeyboardlessEditText _barcodeInput;
         private BindableProgress _bindableProgress;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

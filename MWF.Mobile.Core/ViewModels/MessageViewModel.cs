@@ -119,12 +119,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Task<bool> OnBackButtonPressed()
         {
-
-            var task = new Task<bool>(() => false);
-
             ReturnResult(false);
-
-            return task;
+            return Task.FromResult(false);
         }
 
         #endregion IBackButtonHandler Implementation

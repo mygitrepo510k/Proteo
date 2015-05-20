@@ -78,6 +78,16 @@ namespace MWF.Mobile.Android
             }
         }
 
+        protected override IDictionary<string, string> ViewNamespaceAbbreviations
+        {
+            get
+            {
+                var retVal = base.ViewNamespaceAbbreviations;
+                retVal["mwf"] = "MWF.Mobile.Android.Controls";
+                return retVal;
+            }
+        }
+
         public override void LoadPlugins(Cirrious.CrossCore.Plugins.IMvxPluginManager pluginManager)
         {
             pluginManager.EnsurePluginLoaded<PluginLoader>();

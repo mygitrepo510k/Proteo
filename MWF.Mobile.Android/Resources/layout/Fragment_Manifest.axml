@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <MWF.Mobile.Android.Views.BindableGroupListView
+    <mwf.BindableGroupListView
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

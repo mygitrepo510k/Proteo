@@ -156,10 +156,20 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressed()
         {
-            _closeApplication.CloseApp();
-            return new Task<bool>(() => false);
+            var closeApp = true;
+
+#if DEBUG
+            closeApp = !await Mvx.Resolve<IUserInteraction>().ConfirmAsync("DEBUGGING: Return to Customer Code screen?", cancelButton: "No, close the app");
+#endif
+
+            if (closeApp)
+                _closeApplication.CloseApp();
+            else
+                ShowViewModel<CustomerCodeViewModel>();
+
+            return false;
         }
 
         #endregion IBackButtonHandler Implementation

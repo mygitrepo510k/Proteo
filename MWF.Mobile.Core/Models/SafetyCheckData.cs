@@ -84,6 +84,28 @@ namespace MWF.Mobile.Core.Models
             return Enums.SafetyCheckStatus.Passed;
         }
 
+        /// <summary>
+        /// Clone an existing safety check - doesn't include the Faults
+        /// </summary>
+        internal static SafetyCheckData ShallowCopy(SafetyCheckData scd)
+        {
+            return new SafetyCheckData
+            {
+                ID = scd.ID,
+                DriverID = scd.DriverID,
+                DriverTitle = scd.DriverTitle,
+                VehicleID = scd.VehicleID,
+                VehicleRegistration = scd.VehicleRegistration,
+                EffectiveDate = scd.EffectiveDate,
+                Mileage = scd.Mileage,
+                SMP = scd.SMP,
+                Signature = scd.Signature,
+                ProfileIntLink = scd.ProfileIntLink,
+                IsTrailer = scd.IsTrailer,
+                LatestSafetyCheckID = scd.LatestSafetyCheckID,
+            };
+        }
+
     }
 
 }

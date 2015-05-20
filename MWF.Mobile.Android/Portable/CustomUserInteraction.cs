@@ -18,6 +18,7 @@ using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using MWF.Mobile.Core.Enums;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Android.Controls;
 
 namespace MWF.Mobile.Android.Portable
 {
@@ -140,7 +141,7 @@ namespace MWF.Mobile.Android.Portable
 
                     expandableListView.ChildClick += expandableListView_ChildClick;
 
-                    ExpandableListAdapter expandableListAdapter = new ExpandableListAdapter(CurrentActivity, headers, inoList);
+                    var expandableListAdapter = new ExpandableListAdapter(CurrentActivity, headers, inoList);
 
                     expandableListView.SetAdapter(expandableListAdapter);
 

@@ -274,13 +274,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Task<bool> OnBackButtonPressed()
         {
-            var task = new Task<bool>(() => false);
-
-            //NavItem<MobileData> navItem = new NavItem<MobileData>() { ID = _mobileData.ID };
             _navigationService.GoBack();
-
-            return task;
+            return Task.FromResult(false);
         }
+
         #endregion IBackButtonHandler Implementation
 
         #region BaseInstructionNotificationViewModel

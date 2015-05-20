@@ -288,7 +288,7 @@ namespace MWF.Mobile.Core.Services
             if ((VehicleSafetyProfile != null && VehicleSafetyProfile.DisplayAtLogoff)
                 || (TrailerSafetyProfile != null && TrailerSafetyProfile.DisplayAtLogoff))
             {
-                 this.ShowViewModel<SafetyCheckViewModel>();
+                this.ShowViewModel<SafetyCheckViewModel>();
             }
             else
             {
@@ -430,24 +430,13 @@ namespace MWF.Mobile.Core.Services
         /// Adds navigation data object to our dictionary so it can be retreived by a view model after a navigation action has completed
         /// MVVM cross only allows passing of simple objects via serialization. Navigation improves this by having MVVM Cross pass a GUID
         /// linked to the full objects that can be retrieved after the navigated to ViewModel is shown
-        /// a 
         /// </summary>
         /// <param name="navData"></param>
         private void AddNavDataToDictionary(NavData navData)
         {
 
             var tuple = Tuple.Create<object, Dictionary<string, object>>(navData.GetData(), navData.OtherData);
-
-            if (_navDataDictionary.Keys.Contains(navData.NavGUID))
-            {
-                _navDataDictionary[navData.NavGUID] = tuple;
-            }
-            else
-            {
-                _navDataDictionary.Add(navData.NavGUID, tuple);
-            }
-            
-
+            _navDataDictionary[navData.NavGUID] = tuple;
         }
 
         /// <summary>
@@ -508,6 +497,9 @@ namespace MWF.Mobile.Core.Services
 
         private void StopLoginSessionTimer()
         {
+            if (_loginSessionTimer == null)
+                return;
+
             _loginSessionTimer.Dispose();
             _loginSessionTimer = null;
         }
@@ -683,7 +675,7 @@ namespace MWF.Mobile.Core.Services
 
             if (navData is NavData<Models.Instruction.Trailer>)
             {
-                
+
             }
             else if (navData is NavData<MobileData>)
             {
@@ -725,11 +717,12 @@ namespace MWF.Mobile.Core.Services
 
                     if (additionalContent.IsTrailerConfirmationEnabled || !Models.Trailer.SameAs(_startupService.CurrentTrailer, mobileNavData.Data.Order.Additional.Trailer))
                     {
-                        // noteif trailer confirmation is not explicitly enabled, still need to cater for ambiguous case
+                        // Note if trailer confirmation is not explicitly enabled, still need to cater for ambiguous case
                         // where the current trailer doesn't match the one specified on the order. Which one does the driver
                         // actually have attached and intend to use for the order?
-                        string orderTrailerMessage  = (mobileNavData.Data.Order.Additional.Trailer.TrailerId == null) ? "No trailer specified on instruction." : string.Format("Trailer specified on instruction is {0}.", mobileNavData.Data.Order.Additional.Trailer.TrailerId);
-                        string currentTrailerMessage  = (_startupService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _startupService.CurrentTrailer.Registration);
+                        var instructionTrailer = mobileNavData.Data.Order.Additional.Trailer;
+                        string orderTrailerMessage = (instructionTrailer == null || instructionTrailer.TrailerId == null) ? "No trailer specified on instruction." : string.Format("Trailer specified on instruction is {0}.", instructionTrailer.TrailerId);
+                        string currentTrailerMessage = (_startupService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _startupService.CurrentTrailer.Registration);
 
                         string message = orderTrailerMessage + currentTrailerMessage;
                         var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
@@ -746,10 +739,15 @@ namespace MWF.Mobile.Core.Services
                     }
                 }
 
-                if (mobileNavData.Data.Order.Items.Any(i => (i.Additional.BarcodeScanRequiredForDelivery && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)))
+                if (mobileNavData.Data.Order.IsBarcodeScanRequired())
                 {
-                    this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
-                    return;
+                    if (mobileNavData.Data.Order.HasBarcodes())
+                    {
+                        this.ShowViewModel<BarcodeScanningViewModel>(mobileNavData);
+                        return;
+                    }
+
+                    await Mvx.Resolve<IUserInteraction>().AlertAsync("There are no barcodes to be scanned on this instruction.");
                 }
 
                 // Delivery Clean/Clause Prompt
@@ -788,33 +786,33 @@ namespace MWF.Mobile.Core.Services
         public async void InstructionTrailer_CustomAction(NavData navData)
         {
 
-                var mobileNavData = navData as NavData<MobileData>;
-                Models.Trailer trailer = mobileNavData.OtherData["UpdatedTrailer"] as Models.Trailer;
+            var mobileNavData = navData as NavData<MobileData>;
+            Models.Trailer trailer = mobileNavData.OtherData["UpdatedTrailer"] as Models.Trailer;
 
 
-                // Trailer differs from the current trailer
-                if (trailer != null && (!Models.Trailer.SameAs(trailer, _startupService.CurrentTrailer)))
+            // Trailer differs from the current trailer
+            if (trailer != null && (!Models.Trailer.SameAs(trailer, _startupService.CurrentTrailer)))
+            {
+                this.ShowViewModel<InstructionSafetyCheckViewModel>(mobileNavData);
+            }
+            else
+            {
+                UpdateTrailerForInstruction(mobileNavData, trailer);
+                mobileNavData.OtherData["UpdatedTrailer"] = null;
+
+                if (navData.OtherData.IsDefined("IsTrailerEditFromInstructionScreen"))
                 {
-                    this.ShowViewModel<InstructionSafetyCheckViewModel>(mobileNavData);
+                    mobileNavData.OtherData["IsTrailerEditFromInstructionScreen"] = null;
+                    // Go back to the instruction screen
+                    this.ShowViewModel<InstructionViewModel>(mobileNavData);
                 }
                 else
                 {
-                    UpdateTrailerForInstruction(mobileNavData, trailer);                  
-                    mobileNavData.OtherData["UpdatedTrailer"] = null;
-
-                    if (navData.OtherData.IsDefined("IsTrailerEditFromInstructionScreen"))
-                    {
-                        mobileNavData.OtherData["IsTrailerEditFromInstructionScreen"] = null;
-                        // Go back to the instruction screen
-                        this.ShowViewModel<InstructionViewModel>(mobileNavData);
-                    }
-                    else
-                    {
-                        // else trailer select was via collection on-site flow
-                        await CompleteInstructionTrailerSelection(mobileNavData);
-                        return;
-                    }
+                    // else trailer select was via collection on-site flow
+                    await CompleteInstructionTrailerSelection(mobileNavData);
+                    return;
                 }
+            }
         }
 
 
@@ -830,6 +828,7 @@ namespace MWF.Mobile.Core.Services
             var additionalContent = mobileNavData.Data.Order.Additional;
             var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
+          
 
             if (!itemAdditionalContent.BypassCommentsScreen)
             {
@@ -857,14 +856,21 @@ namespace MWF.Mobile.Core.Services
                 if (trailer == null)
                     mobileNavData.Data.Order.Additional.Trailer = null;
                 else
+                {
+                    if (mobileNavData.Data.Order.Additional.Trailer == null)
+                        mobileNavData.Data.Order.Additional.Trailer = new Models.Instruction.Trailer();
+
                     mobileNavData.Data.Order.Additional.Trailer.TrailerId = trailer.Registration;
+                }
 
                 // send the revised trailer data chunk
                 _dataChunkService.SendDataChunk(mobileNavData.GetDataChunk(), mobileNavData.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle, updateTrailer: true);
             }
 
             _startupService.CurrentTrailer = trailer;
-            _startupService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
+
+            if (trailer != null)
+                _startupService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
         }
 
 
@@ -889,7 +895,7 @@ namespace MWF.Mobile.Core.Services
                 }
                 else
                 {
-                   
+
                     await CompleteInstructionTrailerSelection(mobileNavData);
                     return;
                 }
@@ -952,7 +958,7 @@ namespace MWF.Mobile.Core.Services
             _startupService.CurrentTrailerSafetyCheckData = navData.OtherData["UpdatedTrailerSafetyCheckData"] as SafetyCheckData;
 
             // commit safety check data to repositories and bluesphere
-            _startupService.CommitSafetyCheckData();
+            _startupService.CommitSafetyCheckData(trailerOnly: true);
 
             // clear all nav item data related to trailer selection flow
             mobileNavData.OtherData["UpdatedTrailer"] = null;
@@ -1051,8 +1057,8 @@ namespace MWF.Mobile.Core.Services
 
                 if (additionalContent.IsTrailerConfirmationEnabled && mobileNavData.Data.Order.Type == Enums.InstructionType.ProceedFrom)
                 {
-
-                    string orderTrailerMessage = (mobileNavData.Data.Order.Additional.Trailer.TrailerId == null) ? "No trailer specified on instruction." : string.Format("Trailer specified on instruction is {0}.", mobileNavData.Data.Order.Additional.Trailer.TrailerId);
+                    var instructionTrailer = mobileNavData.Data.Order.Additional.Trailer;
+                    string orderTrailerMessage = (instructionTrailer == null || instructionTrailer.TrailerId == null) ? "No trailer specified on instruction." : string.Format("Trailer specified on instruction is {0}.", instructionTrailer.TrailerId);
                     string currentTrailerMessage = (_startupService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _startupService.CurrentTrailer.Registration);
 
                     string message = orderTrailerMessage + currentTrailerMessage;
@@ -1066,10 +1072,10 @@ namespace MWF.Mobile.Core.Services
                     }
                     else
                     {
-                        UpdateTrailerForInstruction(mobileNavData, _startupService.CurrentTrailer);                     
+                        UpdateTrailerForInstruction(mobileNavData, _startupService.CurrentTrailer);
                     }
                 }
-          
+
                 CompleteInstruction(mobileNavData);
             }
         }

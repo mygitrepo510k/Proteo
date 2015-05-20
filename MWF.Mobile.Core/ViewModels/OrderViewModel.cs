@@ -130,6 +130,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Task<bool> OnBackButtonPressed()
         {
+
             var task = new Task<bool>(() => false);
 
             this.Cancel();

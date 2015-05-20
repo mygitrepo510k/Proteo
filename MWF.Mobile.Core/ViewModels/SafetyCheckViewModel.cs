@@ -34,7 +34,7 @@ namespace MWF.Mobile.Core.ViewModels
             _repositories = repositories;
             _navigationService = navigationService;
 
-            Vehicle vehicle = null;
+            Models.Vehicle vehicle = null;
             Models.Trailer trailer = null;
 
             vehicle = _repositories.VehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID);
@@ -204,9 +204,9 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Safety checklist"; }
         }
 
-        public async Task<bool> OnBackButtonPressed()
+        public Task<bool> OnBackButtonPressed()
         {
-            return await Mvx.Resolve<IUserInteraction>().ConfirmAsync("All information you have entered will be lost, do you wish to continue?", "Abandon safety check!", "Continue");
+            return Mvx.Resolve<IUserInteraction>().ConfirmAsync("All information you have entered will be lost, do you wish to continue?", "Abandon safety check!", "Continue");
         }
 
         #endregion

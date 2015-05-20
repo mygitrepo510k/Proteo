@@ -249,6 +249,7 @@
     <Compile Include="Services\IStartupService.cs" />
     <Compile Include="Services\StartupService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
+    <Compile Include="Utilities\AsyncLock.cs" />
     <Compile Include="Utilities\Timer.cs" />
     <Compile Include="ViewModels\BarcodeItemViewModel.cs" />
     <Compile Include="ViewModels\BarcodeSectionViewModel.cs" />

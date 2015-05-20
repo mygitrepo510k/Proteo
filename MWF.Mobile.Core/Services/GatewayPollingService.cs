@@ -103,25 +103,26 @@ namespace MWF.Mobile.Core.Services
 
             IEnumerable<MobileData> instructions = new List<MobileData>();
 
-
             // Call to BlueSphere to check for instructions
             instructions = await _gatewayService.GetDriverInstructions(_startupService.CurrentVehicle.Registration,
                                                                        _startupService.LoggedInDriver.ID,
                                                                        DateTime.Now,
                                                                        DateTime.Now.AddDays(DataSpan));
 
-
-
             Mvx.Trace("Successfully pulled instructions.");
 
             // Check if we have anything in the response
             if (instructions.Any())
             {
+                var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
+                var manifestInstructionVMsForNotification = new List<ManifestInstructionViewModel>(instructions.Count());
+
                 // We have a response so check what we need to do (Save/Update/Delete)
                 foreach (var instruction in instructions)
                 {
-                    Mvx.Trace("started processing instruction." + instruction.ID);
+                    var notifyInstruction = false;
 
+                    Mvx.Trace("started processing instruction." + instruction.ID);
 
                     instruction.VehicleId = _startupService.CurrentVehicle.ID;
 
@@ -131,16 +132,21 @@ namespace MWF.Mobile.Core.Services
 
                             Mvx.Trace("started adding instruction." + instruction.ID);
                             var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
-                            if (instructionToAdd == null)
-                                _repositories.MobileDataRepository.Insert(instruction);
-                            Mvx.Trace("completed adding instruction." + instruction.ID);
 
+                            if (instructionToAdd == null)
+                            {
+                                _repositories.MobileDataRepository.Insert(instruction);
+                                notifyInstruction = true;
+                            }
+                            
+                            Mvx.Trace("completed adding instruction." + instruction.ID);
                             PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, instruction.ID);
                             break;
 
                         case SyncState.Update:
                             Mvx.Trace("started updating instruction." + instruction.ID);
                             var instructionToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                            
                             if (instructionToUpdate != null)
                             {
                                 var progress = instructionToUpdate.ProgressState;
@@ -150,38 +156,47 @@ namespace MWF.Mobile.Core.Services
                             }
 
                             _repositories.MobileDataRepository.Insert(instruction);
+                            notifyInstruction = true;
                             Mvx.Trace("completed updating instruction." + instruction.ID);
-
                             PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
                             break;
 
                         case SyncState.Delete:
                             Mvx.Trace("started deleting instruction." + instruction.ID);
                             var oldInstruction = _repositories.MobileDataRepository.GetByID(instruction.ID);
-                            if (oldInstruction != null)
-                                _repositories.MobileDataRepository.Delete(oldInstruction);
-                            Mvx.Trace("completed deleting instruction." + instruction.ID);
 
+                            if (oldInstruction != null)
+                            {
+                                _repositories.MobileDataRepository.Delete(oldInstruction);
+
+                                if (oldInstruction.ProgressState != InstructionProgress.Complete)
+                                    notifyInstruction = true;
+                            }
+                            
+                            Mvx.Trace("completed deleting instruction." + instruction.ID);
                             PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, instruction.ID);
                             break;
                     }
 
+                    if (notifyInstruction)
+                        manifestInstructionVMsForNotification.Add(new ManifestInstructionViewModel(currentViewModel, null, instruction));
                 }
 
                 Mvx.Trace("Successfully inserted instructions into Repository.");
 
-
                 //Acknowledge that they are on the Device (Not however acknowledged by the driver)
                 AcknowledgeInstructions(instructions);
 
-
                 Mvx.Trace("Successfully sent device acknowledgement.");
 
-                var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
-                var instVM = instructions.Select(i => new ManifestInstructionViewModel(currentViewModel, null, i));
-
-                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instVM.ToList(), (instToSend) =>
-                    _dataChunkService.SendReadChunk(instToSend.Select(i => i.MobileData), _mainService.CurrentDriver, _mainService.CurrentVehicle), "Manifest Update", "Acknowledge");
+                if (manifestInstructionVMsForNotification.Any())
+                {
+                    Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotification(
+                        manifestInstructionVMsForNotification,
+                        done: notifiedInstructionVMs => _dataChunkService.SendReadChunk(notifiedInstructionVMs.Select(i => i.MobileData), _mainService.CurrentDriver, _mainService.CurrentVehicle),
+                        title: "Manifest Update",
+                        okButton: "Acknowledge");
+                }
             }
         }
 

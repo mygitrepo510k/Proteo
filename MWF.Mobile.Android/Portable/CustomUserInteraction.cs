@@ -50,7 +50,7 @@ namespace MWF.Mobile.Android.Portable
         /// <param name="done">The action that is taken when the postive button is pressed</param>
         /// <param name="title">Title of the modal</param>
         /// <param name="okButton">The text of the positive button</param>
-        public void PopUpInstructionNotifaction(List<ManifestInstructionViewModel> alteredInstructions, Action<List<ManifestInstructionViewModel>> done = null, string title = "", string okButton = "OK")
+        public void PopUpInstructionNotification(List<ManifestInstructionViewModel> alteredInstructions, Action<List<ManifestInstructionViewModel>> done = null, string title = "", string okButton = "OK")
         {
             Application.SynchronizationContext.Post(ignored =>
             {
@@ -79,14 +79,14 @@ namespace MWF.Mobile.Android.Portable
                 foreach (var instruction in CurrentPopInstructions)
                 {
                     if (instruction.InstructionType == InstructionType.OrderMessage)
+                    {
                         if (instruction.MobileData.Order.Addresses == null)
-                        {
                             messages.Instructions.Add(instruction);
-
-                        }
                         else
                             messagesWithPoints.Instructions.Add(instruction);
+                    }
                     else
+                    {
                         switch (instruction.MobileData.SyncState)
                         {
                             case SyncState.Add:
@@ -99,6 +99,7 @@ namespace MWF.Mobile.Android.Portable
                                 deleteInstructions.Instructions.Add(instruction);
                                 break;
                         }
+                    }
                 }
 
 

@@ -21,10 +21,7 @@
             android:orientation="vertical"
             android:layout_width="fill_parent">
             <EditText
-                style="@style/Proteo.Multiline"
-                android:scrollbars="vertical"
-                android:maxLines="4"
-                android:layout_marginTop="0dp"
+                style="@style/Proteo.EditText"
                 local:MvxBind="Text CommentText; Hint CommentHintText" />
             <Mvx.MvxGridView
                 android:id="@+id/GridView"

@@ -49,11 +49,7 @@
                 style="@style/Proteo.TextView.SectionHeading"
                 local:MvxBind="Text DeliveryCommentsLabel" />
             <EditText
-                style="@style/Proteo.Multiline"
-                android:scrollbars="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginTop="3dp"
+                style="@style/Proteo.EditText"
                 android:maxLength="30"
                 local:MvxBind="Text Barcode.DeliveryComments; Hint CommentHintText;" />
             <Button

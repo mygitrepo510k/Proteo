@@ -183,6 +183,7 @@
     <item name = "android:textSize">16dp</item>
     <item name = "android:background">#cccfd1</item>
     <item name = "android:gravity">center</item>
+    <item name = "android:singleLine">true</item>
   </style>
 
   <style name="Proteo.EditText.NumberPasscode" parent="style/Proteo.EditText">

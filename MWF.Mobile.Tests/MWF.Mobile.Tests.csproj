@@ -153,6 +153,7 @@
     <Compile Include="ViewModelTests\DisplaySafetyCheckViewModelTests.cs" />
     <Compile Include="ViewModelTests\InboxViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionCommentViewModelTests.cs" />
+    <Compile Include="ViewModelTests\InstructionAddDeliveriesViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionOnSiteViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionSafetyCheckSignatureViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionSignatureViewModelTests.cs" />
@@ -161,6 +162,7 @@
     <Compile Include="ViewModelTests\InstructionTrunkProceedViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionViewModelTests.cs" />
     <Compile Include="ViewModelTests\ManifestViewModelTests.cs" />
+    <Compile Include="ViewModelTests\Navigation\NavDataHelperTests.cs" />
     <Compile Include="ViewModelTests\OrderViewModelTests.cs" />
     <Compile Include="ViewModelTests\ReviseQuantityViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionSafetyCheckViewModelTests .cs" />
@@ -184,6 +186,7 @@
       <Name>MWF.Mobile.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

@@ -54,7 +54,7 @@ namespace MWF.Mobile.Tests.Helpers
             var mobileData = fixture.Create<MobileData>();
             mobileData.Order.Type = instructionType;
             mobileData.Order.Additional.IsTrailerConfirmationEnabled = isTrailerConfirmationRequired;
-            mobileData.Order.Items.First().Additional.BypassCommentsScreen = isBypassCommentScreen;
+            mobileData.Order.Items.ForEach(i => i.Additional.BypassCommentsScreen = isBypassCommentScreen);
             mobileData.Order.Items.ForEach(i => i.Additional.BypassCleanClausedScreen = BypassCleanClausedScreen);
 
             if (instructionType == Core.Enums.InstructionType.Collect)

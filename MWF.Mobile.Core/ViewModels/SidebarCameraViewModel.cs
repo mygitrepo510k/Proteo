@@ -39,7 +39,7 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService.MoveToNext(_navigationService.CurrentNavData);
 
 
-            List<MobileData> mobileDatas = null;
+            IEnumerable<MobileData> mobileDatas = null;
             if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData is NavData<MobileData>)
             {
                 mobileDatas = (_navigationService.CurrentNavData as NavData<MobileData>).GetAllInstructions();

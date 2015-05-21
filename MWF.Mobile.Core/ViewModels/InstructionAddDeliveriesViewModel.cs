@@ -67,8 +67,8 @@ namespace MWF.Mobile.Core.ViewModels
 
             // get all non-complete deliveries (excluding the current one) that conform to the same "barcode scanning on delivery) type as the current one
             var nonCompletedDeliveries = _repositories.MobileDataRepository.GetNonCompletedInstructions(_startupService.LoggedInDriver.ID).Where(i => i.Order.Type == Enums.InstructionType.Deliver && 
-                                                                                                                                                        i.ID != _navData.Data.ID &&                                                                                                                                                    i.Order.Items.First().Additional.BarcodeScanRequiredForDelivery == _navData.Data.Order.Items.First().Additional.BarcodeScanRequiredForDelivery);
-           
+                                                                                                                                                        i.ID != _navData.Data.ID &&                                                                                                                                              
+                                                                                                                                                        i.Order.Items.First().Additional.BarcodeScanRequiredForDelivery == _navData.Data.Order.Items.First().Additional.BarcodeScanRequiredForDelivery);      
             // only get the ones that show up in the same time range as displayed in the manifest screen
             var nonCompletedDeliveriesInRange = nonCompletedDeliveries.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
            
@@ -88,7 +88,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override string FragmentTitle
         {
-            get { return "Add/Remove Deliveries "; }
+            get { return "Add/Remove Deliveries"; }
         }
 
         public string InstructionsText
@@ -162,7 +162,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private string GetSelectionSummary()
         {
-            return this.DeliveryInstructions.Select(i => i.IsSelected.ToString()).Aggregate((i, j) => i + " " + j);
+            return string.Join(" ", this.DeliveryInstructions.Select(i => i.IsSelected.ToString()).ToArray());
         }
 
         private void RefreshPage()

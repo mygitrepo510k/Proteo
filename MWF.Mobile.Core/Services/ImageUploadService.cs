@@ -46,7 +46,7 @@ namespace MWF.Mobile.Core.Services
             string comment,
             List<Image> photos,
             Driver currentDriver,
-            List<MobileData> mobileDatas)
+            IEnumerable<MobileData> mobileDatas)
         {
 
             if (!_reachability.IsConnected())

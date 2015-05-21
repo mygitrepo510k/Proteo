@@ -59,7 +59,7 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
         }
 
 
-        public static List<MobileApplicationDataChunkContentActivity> GetAllDataChunks(this NavData<MobileData> navData)
+        public static IEnumerable<MobileApplicationDataChunkContentActivity> GetAllDataChunks(this NavData<MobileData> navData)
         {
 
             List<MobileApplicationDataChunkContentActivity> dataChunks = new List<MobileApplicationDataChunkContentActivity>();
@@ -128,7 +128,7 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
             return navData.OtherData["AdditionalInstructions"] as List<MobileData>;
         }
 
-        public static List<MobileData> GetAllInstructions(this NavData<MobileData> navData)
+        public static IEnumerable<MobileData> GetAllInstructions(this NavData<MobileData> navData)
         {
             List<MobileData> mobileDatas = new List<MobileData>();
             mobileDatas.Add(navData.Data);
@@ -156,8 +156,8 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
                 customerNameRequiredForDelivery = customerNameRequiredForDelivery || instruction.Order.Additional.CustomerNameRequiredForDelivery;
                 customerSignatureRequiredForDelivery = customerSignatureRequiredForDelivery || instruction.Order.Additional.CustomerSignatureRequiredForDelivery;
                 barcodeScanRequiredForDelivery = barcodeScanRequiredForDelivery || instruction.Order.Items.Any(i => i.Additional.BarcodeScanRequiredForDelivery);
-                bypassCleanClausedScreen = bypassCleanClausedScreen && instruction.Order.Items.FirstOrDefault().Additional.BypassCleanClausedScreen;
-                bypassCommentsScreen = bypassCommentsScreen && instruction.Order.Items.FirstOrDefault().Additional.BypassCommentsScreen;
+                bypassCleanClausedScreen = bypassCleanClausedScreen && !instruction.Order.Items.Any(i => !i.Additional.BypassCleanClausedScreen);
+                bypassCommentsScreen = bypassCommentsScreen && !instruction.Order.Items.Any(i => !i.Additional.BypassCommentsScreen);
             }
 
             return new DeliveryOptions(customerNameRequiredForDelivery,

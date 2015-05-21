@@ -36,8 +36,16 @@ namespace MWF.Mobile.Android.Views.Fragments
             set.Bind(submitButton).For(b => b.Enabled).To(vm => vm.CommentText).WithConversion(new StringHasLengthConverter(), null);
             set.Apply();
         }
-       
-        
+
+        public override void OnResume()
+        {
+            base.OnResume();
+
+            var commentText = (EditText)this.View.FindViewById(Resource.Id.commentText);
+            commentText.RequestFocus();
+            this.ShowSoftKeyboard();
+        }
+
     }
 
 }

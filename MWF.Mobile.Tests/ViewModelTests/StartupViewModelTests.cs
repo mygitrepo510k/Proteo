@@ -1,19 +1,15 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.MvvmCross.Test.Core;
-using Moq;
-using MWF.Mobile.Core.Repositories;
-using MWF.Mobile.Core.Portable;
-using MWF.Mobile.Core.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using Cirrious.MvvmCross.Test.Core;
+using Moq;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.ViewModels;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
-using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {

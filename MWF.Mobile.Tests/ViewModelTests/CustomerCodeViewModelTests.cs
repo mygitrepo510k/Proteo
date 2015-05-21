@@ -1,22 +1,19 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.CrossCore.Core;
-using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Cirrious.MvvmCross.Test.Core;
 using Cirrious.MvvmCross.Views;
 using Moq;
-using MWF.Mobile.Core.Repositories;
-using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MWF.Mobile.Core.ViewModels;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Xunit;
 
 
@@ -25,7 +22,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
     public class CustomerCodeViewModelTests : MvxIoCSupportingTest
     {
         private IFixture _fixture;
-        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IDataService> _dataService;
 
         protected override void AdditionalSetup()
@@ -37,8 +34,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            _mockUserInteraction = new Mock<IUserInteraction>();
-            _fixture.Register<IUserInteraction>(() => _mockUserInteraction.Object);
+            _mockUserInteraction = new Mock<ICustomUserInteraction>();
+            _fixture.Register<ICustomUserInteraction>(() => _mockUserInteraction.Object);
 
             _dataService = new Mock<IDataService>();
             var connection = _fixture.Create<ISQLiteConnection>();

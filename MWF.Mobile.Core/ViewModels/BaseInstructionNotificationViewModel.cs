@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
+
     /// <summary>
     /// This base class is used to recieve notifications for when instructions that are being viewed are updated or deleted.
     /// </summary>
     public abstract class BaseInstructionNotificationViewModel
         : BaseFragmentViewModel
     {
+
         private MvxSubscriptionToken _notificationToken;
 
         public BaseInstructionNotificationViewModel()
         {
-            _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(m =>
-                CheckInstructionNotification(m.Command, m.InstructionID)
-                );
+            _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(async m => await CheckInstructionNotificationAsync(m.Command, m.InstructionID));
         }
 
         private IMvxMessenger _messenger;
@@ -35,15 +35,14 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-
         public void UnsubscribeNotificationToken()
         {
             if (_notificationToken != null)
                 Messenger.Unsubscribe<Messages.GatewayInstructionNotificationMessage>(_notificationToken);
         }
 
-        abstract public void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID);
-
+        abstract public Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID);
 
     }
+
 }

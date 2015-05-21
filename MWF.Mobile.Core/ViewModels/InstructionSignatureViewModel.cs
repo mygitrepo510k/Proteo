@@ -1,4 +1,8 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Messages;
@@ -6,12 +10,6 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -25,7 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
-        private readonly IUserInteraction _userInteraction;
+        private readonly ICustomUserInteraction _userInteraction;
         private readonly IMainService _mainService;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
@@ -34,7 +32,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public InstructionSignatureViewModel(INavigationService navigationService, IRepositories repositories, IUserInteraction userInteraction, IMainService mobileApplicationDataChunkService)
+        public InstructionSignatureViewModel(INavigationService navigationService, IRepositories repositories, ICustomUserInteraction userInteraction, IMainService mobileApplicationDataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
@@ -166,7 +164,6 @@ namespace MWF.Mobile.Core.ViewModels
             RaiseAllPropertiesChanged();
         }
 
-
         #endregion
 
         #region BaseFragmentViewModel Overrides
@@ -179,14 +176,20 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel Overrides
 
-        public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override async Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been updated.", "OK");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
+                    RefreshPage(instructionID);
+                }
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been deleted.");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
+                    _navigationService.GoToManifest();
+                }
             }
         }
 

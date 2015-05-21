@@ -317,7 +317,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.GroupTitle = "UpdateTitle";
 
-            viewModel.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            viewModel.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             //It is checked twice because it checks when it creates the view model and when you refresh.
             _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructions(It.Is<Guid>(i => i == _startupService.LoggedInDriver.ID)), Times.Exactly(2));

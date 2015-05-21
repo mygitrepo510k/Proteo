@@ -2,27 +2,20 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore.Core;
-using Cirrious.CrossCore.Platform;
-using Cirrious.MvvmCross.Test.Core;
-using Cirrious.MvvmCross.Views;
-using Moq;
-using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.ViewModels;
-using Xunit;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoMoq;
-using MWF.Mobile.Core.Repositories.Interfaces;
-using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Portable;
-using MWF.Mobile.Core.Repositories;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Plugins.PictureChooser;
+using Cirrious.MvvmCross.Test.Core;
+using Moq;
 using MWF.Mobile.Core.Messages;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Tests.Helpers;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -37,15 +30,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private SafetyCheckFault _vehicleSafetyCheckFault;
         private SafetyCheckFault _trailerSafetyCheckFault;
         private Mock<IMvxPictureChooserTask> _pictureChooserMock;
-        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
         private byte[] _pictureBytes;
 
         protected override void AdditionalSetup()
         {
 
-            _mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
+            _mockUserInteraction = new Mock<ICustomUserInteraction>();
+            Ioc.RegisterSingleton<ICustomUserInteraction>(_mockUserInteraction.Object);
 
             _mockMessenger = new Mock<IMvxMessenger>();
             Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
@@ -348,7 +341,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
         [Fact]
         public void SafetyCheckFaultImageVM_Delete_OK()
         {
-
             base.ClearAll();
 
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
@@ -361,7 +353,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             int previousImageCount = safetyCheckFaultVM.Images.Count;
 
             // dialog returns true
-            _mockUserInteraction.ConfirmReturnsTrue();
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Delete Picture");
 
             //delete the last image
             safetyCheckFaultVM.Images[previousImageCount - 1].DeleteCommand.Execute(null);

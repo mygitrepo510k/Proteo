@@ -110,7 +110,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var inboxVM = _fixture.Create<InboxViewModel>();
 
-            inboxVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, new Guid());
+            inboxVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, new Guid());
 
             //Its twice because when the viewmodel is created then it calls refreshMessages()
             _mobileDataRepoMock.Verify(md => md.GetAllMessages(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));

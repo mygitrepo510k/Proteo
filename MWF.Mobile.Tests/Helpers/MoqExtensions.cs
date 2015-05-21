@@ -2,18 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Moq.Language.Flow;
-using Moq;
-using Chance.MvvmCross.Plugins.UserInteraction;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoMoq;
 using Cirrious.CrossCore.IoC;
-using MWF.Mobile.Core.Repositories.Interfaces;
+using Moq;
+using Moq.Language.Flow;
 using MWF.Mobile.Core.Models.Instruction;
-using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Portable;
+using Ploeh.AutoFixture;
 
 namespace MWF.Mobile.Tests.Helpers
 {
@@ -76,10 +71,10 @@ namespace MWF.Mobile.Tests.Helpers
             return mobileData;
         }
 
-        #region IUserInteraction Helpers
+        #region ICustomUserInteraction Helpers
 
         // shortcut way of setting up a Mock UserInteraction to execute the "OK" logic of a Confirm call 
-        public static Mock<IUserInteraction> ConfirmReturnsTrueIfTitleStartsWith(this Mock<IUserInteraction> userInteractionMock, string messageStartsWith)
+        public static Mock<ICustomUserInteraction> ConfirmReturnsTrueIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
         {
             userInteractionMock.Setup(ui => ui.Confirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
                     .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
@@ -89,7 +84,7 @@ namespace MWF.Mobile.Tests.Helpers
 
 
         // shortcut way of setting up a Mock UserInteraction to execute the "OK" logic of a Confirm call 
-        public static Mock<IUserInteraction> ConfirmAsyncReturnsTrueIfTitleStartsWith(this Mock<IUserInteraction> userInteractionMock, string messageStartsWith)
+        public static Mock<ICustomUserInteraction> ConfirmAsyncReturnsTrueIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
         {
             userInteractionMock.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
                     .Returns(Task.FromResult(true));
@@ -98,7 +93,7 @@ namespace MWF.Mobile.Tests.Helpers
         }
 
         // shortcut way of setting up a Mock UserInteraction to execute the "Cancel" logic of a Confirm call 
-        public static Mock<IUserInteraction> ConfirmAsyncReturnsFalseIfTitleStartsWith(this Mock<IUserInteraction> userInteractionMock, string messageStartsWith)
+        public static Mock<ICustomUserInteraction> ConfirmAsyncReturnsFalseIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
         {
             userInteractionMock.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
                     .Returns(Task.FromResult(false));
@@ -108,7 +103,7 @@ namespace MWF.Mobile.Tests.Helpers
 
 
         // shortcut way of setting up a Mock UserInteraction to execute the "Cancel" logic of a Confirm call 
-        public static Mock<IUserInteraction> ConfirmReturnsFalseIfTitleStartsWith(this Mock<IUserInteraction> userInteractionMock, string messageStartsWith)
+        public static Mock<ICustomUserInteraction> ConfirmReturnsFalseIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
         {
             userInteractionMock.Setup(ui => ui.Confirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
                     .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(false));
@@ -117,28 +112,8 @@ namespace MWF.Mobile.Tests.Helpers
         }
 
 
-
-        // shortcut way of setting up a Mock CustomUserInteraction to execute the "OK" logic of a Confirm call 
-        public static Mock<ICustomUserInteraction> PopUpConfirmReturnsTrueIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
-        {
-            userInteractionMock.Setup(ui => ui.PopUpConfirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
-                    .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
-
-            return userInteractionMock;
-        }
-
-
-        // shortcut way of setting up a Mock CustomUserInteraction to execute the "Cancel" logic of a Confirm call 
-        public static Mock<ICustomUserInteraction> PopUpConfirmReturnsFalseIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
-        {
-            userInteractionMock.Setup(ui => ui.PopUpConfirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
-                    .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(false));
-
-            return userInteractionMock;
-        }
-
         // shortcut way of setting up a Mock UserInteraction to execute the "OK" logic of a Confirm call 
-        public static Mock<IUserInteraction> ConfirmReturnsTrue(this Mock<IUserInteraction> userInteractionMock)
+        public static Mock<ICustomUserInteraction> ConfirmReturnsTrue(this Mock<ICustomUserInteraction> userInteractionMock)
         {
             userInteractionMock.Setup(ui => ui.Confirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>()))
                     .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
@@ -148,7 +123,7 @@ namespace MWF.Mobile.Tests.Helpers
 
 
         // shortcut way of setting up a Mock UserInteraction to execute the "Cancel" logic of a Confirm call 
-        public static Mock<IUserInteraction> ConfirmReturnsFalse(this Mock<IUserInteraction> userInteractionMock)
+        public static Mock<ICustomUserInteraction> ConfirmReturnsFalse(this Mock<ICustomUserInteraction> userInteractionMock)
         {
             userInteractionMock.Setup(ui => ui.Confirm(It.IsAny<String>(), It.IsAny<Action<bool>>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>()))
                     .Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(false));
@@ -156,7 +131,7 @@ namespace MWF.Mobile.Tests.Helpers
             return userInteractionMock;
         }
 
-        public static Mock<IUserInteraction> AlertInvokeAction(this Mock<IUserInteraction> userInteractionMock)
+        public static Mock<ICustomUserInteraction> AlertInvokeAction(this Mock<ICustomUserInteraction> userInteractionMock)
         {
             userInteractionMock.Setup(ui => ui.Alert(It.IsAny<String>(), It.Is<Action>(a => a != null), It.IsAny<String>(), It.IsAny<String>()))
                     .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());

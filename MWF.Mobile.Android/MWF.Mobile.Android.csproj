@@ -49,14 +49,6 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Chance.MvvmCross.Plugins.UserInteraction, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Chance.MvvmCross.Plugins.UserInteraction.1.1.2\lib\MonoAndroid\Chance.MvvmCross.Plugins.UserInteraction.dll</HintPath>
-    </Reference>
-    <Reference Include="Chance.MvvmCross.Plugins.UserInteraction.Droid, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Chance.MvvmCross.Plugins.UserInteraction.1.1.2\lib\MonoAndroid\Chance.MvvmCross.Plugins.UserInteraction.Droid.dll</HintPath>
-    </Reference>
     <Reference Include="Cirrious.CrossCore, Version=1.0.0.0, Culture=neutral, PublicKeyToken=e16445fd9b451819, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MvvmCross.HotTuna.CrossCore.3.2.2\lib\MonoAndroid\Cirrious.CrossCore.dll</HintPath>
@@ -166,7 +158,6 @@
     <Compile Include="Bootstrap\LocationPluginBootstrap.cs" />
     <Compile Include="Bootstrap\MessengerPluginBootstrap.cs" />
     <Compile Include="Bootstrap\PictureChooserPluginBootstrap.cs" />
-    <Compile Include="Bootstrap\UserInteractionPluginBootstrap.cs" />
     <Compile Include="Bootstrap\VisibilityPluginBootstrap.cs" />
     <Compile Include="DebugTrace.cs" />
     <Compile Include="Helpers\CustomActionBarDrawerToggle.cs" />

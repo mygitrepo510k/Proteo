@@ -1,10 +1,12 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.CrossCore.Core;
-using Cirrious.MvvmCross.Test.Core;
 using Cirrious.MvvmCross.Plugins.Messenger;
+using Cirrious.MvvmCross.Test.Core;
 using Cirrious.MvvmCross.Views;
 using Moq;
-using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
@@ -14,11 +16,6 @@ using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
@@ -32,7 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IStartupService _startupService;
         private Mock<IMvxMessenger> _mockMessenger;
         private Mock<INavigationService> _navigationServiceMock;
-        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
 
 
         protected override void AdditionalSetup()
@@ -41,12 +38,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<IMvxViewDispatcher>(mockDispatcher);
             Ioc.RegisterSingleton<IMvxMainThreadDispatcher>(mockDispatcher);
 
-            var mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(mockUserInteraction.Object);
+            var mockUserInteraction = new Mock<ICustomUserInteraction>();
+            Ioc.RegisterSingleton<ICustomUserInteraction>(mockUserInteraction.Object);
 
-            _mockCustomUserInteraction = new Mock<ICustomUserInteraction>();
-            _mockCustomUserInteraction.Setup(ui => ui.PopUpConfirm(It.IsAny<string>(), It.IsAny<Action<bool>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
-            Ioc.RegisterSingleton<ICustomUserInteraction>(_mockCustomUserInteraction.Object);
+            _mockUserInteraction = new Mock<ICustomUserInteraction>();
+            _mockUserInteraction.Setup(ui => ui.Confirm(It.IsAny<string>(), It.IsAny<Action<bool>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
+            Ioc.RegisterSingleton<ICustomUserInteraction>(_mockUserInteraction.Object);
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _fixture.Customize<TrailerListViewModel>(tlvm => tlvm.Without(x => x.DefaultTrailerReg));
@@ -127,8 +124,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var trailerItem = vm.Trailers.First();
 
-            var mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
-            mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your trailer");
+            var mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
+            mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your trailer");
 
             //select the first trailer
             vm.TrailerSelectCommand.Execute(trailerItem);
@@ -142,13 +139,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionTrailerListVM_CheckInstructionNotification_Delete()
+        public async Task InstructionTrailerListVM_CheckInstructionNotification_Delete()
         {
-
             base.ClearAll();
-
-            _mockCustomUserInteraction.Setup(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
@@ -158,9 +151,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.Init(new NavData<MobileData>() { Data = mobileData });
 
-            vm.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, mobileData.ID);
+            await vm.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, mobileData.ID);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _navigationServiceMock.Verify(ns => ns.GoToManifest(), Times.Once);
 
@@ -168,24 +161,17 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void InstructionTrailerListVM_CheckInstructionNotification_Update_Confirm()
+        public async Task InstructionTrailerListVM_CheckInstructionNotification_Update_Confirm()
         {
-
-
             base.ClearAll();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
-
 
             var mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == mobileData.ID))).Returns(mobileData);
             var repositories = _fixture.Create<Repositories>();
             _fixture.Inject<IRepositories>(repositories);
 
-            _mockCustomUserInteraction.Setup(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
-
-          
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
 
@@ -193,9 +179,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.Init(new NavData<MobileData>() { Data = mobileData });
 
-            vm.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, mobileData.ID);
+            await vm.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, mobileData.ID);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == mobileData.ID.ToString())), Times.Exactly(1));
 

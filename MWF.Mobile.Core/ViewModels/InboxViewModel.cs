@@ -80,7 +80,6 @@ namespace MWF.Mobile.Core.ViewModels
             RaisePropertyChanged(() => InboxHeaderText);
         }
 
-
         #region BaseFragmentViewModel Overrides
 
         public override string FragmentTitle
@@ -92,9 +91,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel Overrides
 
-        public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             ReloadPage();
+            return Task.FromResult(0);
         }
 
         #endregion BaseInstructionNotificationViewModel Overrides

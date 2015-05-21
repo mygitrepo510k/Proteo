@@ -1,4 +1,8 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Plugins.PictureChooser;
 using Cirrious.MvvmCross.Test.Core;
@@ -11,12 +15,6 @@ using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
@@ -32,8 +30,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<INavigationService> _navigationService;
         private Mock<IMvxPictureChooserTask> _pictureChooserMock;
         private Mock<IMainService> _mockMainService;
-        private Mock<IUserInteraction> _mockUserInteraction;
-        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IImageUploadService> _mockImageUploadService;
         private Mock<IMvxMessenger> _mockMessenger;
 
@@ -56,12 +53,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMainService = _fixture.InjectNewMock<IMainService>();
             _mockMainService.Setup(m => m.CurrentDriver).Returns(_fixture.Create<Driver>());
 
-            _mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
-
+            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
             _mockUserInteraction.ConfirmReturnsTrue();
-
-            _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
             _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
@@ -139,7 +132,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             int previousImageCount = cameraVM.ImagesVM.Count;
 
             // dialog returns true
-            _mockUserInteraction.ConfirmReturnsTrue();
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Delete Picture");
 
             //delete the last image
             cameraVM.ImagesVM[previousImageCount - 1].DeleteCommand.Execute(null);
@@ -205,16 +198,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             base.ClearAll();
 
-            _mockCustomUserInteraction.Setup(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockUserInteraction.Setup(cui => cui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
             .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
 
             _navigationService.SetupGet( x=> x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData});
 
             var cameraVM = _fixture.Create<SidebarCameraViewModel>();
 
-            cameraVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _navigationService.Verify(ns => ns.GoToManifest(), Times.Once);
 
@@ -231,9 +224,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
-            cameraVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
         }
 

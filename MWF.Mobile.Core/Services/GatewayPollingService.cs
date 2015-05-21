@@ -6,17 +6,12 @@ using System.Threading.Tasks;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Enums;
-using MWF.Mobile.Core.Models.Instruction;
-using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Models.GatewayServiceRequest;
-using System.Xml;
-using System.Xml.Serialization;
-using System.IO;
-using System.Xml.Linq;
+using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
-using Chance.MvvmCross.Plugins.UserInteraction;
-using MWF.Mobile.Core.Utilities;
 using MWF.Mobile.Core.Presentation;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Utilities;
 using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Core.Services

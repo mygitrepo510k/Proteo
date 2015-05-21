@@ -1,30 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore.Core;
-using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
-using Cirrious.MvvmCross.Views;
 using Moq;
-using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.ViewModels;
-using Xunit;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoMoq;
-using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
-using Cirrious.MvvmCross.Plugins.Messenger;
-using Cirrious.MvvmCross.Plugins.PictureChooser;
-using MWF.Mobile.Core.Messages;
-using MWF.Mobile.Tests.Helpers;
+using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
+using MWF.Mobile.Tests.Helpers;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -35,7 +27,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         private IFixture _fixture;
         private IStartupService _startupService;
-        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
@@ -49,8 +41,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         protected override void AdditionalSetup()
         {
 
-            _mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
+            _mockUserInteraction = new Mock<ICustomUserInteraction>();
+            Ioc.RegisterSingleton<ICustomUserInteraction>(_mockUserInteraction.Object);
 
             _mockMessenger = new Mock<IMvxMessenger>();
             Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
@@ -137,12 +129,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-
             _mockSafetyProfileRepository.Setup(spr => spr.GetAll()).Returns(new List<SafetyProfile>());
 
-             var mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
-             mockCustomUserInteraction.Setup(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+            _mockUserInteraction
+                .Setup(cui => cui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
 
             var vm = _fixture.Create<InstructionSafetyCheckViewModel>();
 
@@ -153,12 +144,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.False(_navData.OtherData.IsDefined("UpdatedTrailerSafetyCheckData"));
 
             //should have shown the custom user interaction and moved to the the next view model
-            mockCustomUserInteraction.Verify(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(x => x == _navData)), Times.Once);
         }
-
-
 
     }
 

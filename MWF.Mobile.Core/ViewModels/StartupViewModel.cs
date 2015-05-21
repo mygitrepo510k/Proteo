@@ -1,15 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cirrious.CrossCore;
-using Cirrious.MvvmCross.ViewModels;
-using MWF.Mobile.Core.Models;
+using System.Threading.Tasks;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.Portable;
-using Chance.MvvmCross.Plugins.UserInteraction;
-using MWF.Mobile.Core.Repositories.Interfaces;
-
-
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -25,7 +20,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IRepositories _repositories = null; 
         private readonly IStartupService _startupService = null;
         private readonly INavigationService _navigationService = null; 
-        private readonly IUserInteraction _userInteraction = null;
+        private readonly ICustomUserInteraction _userInteraction = null;
         private readonly ILoggingService _loggingService = null;
         
         public StartupViewModel(IAuthenticationService authenticationService, 
@@ -35,7 +30,7 @@ namespace MWF.Mobile.Core.ViewModels
                                 IDataService dataService, 
                                 IRepositories repositories, 
                                 IStartupService startupService, 
-                                IUserInteraction userInteraction, 
+                                ICustomUserInteraction userInteraction, 
                                 INavigationService navigationService,
                                 ILoggingService loggingService)
         {

@@ -1,21 +1,18 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore;
-using Cirrious.MvvmCross.ViewModels;
-using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Repositories;
-using MWF.Mobile.Core.ViewModels.Interfaces;
-using MWF.Mobile.Core.Portable;
-using System;
-using System.IO;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
-using MWF.Mobile.Core.Models.Instruction;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Messages;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 
 namespace MWF.Mobile.Core.ViewModels
@@ -205,7 +202,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (UserChangesDetected)
             {
-                continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("The changes you have made will be lost, do you wish to continue?", "Changes will be lost!", "Continue");
+                continueWithBackPress = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("The changes you have made will be lost, do you wish to continue?", "Changes will be lost!", "Continue");
             }
 
             // since we are modal, we need to let the calling viewmodel know that we cancelled (it will handle the back press)
@@ -221,14 +218,20 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override async Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             if ( _navData.Data.ID == instructionID || this.DeliveryInstructions.Any(x => x.InstructionID == instructionID))
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(), "Instructions have been updated", "OK");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "Instructions have been updated");
+                    RefreshPage();
+                }
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "Instructions on this delivery have been deleted.");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "Instructions on this delivery have been deleted.");
+                    _navigationService.GoToManifest();
+                }
             }
         }
 

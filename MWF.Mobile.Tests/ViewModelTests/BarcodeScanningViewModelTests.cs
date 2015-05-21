@@ -1,27 +1,23 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
+using MWF.Mobile.Core.Enums;
+using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using MWF.Mobile.Core.Repositories.Interfaces;
-using Cirrious.MvvmCross.Plugins.Messenger;
-using MWF.Mobile.Core.Enums;
-using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Extensions;
-using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -35,10 +31,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<IVerbProfileRepository> _mockVerbProfileRepo;
         private Mock<INavigationService> _mockNavigationService;
-        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMainService> _mockMainService;
         private Mock<IMvxMessenger> _mockMessenger;
-        private Mock<IUserInteraction> _mockUserInteraction;
         private VerbProfile _verbProfile;
 
 
@@ -61,12 +56,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockNavigationService = _fixture.InjectNewMock<INavigationService>();
 
-            _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
+            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
             _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
             _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
-
 
             _mockMainService = _fixture.InjectNewMock<IMainService>();
 
@@ -74,10 +68,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<BarcodeScanningViewModel>(vm => vm.Without(x => x.BarcodeInput));
 
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
-
-            _mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
-
         }
 
         #endregion Setup
@@ -319,8 +309,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-
-            _mockCustomUserInteraction.PopUpConfirmReturnsTrueIfTitleStartsWith("Mark Barcode as Manually Processed?");
+            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Mark Barcode as Manually Processed?");
 
             // set the barcode input to be the same as the input barcode of the first view model
             var barcodeToInput = barcodeScanningVM.BarcodeSections[0].Barcodes[0];

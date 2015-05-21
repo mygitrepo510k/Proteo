@@ -1,19 +1,17 @@
-﻿using Cirrious.MvvmCross.ViewModels;
-using MWF.Mobile.Core.Models.Instruction;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using MWF.Mobile.Core.Extensions;
-using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.Messages;
-using MWF.Mobile.Core.Repositories;
-using MWF.Mobile.Core.ViewModels.Interfaces;
-using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Extensions;
+using MWF.Mobile.Core.Messages;
+using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -282,14 +280,20 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
+                    GetMobileDataFromRepository(instructionID);
+                }
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                    _navigationService.GoToManifest();
+                }
             }
         }
 

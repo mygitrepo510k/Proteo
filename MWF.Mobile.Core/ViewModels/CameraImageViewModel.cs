@@ -1,17 +1,14 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore;
-using Cirrious.MvvmCross.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-
 
     public class CameraImageViewModel : MvxViewModel
     {
@@ -61,7 +58,7 @@ namespace MWF.Mobile.Core.ViewModels
         
         public System.Windows.Input.ICommand DeleteCommand
         {
-            get { return (_deleteCommand = _deleteCommand ?? new MvxCommand(Delete)); }
+            get { return (_deleteCommand = _deleteCommand ?? new MvxCommand(async () => await DeleteAsync())); }
         }
 
 
@@ -69,15 +66,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private void Delete()
+        private async Task DeleteAsync()
         {
-            Mvx.Resolve<IUserInteraction>().Confirm("Are you sure you want to delete this picture?", isConfirmed =>
-            {
-                if (isConfirmed)
-                {
-                    _parentCameraViewModel.Delete(this);
-                }
-            }, "Delete Picture", "Delete", "Cancel");
+            if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Are you sure you want to delete this picture?", "Delete Picture", "Delete", "Cancel"))
+                _parentCameraViewModel.Delete(this);
         }
 
         private void Display()
@@ -86,7 +78,6 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion
-
 
     }
 }

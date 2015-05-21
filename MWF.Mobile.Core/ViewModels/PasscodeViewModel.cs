@@ -1,13 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
-using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -103,7 +104,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (string.IsNullOrWhiteSpace(this.Passcode))
             {
                 //TODO: probably should additionally implement presentation layer required field validation so we don't even get this far.
-                await Mvx.Resolve<IUserInteraction>().AlertAsync("To login, submit a passcode");
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("To login, submit a passcode");
                 return;
             }
 
@@ -149,7 +150,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             // Let the user know
-            if (!result.Success) await Mvx.Resolve<IUserInteraction>().AlertAsync(result.AuthenticationFailedMessage);
+            if (!result.Success) await Mvx.Resolve<ICustomUserInteraction>().AlertAsync(result.AuthenticationFailedMessage);
         }
 
         #endregion
@@ -161,7 +162,7 @@ namespace MWF.Mobile.Core.ViewModels
             var closeApp = true;
 
 #if DEBUG
-            closeApp = !await Mvx.Resolve<IUserInteraction>().ConfirmAsync("DEBUGGING: Return to Customer Code screen?", cancelButton: "No, close the app");
+            closeApp = !await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("DEBUGGING: Return to Customer Code screen?", cancelButton: "No, close the app");
 #endif
 
             if (closeApp)

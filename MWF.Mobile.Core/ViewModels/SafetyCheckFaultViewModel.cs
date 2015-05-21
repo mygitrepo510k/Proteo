@@ -1,18 +1,15 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.CrossCore;
+using Cirrious.MvvmCross.Plugins.PictureChooser;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Repositories;
-using MWF.Mobile.Core.ViewModels.Interfaces;
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Cirrious.MvvmCross.Plugins.PictureChooser;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 
 namespace MWF.Mobile.Core.ViewModels
@@ -207,7 +204,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task<bool> OnBackButtonPressed()
         {
-            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("The changes you have made will be lost, do you wish to continue?", "Changes will be lost!", "Continue");
+            bool continueWithBackPress = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("The changes you have made will be lost, do you wish to continue?", "Changes will be lost!", "Continue");
 
             // since we are modal, we need to let the calling viewmodel know that we cancelled (it will handle the back press)
             if (continueWithBackPress)

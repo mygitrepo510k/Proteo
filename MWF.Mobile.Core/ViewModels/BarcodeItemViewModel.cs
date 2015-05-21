@@ -175,7 +175,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _selectBarcodeCommand;
         public ICommand SelectBarcodeCommand
         {
-            get { return (_selectBarcodeCommand = _selectBarcodeCommand ?? new MvxCommand(SelectBarcode)); }
+            get { return (_selectBarcodeCommand = _selectBarcodeCommand ?? new MvxCommand(async () => await SelectBarcodeAsync())); }
         }
 
         public override string FragmentTitle
@@ -204,10 +204,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region private methods
 
-
-        private void SelectBarcode()
+        private async Task SelectBarcodeAsync()
         {
-
             if (this.IsDummy)
                 return; 
             
@@ -216,15 +214,9 @@ namespace MWF.Mobile.Core.ViewModels
                 string message = string.Format("Barcodes should be scanned if possible. Confirm the pallet with barcode {0} has been manually processed.", _barcodeText);
                 string title = "Mark Barcode as Manually Processed?";
 
-                Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm(message, isConfirmed =>
-                {
-                    if (isConfirmed)
-                    {
-                        _barcodeScanningViewModel.MarkBarcodeAsProcessed(this, false);
-                    }
-                }, title);
+                if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, title))
+                    _barcodeScanningViewModel.MarkBarcodeAsProcessed(this, false);
 
-                
                 return;
             }
 

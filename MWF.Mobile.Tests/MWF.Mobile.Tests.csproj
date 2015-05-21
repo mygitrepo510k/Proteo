@@ -35,10 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Chance.MvvmCross.Plugins.UserInteraction, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Chance.MvvmCross.Plugins.UserInteraction.1.1.2\lib\portable-win+net45+sl50+wp8+MonoAndroid+MonoTouch\Chance.MvvmCross.Plugins.UserInteraction.dll</HintPath>
-    </Reference>
     <Reference Include="Cirrious.CrossCore">
       <HintPath>..\packages\MvvmCross.HotTuna.CrossCore.3.2.2\lib\net45\Cirrious.CrossCore.dll</HintPath>
     </Reference>
@@ -137,6 +133,7 @@
     <Compile Include="RepositoryTests\TestModels\GrandParentEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\ChildEntity.cs" />
     <Compile Include="RepositoryTests\TestModels\ParentEntity.cs" />
+    <Compile Include="ServiceTests\CustomIUserInteraction.cs" />
     <Compile Include="ServiceTests\ImageUploadServiceTests.cs" />
     <Compile Include="ServiceTests\LoggingServiceTests.cs" />
     <Compile Include="ServiceTests\DataChunkServiceTests.cs" />

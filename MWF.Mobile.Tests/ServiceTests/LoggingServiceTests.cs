@@ -1,4 +1,7 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
@@ -12,11 +15,6 @@ using MWF.Mobile.Core.Services;
 using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MWF.Mobile.Tests.ServiceTests
@@ -31,7 +29,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private Mock<IGatewayService> _mockGatewayService;
         private Mock<ILogMessageRepository> _mockLogMessageRepo;
         private Mock<IDeviceInfo> _mockDeviceInfo;
-        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
 
         #endregion Private Members
 
@@ -53,7 +51,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
 
-            _mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockGatewayService = _fixture.InjectNewMock<IGatewayService>();
         }

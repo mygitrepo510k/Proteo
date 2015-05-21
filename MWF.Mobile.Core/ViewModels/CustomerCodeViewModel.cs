@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Extensions;
-using MWF.Mobile.Core.Helpers;
-using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-using Chance.MvvmCross.Plugins.UserInteraction;
-using MWF.Mobile.Core.Repositories.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -23,7 +18,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly Services.IGatewayService _gatewayService;
         private readonly Services.IDataService _dataService;
         private readonly IReachability _reachability;
-        private readonly IUserInteraction _userInteraction;
+        private readonly ICustomUserInteraction _userInteraction;
         private readonly INavigationService _navigationService;
 
         private readonly IApplicationProfileRepository _applicationProfileRepository;
@@ -36,7 +31,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVerbProfileRepository _verbProfileRepository;
         private readonly IConfigRepository _configRepository;
 
-        public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, IUserInteraction userInteraction, INavigationService navigationService)
+        public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, ICustomUserInteraction userInteraction, INavigationService navigationService)
         {
             _gatewayService = gatewayService;
             _dataService = dataService;
@@ -115,8 +110,8 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         private string _errorMessage;
-
         private string _unexpectedErrorMessage = "Unfortunately, there was a problem setting up your device, try restarting the device and try again.";
+
         private async Task EnterCodeAsync()
         {
             if (string.IsNullOrWhiteSpace(this.CustomerCode))

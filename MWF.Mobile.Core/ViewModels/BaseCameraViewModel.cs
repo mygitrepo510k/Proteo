@@ -94,7 +94,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public System.Windows.Input.ICommand DoneCommand
         {
-            get { return (_doneCommand = _doneCommand ?? new MvxCommand(async () => await DoDoneCommand())); }
+            get { return (_doneCommand = _doneCommand ?? new MvxCommand(async () => await DoDoneCommandAsync())); }
         }
 
         public System.Windows.Input.ICommand TakePictureCommand
@@ -128,7 +128,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        protected abstract Task DoDoneCommand();
+        protected abstract Task DoDoneCommandAsync();
 
         private void TakePicture()
         {
@@ -184,14 +184,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData.GetMobileData() != null && _navigationService.CurrentNavData.GetMobileData().ID == instructionID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Data may have changed.", null, "This instruction has been Updated", "OK");
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Data may have changed.", "This instruction has been updated");
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                    _navigationService.GoToManifest();
+                }
             }
         }
 

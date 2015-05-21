@@ -1,20 +1,18 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
-using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Messages;
+using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -253,7 +251,6 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 ShowErrorAlert();
             }
-               
         }
 
         private void ShowErrorAlert()
@@ -263,7 +260,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (_processedBarcodes.Barcodes.Any(x => x.BarcodeText == BarcodeInput))
                 errorMessage = "Barcode already scanned";
 
-            Mvx.Resolve<IUserInteraction>().Alert(errorMessage, () => { ClearBarcode(); RequestBarcodeFocus(); });
+            Mvx.Resolve<ICustomUserInteraction>().Alert(errorMessage, () => { ClearBarcode(); RequestBarcodeFocus(); });
         }
 
         private async void RegainFocusViaHack()
@@ -274,10 +271,8 @@ namespace MWF.Mobile.Core.ViewModels
             RequestBarcodeFocus();
         }
 
-       
         private void CompleteScanning()
         {
-
             // Update datachunk for this order
             var newScannedDelivery = GetScannedDelivery(_mobileData.ID);
             _navData.GetDataChunk().ScannedDelivery = newScannedDelivery;
@@ -352,14 +347,20 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel Overrides
 
-        public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override async Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => RefreshPage(instructionID), "This instruction has been updated.", "OK");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
+                    this.RefreshPage(instructionID);
+                }
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been deleted.");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
+                    _navigationService.GoToManifest();
+                }
             }
         }
 
@@ -378,7 +379,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Task<bool> OnBackButtonPressed()
         {
-            return Mvx.Resolve<IUserInteraction>().ConfirmAsync("The changes you have made will be lost, do you wish to continue?", "Changes will be lost!", "Continue");
+            return Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("The changes you have made will be lost, do you wish to continue?", "Changes will be lost!", "Continue");
         }
 
         #endregion

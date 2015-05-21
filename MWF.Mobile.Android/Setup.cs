@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Android.Content;
-using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Droid.Platform;
@@ -7,13 +10,7 @@ using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Android.Portable;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Presentation;
-using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-using System.Collections.Generic;
-using Android.Support;
-using Cirrious.CrossCore.IoC;
-using System;
-using Android.Runtime;
 
 namespace MWF.Mobile.Android
 {
@@ -32,14 +29,11 @@ namespace MWF.Mobile.Android
             PublishExceptionToLog(topLevelException);
         }
 
-     
-
-
         protected override IMvxApplication CreateApp()
         {
             return new Core.App();
         }
-		
+
         protected override IMvxTrace CreateDebugTrace()
         {
             return new DebugTrace();
@@ -90,7 +84,6 @@ namespace MWF.Mobile.Android
 
         public override void LoadPlugins(Cirrious.CrossCore.Plugins.IMvxPluginManager pluginManager)
         {
-            pluginManager.EnsurePluginLoaded<PluginLoader>();
             pluginManager.EnsurePluginLoaded<Cirrious.MvvmCross.Plugins.Visibility.PluginLoader>();
             base.LoadPlugins(pluginManager);
         }

@@ -1,19 +1,15 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using MWF.Mobile.Core.Portable;
-using MWF.Mobile.Core.Repositories.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -94,7 +90,7 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService.MoveToNext();
         }
 
-        public void LastVehicleSelect()
+        private void LastVehicleSelect()
         {
             var currentDriver = _currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID);
 
@@ -111,7 +107,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (vehicle == null)
                 return;
 
-            Mvx.Resolve<IUserInteraction>().Confirm((vehicle.Registration),isConfirmed =>
+            Mvx.Resolve<ICustomUserInteraction>().Confirm((vehicle.Registration), isConfirmed =>
             {
                 if (isConfirmed)
                 {
@@ -125,30 +121,25 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_showVehicleDetailCommand = _showVehicleDetailCommand ?? new MvxCommand<Vehicle>(v => VehicleDetail(v)));
+                return (_showVehicleDetailCommand = _showVehicleDetailCommand ?? new MvxCommand<Vehicle>(async v => await VehicleDetailAsync(v)));
             }
         }
 
-        private void VehicleDetail(Vehicle vehicle)
+        private async Task VehicleDetailAsync(Vehicle vehicle)
         {
+            if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(vehicle.Registration, "Confirm your vehicle", "Confirm"))
+            {
+                var newDriver = _currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID);
 
-                Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm(vehicle.Registration, isConfirmed =>
-                {
-                    if (isConfirmed)
-                    {
-                        var newDriver = _currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID);
+                if (newDriver == null)
+                    return;
 
-                        if (newDriver == null)
-                            return;
+                _currentDriverRepository.Delete(newDriver);
+                newDriver.LastVehicleID = vehicle.ID;
+                _currentDriverRepository.Insert(newDriver);
 
-                        _currentDriverRepository.Delete(newDriver);
-                        newDriver.LastVehicleID = vehicle.ID;
-                        _currentDriverRepository.Insert(newDriver);
-
-                        ShowTrailerScreen(vehicle);
-                    }
-
-                }, "Confirm your vehicle", "Confirm");
+                ShowTrailerScreen(vehicle);
+            }
         }
 
         private string _vehicleSearchText;

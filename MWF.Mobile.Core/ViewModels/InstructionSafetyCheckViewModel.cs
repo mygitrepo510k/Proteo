@@ -1,17 +1,12 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.CrossCore;
-using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models.Instruction;
-using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -56,7 +51,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_navData.OtherData["UpdatedTrailerSafetyCheckData"] == null)
             {
-                Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("A safety check profile for your trailer has not been found - Perform a manual safety check.", () => { _navigationService.MoveToNext(_navData); });
+                Mvx.Resolve<ICustomUserInteraction>().Alert("A safety check profile for your trailer has not been found - Perform a manual safety check.", () => { _navigationService.MoveToNext(_navData); });
             }
 
         }

@@ -1,11 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Portable;
-using MWF.Mobile.Core.Repositories.Interfaces;
-using MWF.Mobile.Core.Services;
-using Cirrious.CrossCore;
-using Chance.MvvmCross.Plugins.UserInteraction;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -73,7 +74,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return this._logoutCommand ?? (this._logoutCommand = new MvxCommand(this.DoLogoutCommand));
+                return this._logoutCommand ?? (this._logoutCommand = new MvxCommand(async () => await this.DoLogoutCommandAsync()));
             }
         }
 
@@ -113,15 +114,10 @@ namespace MWF.Mobile.Core.ViewModels
             };
         }
 
-        private void DoLogoutCommand()
+        private async Task DoLogoutCommandAsync()
         {
-            Mvx.Resolve<IUserInteraction>().Confirm("Are you sure you want to log out?", isConfirmed =>
-            {
-                if (isConfirmed)
-                {
-                    _navigationService.Logout_Action(null);
-                }
-            }, "Logout", "Logout", "Cancel");
+            if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Are you sure you want to log out?", "Logout", "Logout", "Cancel"))
+                _navigationService.Logout_Action(null);
         }
 
         private void DoSelectMenuItemCommand(MenuViewModel item)

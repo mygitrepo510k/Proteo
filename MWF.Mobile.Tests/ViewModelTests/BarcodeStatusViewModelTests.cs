@@ -1,7 +1,11 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
+using MWF.Mobile.Core.Enums;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
@@ -10,18 +14,7 @@ using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
-using MWF.Mobile.Core.Repositories.Interfaces;
-using Cirrious.MvvmCross.Plugins.Messenger;
-using MWF.Mobile.Core.Enums;
-using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Extensions;
-using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -32,9 +25,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         private IFixture _fixture;
         private Mock<INavigationService> _mockNavigationService;
-        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private BarcodeScanningViewModel _barcodeScanningViewModel;
-        private Mock<IUserInteraction> _mockUserInteraction;
         private List<DamageStatus> _damageStatuses;
         private Mock<IMvxMessenger> _mockMessenger;
         private MobileData _mobileData;
@@ -57,7 +49,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
             _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
-            _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
+            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _fixture.Customize<BarcodeScanningViewModel>(vm => vm.Without(x => x.BarcodeSections));
             _fixture.Customize<BarcodeScanningViewModel>(vm => vm.Without(x => x.BarcodeInput));
@@ -76,13 +68,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _barcodeItemViewModel2 = _barcodeScanningViewModel.BarcodeSections[1].Barcodes[1];
             _barcodeItemViewModel3 = _barcodeScanningViewModel.BarcodeSections[1].Barcodes[2];
 
-            _mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
-
-             _damageStatuses = _fixture.CreateMany<DamageStatus>().ToList();
+            _damageStatuses = _fixture.CreateMany<DamageStatus>().ToList();
             _damageStatuses[0].Code = "POD";
             _damageStatuses[1].Code = "PODD";
-
         }
 
         #endregion Setup

@@ -1,21 +1,9 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Models.Instruction;
-using MWF.Mobile.Core.Portable;
-using MWF.Mobile.Core.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace MWF.Mobile.Core.Services
 {

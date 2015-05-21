@@ -1,18 +1,14 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.CrossCore;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.GatewayServiceRequest;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Repositories.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -100,7 +96,7 @@ namespace MWF.Mobile.Core.Services
                     else
                     {
                         var message = "Error uploading log file.";
-                        Mvx.Resolve<IUserInteraction>().Alert(message);
+                        Mvx.Resolve<ICustomUserInteraction>().Alert(message);
                         break;
                     }
                 }

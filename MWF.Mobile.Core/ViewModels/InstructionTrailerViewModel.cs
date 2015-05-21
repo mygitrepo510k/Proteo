@@ -45,9 +45,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _mainService = mainService;
 
-            _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(m =>
-                CheckInstructionNotification(m.Command, m.InstructionID)
-                );
+            _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(async m => await CheckInstructionNotificationAsync(m.Command, m.InstructionID));
         }
 
         public void Init(NavData<MobileData> navData)
@@ -62,7 +60,6 @@ namespace MWF.Mobile.Core.ViewModels
                 this.DefaultTrailerReg = _mobileData.Order.Additional.Trailer.TrailerId;
             }
         }
-
 
         #endregion
 
@@ -86,20 +83,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Protected/Private Methods
 
-        protected override void ConfirmTrailer(Models.Trailer trailer, string title, string message)
+        protected override async Task ConfirmTrailerAsync(Models.Trailer trailer, string title, string message)
         {
-
-            Mvx.Resolve<ICustomUserInteraction>().PopUpConfirm(message, async isConfirmed =>
+            if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, title, "Confirm"))
             {
-                if (isConfirmed)
-                {
-                     await UpdateReadyForSafetyCheck(trailer);
-                     _navData.OtherData["UpdatedTrailer"] = trailer;
-                    _navigationService.MoveToNext(_navData);
-                }
-            }, title, "Confirm");
-
-        
+                await UpdateReadyForSafetyCheck(trailer);
+                _navData.OtherData["UpdatedTrailer"] = trailer;
+                _navigationService.MoveToNext(_navData);
+            }
         }
 
         private async Task UpdateReadyForSafetyCheck(Models.Trailer trailer)
@@ -119,11 +110,9 @@ namespace MWF.Mobile.Core.ViewModels
 
                 this.IsBusy = false;
 
-                
             }
 
         }
-
 
         private void GetMobileDataFromRepository(Guid ID)
         {
@@ -133,14 +122,20 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        public void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Now refreshing the page.", () => GetMobileDataFromRepository(instructionID), "This instruction has been Updated", "OK");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
+                    GetMobileDataFromRepository(instructionID);
+                }
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                    _navigationService.GoToManifest();
+                }
             }
         }
 

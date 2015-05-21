@@ -1,30 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore.Core;
-using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
-using Cirrious.MvvmCross.Views;
 using Moq;
-using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.ViewModels;
-using Xunit;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoMoq;
-using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
-using Cirrious.MvvmCross.Plugins.Messenger;
-using Cirrious.MvvmCross.Plugins.PictureChooser;
-using MWF.Mobile.Core.Messages;
+using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Tests.Helpers;
-using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -35,7 +26,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         private IFixture _fixture;
         private IStartupService _startupService;
-        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
@@ -52,8 +43,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         protected override void AdditionalSetup()
         {
 
-            _mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
+            _mockUserInteraction = new Mock<ICustomUserInteraction>();
+            Ioc.RegisterSingleton<ICustomUserInteraction>(_mockUserInteraction.Object);
 
             _mockMessenger = new Mock<IMvxMessenger>();
             Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);

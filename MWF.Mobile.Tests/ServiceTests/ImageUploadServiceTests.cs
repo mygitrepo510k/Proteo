@@ -1,4 +1,8 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using MWF.Mobile.Core.Models;
@@ -9,12 +13,6 @@ using MWF.Mobile.Core.Services;
 using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MWF.Mobile.Tests.ServiceTests
@@ -30,7 +28,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private MWFMobileConfig _mockMobileConfig;
         private Mock<ILoggingService> _mockLoggingService;
         private Mock<IHttpService> _mockHttpService;
-        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IToast> _mockToast; 
 
 
@@ -65,7 +63,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockLoggingService = _fixture.InjectNewMock<ILoggingService>();
 
-            _mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockToast = Ioc.RegisterNewMock<IToast>();
 
@@ -168,7 +166,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGpsService.Verify(mgs => mgs.GetLatitude(), Times.Exactly(3));
 
             //This only gets logged when it has been successfully uploaded
-            _mockUserInteraction.Verify(mui => mui.Alert(It.IsAny<string>(), It.IsAny<System.Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(mui => mui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockToast.Verify(mt => mt.Show(It.IsAny<string>()), Times.Once);
 

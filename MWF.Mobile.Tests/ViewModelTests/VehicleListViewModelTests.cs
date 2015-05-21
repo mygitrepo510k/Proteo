@@ -1,23 +1,17 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore.Core;
-using Cirrious.MvvmCross.Test.Core;
-using Cirrious.MvvmCross.Views;
-using Moq;
-using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Models.GatewayServiceResponse;
-using MWF.Mobile.Core.Portable;
-using MWF.Mobile.Core.Repositories;
-using MWF.Mobile.Core.Repositories.Interfaces;
-using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.ViewModels;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoMoq;
-using MWF.Mobile.Tests.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Cirrious.MvvmCross.Test.Core;
+using Moq;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Tests.Helpers;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
@@ -31,20 +25,17 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Vehicle _vehicle;
         private IStartupService _startupService;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
-        private Mock<IUserInteraction> _mockUserInteraction;
-        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
-
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
 
         protected override void AdditionalSetup()
         {
+            _mockUserInteraction = new Mock<ICustomUserInteraction>();
+            _mockUserInteraction.ConfirmReturnsFalseIfTitleStartsWith("Last Used Vehicle");
+            Ioc.RegisterSingleton<ICustomUserInteraction>(_mockUserInteraction.Object);
 
-            _mockCustomUserInteraction = new Mock<ICustomUserInteraction>();
-            _mockCustomUserInteraction.PopUpConfirmReturnsFalseIfTitleStartsWith("Last Used Vehicle");
-            Ioc.RegisterSingleton<ICustomUserInteraction>(_mockCustomUserInteraction.Object);
-
-            _mockUserInteraction = new Mock<IUserInteraction>();
+            _mockUserInteraction = new Mock<ICustomUserInteraction>();
             
-            Ioc.RegisterSingleton<IUserInteraction>(_mockUserInteraction.Object);
+            Ioc.RegisterSingleton<ICustomUserInteraction>(_mockUserInteraction.Object);
 
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -72,7 +63,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockCustomUserInteraction.PopUpConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var navigationServiceMock = new Mock<INavigationService>();
             navigationServiceMock.Setup(ns => ns.MoveToNext());
@@ -95,7 +86,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockCustomUserInteraction.PopUpConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var vm = _fixture.Create<VehicleListViewModel>();
 
@@ -114,7 +105,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockCustomUserInteraction.PopUpConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var vm = _fixture.Create<VehicleListViewModel>();
 

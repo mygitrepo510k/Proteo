@@ -1,26 +1,26 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore;
-using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Models.Instruction;
-using MWF.Mobile.Core.Portable;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Cirrious.CrossCore;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
 
 namespace MWF.Mobile.Core.Services
 {
+
     public class ImageUploadService : IImageUploadService
     {
+        
         private readonly Repositories.IRepositories _repositories = null;
         private readonly IGpsService _gpsService = null;
         private readonly ILoggingService _loggingService = null;
         private readonly IReachability _reachability = null;
         private readonly IHttpService _httpService = null;
-
 
         public ImageUploadService(
             Repositories.IRepositories repositories,
@@ -61,7 +61,7 @@ namespace MWF.Mobile.Core.Services
 
             if (config == null && string.IsNullOrWhiteSpace(config.HEUrl))
             {
-                Mvx.Resolve<IUserInteraction>().Alert("Your HE Url has not been setup, you cannot upload images unless it has been setup.");
+                Mvx.Resolve<ICustomUserInteraction>().Alert("Your HE Url has not been setup, you cannot upload images unless it has been setup.");
                 return;
             }
 
@@ -125,17 +125,15 @@ namespace MWF.Mobile.Core.Services
                     }
                     else
                         _loggingService.LogEvent(string.Format("Image failed to send, Status Code: {0}.", response.StatusCode), Enums.LogType.Error);
-
-
                 }
-
             }
 
             if (uploadedCount != imageUpload.Pictures.Count)
-                Mvx.Resolve<IUserInteraction>().Alert(string.Format("Only {0} of {1} were uploaded successful.", uploadedCount, imageUpload.Pictures.Count), null, "Upload Failed");
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync(string.Format("Only {0} of {1} were uploaded successful.", uploadedCount, imageUpload.Pictures.Count), title: "Upload Failed");
             else
                 Mvx.Resolve<IToast>().Show("Successfully uploaded images");
-
         }
+
     }
+
 }

@@ -1,4 +1,7 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.CrossCore.Core;
 using Cirrious.MvvmCross.Test.Core;
 using Cirrious.MvvmCross.Views;
@@ -6,16 +9,11 @@ using Moq;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
-using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
@@ -29,6 +27,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private TrailerItemViewModel _trailerItemViewModel;
         private IStartupService _startupService;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
 
         protected override void AdditionalSetup()
         {
@@ -36,12 +35,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<IMvxViewDispatcher>(mockDispatcher);
             Ioc.RegisterSingleton<IMvxMainThreadDispatcher>(mockDispatcher);
 
-            var mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(mockUserInteraction.Object);
-
-            var mockCustomUserInteraction = new Mock<ICustomUserInteraction>();
-            mockCustomUserInteraction.Setup(ui => ui.PopUpConfirm(It.IsAny<string>(), It.IsAny<Action<bool>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
-            Ioc.RegisterSingleton<ICustomUserInteraction>(mockCustomUserInteraction.Object);
+            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _fixture.Customize<TrailerListViewModel>(tlvm => tlvm.Without(x => x.DefaultTrailerReg));
@@ -79,14 +73,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             navigationServiceMock.Setup(ns => ns.MoveToNext());
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your trailer");
+
             var vm = _fixture.Create<TrailerListViewModel>();
 
             vm.TrailerSelectCommand.Execute(_trailerItemViewModel);
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);
-
-
 
         }
 
@@ -97,6 +91,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         public void TrailerListVM_SuccessfulAuthenticationStoresDriverTrailerID()
         {
             base.ClearAll();
+
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your trailer");
 
             var vm = _fixture.Create<TrailerListViewModel>();
 

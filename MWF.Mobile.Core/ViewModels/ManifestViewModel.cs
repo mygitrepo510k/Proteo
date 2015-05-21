@@ -1,20 +1,18 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore;
-using Cirrious.MvvmCross.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
-using MWF.Mobile.Core.Portable;
-using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.Repositories.Interfaces;
-using MWF.Mobile.Core.ViewModels.Interfaces;
-using MWF.Mobile.Core.Models.Instruction;
-using System.Collections.Specialized;
-using MWF.Mobile.Core.Repositories;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 
 namespace MWF.Mobile.Core.ViewModels
@@ -236,7 +234,7 @@ namespace MWF.Mobile.Core.ViewModels
         public async Task<bool> OnBackButtonPressed()
         {
 
-            bool continueWithBackPress = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you wish to logout?", "", "Logout");
+            bool continueWithBackPress = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Do you wish to logout?", "", "Logout");
 
             if (continueWithBackPress)
             {
@@ -260,9 +258,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override void CheckInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             RefreshInstructions();
+            return Task.FromResult(0);
         }
 
         #endregion BaseInstructionNotificationViewModel

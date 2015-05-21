@@ -2,27 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Cirrious.CrossCore.Core;
-using Cirrious.MvvmCross.Views;
 using Cirrious.MvvmCross.Platform;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
+using Cirrious.MvvmCross.Views;
 using Moq;
-using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.Enums;
 using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Portable;
-using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Models.Instruction;
-using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Presentation;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
-using Chance.MvvmCross.Plugins.UserInteraction;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Repositories.Interfaces;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
-using MWF.Mobile.Tests.Helpers;
-using MWF.Mobile.Core.Repositories.Interfaces;
-using Cirrious.MvvmCross.Plugins.Messenger;
-using MWF.Mobile.Core.Enums;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
@@ -35,7 +32,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         private IFixture _fixture;
         private MockDispatcher _mockViewDispatcher;
-        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
 
         private MobileData _mobileData;
@@ -49,11 +46,11 @@ namespace MWF.Mobile.Tests.ServiceTests
         protected override void AdditionalSetup()
         {
 
-            _mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Complete Instruction");
-            _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.Is<string>(s => s == "Change Trailer?"), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<IUserInteraction,bool>(true);
-            _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.Is<string>(s => s == "Do you want to enter a comment for this instruction?"),It.IsAny<string>() , It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<IUserInteraction,bool>(true);
+            _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.Is<string>(s => s == "Change Trailer?"), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<ICustomUserInteraction, bool>(true);
+            _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.Is<string>(s => s == "Do you want to enter a comment for this instruction?"), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<ICustomUserInteraction, bool>(true);
 
             Ioc.RegisterSingleton<IMvxStringToTypeParser>(new MvxStringToTypeParser());
 
@@ -1212,7 +1209,7 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            var mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+            var mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Change Trailer?");
 
@@ -1244,7 +1241,7 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            var mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+            var mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             mockUserInteraction.ConfirmAsyncReturnsFalseIfTitleStartsWith("Change Trailer?");
 
@@ -1292,7 +1289,7 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            var mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+            var mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Change Trailer?");
 
@@ -1329,7 +1326,7 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            var mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+            var mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             mockUserInteraction.ConfirmAsyncReturnsFalseIfTitleStartsWith("Change Trailer?");
 
@@ -2250,7 +2247,7 @@ namespace MWF.Mobile.Tests.ServiceTests
                                                                 cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
             _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
 
-            _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<IUserInteraction, bool>(false);
+            _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<ICustomUserInteraction, bool>(false);
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, null);
 

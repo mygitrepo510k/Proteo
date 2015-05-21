@@ -1,13 +1,11 @@
-﻿using Cirrious.MvvmCross.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MWF.Mobile.Core.Services;
-using Chance.MvvmCross.Plugins.UserInteraction;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -15,7 +13,7 @@ namespace MWF.Mobile.Core.ViewModels
     public class InstructionSafetyCheckSignatureViewModel : SafetyCheckSignatureViewModel
     {
 
-        public InstructionSafetyCheckSignatureViewModel(Services.IStartupService startupService, Services.IGatewayQueuedService gatewayQueuedService, IUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService)
+        public InstructionSafetyCheckSignatureViewModel(Services.IStartupService startupService, Services.IGatewayQueuedService gatewayQueuedService, ICustomUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService)
         {
             _startupService = startupService;
             _gatewayQueuedService = gatewayQueuedService;

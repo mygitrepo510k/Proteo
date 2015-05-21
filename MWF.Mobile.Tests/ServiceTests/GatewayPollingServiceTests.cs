@@ -28,7 +28,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private Mock<IGatewayQueuedService> _mockGatewayQueuedService;
         private ApplicationProfile _applicationProfile;
         private Mock<IGatewayService> _gatewayMock;
-        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMvxMessenger;
         private Mock<IMainService> _mockMainService;
         private Mock<IDataChunkService> _mockDataChunkService;
@@ -48,10 +48,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             var applicationRepo = _fixture.InjectNewMock<IApplicationProfileRepository>();
             applicationRepo.Setup(ar => ar.GetAll()).Returns(new List<ApplicationProfile>() { _applicationProfile });
 
-            _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
+            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             //Setup to skip the modal and call the action instead.
-            _mockCustomUserInteraction.Setup(cui => cui.PopUpInstructionNotification(It.IsAny<List<ManifestInstructionViewModel>>(), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()))
+            _mockUserInteraction.Setup(cui => cui.PopUpInstructionNotification(It.IsAny<List<ManifestInstructionViewModel>>(), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<List<ManifestInstructionViewModel>, Action<List<ManifestInstructionViewModel>>, string, string>((s1, a, s2, s3) => _mockDataChunkService.Object.SendReadChunk(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()));
 
             var mockStartupService = Mock.Of<IStartupService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
@@ -385,7 +385,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Allow the timer to process the queue
             await Task.Delay(2000);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpInstructionNotification(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == 1), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.PopUpInstructionNotification(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == 1), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
@@ -424,7 +424,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Allow the timer to process the queue
             await Task.Delay(100);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpInstructionNotification(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == ids.Count()), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.PopUpInstructionNotification(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == ids.Count()), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueue(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);

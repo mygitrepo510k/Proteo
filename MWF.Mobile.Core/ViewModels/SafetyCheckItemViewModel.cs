@@ -1,12 +1,11 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
-using Cirrious.CrossCore;
-using Cirrious.MvvmCross.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -77,7 +76,7 @@ namespace MWF.Mobile.Core.ViewModels
                 if ((_checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass ||
                     _checkStatus == Enums.SafetyCheckStatus.Failed) && value == Enums.SafetyCheckStatus.Passed)
                 {
-                    Mvx.Resolve<IUserInteraction>().Confirm(("Change '"+ Title +"' to passed?"), isConfirmed =>
+                    Mvx.Resolve<ICustomUserInteraction>().Confirm(("Change '"+ Title +"' to passed?"), isConfirmed =>
                     {
                         if (isConfirmed)
                         {

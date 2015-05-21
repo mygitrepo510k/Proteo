@@ -1,18 +1,15 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -36,7 +33,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         public DisplaySafetyCheckViewModel(IMainService mainService, INavigationService navigationService, Repositories.IRepositories repositories)
         {
-
             _mainService = mainService;
             _navigationService = navigationService;
             _repositories = repositories;
@@ -48,7 +44,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (_latestSafetyCheckData.VehicleSafetyCheck == null && _latestSafetyCheckData.TrailerSafetyCheck == null)
             {
 
-                Mvx.Resolve<IUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been completed - Refer to your manual safety check.",
+                Mvx.Resolve<ICustomUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been completed - Refer to your manual safety check.",
                     () => { _navigationService.MoveToNext(_navigationService.CurrentNavData); });
             }
 
@@ -57,7 +53,6 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_latestSafetyCheckData.TrailerSafetyCheck != null)
                 GenerateSafetyCheckFaultItems(_latestSafetyCheckData.TrailerSafetyCheck.Faults, true);
-
         }
 
         #endregion Construction
@@ -132,7 +127,7 @@ namespace MWF.Mobile.Core.ViewModels
         private void SafetyCheckFaultDetail(DisplaySafetyCheckFaultItemViewModel fault)
         {
             if (!string.IsNullOrWhiteSpace(fault.FaultCheckComment))
-                Mvx.Resolve<IUserInteraction>().Alert(fault.FaultCheckComment.Trim(new Char[] {' ', '-'}), null, string.Format("{0} - {1}", "Fault", fault.FaultCheckTitle));
+                Mvx.Resolve<ICustomUserInteraction>().Alert(fault.FaultCheckComment.Trim(new Char[] {' ', '-'}), null, string.Format("{0} - {1}", "Fault", fault.FaultCheckTitle));
         }
 
         private void GenerateSafetyCheckFaultItems(List<SafetyCheckFault> faults, bool isTrailer)
@@ -168,15 +163,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override void CheckInstructionNotification(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
 
             if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData.GetMobileData() != null && _navigationService.CurrentNavData.GetMobileData().ID == instructionID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Data may have changed.", null, "This instruction has been Updated", "OK");
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Data may have changed.", "This instruction has been updated");
                 else
-                    Mvx.Resolve<ICustomUserInteraction>().PopUpAlert("Redirecting you back to the manifest screen", () => _navigationService.GoToManifest(), "This instruction has been Deleted");
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                    _navigationService.GoToManifest();
+                }
             }
         }
 

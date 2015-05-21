@@ -1,4 +1,7 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
@@ -12,11 +15,6 @@ using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
@@ -30,13 +28,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private MobileData _mobileData;
         private Mock<INavigationService> _navigationService;
-        private Mock<IUserInteraction> _mockUserInteraction;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<IMainService> _mockMainService;
         private Mock<IDataChunkService> _mockDataChunkService;
-        private Mock<ICustomUserInteraction> _mockCustomUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
-
 
         #endregion Private Members
 
@@ -52,7 +48,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
 
-            _mockUserInteraction = Ioc.RegisterNewMock<IUserInteraction>();
+            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
             _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Complete Instruction");
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -66,14 +62,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
-            _mockCustomUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
-
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
             _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
             _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
-
         }
 
         #endregion Setup
@@ -322,16 +315,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             base.ClearAll();
 
-            _mockCustomUserInteraction.Setup(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
-
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
             instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionSignatureVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            instructionSignatureVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _navigationService.Verify(ns => ns.GoToManifest(), Times.Once);
 
@@ -341,19 +331,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
         [Fact]
         public void InstructionSignatureVM_CheckInstructionNotification_Update_Confirm()
         {
-
             base.ClearAll();
-
-            _mockCustomUserInteraction.Setup(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
 
             var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
 
             instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionSignatureVM.CheckInstructionNotification(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            instructionSignatureVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
-            _mockCustomUserInteraction.Verify(cui => cui.PopUpAlert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
 

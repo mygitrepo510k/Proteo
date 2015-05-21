@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore.Core;
-using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Test.Core;
 using Cirrious.MvvmCross.Views;
 using Moq;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels;
-using Xunit;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
-using MWF.Mobile.Core.Repositories.Interfaces;
-using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Repositories;
+using Xunit;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -34,8 +31,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<IMvxViewDispatcher>(mockDispatcher);
             Ioc.RegisterSingleton<IMvxMainThreadDispatcher>(mockDispatcher);
 
-            var mockUserInteraction = new Mock<IUserInteraction>();
-            Ioc.RegisterSingleton<IUserInteraction>(mockUserInteraction.Object);
+            var mockUserInteraction = new Mock<ICustomUserInteraction>();
+            Ioc.RegisterSingleton<ICustomUserInteraction>(mockUserInteraction.Object);
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
 

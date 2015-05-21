@@ -1,14 +1,13 @@
-﻿using Cirrious.MvvmCross.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.Repositories;
-using Chance.MvvmCross.Plugins.UserInteraction;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -20,7 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected Services.IStartupService _startupService = null;
         protected Services.IGatewayQueuedService _gatewayQueuedService = null;
-        protected IUserInteraction _userInteraction = null;
+        protected ICustomUserInteraction _userInteraction = null;
         protected INavigationService _navigationService;
         protected IEnumerable<Models.SafetyCheckData> _safetyCheckData;
         protected NavData<MobileData> _navData;
@@ -30,7 +29,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region construction
 
-        public SafetyCheckSignatureViewModel(Services.IStartupService startupService, Services.IGatewayQueuedService gatewayQueuedService, IUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService)
+        public SafetyCheckSignatureViewModel(Services.IStartupService startupService, Services.IGatewayQueuedService gatewayQueuedService, ICustomUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService)
         {
             _startupService = startupService;
             _gatewayQueuedService = gatewayQueuedService;

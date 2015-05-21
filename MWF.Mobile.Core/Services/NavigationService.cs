@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Chance.MvvmCross.Plugins.UserInteraction;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
@@ -403,7 +401,7 @@ namespace MWF.Mobile.Core.Services
         {
             bool advanceToCommentScreen = false;
 
-            var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Do you want to enter a comment for this instruction?", "", "Yes", "No");
+            var isConfirmed = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Do you want to enter a comment for this instruction?", "", "Yes", "No");
 
             if (isConfirmed)
             {
@@ -416,7 +414,7 @@ namespace MWF.Mobile.Core.Services
 
         private async Task<bool> IsCleanInstruction(NavData navData)
         {
-            var isClean = await Mvx.Resolve<IUserInteraction>().ConfirmAsync("Is the delivery clean?", "", "Yes", "No");
+            var isClean = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Is the delivery clean?", "", "Yes", "No");
 
             if (!isClean)
             {
@@ -444,7 +442,7 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         private void CompleteInstruction(NavData<MobileData> navData)
         {
-            Mvx.Resolve<IUserInteraction>().Confirm("Do you wish to complete?", isConfirmed =>
+            Mvx.Resolve<ICustomUserInteraction>().Confirm("Do you wish to complete?", isConfirmed =>
             {
                 if (isConfirmed)
                     SendMobileData(navData);
@@ -725,7 +723,7 @@ namespace MWF.Mobile.Core.Services
                         string currentTrailerMessage = (_startupService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _startupService.CurrentTrailer.Registration);
 
                         string message = orderTrailerMessage + currentTrailerMessage;
-                        var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
+                        var isConfirmed = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
 
                         if (isConfirmed)
                         {
@@ -747,7 +745,7 @@ namespace MWF.Mobile.Core.Services
                         return;
                     }
 
-                    await Mvx.Resolve<IUserInteraction>().AlertAsync("There are no barcodes to be scanned on this instruction.");
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("There are no barcodes to be scanned on this instruction.");
                 }
 
                 // Delivery Clean/Clause Prompt
@@ -1062,7 +1060,7 @@ namespace MWF.Mobile.Core.Services
                     string currentTrailerMessage = (_startupService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _startupService.CurrentTrailer.Registration);
 
                     string message = orderTrailerMessage + currentTrailerMessage;
-                    var isConfirmed = await Mvx.Resolve<IUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
+                    var isConfirmed = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
 
                     if (isConfirmed)
                     {

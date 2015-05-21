@@ -1,19 +1,15 @@
-﻿using Chance.MvvmCross.Plugins.UserInteraction;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Cirrious.CrossCore;
-using Cirrious.CrossCore.UI;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-using MWF.Mobile.Core.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 
 namespace MWF.Mobile.Core.ViewModels
@@ -124,7 +120,7 @@ namespace MWF.Mobile.Core.ViewModels
             get
             {
                 var title = "Confirm your trailer";
-                return (_trailerSelectCommand = _trailerSelectCommand ?? new MvxCommand<TrailerItemViewModel>(t => ConfirmTrailer(t.Trailer, title, t.Trailer.Registration)));
+                return (_trailerSelectCommand = _trailerSelectCommand ?? new MvxCommand<TrailerItemViewModel>(async t => await ConfirmTrailerAsync(t.Trailer, title, t.Trailer.Registration)));
             }
         }
 
@@ -153,7 +149,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 var title = "No trailer";
                 var message = "Confirm you don't have a trailer";
-                return (_notrailerSelectCommand = _notrailerSelectCommand ?? new MvxCommand<Trailer>(t => ConfirmTrailer(null, title, message)));
+                return (_notrailerSelectCommand = _notrailerSelectCommand ?? new MvxCommand<Trailer>(async t => await ConfirmTrailerAsync(null, title, message)));
             }
         }
 
@@ -177,7 +173,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Protected/Private Methods
 
-        protected abstract void ConfirmTrailer(Trailer trailer, string title, string message);
+        protected abstract Task ConfirmTrailerAsync(Trailer trailer, string title, string message);
 
         protected async Task UpdateTrailerListAsync()
         {
@@ -236,7 +232,7 @@ namespace MWF.Mobile.Core.ViewModels
                 var safetyProfileRepository = _repositories.SafetyProfileRepository;
                 if (safetyProfileRepository.GetAll().ToList().Count == 0)
                 {
-                    Mvx.Resolve<IUserInteraction>().Alert("No Profiles Found.");
+                    Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
                 }
             }
         }

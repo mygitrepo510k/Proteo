@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp" />
     <EditText
-        style="@style/Proteo.Multiline.Large"
+        style="@style/Proteo.EditText"
         android:id="@+id/commentText"
         local:MvxBind="Text CommentText"
         android:imeOptions="actionDone"

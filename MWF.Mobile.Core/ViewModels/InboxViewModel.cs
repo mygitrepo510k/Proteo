@@ -68,7 +68,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void RefreshMessages()
         {
-            _gatewayPollingService.PollForInstructions();
+            _gatewayPollingService.PollForInstructionsAsync();
             ReloadPage();
         }
 

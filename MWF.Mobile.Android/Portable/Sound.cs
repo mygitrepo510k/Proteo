@@ -19,7 +19,6 @@ namespace MWF.Mobile.Android.Portable
     public class Sound
         : ISound
     {
-        private MediaPlayer _player;
 
         protected Activity CurrentActivity
         {

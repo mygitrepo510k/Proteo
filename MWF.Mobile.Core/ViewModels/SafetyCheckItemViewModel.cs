@@ -48,6 +48,23 @@ namespace MWF.Mobile.Core.ViewModels
             set { _isDiscretionaryQuestion = value; }
         }
 
+        public IDictionary<Enums.SafetyCheckStatus, string> AvailableStatuses
+        {
+            get
+            {
+                var retVal = new Dictionary<Enums.SafetyCheckStatus, string>();
+                
+                retVal.Add(Enums.SafetyCheckStatus.Passed, "Pass");
+                
+                if (this.IsDiscretionaryQuestion)
+                    retVal.Add(Enums.SafetyCheckStatus.DiscretionaryPass, "Discretionary Pass");
+
+                retVal.Add(Enums.SafetyCheckStatus.Failed, "Fail");
+
+                return retVal;
+            }
+        }
+
         // The safety check fault model that will be persisted back to bluesphere/local db
         public SafetyCheckFault SafetyCheckFault { get; set; }
 

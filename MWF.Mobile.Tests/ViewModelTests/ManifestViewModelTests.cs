@@ -111,9 +111,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             viewModel.RefreshListCommand.Execute(null);
 
-            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructions(It.Is<Guid>(i => i == _startupService.LoggedInDriver.ID)), Times.Exactly(2));
-            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructions(It.Is<Guid>(i => i == _startupService.LoggedInDriver.ID)), Times.Exactly(2));
-
+            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructions(It.Is<Guid>(i => i == _startupService.LoggedInDriver.ID)), Times.Once);
+            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructions(It.Is<Guid>(i => i == _startupService.LoggedInDriver.ID)), Times.Once);
         }
 
         /// <summary>

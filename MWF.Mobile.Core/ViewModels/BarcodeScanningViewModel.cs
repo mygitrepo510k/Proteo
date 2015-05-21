@@ -239,7 +239,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private async void CheckScanInput()
+        private void CheckScanInput()
         {
             var barcode = _unprocessedBarcodes.FirstOrDefault(bc => bc.BarcodeText == this.BarcodeInput);
 

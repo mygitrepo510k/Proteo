@@ -39,14 +39,9 @@ namespace MWF.Mobile.Core.Services
         private readonly IStartupService _startupService;
         private readonly IMainService _mainService;
         IDataChunkService _dataChunkService;
+        private readonly AsyncLock _lock = new AsyncLock(); 
 
-        private readonly string _gatewayDeviceRequestUrl = null;
-
-        private MvxSubscriptionToken _pollTimerMessageToken = null;
-        private bool _isSubmitting = false;
-        private bool _submitAgainOnCompletion = false;
         private int _dataSpan = -1;
-
 
         public GatewayPollingService(
             IDeviceInfo deviceInfo,
@@ -74,10 +69,6 @@ namespace MWF.Mobile.Core.Services
             _dataChunkService = dataChunkService;
             _customPresenter = customPresenter;
 
-
-            //TODO: read this from config or somewhere?
-            _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
-
             _deviceRepository = repositories.DeviceRepository;
 
         }
@@ -104,99 +95,112 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        public async Task PollForInstructions()
+        public async Task PollForInstructionsAsync()
         {
-            await PollForInstructionsAsync();
-        }
-
-        private async Task PollForInstructionsAsync()
-        {
-            Mvx.Trace("Begin Polling For Instructions");
-
-            if (!_reachability.IsConnected())
-                return;
-
-            IEnumerable<MobileData> instructions = new List<MobileData>();
-
-
-            // Call to BlueSphere to check for instructions
-            instructions = await _gatewayService.GetDriverInstructions(_startupService.CurrentVehicle.Registration,
-                                                                       _startupService.LoggedInDriver.ID,
-                                                                       DateTime.Now,
-                                                                       DateTime.Now.AddDays(DataSpan));
-
-
-
-            Mvx.Trace("Successfully pulled instructions.");
-
-            // Check if we have anything in the response
-            if (instructions.Any())
+            using (await _lock.LockAsync())
             {
-                // We have a response so check what we need to do (Save/Update/Delete)
-                foreach (var instruction in instructions)
+                Mvx.Trace("Begin Polling For Instructions");
+
+                if (!_reachability.IsConnected())
+                    return;
+
+                IEnumerable<MobileData> instructions = new List<MobileData>();
+
+                // Call to BlueSphere to check for instructions
+                instructions = await _gatewayService.GetDriverInstructions(_startupService.CurrentVehicle.Registration,
+                                                                           _startupService.LoggedInDriver.ID,
+                                                                           DateTime.Now,
+                                                                           DateTime.Now.AddDays(DataSpan));
+
+                Mvx.Trace("Successfully pulled instructions.");
+
+                // Check if we have anything in the response
+                if (instructions.Any())
                 {
-                    Mvx.Trace("started processing instruction." + instruction.ID);
+                    var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
+                    var manifestInstructionVMsForNotification = new List<ManifestInstructionViewModel>(instructions.Count());
 
-
-                    instruction.VehicleId = _startupService.CurrentVehicle.ID;
-
-                    switch (instruction.SyncState)
+                    // We have a response so check what we need to do (Save/Update/Delete)
+                    foreach (var instruction in instructions)
                     {
-                        case SyncState.Add:
+                        var notifyInstruction = false;
 
-                            Mvx.Trace("started adding instruction." + instruction.ID);
-                            var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
-                            if (instructionToAdd == null)
+                        Mvx.Trace("started processing instruction." + instruction.ID);
+
+                        instruction.VehicleId = _startupService.CurrentVehicle.ID;
+
+                        switch (instruction.SyncState)
+                        {
+                            case SyncState.Add:
+
+                                Mvx.Trace("started adding instruction." + instruction.ID);
+                                var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
+
+                                if (instructionToAdd == null)
+                                {
+                                    _repositories.MobileDataRepository.Insert(instruction);
+                                    notifyInstruction = true;
+                                }
+
+                                Mvx.Trace("completed adding instruction." + instruction.ID);
+                                PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, instruction.ID);
+                                break;
+
+                            case SyncState.Update:
+                                Mvx.Trace("started updating instruction." + instruction.ID);
+                                var instructionToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
+
+                                if (instructionToUpdate != null)
+                                {
+                                    var progress = instructionToUpdate.ProgressState;
+                                    _repositories.MobileDataRepository.Delete(instructionToUpdate);
+                                    instruction.ProgressState = progress;
+                                    instruction.LatestDataChunkSequence = instructionToUpdate.LatestDataChunkSequence;
+                                }
+
                                 _repositories.MobileDataRepository.Insert(instruction);
-                            Mvx.Trace("completed adding instruction." + instruction.ID);
+                                notifyInstruction = true;
+                                Mvx.Trace("completed updating instruction." + instruction.ID);
+                                PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
+                                break;
 
-                            PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, instruction.ID);
-                            break;
+                            case SyncState.Delete:
+                                Mvx.Trace("started deleting instruction." + instruction.ID);
+                                var oldInstruction = _repositories.MobileDataRepository.GetByID(instruction.ID);
 
-                        case SyncState.Update:
-                            Mvx.Trace("started updating instruction." + instruction.ID);
-                            var instructionToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
-                            if (instructionToUpdate != null)
-                            {
-                                var progress = instructionToUpdate.ProgressState;
-                                _repositories.MobileDataRepository.Delete(instructionToUpdate);
-                                instruction.ProgressState = progress;
-                                instruction.LatestDataChunkSequence = instructionToUpdate.LatestDataChunkSequence;
-                            }
+                                if (oldInstruction != null)
+                                {
+                                    _repositories.MobileDataRepository.Delete(oldInstruction);
 
-                            _repositories.MobileDataRepository.Insert(instruction);
-                            Mvx.Trace("completed updating instruction." + instruction.ID);
+                                    if (oldInstruction.ProgressState != InstructionProgress.Complete)
+                                        notifyInstruction = true;
+                                }
 
-                            PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
-                            break;
+                                Mvx.Trace("completed deleting instruction." + instruction.ID);
+                                PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, instruction.ID);
+                                break;
+                        }
 
-                        case SyncState.Delete:
-                            Mvx.Trace("started deleting instruction." + instruction.ID);
-                            var oldInstruction = _repositories.MobileDataRepository.GetByID(instruction.ID);
-                            if (oldInstruction != null)
-                                _repositories.MobileDataRepository.Delete(oldInstruction);
-                            Mvx.Trace("completed deleting instruction." + instruction.ID);
-
-                            PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, instruction.ID);
-                            break;
+                        if (notifyInstruction)
+                            manifestInstructionVMsForNotification.Add(new ManifestInstructionViewModel(currentViewModel, null, instruction));
                     }
 
+                    Mvx.Trace("Successfully inserted instructions into Repository.");
+
+                    //Acknowledge that they are on the Device (Not however acknowledged by the driver)
+                    AcknowledgeInstructions(instructions);
+
+                    Mvx.Trace("Successfully sent device acknowledgement.");
+
+                    if (manifestInstructionVMsForNotification.Any())
+                    {
+                        Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotification(
+                            manifestInstructionVMsForNotification,
+                            done: notifiedInstructionVMs => _dataChunkService.SendReadChunk(notifiedInstructionVMs.Select(i => i.MobileData), _mainService.CurrentDriver, _mainService.CurrentVehicle),
+                            title: "Manifest Update",
+                            okButton: "Acknowledge");
+                    }
                 }
-
-                Mvx.Trace("Successfully inserted instructions into Repository.");
-
-
-                //Acknowledge that they are on the Device (Not however acknowledged by the driver)
-                AcknowledgeInstructions(instructions);
-
-
-                Mvx.Trace("Successfully sent device acknowledgement.");
-
-                var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
-                var instVM = instructions.Select(i => new ManifestInstructionViewModel(currentViewModel, null, i));
-
-                Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotifaction(instVM.ToList(), (instToSend) =>
-                    _dataChunkService.SendReadChunk(instToSend.Select(i => i.MobileData), _mainService.CurrentDriver, _mainService.CurrentVehicle), "Manifest Update", "Acknowledge");
             }
         }
 

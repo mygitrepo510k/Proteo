@@ -19,7 +19,7 @@ namespace MWF.Mobile.Core.Services
     {
         void StartPollingTimer();
         void StopPollingTimer();
-        Task PollForInstructions();
+        Task PollForInstructionsAsync();
     }
 
 }

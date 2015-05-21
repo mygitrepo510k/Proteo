@@ -37,13 +37,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public BaseTrailerListViewModel(IGatewayService gatewayService, IRepositories repositories, IReachability reachabibilty, IToast toast, IStartupService startupService, INavigationService navigationService)
+        public BaseTrailerListViewModel(IGatewayService gatewayService, IRepositories repositories, IReachability reachabilty, IToast toast, IStartupService startupService, INavigationService navigationService)
         {
-            _reachability = reachabibilty;
+            _reachability = reachabilty;
+            _toast = toast;
             _startupService = startupService;
             _navigationService = navigationService;
             _gatewayService = gatewayService;
-
             _repositories = repositories;
             GetTrailerModels();
         }

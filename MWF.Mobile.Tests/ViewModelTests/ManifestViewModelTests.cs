@@ -325,16 +325,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-        [Fact]
-        public void ManifestVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
-
-            viewModel.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
-        }
     }
+
 }

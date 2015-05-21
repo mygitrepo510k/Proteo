@@ -20,9 +20,11 @@ namespace MWF.Mobile.Core.ViewModels
 
     public class ManifestViewModel : 
         BaseInstructionNotificationViewModel, 
-        IBackButtonHandler, 
-        IVisible
+        IBackButtonHandler
     {
+
+        public class DummyMobileData : MobileData { }
+
         #region Private Members
 
         private readonly IMobileDataRepository _mobileDataRepository;
@@ -56,7 +58,6 @@ namespace MWF.Mobile.Core.ViewModels
             _mobileDataRepository = repositories.MobileDataRepository;
             _applicationProfileRepository = repositories.ApplicationRepository;
 
-
             _navigationService = navigationService;
             _reachability = reachability;
             _toast = toast;
@@ -74,8 +75,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-
-
         private void CreateSections()
         {
             Sections = new ObservableCollection<ManifestSectionViewModel>();
@@ -87,15 +86,12 @@ namespace MWF.Mobile.Core.ViewModels
 
             Sections.Add(_activeInstructionsSection);
 
-
             _nonActiveInstructionsSection = new ManifestSectionViewModel(this)
             {
                 SectionHeader = "Instructions",
             };
 
-
             Sections.Add(_nonActiveInstructionsSection);
-
 
             _messageSection = new ManifestSectionViewModel(this)
             {
@@ -123,27 +119,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         public int InstructionsCount
         {
-            get
-            {
-                return Sections.Sum(s => s.Instructions.
-                    Where(i => !(i.MobileData is DummyMobileData)).Count());
-            }
+            get { return Sections.Sum(s => s.Instructions.Where(i => !(i.MobileData is DummyMobileData)).Count()); }
         }
 
         public ICommand RefreshListCommand
         {
-            get
-            {
-                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(async () => await UpdateInstructionsListAsync()));
-            }
+            get { return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(async () => await UpdateInstructionsListAsync())); }
         }
 
         public ICommand RefreshStatusesCommand
         {
-            get
-            {
-                return (_refreshStatusesCommand = _refreshStatusesCommand ?? new MvxCommand(() => RefreshInstructions()));
-            }
+            get { return (_refreshStatusesCommand = _refreshStatusesCommand ?? new MvxCommand(() => RefreshInstructions())); }
         }
 
         #endregion
@@ -152,7 +138,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task UpdateInstructionsListAsync()
         {
-
             if (!_reachability.IsConnected())
             {
                 _toast.Show("No internet connection!");
@@ -166,10 +151,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void RefreshInstructions()
         {
-
             Mvx.Trace("started refreshing manifest screen");
 
-            if (!_initialised) return;
+            if (!_initialised)
+                return;
 
             var today = DateTime.Now;
 
@@ -206,12 +191,10 @@ namespace MWF.Mobile.Core.ViewModels
                 messageDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
             }
 
-
             // Create the view models
             var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this,_navigationService, md));
             var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this,_navigationService, md));
             var messageViewModels = messageDataModels.Select(md => new ManifestInstructionViewModel(this,_navigationService, md));
-
 
             // Update the observable collections in each section
             _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels.OrderBy(ivm => ivm.ArrivalDate));
@@ -226,14 +209,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-
         #endregion
 
         #region IBackButtonHandler Implementation
 
         public async Task<bool> OnBackButtonPressed()
         {
-
             bool continueWithBackPress = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Do you wish to logout?", "", "Logout");
 
             if (continueWithBackPress)
@@ -265,20 +246,6 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion BaseInstructionNotificationViewModel
-
-        #region IVisible
-
-        public void IsVisible(bool isVisible)
-        {
-            if (isVisible) { }
-            else
-            {
-                this.UnsubscribeNotificationToken();
-            }
-        }
-
-        #endregion IVisible
     }
 
-    public class DummyMobileData : MobileData { }
 }

@@ -21,6 +21,6 @@ namespace MWF.Mobile.Core.Models
         public string SafetyCheckFailText { get; set; }
         public string SafetyCheckDiscretionaryText { get; set; }
         public string HEUrl { get; set; }
-
+        public int SessionTimeoutInSeconds { get; set; }
     }
 }

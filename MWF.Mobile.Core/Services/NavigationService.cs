@@ -483,11 +483,11 @@ namespace MWF.Mobile.Core.Services
         {
             if (_loginSessionTimer == null)
             {
-                var appProfile = _repositories.ApplicationRepository.GetAll().First();
-                var sessionTimeoutInSeconds = appProfile.Timeout;
+                var config = _repositories.ConfigRepository.Get();
+                var sessionTimeoutInSeconds = config.SessionTimeoutInSeconds;
 
-                if (sessionTimeoutInSeconds > 0)
-                    _loginSessionTimer = new Timer(state => this.DoLogout(null), null, sessionTimeoutInSeconds * 1000);
+                if (config.SessionTimeoutInSeconds > 0)
+                    _loginSessionTimer = new Timer(state => this.DoLogout(null), null, config.SessionTimeoutInSeconds * 1000);
             }
             else
                 _loginSessionTimer.Reset();

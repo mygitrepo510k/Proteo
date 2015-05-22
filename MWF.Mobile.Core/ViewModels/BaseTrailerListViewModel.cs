@@ -168,7 +168,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-
         #endregion
 
         #region Protected/Private Methods
@@ -177,93 +176,116 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected async Task UpdateTrailerListAsync()
         {
-
             if (!_reachability.IsConnected())
             {
                 _toast.Show("No internet connection!");
+                return;
             }
-            else
+
+            IDictionary<string, IEnumerable<Models.BaseVehicle>> vehicleViewVehicles;
+
+            try
             {
                 var vehicleViews = await _gatewayService.GetVehicleViews();
 
-                var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
+                vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
 
                 foreach (var vehicleView in vehicleViews)
                 {
                     vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
                 }
+            }
+            catch (TaskCanceledException)
+            {
+                // Although we have used reachability to determine that there is an available network connection,
+                // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
+                _toast.Show("Connection failure!");
+                return;
+            }
 
-                var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
-                var trailers = vehiclesAndTrailers.Where(bv => bv.IsTrailer).Select(bv => new Models.Trailer(bv));
+            var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+            var trailers = vehiclesAndTrailers.Where(bv => bv.IsTrailer).Select(bv => new Models.Trailer(bv));
 
-                if (trailers != null)
-                {
+            if (trailers != null)
+            {
+                _repositories.TrailerRepository.DeleteAll();
 
-                    _repositories.TrailerRepository.DeleteAll();
+                _repositories.TrailerRepository.Insert(trailers);
 
-                    _repositories.TrailerRepository.Insert(trailers);
+                GetTrailerModels();
 
-                    GetTrailerModels();
-
-                    //Recalls the filter text if there is text in the search field.
-                    if (TrailerSearchText != null)
-                    {
-                        FilterList();
-                    }
-                }
+                //Recalls the filter text if there is text in the search field.
+                if (TrailerSearchText != null)
+                    FilterList();
             }
         }
 
         protected async Task UpdateSafetyProfilesAsync()
         {
+            var safetyProfileRepository = _repositories.SafetyProfileRepository;
+
             // First check if we have a internet connection. If we do go and get the latest safety checks from Blue Sphere.
             if (_reachability.IsConnected())
             {
-                var safetyProfiles = await _gatewayService.GetSafetyProfiles();
+                IEnumerable<SafetyProfile> safetyProfiles = null;
+
+                try
+                {
+                    safetyProfiles = await _gatewayService.GetSafetyProfiles();
+                }
+                catch (TaskCanceledException)
+                {
+                    // Although we have used reachability to determine that there is an available network connection,
+                    // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
+                }
 
                 if (safetyProfiles != null)
                 {
-                    _repositories.SafetyProfileRepository.DeleteAll();
-                    _repositories.SafetyProfileRepository.Insert(safetyProfiles);
+                    safetyProfileRepository.DeleteAll();
+                    safetyProfileRepository.Insert(safetyProfiles);
                 }
             }
-            else
-            {
-                var safetyProfileRepository = _repositories.SafetyProfileRepository;
-                if (safetyProfileRepository.GetAll().ToList().Count == 0)
-                {
-                    Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
-                }
-            }
+
+            if (safetyProfileRepository.GetAll().ToList().Count == 0)
+                Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
         }
 
         protected async Task UpdateVehicleListAsync()
         {
-
             if (!_reachability.IsConnected())
             {
                 _toast.Show("No internet connection!");
+                return;
             }
-            else
+
+            IDictionary<string, IEnumerable<Models.BaseVehicle>> vehicleViewVehicles;
+
+            try
             {
                 var vehicleViews = await _gatewayService.GetVehicleViews();
 
-                var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
+                vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
 
                 foreach (var vehicleView in vehicleViews)
                 {
                     vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
                 }
+            }
+            catch (TaskCanceledException)
+            {
+                // Although we have used reachability to determine that there is an available network connection,
+                // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
+                _toast.Show("Connection failure!");
+                return;
+            }
 
-                var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
-                var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
+            var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+            var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
 
-                if (vehicles != null)
-                {
-                    _repositories.VehicleRepository.DeleteAll();
-                    _repositories.VehicleRepository.Insert(vehicles);
-
-                }
+            if (vehicles != null)
+            {
+                _repositories.VehicleRepository.DeleteAll();
+                _repositories.VehicleRepository.Insert(vehicles);
             }
         }
 

@@ -99,19 +99,21 @@ namespace MWF.Mobile.Core.ViewModels
             // everything requirede to update safety profiles is readiness for the next step
             if (trailer != null && (!Models.Trailer.SameAs(trailer, _mainService.CurrentTrailer)))
             {
-
                 this.IsBusy = true;
 
-                await UpdateVehicleListAsync();
+                try
+                {
+                    await UpdateVehicleListAsync();
+                    await UpdateTrailerListAsync();
 
-                await UpdateTrailerListAsync();
-                // Try and update safety profiles before continuing
-                await UpdateSafetyProfilesAsync();
-
-                this.IsBusy = false;
-
+                    // Try and update safety profiles before continuing
+                    await UpdateSafetyProfilesAsync();
+                }
+                finally
+                {
+                    this.IsBusy = false;
+                }
             }
-
         }
 
         private void GetMobileDataFromRepository(Guid ID)

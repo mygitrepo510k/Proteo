@@ -39,13 +39,18 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 this.IsBusy = true;
 
-                await UpdateVehicleListAsync();
+                try
+                {
+                    await UpdateVehicleListAsync();
+                    await UpdateTrailerListAsync();
 
-                await UpdateTrailerListAsync();
-                // Try and update safety profiles before continuing
-                await UpdateSafetyProfilesAsync();
-
-                this.IsBusy = false;
+                    // Try and update safety profiles before continuing
+                    await UpdateSafetyProfilesAsync();
+                }
+                finally
+                {
+                    this.IsBusy = false;
+                }
 
                 _startupService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
                 _startupService.CurrentTrailer = trailer;

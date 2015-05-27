@@ -345,18 +345,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-        [Fact]
-        public void InstructionSignatureVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var instructionSignatureVM = _fixture.Create<InstructionSignatureViewModel>();
-
-            instructionSignatureVM.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
-        }
-
 
         #endregion Test
     }

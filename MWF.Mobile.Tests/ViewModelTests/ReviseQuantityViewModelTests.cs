@@ -92,6 +92,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var reviseQuantityVM = _fixture.Create<ReviseQuantityViewModel>();
+            reviseQuantityVM.IsVisible = true;
 
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
@@ -113,6 +114,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var reviseQuantityVM = _fixture.Create<ReviseQuantityViewModel>();
+            reviseQuantityVM.IsVisible = true;
 
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
@@ -128,17 +130,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-        [Fact]
-        public void ReviseQuantityVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var reviseQuantityVM = _fixture.Create<ReviseQuantityViewModel>();
-
-            reviseQuantityVM.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
-        }
 
         #endregion Tests
     }

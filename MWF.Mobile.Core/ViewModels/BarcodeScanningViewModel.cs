@@ -18,7 +18,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class BarcodeScanningViewModel :
         BaseInstructionNotificationViewModel,
-        IVisible, IBackButtonHandler
+        IBackButtonHandler
     {
         #region Construction
 
@@ -332,19 +332,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion Private Methods
 
-        #region IVisible
-
-        public void IsVisible(bool isVisible)
-        {
-            if (isVisible) { }
-            else
-            {
-                this.UnsubscribeNotificationToken();
-            }
-        }
-
-        #endregion IVisible
-
         #region BaseInstructionNotificationViewModel Overrides
 
         public override async Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
@@ -353,13 +340,17 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                 {
-                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
+                    if (this.IsVisible) 
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
                     this.RefreshPage(instructionID);
                 }
                 else
                 {
-                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                    _navigationService.GoToManifest();
+                    if (this.IsVisible)
+                    {
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
+                        _navigationService.GoToManifest();
+                    }
                 }
             }
         }

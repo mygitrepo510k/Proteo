@@ -7,16 +7,18 @@ using Cirrious.CrossCore;
 using System.Threading.Tasks;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Messages;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
     public abstract class BaseFragmentViewModel
-        : MvxViewModel
+        : MvxViewModel, IVisible
     {
 
         abstract public string FragmentTitle { get; }
         private IMvxMessenger _messenger;
+        private bool _isVisible;
 
 
 
@@ -42,8 +44,6 @@ namespace MWF.Mobile.Core.ViewModels
         where TViewModel : IModalViewModel<TResult>
         {
 
-            //navItem.NavGUID = Guid.NewGuid();
-
             MvxSubscriptionToken token = null;
             token = Messenger.Subscribe<ModalNavigationResultMessage<TResult>>(msg =>
             {
@@ -56,5 +56,21 @@ namespace MWF.Mobile.Core.ViewModels
 
             return ShowViewModel<TViewModel>(navItem);
         }
+
+        #region IVisible
+
+        public bool IsVisible
+        {
+            get
+            {
+                return _isVisible;
+            }
+
+            set
+            {
+                _isVisible = value;
+            }
+        }
+        #endregion IVisible
     }
 }

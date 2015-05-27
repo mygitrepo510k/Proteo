@@ -15,8 +15,7 @@ using System.Windows.Input;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class InboxViewModel
-        : BaseInstructionNotificationViewModel,
-        IVisible
+        : BaseInstructionNotificationViewModel
     {
 
         private IMobileDataRepository _mobileDataRepository;
@@ -99,17 +98,5 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion BaseInstructionNotificationViewModel Overrides
 
-        #region IVisible
-
-        public void IsVisible(bool isVisible)
-        {
-            if (isVisible) { }
-            else
-            {
-                this.UnsubscribeNotificationToken();
-            }
-        }
-
-        #endregion IVisible
     }
 }

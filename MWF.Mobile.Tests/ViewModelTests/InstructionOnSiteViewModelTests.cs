@@ -153,6 +153,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+            instructionOnSiteVM.IsVisible = true;
 
             instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
@@ -172,6 +173,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+            instructionOnSiteVM.IsVisible = true;
 
             instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
@@ -183,17 +185,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-        [Fact]
-        public void InstructionOnSiteVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
-
-            instructionOnSiteVM.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
-        }
 
         #endregion Test
 

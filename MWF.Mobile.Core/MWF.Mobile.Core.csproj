@@ -184,6 +184,7 @@
     <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />
     <Compile Include="Portable\IVibrate.cs" />
+    <Compile Include="Portable\IDisposable.cs" />
     <Compile Include="Portable\IVisible.cs" />
     <Compile Include="Presentation\CloseUpToViewPresentationHint.cs" />
     <Compile Include="Presentation\CloseToInitialViewPresentationHint.cs" />
@@ -254,6 +255,7 @@
     <Compile Include="ViewModels\BarcodeItemViewModel.cs" />
     <Compile Include="ViewModels\BarcodeSectionViewModel.cs" />
     <Compile Include="ViewModels\BarcodeScanningViewModel.cs" />
+    <Compile Include="ViewModels\Interfaces\IInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\InstructionAddDeliveriesViewModel.cs" />
     <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\BaseModalViewModel.cs" />

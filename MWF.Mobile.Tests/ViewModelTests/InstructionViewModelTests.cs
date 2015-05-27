@@ -283,6 +283,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
+            instructionVM.IsVisible = true;
 
             instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
@@ -301,6 +302,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
+            instructionVM.IsVisible = true;
 
             instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
@@ -312,18 +314,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
 
-        }
-
-        [Fact]
-        public void InstructionVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var instructionVM = _fixture.Create<InstructionViewModel>();
-
-            instructionVM.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
         }
 
         #endregion Test

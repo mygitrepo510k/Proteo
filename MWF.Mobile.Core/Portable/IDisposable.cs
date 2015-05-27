@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.Portable
 {
-    public interface IVisible
+    public interface IDisposable
     {
-        bool IsVisible { get; set; }
+        void Dispose();
     }
 }

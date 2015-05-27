@@ -20,8 +20,7 @@ using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 namespace MWF.Mobile.Core.ViewModels
 {
     public abstract class BaseCameraViewModel : 
-        BaseInstructionNotificationViewModel, 
-        IVisible
+        BaseInstructionNotificationViewModel
     {
         #region Private Members
 
@@ -188,12 +187,15 @@ namespace MWF.Mobile.Core.ViewModels
         {
             if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData.GetMobileData() != null && _navigationService.CurrentNavData.GetMobileData().ID == instructionID)
             {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
+                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update && this.IsVisible)
                     await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Data may have changed.", "This instruction has been updated");
                 else
                 {
-                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
-                    _navigationService.GoToManifest();
+                    if (this.IsVisible)
+                    {
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                        _navigationService.GoToManifest();
+                    }
                 }
             }
         }
@@ -209,17 +211,5 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion BaseFragmentViewModel Overrides
 
-        #region IVisible
-
-        public void IsVisible(bool isVisible)
-        {
-            if (isVisible) { }
-            else
-            {
-                this.UnsubscribeNotificationToken();
-            }
-        }
-
-        #endregion IVisible
     }
 }

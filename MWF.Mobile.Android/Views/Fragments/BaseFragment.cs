@@ -8,6 +8,7 @@ using Android.Widget;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.Portable;
 using Android.Views.InputMethods;
 using Android.Content;
 
@@ -38,6 +39,18 @@ namespace MWF.Mobile.Android.Views.Fragments
             base.OnResume();
         }
 
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            var disposableViewModel = this.ViewModel as Core.Portable.IDisposable;
+
+            if (disposableViewModel != null)
+                disposableViewModel.Dispose();
+
+        }
+
+
         protected void HideKeyboard()
         {
             InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
@@ -64,7 +77,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             var visibleViewModel = this.ViewModel as Core.Portable.IVisible;
 
             if (visibleViewModel != null)
-                visibleViewModel.IsVisible(value);
+                visibleViewModel.IsVisible = value;
         }
     }
 }

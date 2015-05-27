@@ -240,6 +240,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            displaySafetyCheckVM.IsVisible = true;
 
             _mockNavigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
@@ -260,6 +261,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            displaySafetyCheckVM.IsVisible = true;
 
             _mockNavigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
@@ -268,18 +270,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
 
-        }
-
-        [Fact]
-        public void DisplaySafetyCheckVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
-
-            displaySafetyCheckVM.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
         }
 
 

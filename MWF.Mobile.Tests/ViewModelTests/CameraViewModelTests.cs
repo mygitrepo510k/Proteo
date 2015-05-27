@@ -205,6 +205,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var cameraVM = _fixture.Create<SidebarCameraViewModel>();
 
+            cameraVM.IsVisible = true;
+
             cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -222,6 +224,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var cameraVM = _fixture.Create<SidebarCameraViewModel>();
 
+            cameraVM.IsVisible = true;
+
             _navigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
             cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
@@ -230,17 +234,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-        [Fact]
-        public void CameraVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var cameraVM = _fixture.Create<SidebarCameraViewModel>();
-
-            cameraVM.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
-        }
 
         #endregion Tests
 

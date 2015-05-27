@@ -243,6 +243,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var orderVM = _fixture.Create<OrderViewModel>();
+            orderVM.IsVisible = true;
 
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
@@ -263,6 +264,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var orderVM = _fixture.Create<OrderViewModel>();
+            orderVM.IsVisible = true;
 
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
@@ -277,17 +279,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-        [Fact]
-        public void OrderVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var orderVM = _fixture.Create<OrderViewModel>();
-
-            orderVM.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
-        }
 
         #endregion Tests
     }

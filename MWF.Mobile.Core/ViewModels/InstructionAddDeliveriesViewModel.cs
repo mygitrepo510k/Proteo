@@ -19,8 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class InstructionAddDeliveriesViewModel : BaseInstructionNotificationViewModel,
         IModalViewModel<bool>, 
-        IBackButtonHandler,
-        IVisible
+        IBackButtonHandler
     {
 
         #region Private Members
@@ -224,34 +223,23 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                 {
-                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "Instructions have been updated");
+                    if (this.IsVisible) 
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "Instructions have been updated");
                     RefreshPage();
                 }
                 else
                 {
-                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "Instructions on this delivery have been deleted.");
-                    _navigationService.GoToManifest();
+                    if (this.IsVisible)
+                    {
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "Instructions on this delivery have been deleted.");
+                        _navigationService.GoToManifest();
+                    }
                 }
             }
         }
 
         #endregion
 
-        #region IVisible
-
-        public void IsVisible(bool isVisible)
-        {
-            if (isVisible)
-            {
-
-            }
-            else
-            {
-                this.UnsubscribeNotificationToken();
-            }
-        }
-
-        #endregion IVisible
 
     }
 

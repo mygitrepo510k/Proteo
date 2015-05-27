@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -13,7 +14,7 @@ namespace MWF.Mobile.Core.ViewModels
     /// This base class is used to recieve notifications for when instructions that are being viewed are updated or deleted.
     /// </summary>
     public abstract class BaseInstructionNotificationViewModel
-        : BaseFragmentViewModel
+        : BaseFragmentViewModel, MWF.Mobile.Core.Portable.IDisposable, IInstructionNotificationViewModel
     {
 
         private MvxSubscriptionToken _notificationToken;
@@ -42,6 +43,11 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         abstract public Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID);
+
+        public void Dispose()
+        {
+            UnsubscribeNotificationToken();
+        }
 
     }
 

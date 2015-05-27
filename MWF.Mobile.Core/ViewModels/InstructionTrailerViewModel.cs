@@ -12,12 +12,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Cirrious.MvvmCross.Plugins.Messenger;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
     public class InstructionTrailerViewModel
-        : BaseTrailerListViewModel,
-        IVisible
+        : BaseTrailerListViewModel, IInstructionNotificationViewModel
     {
         #region Private Fields
 
@@ -73,12 +73,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private void UnsubscribeNotificationToken()
-        {
-            if (_notificationToken != null)
-                Messenger.Unsubscribe<Messages.GatewayInstructionNotificationMessage>(_notificationToken);
-        }
-
         #endregion
 
         #region Protected/Private Methods
@@ -124,38 +118,47 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
+        #endregion
+
+        #region Core.Portable.IDisposable
+
+        public void Dispose()
+        {
+            UnsubscribeNotificationToken();
+        }
+
+        #endregion
+
+        #region IInstructionNotificationViewModel
+
+        public void UnsubscribeNotificationToken()
+        {
+            if (_notificationToken != null)
+                Messenger.Unsubscribe<Messages.GatewayInstructionNotificationMessage>(_notificationToken);
+        }
+
         public async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
             if (instructionID == _mobileData.ID)
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                 {
-                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
+                    if (this.IsVisible)
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
                     GetMobileDataFromRepository(instructionID);
                 }
                 else
                 {
-                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
-                    _navigationService.GoToManifest();
+                    if (this.IsVisible)
+                    {
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                        _navigationService.GoToManifest();
+                    }
                 }
             }
         }
 
         #endregion
-
-        #region IVisible
-
-        public void IsVisible(bool isVisible)
-        {
-            if (isVisible) { }
-            else
-            {
-                this.UnsubscribeNotificationToken();
-            }
-        }
-
-        #endregion IVisible
-
 
     }
 }

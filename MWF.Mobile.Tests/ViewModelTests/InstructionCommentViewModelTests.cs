@@ -147,6 +147,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
+            instructionCommentVM.IsVisible = true;
 
             instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
@@ -164,6 +165,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
+            instructionCommentVM.IsVisible = true;
 
             instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
@@ -175,17 +177,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-        [Fact]
-        public void InstructionCommentVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
-
-            instructionCommentVM.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
-        }
 
         #endregion Tests
     }

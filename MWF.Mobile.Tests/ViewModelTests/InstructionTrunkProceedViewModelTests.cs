@@ -192,6 +192,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
+            InstructionTrunkProceedVM.IsVisible = true;
 
             InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
@@ -210,6 +211,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
+            InstructionTrunkProceedVM.IsVisible = true;
 
             InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
@@ -251,17 +253,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-        [Fact]
-        public void InstructionTrunkProceedVM_IsVisible()
-        {
-            base.ClearAll();
-
-            var instructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
-
-            instructionTrunkProceedVM.IsVisible(false);
-
-            _mockMessenger.Verify(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()), Times.Once);
-        }
 
         #endregion Test
 

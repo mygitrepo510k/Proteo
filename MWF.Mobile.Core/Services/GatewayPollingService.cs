@@ -31,8 +31,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IGatewayService _gatewayService = null;
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private Timer _timer;
-        private readonly IStartupService _startupService;
-        private readonly IMainService _mainService;
+        private readonly IInfoService _infoService;
         IDataChunkService _dataChunkService;
         private readonly AsyncLock _lock = new AsyncLock(); 
 
@@ -46,8 +45,7 @@ namespace MWF.Mobile.Core.Services
             IMvxMessenger messenger,
             IGatewayService gatewayService,
             IGatewayQueuedService gatewayQueuedService,
-            IStartupService startupService,
-            IMainService mainService,
+            IInfoService infoService,
             IDataChunkService dataChunkService,
             ICustomPresenter customPresenter
             )
@@ -59,8 +57,7 @@ namespace MWF.Mobile.Core.Services
             _messenger = messenger;
             _gatewayService = gatewayService;
             _gatewayQueuedService = gatewayQueuedService;
-            _startupService = startupService;
-            _mainService = mainService;
+            _infoService = infoService;
             _dataChunkService = dataChunkService;
             _customPresenter = customPresenter;
 
@@ -102,8 +99,8 @@ namespace MWF.Mobile.Core.Services
                 IEnumerable<MobileData> instructions = new List<MobileData>();
 
                 // Call to BlueSphere to check for instructions
-                instructions = await _gatewayService.GetDriverInstructions(_startupService.CurrentVehicle.Registration,
-                                                                           _startupService.LoggedInDriver.ID,
+                instructions = await _gatewayService.GetDriverInstructions(_infoService.CurrentVehicle.Registration,
+                                                                           _infoService.LoggedInDriver.ID,
                                                                            DateTime.Now,
                                                                            DateTime.Now.AddDays(DataSpan));
 
@@ -122,7 +119,7 @@ namespace MWF.Mobile.Core.Services
 
                         Mvx.Trace("started processing instruction." + instruction.ID);
 
-                        instruction.VehicleId = _startupService.CurrentVehicle.ID;
+                        instruction.VehicleId = _infoService.CurrentVehicle.ID;
 
                         switch (instruction.SyncState)
                         {
@@ -191,7 +188,7 @@ namespace MWF.Mobile.Core.Services
                     {
                         Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotification(
                             manifestInstructionVMsForNotification,
-                            done: notifiedInstructionVMs => _dataChunkService.SendReadChunk(notifiedInstructionVMs.Select(i => i.MobileData), _mainService.CurrentDriver, _mainService.CurrentVehicle),
+                            done: notifiedInstructionVMs => _dataChunkService.SendReadChunk(notifiedInstructionVMs.Select(i => i.MobileData), _infoService.LoggedInDriver, _infoService.CurrentVehicle),
                             title: "Manifest Update",
                             okButton: "Acknowledge");
                     }

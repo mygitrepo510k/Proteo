@@ -24,7 +24,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IToast _toast;
         private readonly IReachability _reachability;
-        private readonly IStartupService _startupService;
+        private readonly IInfoService _infoService;
         private readonly INavigationService _navigationService;
         private readonly ILoggingService _loggingService;
 
@@ -33,7 +33,7 @@ namespace MWF.Mobile.Core.ViewModels
             IVehicleRepository vehicleRepository, 
             IReachability reachabibilty,
             IToast toast, 
-            IStartupService startupService, 
+            IInfoService infoService, 
             INavigationService navigationService, 
             ICurrentDriverRepository currentDriverRepository,
             ILoggingService loggingService)
@@ -42,7 +42,7 @@ namespace MWF.Mobile.Core.ViewModels
             _reachability = reachabibilty;
 
             _gatewayService = gatewayService;
-            _startupService = startupService;
+            _infoService = infoService;
             _navigationService = navigationService;
             _loggingService = loggingService;
 
@@ -85,14 +85,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void ShowTrailerScreen(Vehicle vehicle)
         {
-            _startupService.LoggedInDriver.LastVehicleID = vehicle.ID;
-            _startupService.CurrentVehicle = vehicle;
+            _infoService.LoggedInDriver.LastVehicleID = vehicle.ID;
+            _infoService.CurrentVehicle = vehicle;
             _navigationService.MoveToNext();
         }
 
         private void LastVehicleSelect()
         {
-            var currentDriver = _currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID);
+            var currentDriver = _currentDriverRepository.GetByID(_infoService.LoggedInDriver.ID);
 
             if (currentDriver == null)
                 return;
@@ -129,7 +129,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(vehicle.Registration, "Confirm your vehicle", "Confirm"))
             {
-                var newDriver = _currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID);
+                var newDriver = _currentDriverRepository.GetByID(_infoService.LoggedInDriver.ID);
 
                 if (newDriver == null)
                     return;

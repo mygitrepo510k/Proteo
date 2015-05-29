@@ -26,7 +26,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
     {
 
         private IFixture _fixture;
-        private IStartupService _startupService;
+        private IInfoService _infoService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
         private MobileData _mobileData;
@@ -52,12 +52,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyProfileVehicle));
 
             _driver = _fixture.Create<Driver>();
-
-             var infoService = _fixture.Create<InfoService>();
-            _fixture.Inject<IInfoService>(infoService);
-            _startupService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(_startupService);
-            _startupService.LoggedInDriver = _driver;
+            _infoService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(_infoService);
+            _infoService.LoggedInDriver = _driver;
 
 
             _mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);

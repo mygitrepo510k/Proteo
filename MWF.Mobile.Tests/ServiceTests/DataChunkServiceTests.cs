@@ -26,7 +26,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         private IFixture _fixture;
         private Mock<IGatewayQueuedService> _mockGatewayQueuedService;
-        private Mock<IMainService> _mockMainService;
+        private Mock<IInfoService> _mockInfoService;
              
         private MobileApplicationDataChunkCollection _mobileDataChunkCollection;
         private UploadCameraImageObject _uploadImageObject;
@@ -61,7 +61,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _fixture.Inject<IGatewayQueuedService>(_mockGatewayQueuedService.Object);
 
-            _mockMainService = _fixture.InjectNewMock<IMainService>();
+            _mockInfoService = _fixture.InjectNewMock<IInfoService>();
         }
 
         #endregion Setup
@@ -73,7 +73,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a drive chunk
         /// </summary>
         [Fact]
-         public void MainService_SendDriveChunk()
+         public void InfoService_SendDriveChunk()
         {
             base.ClearAll();
 
@@ -105,7 +105,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a on site chunk
         /// </summary>
         [Fact]
-        public void MainService_SendOnSiteChunk()
+        public void InfoService_SendOnSiteChunk()
         {
             base.ClearAll();
 
@@ -138,7 +138,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a complete chunk
         /// </summary>
         [Fact]
-        public void MainService_SendCompleteChunk()
+        public void InfoService_SendCompleteChunk()
         {
             base.ClearAll();
 
@@ -171,7 +171,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a Read chunk
         /// </summary>
         [Fact]
-        public void MainService_SendReadChunk()
+        public void InfoService_SendReadChunk()
         {
             base.ClearAll();
 

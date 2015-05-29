@@ -40,7 +40,7 @@ namespace MWF.Mobile.Tests.ServiceTests
              
 
             // set up info service to have a logged in driver who is licensed
-            _infoService = _fixture.Create<InfoService>();
+            _infoService= _fixture.Create<InfoService>();
             _fixture.Inject<IInfoService>(_infoService);
             //(relies on driver TEST TEST (on Proteo test site) not being marked as revoked)
             _infoService.LoggedInDriver.ID = new Guid("7B5657F7-A0C3-4CAF-AA5F-D76FE942074B");

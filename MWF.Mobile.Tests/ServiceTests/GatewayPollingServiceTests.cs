@@ -30,7 +30,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private Mock<IGatewayService> _gatewayMock;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMvxMessenger;
-        private Mock<IMainService> _mockMainService;
+        private IInfoService _mockInfoService;
         private Mock<IDataChunkService> _mockDataChunkService;
 
         protected override void AdditionalSetup()
@@ -54,13 +54,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockUserInteraction.Setup(cui => cui.PopUpInstructionNotification(It.IsAny<List<ManifestInstructionViewModel>>(), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback<List<ManifestInstructionViewModel>, Action<List<ManifestInstructionViewModel>>, string, string>((s1, a, s2, s3) => _mockDataChunkService.Object.SendReadChunk(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()));
 
-            var mockStartupService = Mock.Of<IStartupService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
+
+            _mockInfoService = Mock.Of<IInfoService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
                                                     && ssr.LoggedInDriver == _fixture.Create<Driver>());
 
-            _fixture.Inject<IStartupService>(mockStartupService);
-
-            _mockMainService = new Mock<IMainService>();
-            _fixture.Inject<IMainService>(_mockMainService.Object);
+            _fixture.Inject<IInfoService>(_mockInfoService);
 
             IRepositories repos = Mock.Of<IRepositories>(r => r.DeviceRepository == deviceRepo);
             _fixture.Register<IRepositories>(() => repos);

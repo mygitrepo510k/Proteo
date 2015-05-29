@@ -18,10 +18,11 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly Portable.ICloseApplication _closeApplication = null;
         private readonly IDataService _dataService = null; 
         private readonly IRepositories _repositories = null; 
-        private readonly IStartupService _startupService = null;
+        private readonly IInfoService _infoService = null;
         private readonly INavigationService _navigationService = null; 
         private readonly ICustomUserInteraction _userInteraction = null;
         private readonly ILoggingService _loggingService = null;
+        private readonly IGatewayQueuedService _gatewayQueuedService = null;
         
         public StartupViewModel(IAuthenticationService authenticationService, 
                                 IGatewayService gatewayService, 
@@ -29,10 +30,11 @@ namespace MWF.Mobile.Core.ViewModels
                                 Portable.ICloseApplication closeApplication,
                                 IDataService dataService, 
                                 IRepositories repositories, 
-                                IStartupService startupService, 
+                                IInfoService infoService, 
                                 ICustomUserInteraction userInteraction, 
                                 INavigationService navigationService,
-                                ILoggingService loggingService)
+                                ILoggingService loggingService,
+                                IGatewayQueuedService gatewayQueuedService)
         {
             _authenticationService = authenticationService;
             _gatewayService = gatewayService;
@@ -40,10 +42,11 @@ namespace MWF.Mobile.Core.ViewModels
             _closeApplication = closeApplication;
             _dataService = dataService;
             _repositories = repositories;
-            _startupService = startupService;
+            _infoService = infoService;
             _userInteraction = userInteraction;
             _navigationService = navigationService;
             _loggingService = loggingService;
+            _gatewayQueuedService = gatewayQueuedService;
 
             this.SetInitialViewModel();
         }
@@ -53,7 +56,7 @@ namespace MWF.Mobile.Core.ViewModels
             var customerRepository = _repositories.CustomerRepository;
 
             if (customerRepository.GetAll().Any())
-                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _startupService, _closeApplication, _repositories, _navigationService, _loggingService);
+                this.InitialViewModel = new PasscodeViewModel(_authenticationService, _infoService, _closeApplication, _repositories, _navigationService, _loggingService, _gatewayQueuedService);
             else
                 this.InitialViewModel = new CustomerCodeViewModel(_gatewayService, _reachableService, _dataService, _repositories, _userInteraction, _navigationService);
         }

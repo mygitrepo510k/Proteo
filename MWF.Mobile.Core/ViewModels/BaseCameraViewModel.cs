@@ -31,7 +31,7 @@ namespace MWF.Mobile.Core.ViewModels
         List<Image> _images;
         private string _commentText;
         private readonly IMvxPictureChooserTask _pictureChooserTask;
-        protected IMainService _mainService;
+        protected IInfoService _infoService;
         protected INavigationService _navigationService;
         protected IImageUploadService _imageUploadService;
 
@@ -41,13 +41,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         public BaseCameraViewModel(
             IMvxPictureChooserTask pictureChooserTask, 
-            IMainService mainService, 
+            IInfoService infoService, 
             INavigationService navigationService,
             IImageUploadService imageUploadService)
         {
             _pictureChooserTask = pictureChooserTask;
             _imagesVM = new ObservableCollection<CameraImageViewModel>();
-            _mainService = mainService;
+            _infoService = infoService;
             _images = new List<Image>();
             _navigationService = navigationService;
             _imageUploadService = imageUploadService;
@@ -154,7 +154,7 @@ namespace MWF.Mobile.Core.ViewModels
             stream.CopyTo(memoryStream);
 
             int sequenceNumber = (ImagesVM.Any()) ? _imagesVM.Max(i => i.Image.Sequence) + 1 : 1;
-            Image image = new Image() { ID = Guid.NewGuid(), Sequence = sequenceNumber, Bytes = memoryStream.ToArray(), Filename = string.Format("{0} {1}.jpg", _mainService.CurrentDriver.DisplayName, DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss")) };
+            Image image = new Image() { ID = Guid.NewGuid(), Sequence = sequenceNumber, Bytes = memoryStream.ToArray(), Filename = string.Format("{0} {1}.jpg", _infoService.LoggedInDriver.DisplayName, DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss")) };
 
             //Add to view model
             CameraImageViewModel imageViewModel = new CameraImageViewModel(image, this);
@@ -193,7 +193,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                     {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
                         _navigationService.GoToManifest();
                     }
                 }

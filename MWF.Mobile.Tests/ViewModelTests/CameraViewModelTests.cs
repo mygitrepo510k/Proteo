@@ -29,7 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private MobileData _mobileData;
         private Mock<INavigationService> _navigationService;
         private Mock<IMvxPictureChooserTask> _pictureChooserMock;
-        private Mock<IMainService> _mockMainService;
+        private Mock<IInfoService> _mockInfoService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IImageUploadService> _mockImageUploadService;
         private Mock<IMvxMessenger> _mockMessenger;
@@ -50,8 +50,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
-            _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(m => m.CurrentDriver).Returns(_fixture.Create<Driver>());
+            _mockInfoService = _fixture.InjectNewMock<IInfoService>();
+            _mockInfoService.Setup(m => m.LoggedInDriver).Returns(_fixture.Create<Driver>());
 
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
             _mockUserInteraction.ConfirmReturnsTrue();

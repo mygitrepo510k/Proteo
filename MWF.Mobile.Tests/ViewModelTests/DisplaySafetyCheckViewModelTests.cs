@@ -29,7 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private MobileData _mobileData;
         private Mock<INavigationService> _mockNavigationService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
-        private Mock<IMainService> _mockMainService;
+        private Mock<IInfoService> _mockInfoService;
         private Mock<ILatestSafetyCheckRepository> _mockLatestSafetyCheckRepository;
         private Mock<IMvxMessenger> _mockMessenger;
 
@@ -40,8 +40,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _latestSafetyCheck = _fixture.Create<LatestSafetyCheck>();
             _mobileData = _fixture.Create<MobileData>();
 
-            _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(m => m.CurrentDriver).Returns(_fixture.Create<Driver>());
+            _mockInfoService = _fixture.InjectNewMock<IInfoService>();
+            _mockInfoService.Setup(m => m.LoggedInDriver).Returns(_fixture.Create<Driver>());
 
             _mockLatestSafetyCheckRepository = _fixture.InjectNewMock<ILatestSafetyCheckRepository>();
             _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriver(It.IsAny<Guid>())).Returns(_latestSafetyCheck);

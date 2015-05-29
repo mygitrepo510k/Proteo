@@ -25,7 +25,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
-        private readonly IMainService _mainService;
+        private readonly IInfoService _infoService;
         private readonly IDataChunkService _dataChunkService;
 
         private MobileApplicationDataChunkContentActivity _dataChunk;
@@ -40,12 +40,12 @@ namespace MWF.Mobile.Core.ViewModels
         public ReviseQuantityViewModel(
             INavigationService navigationService, 
             IRepositories repositories, 
-            IMainService mainService,
+            IInfoService infoService,
             IDataChunkService dataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
-            _mainService = mainService;
+            _infoService = infoService;
             _dataChunkService = dataChunkService;
         }
 
@@ -107,7 +107,7 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
             //This value gets updated in HE.
-            _dataChunkService.SendDataChunk(_dataChunk, _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle, updateQuantity: true);
+            _dataChunkService.SendDataChunk(_dataChunk, _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle, updateQuantity: true);
 
             this.ReturnResult(true);
 
@@ -183,7 +183,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                     {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
                         _navigationService.GoToManifest();
                     }
                 }

@@ -18,27 +18,30 @@ namespace MWF.Mobile.Core.ViewModels
     {
         private readonly ICurrentDriverRepository _currentDriverRepository = null;
         private readonly IAuthenticationService _authenticationService = null;
-        private readonly IStartupService _startupService = null;
+        private readonly IInfoService _infoService = null;
         private readonly ICloseApplication _closeApplication;
         private readonly INavigationService _navigationService;
         private readonly ILoggingService _loggingService;
+        private readonly IGatewayQueuedService _gatewayQueuedService;
         private bool _isBusy = false;
 
         public PasscodeViewModel(
             IAuthenticationService authenticationService, 
-            IStartupService startupService,
+            IInfoService infoService,
             ICloseApplication closeApplication, 
             IRepositories repositories, 
             INavigationService navigationService,
-            ILoggingService loggingService)
+            ILoggingService loggingService,
+            IGatewayQueuedService gatewayQueuedService)
         {
             _authenticationService = authenticationService;
-            _startupService = startupService;
+            _infoService = infoService;
             _navigationService = navigationService;
             _loggingService = loggingService;
 
             _currentDriverRepository = repositories.CurrentDriverRepository;
             _closeApplication = closeApplication;
+            _gatewayQueuedService = gatewayQueuedService;
         }
 
         #region Public Members
@@ -122,17 +125,17 @@ namespace MWF.Mobile.Core.ViewModels
 
                 if (result.Success)
                 {
-                    _startupService.LoggedInDriver = result.Driver;
+                    _infoService.LoggedInDriver = result.Driver;
 
-                    if (_currentDriverRepository.GetByID(_startupService.LoggedInDriver.ID) == null)
+                    if (_currentDriverRepository.GetByID(_infoService.LoggedInDriver.ID) == null)
                     {
                         CurrentDriver newDriver = new CurrentDriver();
-                        newDriver.ID = _startupService.LoggedInDriver.ID;
+                        newDriver.ID = _infoService.LoggedInDriver.ID;
                         _currentDriverRepository.Insert(newDriver);
                     }
 
                     // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
-                    _startupService.StartGatewayQueueTimer();
+                    _gatewayQueuedService.StartQueueTimer();
                     
                     _navigationService.MoveToNext();
                 }

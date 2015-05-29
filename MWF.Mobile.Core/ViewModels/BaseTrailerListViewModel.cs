@@ -25,7 +25,7 @@ namespace MWF.Mobile.Core.ViewModels
         protected readonly IRepositories _repositories;
         protected readonly IGatewayService _gatewayService;
         protected readonly IReachability _reachability;
-        protected readonly IStartupService _startupService;
+        protected readonly IInfoService _infoService;
         protected readonly INavigationService _navigationService;
         protected readonly IToast _toast;
 
@@ -33,11 +33,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public BaseTrailerListViewModel(IGatewayService gatewayService, IRepositories repositories, IReachability reachabilty, IToast toast, IStartupService startupService, INavigationService navigationService)
+        public BaseTrailerListViewModel(IGatewayService gatewayService, IRepositories repositories, IReachability reachabilty, IToast toast, IInfoService infoService, INavigationService navigationService)
         {
             _reachability = reachabilty;
             _toast = toast;
-            _startupService = startupService;
+            _infoService = infoService;
             _navigationService = navigationService;
             _gatewayService = gatewayService;
             _repositories = repositories;
@@ -68,7 +68,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return _repositories.VehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID).Registration;
+                return _repositories.VehicleRepository.GetByID(_infoService.LoggedInDriver.LastVehicleID).Registration;
             }
         }
 

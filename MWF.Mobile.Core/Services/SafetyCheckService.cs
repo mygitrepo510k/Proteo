@@ -1,26 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Cirrious.MvvmCross.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
 using MWF.Mobile.Core.Models;
 
 namespace MWF.Mobile.Core.Services
 {
-
-    //Simple class for in-memory storage of information picked up during the startup process
-    public class StartupService
-        : MvxNavigatingObject, IStartupService
+    public class SafetyCheckService : MWF.Mobile.Core.Services.ISafetyCheckService
     {
+        #region private members
 
         private readonly Repositories.IRepositories _repositories = null;
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IGpsService _gpsService = null;
         private readonly IInfoService _infoService = null;
 
-        public StartupService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService, IInfoService infoService)
+        #endregion
+
+        #region construction
+
+        public SafetyCheckService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService, IInfoService infoService)
         {
             _repositories = repositories;
             _gatewayQueuedService = gatewayQueuedService;
@@ -28,23 +29,16 @@ namespace MWF.Mobile.Core.Services
             _infoService = infoService;
         }
 
-        public Driver LoggedInDriver
-        {
-            get
-            {
-                return _infoService.LoggedInDriver;
-            }
-            set
-            {
-                _infoService.LoggedInDriver = value;
-            }
-        }
+        #endregion
+
+        #region public properties
 
         public SafetyCheckData CurrentVehicleSafetyCheckData { get; set; }
         public SafetyCheckData CurrentTrailerSafetyCheckData { get; set; }
-        public Vehicle CurrentVehicle { get; set; }
-        public Trailer CurrentTrailer { get; set; }
-        public int Mileage { get; set; }
+
+        #endregion
+
+        #region public methods
 
         public IEnumerable<Models.SafetyCheckData> GetCurrentSafetyCheckData()
         {
@@ -64,12 +58,6 @@ namespace MWF.Mobile.Core.Services
             return retVal;
         }
 
-        public void StartGatewayQueueTimer()
-        {
-            // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis.
-            _gatewayQueuedService.StartQueueTimer();
-        }
-
         public void CommitSafetyCheckData(bool trailerOnly = false)
         {
             // Add the safety checks to the gateway queue
@@ -78,7 +66,7 @@ namespace MWF.Mobile.Core.Services
             var safetyCheckFailed = false;
 
             // Store the latest safety check so the driver can display it at a later point if required
-            var latestSafetyCheck = new LatestSafetyCheck { DriverID = this.LoggedInDriver.ID };
+            var latestSafetyCheck = new LatestSafetyCheck { DriverID = _infoService.LoggedInDriver.ID };
 
             if (safetyCheckData.Any())
             {
@@ -103,7 +91,7 @@ namespace MWF.Mobile.Core.Services
                 if (this.CurrentTrailerSafetyCheckData != null && this.CurrentTrailerSafetyCheckData.Faults.Any())
                 {
                     latestSafetyCheck.TrailerSafetyCheck = this.CurrentTrailerSafetyCheckData;
-                    latestSafetyCheck.TrailerSafetyCheck.EffectiveDate = effectiveDateTime; 
+                    latestSafetyCheck.TrailerSafetyCheck.EffectiveDate = effectiveDateTime;
                 }
 
                 _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
@@ -123,7 +111,7 @@ namespace MWF.Mobile.Core.Services
 
                     // Add the SMP, mileage and effective-date to the safety check
                     safetyCheck.SMP = smp;
-                    safetyCheck.Mileage = this.Mileage;
+                    safetyCheck.Mileage = _infoService.Mileage;
                     safetyCheck.EffectiveDate = effectiveDateTime;
                 }
 
@@ -140,27 +128,8 @@ namespace MWF.Mobile.Core.Services
 
         }
 
-        /// <summary>
-        /// Method that sends a call to bluesphere saying the driver has logged in
-        /// </summary>
-        public void DriverLogIn()
-        {
-            DriverActivity currentDriver = new DriverActivity(LoggedInDriver, CurrentVehicle, Enums.DriverActivity.LogOn);
-            currentDriver.Smp = _gpsService.GetSmpData(Enums.ReportReason.DriverLogOn);
+        #endregion
 
-            _gatewayQueuedService.AddToQueue("fwSetDriverActivity", currentDriver);
-        }
-
-        /// <summary>
-        /// Clear the current logged in driver details
-        /// </summary>
-        public void DriverLogOut()
-        {
-            this.CurrentVehicle = null;
-            this.CurrentTrailer = null;
-            this.LoggedInDriver = null;
-        }
 
     }
-
 }

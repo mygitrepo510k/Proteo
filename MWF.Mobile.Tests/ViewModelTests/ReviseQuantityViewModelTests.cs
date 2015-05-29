@@ -29,7 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<INavigationService> _navigationService;
-        private Mock<IMainService> _mockMainService;
+        private Mock<IInfoService> _mockInfoService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
 
@@ -47,7 +47,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
-            _mockMainService = _fixture.InjectNewMock<IMainService>();
+            _mockInfoService = _fixture.InjectNewMock<IInfoService>();
 
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 

@@ -19,7 +19,6 @@ namespace MWF.Mobile.Core.Services
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IGpsService _gpsService = null;
         private readonly ILoggingService _loggingService = null;
-        private IMainService _mainService = null;
 
         #endregion Private Members
 
@@ -29,14 +28,12 @@ namespace MWF.Mobile.Core.Services
             Repositories.IRepositories repositories,
             IGatewayQueuedService gatewayQueuedService,
             IGpsService gpsService,
-            ILoggingService loggingService,
-            IMainService mainService)
+            ILoggingService loggingService)
         {
             _repositories = repositories;
             _gatewayQueuedService = gatewayQueuedService;
             _gpsService = gpsService;
             _loggingService = loggingService;
-            _mainService = mainService;
         }
 
         #endregion Constructors

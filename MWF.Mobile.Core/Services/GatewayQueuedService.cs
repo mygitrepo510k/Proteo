@@ -50,11 +50,11 @@ namespace MWF.Mobile.Core.Services
 
             //TODO: read this from config or somewhere?
 
-            //_gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
+            _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
 
 
             //Local url will need to change the station number
-            _gatewayDeviceRequestUrl = "http://192.168.3.133:17337/api/gateway/devicerequest";
+            //_gatewayDeviceRequestUrl = "http://192.168.3.133:17337/api/gateway/devicerequest";
 
             _deviceRepository = repositories.DeviceRepository;
         }

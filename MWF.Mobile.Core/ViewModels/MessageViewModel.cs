@@ -27,7 +27,7 @@ namespace MWF.Mobile.Core.ViewModels
         private IRepositories _repositories;
 
         private IDataChunkService _dataChunkService;
-        private IMainService _mainService;
+        private IInfoService _infoService;
 
         private MvxCommand _readMessageCommand;
 
@@ -39,11 +39,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         public MessageViewModel(
             IRepositories repositories, 
-            IMainService mainService, 
+            IInfoService infoService, 
             IDataChunkService dataChunkService)
         {
             _dataChunkService = dataChunkService;
-            _mainService = mainService;
+            _infoService = infoService;
 
             _repositories = repositories;
         }
@@ -96,7 +96,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.Complete;
 
-                _dataChunkService.SendDataChunk(new MobileApplicationDataChunkContentActivity(), _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+                _dataChunkService.SendDataChunk(new MobileApplicationDataChunkContentActivity(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
             }
             ReturnResult(!_isMessageRead);
         }

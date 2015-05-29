@@ -151,7 +151,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                     {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
                         _navigationService.GoToManifest();
                     }
                 }

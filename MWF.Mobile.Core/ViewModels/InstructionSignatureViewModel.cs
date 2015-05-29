@@ -23,7 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly IRepositories _repositories;
         private readonly ICustomUserInteraction _userInteraction;
-        private readonly IMainService _mainService;
+        private readonly IInfoService _infoService;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
 
@@ -31,12 +31,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public InstructionSignatureViewModel(INavigationService navigationService, IRepositories repositories, ICustomUserInteraction userInteraction, IMainService mobileApplicationDataChunkService)
+        public InstructionSignatureViewModel(INavigationService navigationService, IRepositories repositories, ICustomUserInteraction userInteraction, IInfoService mobileApplicationDataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
             _userInteraction = userInteraction;
-            _mainService = mobileApplicationDataChunkService;
+            _infoService = mobileApplicationDataChunkService;
 
         }
 

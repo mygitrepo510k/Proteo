@@ -28,7 +28,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
-        private IMainService _mainService;
+        private IInfoService _infoService;
         private IDataChunkService _dataChunkService;
 
 
@@ -36,11 +36,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public InstructionOnSiteViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService, IDataChunkService dataChunkService)
+        public InstructionOnSiteViewModel(INavigationService navigationService, IRepositories repositories, IInfoService infoService, IDataChunkService dataChunkService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
-            _mainService = mainService;
+            _infoService = infoService;
             _dataChunkService = dataChunkService;
         }
 
@@ -177,7 +177,7 @@ namespace MWF.Mobile.Core.ViewModels
                 if (additionalInstruction.ProgressState != Enums.InstructionProgress.OnSite)
                 {
                     additionalInstruction.ProgressState = Enums.InstructionProgress.OnSite;
-                    _dataChunkService.SendDataChunk(_navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+                    _dataChunkService.SendDataChunk(_navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
                 }
             }
 

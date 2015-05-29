@@ -28,7 +28,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private Driver _driver;
         private Mock<IMobileDataRepository> _mobileDataRepoMock;
-        private Mock<IMainService> _mockMainService;
+        private Mock<IInfoService> _mockInfoService;
         private Mock<INavigationService> _mockNavigationService;
         private Mock<IGatewayPollingService> _mockGatewayPollingService;
 
@@ -38,8 +38,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _driver = _fixture.Create<Driver>();
 
-            _mockMainService = _fixture.InjectNewMock<IMainService>();
-            _mockMainService.Setup(ms => ms.CurrentDriver).Returns(_driver);
+            _mockInfoService = _fixture.InjectNewMock<IInfoService>();
+            _mockInfoService.Setup(ms => ms.LoggedInDriver).Returns(_driver);
 
             _mobileDataRepoMock = _fixture.InjectNewMock<IMobileDataRepository>();
 

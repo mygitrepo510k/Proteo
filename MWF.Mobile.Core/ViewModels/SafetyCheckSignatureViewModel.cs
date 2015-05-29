@@ -17,8 +17,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region private/protected members
 
-        protected Services.IStartupService _startupService = null;
+        protected Services.IInfoService _infoService = null;
         protected Services.IGatewayQueuedService _gatewayQueuedService = null;
+        protected Services.ISafetyCheckService _safetyCheckService = null;
         protected ICustomUserInteraction _userInteraction = null;
         protected INavigationService _navigationService;
         protected IEnumerable<Models.SafetyCheckData> _safetyCheckData;
@@ -29,23 +30,24 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region construction
 
-        public SafetyCheckSignatureViewModel(Services.IStartupService startupService, Services.IGatewayQueuedService gatewayQueuedService, ICustomUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService)
+        public SafetyCheckSignatureViewModel(Services.IInfoService infoService, Services.IGatewayQueuedService gatewayQueuedService, ICustomUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService, ISafetyCheckService safetyCheckService)
         {
-            _startupService = startupService;
+            _infoService = infoService;
             _gatewayQueuedService = gatewayQueuedService;
             _userInteraction = userInteraction;
             _navigationService = navigationService;
             _repositories = repositories;
+            _safetyCheckService = safetyCheckService;
 
             // Retrieve the vehicle and trailer safety check data from the startup info service
-            _safetyCheckData = _startupService.GetCurrentSafetyCheckData();
+            _safetyCheckData = _safetyCheckService.GetCurrentSafetyCheckData();
             SafetyProfile safetyProfileVehicle = null;
             SafetyProfile safetyProfileTrailer = null;
 
-            safetyProfileVehicle = repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == _startupService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
+            safetyProfileVehicle = repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
 
-            if (_startupService.CurrentTrailer != null)
-                safetyProfileTrailer = repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == _startupService.CurrentTrailer.SafetyCheckProfileIntLink).SingleOrDefault();
+            if (_infoService.CurrentTrailer != null)
+                safetyProfileTrailer = repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == _infoService.CurrentTrailer.SafetyCheckProfileIntLink).SingleOrDefault();
 
             if (!_safetyCheckData.Any())
                 throw new Exception("Invalid application state - signature screen should not be displayed in cases where there are no safety checks.");
@@ -57,9 +59,9 @@ namespace MWF.Mobile.Core.ViewModels
                || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant)))
                 throw new Exception("Cannot proceed to safety check signature screen because the safety check hasn't been completed");
 
-            DriverName = startupService.LoggedInDriver.DisplayName;
-            VehicleRegistration = startupService.CurrentVehicle.Registration;
-            TrailerRef = startupService.CurrentTrailer == null ? "- no trailer -" : startupService.CurrentTrailer.Registration;
+            DriverName = infoService.LoggedInDriver.DisplayName;
+            VehicleRegistration = infoService.CurrentVehicle.Registration;
+            TrailerRef = infoService.CurrentTrailer == null ? "- no trailer -" : infoService.CurrentTrailer.Registration;
 
             var config = repositories.ConfigRepository.Get();
             if ((safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant)

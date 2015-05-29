@@ -21,7 +21,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private MvxCommand _doneCommand;
         private MvxCommand _takePictureCommand;
-        private IStartupService _startupService;
+        private IInfoService _infoService;
         private readonly IMvxPictureChooserTask _pictureChooserTask;
         private SafetyCheckFault _safetyCheckFault;             // working copy of safety check fault for duration of this screen
         private SafetyCheckFault _originalSafetyCheckFault;     // original copy of safety check fault we'll write to when "done" is clicked
@@ -32,9 +32,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public SafetyCheckFaultViewModel(IStartupService startupService, IMvxPictureChooserTask pictureChooserTask)
+        public SafetyCheckFaultViewModel(IInfoService infoService, IMvxPictureChooserTask pictureChooserTask)
         {
-            _startupService = startupService;
+            _infoService = infoService;
             _pictureChooserTask = pictureChooserTask;
         }
 

@@ -10,12 +10,12 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class OdometerViewModel : BaseFragmentViewModel
     {
-        private readonly IStartupService _startupService;
+        private readonly IInfoService _infoService;
         private readonly INavigationService _navigationService;
 
-        public OdometerViewModel(IStartupService startupService, INavigationService navigationService)
+        public OdometerViewModel(IInfoService infoService, INavigationService navigationService)
         {
-            _startupService = startupService;
+            _infoService = infoService;
             _navigationService = navigationService;
         }
 
@@ -54,14 +54,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string Registration
         {
-            get { return _startupService.CurrentVehicle.Registration; }
+            get { return _infoService.CurrentVehicle.Registration; }
         }
         
 
         private void DoStoreCommand()
         {
             int odometerValue = int.Parse(OdometerValue);
-            _startupService.Mileage = odometerValue;
+            _infoService.Mileage = odometerValue;
 
             _navigationService.MoveToNext();
         }

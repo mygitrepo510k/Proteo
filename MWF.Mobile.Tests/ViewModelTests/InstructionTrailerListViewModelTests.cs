@@ -26,7 +26,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private Core.Models.Trailer _trailer;
         private TrailerItemViewModel _trailerItemViewModel;
-        private IStartupService _startupService;
+        private IInfoService _infoService;
         private Mock<IMvxMessenger> _mockMessenger;
         private Mock<INavigationService> _navigationServiceMock;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
@@ -53,10 +53,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _trailer = new Core.Models.Trailer() { Registration = "TestRegistration", ID = Guid.NewGuid() };
             _trailerItemViewModel = new TrailerItemViewModel() { Trailer = _trailer };
 
-            var infoService = _fixture.Create<InfoService>();
-            _fixture.Inject<IInfoService>(infoService);
-            _startupService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(_startupService);
+            _infoService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(_infoService);
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
             _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
@@ -150,6 +148,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             var vm = _fixture.Create<InstructionTrailerViewModel>();
+            vm.IsVisible = true;
 
             vm.Init(new NavData<MobileData>() { Data = mobileData });
 
@@ -178,6 +177,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             var vm = _fixture.Create<InstructionTrailerViewModel>();
+            vm.IsVisible = true;
 
             vm.Init(new NavData<MobileData>() { Data = mobileData });
 

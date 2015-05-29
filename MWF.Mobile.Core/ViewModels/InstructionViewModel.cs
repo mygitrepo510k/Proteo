@@ -24,7 +24,7 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Fields
 
         private readonly INavigationService _navigationService;
-        private readonly IMainService _mainService;
+        private readonly IInfoService _infoService;
         private readonly IRepositories _repositories;
         private readonly IDataChunkService _dataChunkService;
 
@@ -41,11 +41,11 @@ namespace MWF.Mobile.Core.ViewModels
         public InstructionViewModel(
             INavigationService navigationService,
             IRepositories repositories,
-            IMainService mainService,
+            IInfoService infoService,
             IDataChunkService dataChunkService)
         {
             _navigationService = navigationService;
-            _mainService = mainService;
+            _infoService = infoService;
             _repositories = repositories;
             _dataChunkService = dataChunkService;
         }
@@ -103,7 +103,7 @@ namespace MWF.Mobile.Core.ViewModels
         { 
             get 
             {
-                var reg = (_mainService.CurrentTrailer == null) ? "No trailer" : _mainService.CurrentTrailer.Registration;
+                var reg = (_infoService.CurrentTrailer == null) ? "No trailer" : _infoService.CurrentTrailer.Registration;
                 if (reg == OrderTrailerReg) return string.Empty;
 
                 return string.Format("(Current: {0})", reg);
@@ -216,7 +216,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (_mobileData.ProgressState == Enums.InstructionProgress.NotStarted)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.Driving;
-                _dataChunkService.SendDataChunk(_navData.GetDataChunk(), _mobileData, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+                _dataChunkService.SendDataChunk(_navData.GetDataChunk(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
             }
             else if (_mobileData.ProgressState == Enums.InstructionProgress.Driving)
             {
@@ -293,7 +293,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                     {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
                         _navigationService.GoToManifest();
                     }
                 }

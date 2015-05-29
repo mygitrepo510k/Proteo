@@ -25,7 +25,7 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Members
 
         private IRepositories _repositories;
-        private IStartupService _startupService;
+        private IInfoService _infoService;
         private MvxCommand _doneCommand;
         private NavData<MobileData> _navData;
         private ApplicationProfile _appProfile;
@@ -37,10 +37,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public InstructionAddDeliveriesViewModel(IRepositories repositories, IStartupService startupService, INavigationService navigationService)
+        public InstructionAddDeliveriesViewModel(IRepositories repositories, IInfoService infoService, INavigationService navigationService)
         {
             _repositories = repositories;
-            _startupService = startupService;
+            _infoService = infoService;
             _appProfile = _repositories.ApplicationRepository.GetAll().First();
             _navigationService = navigationService;
         }
@@ -62,7 +62,7 @@ namespace MWF.Mobile.Core.ViewModels
             var today = DateTime.Now;
 
             // get all non-complete deliveries (excluding the current one) that conform to the same "barcode scanning on delivery) type as the current one
-            var nonCompletedDeliveries = _repositories.MobileDataRepository.GetNonCompletedInstructions(_startupService.LoggedInDriver.ID).Where(i => i.Order.Type == Enums.InstructionType.Deliver && 
+            var nonCompletedDeliveries = _repositories.MobileDataRepository.GetNonCompletedInstructions(_infoService.LoggedInDriver.ID).Where(i => i.Order.Type == Enums.InstructionType.Deliver && 
                                                                                                                                                         i.ID != _navData.Data.ID &&                                                                                                                                              
                                                                                                                                                         i.Order.Items.First().Additional.BarcodeScanRequiredForDelivery == _navData.Data.Order.Items.First().Additional.BarcodeScanRequiredForDelivery);      
             // only get the ones that show up in the same time range as displayed in the manifest screen

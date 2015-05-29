@@ -23,10 +23,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ModalCameraViewModel(
             IMvxPictureChooserTask pictureChooserTask, 
-            IMainService mainService, 
+            IInfoService infoService, 
             INavigationService navigationService,
             IImageUploadService imageUploadService)
-            : base(pictureChooserTask, mainService, navigationService, imageUploadService)
+            : base(pictureChooserTask, infoService, navigationService, imageUploadService)
         {
 
         }
@@ -50,7 +50,7 @@ namespace MWF.Mobile.Core.ViewModels
                 mobileDatas = (_navigationService.CurrentNavData as NavData<MobileData>).GetAllInstructions();
             }
 
-            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _mainService.CurrentDriver, mobileDatas);
+            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _infoService.LoggedInDriver, mobileDatas);
         }
 
 

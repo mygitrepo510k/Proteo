@@ -23,7 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
 
 
         private MobileData _mobileData;
-        private IMainService _mainService;
+        private IInfoService _infoService;
         private NavData<MobileData> _navData;
 
 
@@ -40,10 +40,10 @@ namespace MWF.Mobile.Core.ViewModels
                                             IRepositories repositories,
                                             IReachability reachabiity,
                                             IToast toast,
-                                            IStartupService startUpService,
-                                            IMainService mainService) : base(gatewayService, repositories, reachabiity, toast, startUpService, navigationService )
+                                            IInfoService startUpService,
+                                            IInfoService infoService) : base(gatewayService, repositories, reachabiity, toast, startUpService, navigationService )
         {
-            _mainService = mainService;
+            _infoService = infoService;
 
             _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(async m => await CheckInstructionNotificationAsync(m.Command, m.InstructionID));
         }
@@ -91,7 +91,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             // if a trailer has been selected it differs from the current trailer then we need to update
             // everything requirede to update safety profiles is readiness for the next step
-            if (trailer != null && (!Models.Trailer.SameAs(trailer, _mainService.CurrentTrailer)))
+            if (trailer != null && (!Models.Trailer.SameAs(trailer, _infoService.CurrentTrailer)))
             {
                 this.IsBusy = true;
 
@@ -151,7 +151,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                     {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
                         _navigationService.GoToManifest();
                     }
                 }

@@ -35,9 +35,8 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IToast _toast;
         private readonly IGatewayPollingService _gatewayPollingService;
         private readonly IGatewayQueuedService _gatewayQueuedService;
-        private readonly IStartupService _startupService;
+        private readonly IInfoService _infoService;
 
-        private IMainService _mainService;
         private ObservableCollection<ManifestSectionViewModel> _sections;
         private MvxCommand _refreshListCommand;
         private MvxCommand _refreshStatusesCommand;
@@ -52,7 +51,7 @@ namespace MWF.Mobile.Core.ViewModels
         #region Constructor
 
         public ManifestViewModel(IRepositories repositories, INavigationService navigationService, IReachability reachability, IToast toast,
-                                 IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService, IStartupService startupService, IMainService mainService)
+                                 IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService, IInfoService infoService)
         {
 
             _mobileDataRepository = repositories.MobileDataRepository;
@@ -63,8 +62,7 @@ namespace MWF.Mobile.Core.ViewModels
             _toast = toast;
             _gatewayPollingService = gatewayPollingService;
             _gatewayQueuedService = gatewayQueuedService;
-            _startupService = startupService;
-            _mainService = mainService;
+            _infoService = infoService;
 
             _appProfile = _applicationProfileRepository.GetAll().First();
 
@@ -159,13 +157,13 @@ namespace MWF.Mobile.Core.ViewModels
             var today = DateTime.Now;
 
             // get instruction data models from repository and order them
-            var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_startupService.LoggedInDriver.ID);
-            var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_startupService.LoggedInDriver.ID);
+            var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_infoService.LoggedInDriver.ID);
+            var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_infoService.LoggedInDriver.ID);
 
             activeInstructionsDataModels = activeInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
             nonActiveInstructionsDataModels = nonActiveInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
 
-            var messageDataModels = _mobileDataRepository.GetNonCompletedMessages(_startupService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
+            var messageDataModels = _mobileDataRepository.GetNonCompletedMessages(_infoService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
 
             if (activeInstructionsDataModels.ToList().Count == 0)
             {

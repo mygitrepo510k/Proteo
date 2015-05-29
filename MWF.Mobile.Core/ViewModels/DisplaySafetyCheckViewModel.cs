@@ -21,7 +21,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Members
 
-        private IMainService _mainService;
+        private IInfoService _infoService;
         private INavigationService _navigationService;
         private Repositories.IRepositories _repositories;
         private LatestSafetyCheck _latestSafetyCheckData;
@@ -30,14 +30,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public DisplaySafetyCheckViewModel(IMainService mainService, INavigationService navigationService, Repositories.IRepositories repositories)
+        public DisplaySafetyCheckViewModel(IInfoService infoService, INavigationService navigationService, Repositories.IRepositories repositories)
         {
-            _mainService = mainService;
+            _infoService = infoService;
             _navigationService = navigationService;
             _repositories = repositories;
             SafetyCheckFaultItemViewModels = new List<DisplaySafetyCheckFaultItemViewModel>();
 
-            _latestSafetyCheckData = _repositories.LatestSafetyCheckRepository.GetForDriver(_mainService.CurrentDriver.ID);
+            _latestSafetyCheckData = _repositories.LatestSafetyCheckRepository.GetForDriver(_infoService.LoggedInDriver.ID);
 
             //If there is no safety check data to view, then sends them back to where they came.
             if (_latestSafetyCheckData.VehicleSafetyCheck == null && _latestSafetyCheckData.TrailerSafetyCheck == null)
@@ -100,7 +100,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string DriverName
         {
-            get { return _mainService.CurrentDriver.DisplayName; }
+            get { return _infoService.LoggedInDriver.DisplayName; }
         }
 
         private List<DisplaySafetyCheckFaultItemViewModel> _safetyCheckFaultItemViewModels;
@@ -173,7 +173,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                     {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
                         _navigationService.GoToManifest();
                     }
                 }

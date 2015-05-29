@@ -25,7 +25,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
     {
 
         private IFixture _fixture;
-        private IStartupService _startupService;
+        private IInfoService _infoService;
+        private ISafetyCheckService _safetyCheckService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
         private MobileData _mobileData;
@@ -56,15 +57,19 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _driver = _fixture.Create<Driver>();
 
-            _startupService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(_startupService);
-            _startupService.LoggedInDriver = _driver;
+
+            _infoService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(_infoService);
+            _infoService.LoggedInDriver = _driver;
+
+            _safetyCheckService = _fixture.Create<SafetyCheckService>();
+            _fixture.Inject<ISafetyCheckService>(_safetyCheckService);
 
 
             _mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false,true, null);
             _navData = new NavData<MobileData>() { Data = _mobileData };
 
-            _startupService.CurrentVehicleSafetyCheckData= _vehicleSafetyCheckData = _fixture.Create<SafetyCheckData>();
+            _safetyCheckService.CurrentVehicleSafetyCheckData = _vehicleSafetyCheckData = _fixture.Create<SafetyCheckData>();
             _navData.OtherData["UpdatedTrailerSafetyCheckData"] =_trailerSafetyCheckData = _fixture.Create<SafetyCheckData>();
 
             _trailer = _fixture.Create<Core.Models.Trailer>();
@@ -95,7 +100,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _vehicleSafetyProfile = _fixture.Create<SafetyProfile>();
             _vehicleSafetyProfile.IsTrailerProfile = false;
-            _vehicleSafetyProfile.IntLink = _startupService.CurrentVehicle.SafetyCheckProfileIntLink;
+            _vehicleSafetyProfile.IntLink = _infoService.CurrentVehicle.SafetyCheckProfileIntLink;
 
             List<SafetyProfile> profiles = new List<SafetyProfile>() { _trailerSafetyProfile, _vehicleSafetyProfile };
 
@@ -119,7 +124,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             vm.DoneCommand.Execute(null);
 
             //check the sfaety data has been signed
-            Assert.Equal(vm.SignatureEncodedImage, _startupService.CurrentVehicleSafetyCheckData.Signature.EncodedImage);
+            Assert.Equal(vm.SignatureEncodedImage, _safetyCheckService.CurrentVehicleSafetyCheckData.Signature.EncodedImage);
             Assert.Equal(vm.SignatureEncodedImage, _trailerSafetyCheckData.Signature.EncodedImage);
 
             //check the next view model was navigated to

@@ -36,12 +36,15 @@ namespace MWF.Mobile.Core.Services
 
 
         private readonly IGatewayPollingService _gatewayPollingService;
-        private IMainService _mainService;
+        private readonly IInfoService _infoService;
+        private readonly IDataChunkService _dataChunkService;
+        private readonly ISafetyCheckService _safetyCheckService;
+        private readonly IGatewayQueuedService _gatewayQueuedService = null;
+        private readonly IGpsService _gpsService = null;
         private ICustomPresenter _presenter;
-        IStartupService _startupService;
+        
         IRepositories _repositories;
-        ICloseApplication _closeApplication;
-        private IDataChunkService _dataChunkService;
+        ICloseApplication _closeApplication;      
         private Timer _loginSessionTimer;
         private readonly IMvxMessenger _messenger = null;
         private MvxSubscriptionToken _notificationToken;
@@ -52,25 +55,29 @@ namespace MWF.Mobile.Core.Services
 
         public NavigationService(
             ICustomPresenter presenter,
-            IStartupService startupService,
+            IInfoService infoService,
             ICloseApplication closeApplication,
             IRepositories repositories,
             IGatewayPollingService gatewayPollingService,
-            IMainService mainService,
             IDataChunkService dataChunkService,
-            IMvxMessenger messenger)
+            IMvxMessenger messenger,
+            ISafetyCheckService safetyCheckService,
+            IGatewayQueuedService gatewayQueuedService, 
+            IGpsService gpsService)
         {
             _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<NavData>>();
             _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<NavData>>();
             _navDataDictionary = new Dictionary<Guid, Tuple<object, Dictionary<string, object>>>();
             _presenter = presenter;
 
-            _mainService = mainService;
             _repositories = repositories;
             _gatewayPollingService = gatewayPollingService;
-            _startupService = startupService;
+            _infoService = infoService;
             _closeApplication = closeApplication;
             _dataChunkService = dataChunkService;
+            _safetyCheckService = safetyCheckService;
+            _gatewayQueuedService = gatewayQueuedService;
+            _gpsService = gpsService;
             _messenger = messenger;
 
             _notificationToken = Mvx.Resolve<IMvxMessenger>().Subscribe<Messages.InvalidLicenseNotificationMessage>(m =>
@@ -306,8 +313,8 @@ namespace MWF.Mobile.Core.Services
         {
             await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Your license is no longer valid. Logging out.");
 
-            _startupService.LoggedInDriver.IsLicensed = false;
-            _repositories.DriverRepository.Update(_startupService.LoggedInDriver);
+            _infoService.LoggedInDriver.IsLicensed = false;
+            _repositories.DriverRepository.Update(_infoService.LoggedInDriver);
 
             DoLogout(this.CurrentNavData);
 
@@ -318,7 +325,11 @@ namespace MWF.Mobile.Core.Services
             // Stop the gateway polling service before we "logout" the user.
             _gatewayPollingService.StopPollingTimer();
             this.StopLoginSessionTimer();
-            _startupService.DriverLogOut();
+
+            _infoService.CurrentVehicle = null;
+            _infoService.CurrentTrailer = null;
+            _infoService.LoggedInDriver = null;
+
             MoveTo(typeof(StartupViewModel), navData);
         }
 
@@ -348,7 +359,7 @@ namespace MWF.Mobile.Core.Services
         {
             get
             {
-                return _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == _startupService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
+                return _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
             }
         }
 
@@ -357,7 +368,7 @@ namespace MWF.Mobile.Core.Services
 
             get
             {
-                return GetTrailerSafetyProfile(_startupService.CurrentTrailer);
+                return GetTrailerSafetyProfile(_infoService.CurrentTrailer);
             }
 
         }
@@ -371,7 +382,7 @@ namespace MWF.Mobile.Core.Services
 
         private Enums.SafetyCheckStatus SafetyCheckStatus
         {
-            get { return SafetyCheckData.GetOverallStatus(_startupService.GetCurrentSafetyCheckData().Select(scd => scd.GetOverallStatus())); }
+            get { return SafetyCheckData.GetOverallStatus(_safetyCheckService.GetCurrentSafetyCheckData().Select(scd => scd.GetOverallStatus())); }
         }
 
         #endregion Private Properties
@@ -475,7 +486,7 @@ namespace MWF.Mobile.Core.Services
         private void SendMobileData(NavData<MobileData> navData)
         {
             navData.Data.ProgressState = Enums.InstructionProgress.Complete;
-            _dataChunkService.SendDataChunk(navData.GetDataChunk(), navData.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+            _dataChunkService.SendDataChunk(navData.GetDataChunk(), navData.Data, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
 
             // send any datachunks for addiotional instructions
             var additionalInstructions = navData.GetAdditionalInstructions();
@@ -483,7 +494,7 @@ namespace MWF.Mobile.Core.Services
             {
 
                 additionalInstruction.ProgressState = Enums.InstructionProgress.Complete;
-                _dataChunkService.SendDataChunk(navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+                _dataChunkService.SendDataChunk(navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
 
             }
 
@@ -493,7 +504,11 @@ namespace MWF.Mobile.Core.Services
 
         private void DriverLogIn()
         {
-            _startupService.DriverLogIn();
+            DriverActivity currentDriver = new DriverActivity(_infoService.LoggedInDriver, _infoService.CurrentVehicle, Enums.DriverActivity.LogOn);
+            currentDriver.Smp = _gpsService.GetSmpData(Enums.ReportReason.DriverLogOn);
+
+            _gatewayQueuedService.AddToQueue("fwSetDriverActivity", currentDriver);
+
             this.StartLoginSessionTimer();
             _gatewayPollingService.StartPollingTimer();
         }
@@ -630,7 +645,7 @@ namespace MWF.Mobile.Core.Services
         {
 
             // commit safety check data to repositories and bluesphere
-            _startupService.CommitSafetyCheckData();
+            _safetyCheckService.CommitSafetyCheckData();
 
             if (SafetyCheckStatus == Enums.SafetyCheckStatus.Failed)
             {
@@ -653,7 +668,7 @@ namespace MWF.Mobile.Core.Services
         {
 
             // commit safety check data to repositories and bluesphere
-            _startupService.CommitSafetyCheckData();
+            _safetyCheckService.CommitSafetyCheckData();
 
             DoLogout(navData);
         }
@@ -704,7 +719,7 @@ namespace MWF.Mobile.Core.Services
                 {
                     var mobileDataNav = (NavData<MobileData>)navData;
                     // send "onsite" data chunk 
-                    _dataChunkService.SendDataChunk(mobileDataNav.GetDataChunk(), mobileDataNav.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle);
+                    _dataChunkService.SendDataChunk(mobileDataNav.GetDataChunk(), mobileDataNav.Data, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
 
                     ShowViewModel<InstructionOnSiteViewModel>(mobileDataNav);
                 }
@@ -732,14 +747,14 @@ namespace MWF.Mobile.Core.Services
                 if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
                 {
 
-                    if (additionalContent.IsTrailerConfirmationEnabled || !Models.Trailer.SameAs(_startupService.CurrentTrailer, mobileNavData.Data.Order.Additional.Trailer))
+                    if (additionalContent.IsTrailerConfirmationEnabled || !Models.Trailer.SameAs(_infoService.CurrentTrailer, mobileNavData.Data.Order.Additional.Trailer))
                     {
                         // Note if trailer confirmation is not explicitly enabled, still need to cater for ambiguous case
                         // where the current trailer doesn't match the one specified on the order. Which one does the driver
                         // actually have attached and intend to use for the order?
                         var instructionTrailer = mobileNavData.Data.Order.Additional.Trailer;
                         string orderTrailerMessage = (instructionTrailer == null || instructionTrailer.TrailerId == null) ? "No trailer specified on instruction." : string.Format("Trailer specified on instruction is {0}.", instructionTrailer.TrailerId);
-                        string currentTrailerMessage = (_startupService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _startupService.CurrentTrailer.Registration);
+                        string currentTrailerMessage = (_infoService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _infoService.CurrentTrailer.Registration);
 
                         string message = orderTrailerMessage + currentTrailerMessage;
                         var isConfirmed = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
@@ -751,7 +766,7 @@ namespace MWF.Mobile.Core.Services
                         }
                         else
                         {
-                            UpdateTrailerForInstruction(mobileNavData, _startupService.CurrentTrailer);
+                            UpdateTrailerForInstruction(mobileNavData, _infoService.CurrentTrailer);
                         }
                     }
                 }
@@ -808,7 +823,7 @@ namespace MWF.Mobile.Core.Services
 
 
             // Trailer differs from the current trailer
-            if (trailer != null && (!Models.Trailer.SameAs(trailer, _startupService.CurrentTrailer)))
+            if (trailer != null && (!Models.Trailer.SameAs(trailer, _infoService.CurrentTrailer)))
             {
                 this.ShowViewModel<InstructionSafetyCheckViewModel>(mobileNavData);
             }
@@ -881,13 +896,13 @@ namespace MWF.Mobile.Core.Services
                 }
 
                 // send the revised trailer data chunk
-                _dataChunkService.SendDataChunk(mobileNavData.GetDataChunk(), mobileNavData.Data, _mainService.CurrentDriver, _mainService.CurrentVehicle, updateTrailer: true);
+                _dataChunkService.SendDataChunk(mobileNavData.GetDataChunk(), mobileNavData.Data, _infoService.LoggedInDriver, _infoService.CurrentVehicle, updateTrailer: true);
             }
 
-            _startupService.CurrentTrailer = trailer;
+            _infoService.CurrentTrailer = trailer;
 
             if (trailer != null)
-                _startupService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
+                _infoService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
         }
 
 
@@ -972,10 +987,10 @@ namespace MWF.Mobile.Core.Services
 
             UpdateTrailerForInstruction(mobileNavData, trailer);
 
-            _startupService.CurrentTrailerSafetyCheckData = navData.OtherData["UpdatedTrailerSafetyCheckData"] as SafetyCheckData;
+            _safetyCheckService.CurrentTrailerSafetyCheckData = navData.OtherData["UpdatedTrailerSafetyCheckData"] as SafetyCheckData;
 
             // commit safety check data to repositories and bluesphere
-            _startupService.CommitSafetyCheckData(trailerOnly: true);
+            _safetyCheckService.CommitSafetyCheckData(trailerOnly: true);
 
             // clear all nav item data related to trailer selection flow
             mobileNavData.OtherData["UpdatedTrailer"] = null;
@@ -1076,7 +1091,7 @@ namespace MWF.Mobile.Core.Services
                 {
                     var instructionTrailer = mobileNavData.Data.Order.Additional.Trailer;
                     string orderTrailerMessage = (instructionTrailer == null || instructionTrailer.TrailerId == null) ? "No trailer specified on instruction." : string.Format("Trailer specified on instruction is {0}.", instructionTrailer.TrailerId);
-                    string currentTrailerMessage = (_startupService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _startupService.CurrentTrailer.Registration);
+                    string currentTrailerMessage = (_infoService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _infoService.CurrentTrailer.Registration);
 
                     string message = orderTrailerMessage + currentTrailerMessage;
                     var isConfirmed = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
@@ -1089,7 +1104,7 @@ namespace MWF.Mobile.Core.Services
                     }
                     else
                     {
-                        UpdateTrailerForInstruction(mobileNavData, _startupService.CurrentTrailer);
+                        UpdateTrailerForInstruction(mobileNavData, _infoService.CurrentTrailer);
                     }
                 }
 

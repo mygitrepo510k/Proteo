@@ -20,8 +20,8 @@ namespace MWF.Mobile.Core.ViewModels
                                     IRepositories repositories, 
                                     IReachability reachabibilty, 
                                     IToast toast, 
-                                    IStartupService startupService, 
-                                    INavigationService navigationService) : base(gatewayService, repositories, reachabibilty, toast, startupService, navigationService)
+                                    IInfoService infoService, 
+                                    INavigationService navigationService) : base(gatewayService, repositories, reachabibilty, toast, infoService, navigationService)
         {
         }
 
@@ -52,8 +52,8 @@ namespace MWF.Mobile.Core.ViewModels
                     this.IsBusy = false;
                 }
 
-                _startupService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
-                _startupService.CurrentTrailer = trailer;
+                _infoService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
+                _infoService.CurrentTrailer = trailer;
                 _navigationService.MoveToNext();
             }
         }

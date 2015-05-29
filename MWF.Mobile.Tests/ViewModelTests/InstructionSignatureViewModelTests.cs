@@ -30,7 +30,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<INavigationService> _navigationService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
-        private Mock<IMainService> _mockMainService;
+        private Mock<IInfoService> _mockInfoService;
         private Mock<IDataChunkService> _mockDataChunkService;
         private Mock<IMvxMessenger> _mockMessenger;
 
@@ -53,7 +53,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
-            _mockMainService = _fixture.InjectNewMock<IMainService>();
+            _mockInfoService = _fixture.InjectNewMock<IInfoService>();
 
             _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
 

@@ -32,7 +32,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IVerbProfileRepository> _mockVerbProfileRepo;
         private Mock<INavigationService> _mockNavigationService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
-        private Mock<IMainService> _mockMainService;
+        private Mock<IInfoService> _mockInfoService;
         private Mock<IMvxMessenger> _mockMessenger;
         private VerbProfile _verbProfile;
 
@@ -62,7 +62,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
             _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
-            _mockMainService = _fixture.InjectNewMock<IMainService>();
+            _mockInfoService = _fixture.InjectNewMock<IInfoService>();
 
             _fixture.Customize<BarcodeScanningViewModel>(vm => vm.Without(x => x.BarcodeSections));
             _fixture.Customize<BarcodeScanningViewModel>(vm => vm.Without(x => x.BarcodeInput));

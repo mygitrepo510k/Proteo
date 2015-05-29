@@ -24,18 +24,18 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IRepositories _repositories;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
-        private IMainService _mainService;
+        private IInfoService _infoService;
 
 
         #endregion
 
         #region Construction
 
-        public InstructionCommentViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
+        public InstructionCommentViewModel(INavigationService navigationService, IRepositories repositories, IInfoService infoService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
-            _mainService = mainService;
+            _infoService = infoService;
         }
 
         public void Init(NavData<MobileData> navData)

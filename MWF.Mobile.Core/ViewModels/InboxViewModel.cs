@@ -19,7 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         private IMobileDataRepository _mobileDataRepository;
-        private IMainService _mainService;
+        private IInfoService _infoService;
         private INavigationService _navigationService;
         private IGatewayPollingService _gatewayPollingService;
         private MvxCommand _refreshMessagesCommand;
@@ -27,12 +27,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public InboxViewModel(
             IRepositories repositories, 
-            IMainService mainService, 
+            IInfoService infoService, 
             INavigationService navigationService,
             IGatewayPollingService gatewayPollingService)
         {
             _mobileDataRepository = repositories.MobileDataRepository;
-            _mainService = mainService;
+            _infoService = infoService;
             _navigationService = navigationService;
             _gatewayPollingService = gatewayPollingService;
 
@@ -74,7 +74,7 @@ namespace MWF.Mobile.Core.ViewModels
         private void ReloadPage()
         {
             //Show messages that are no older than a week
-            Messages = new ObservableCollection<ManifestInstructionViewModel>(_mobileDataRepository.GetAllMessages(_mainService.CurrentDriver.ID).Where(i => i.EffectiveDate > DateTime.Today.AddDays(-7)).Select(m => new ManifestInstructionViewModel(this, _navigationService, m)).OrderBy(m => m.ProgressState).ThenBy(m => m.ArrivalDate));
+            Messages = new ObservableCollection<ManifestInstructionViewModel>(_mobileDataRepository.GetAllMessages(_infoService.LoggedInDriver.ID).Where(i => i.EffectiveDate > DateTime.Today.AddDays(-7)).Select(m => new ManifestInstructionViewModel(this, _navigationService, m)).OrderBy(m => m.ProgressState).ThenBy(m => m.ArrivalDate));
             RaisePropertyChanged(() => MessagesCount);
             RaisePropertyChanged(() => InboxHeaderText);
         }

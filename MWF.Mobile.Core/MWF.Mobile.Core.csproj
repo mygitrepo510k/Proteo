@@ -228,14 +228,11 @@
     <Compile Include="Services\DataChunkService.cs" />
     <Compile Include="Services\IDataChunkService.cs" />
     <Compile Include="Services\IImageUploadService.cs" />
-    <Compile Include="Services\IInfoService.cs" />
     <Compile Include="Services\ImageUploadService.cs" />
-    <Compile Include="Services\InfoService.cs" />
+    <Compile Include="Services\ISafetyCheckService.cs" />
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\ILoggingService.cs" />
-    <Compile Include="Services\IMainService.cs" />
     <Compile Include="Services\INavigationService.cs" />
-    <Compile Include="Services\MainService.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\GatewayQueuedService.cs" />
@@ -251,8 +248,9 @@
     <Compile Include="Services\IGatewayService.cs" />
     <Compile Include="Services\IGpsService.cs" />
     <Compile Include="Services\IHttpService.cs" />
-    <Compile Include="Services\IStartupService.cs" />
-    <Compile Include="Services\StartupService.cs" />
+    <Compile Include="Services\IInfoService.cs" />
+    <Compile Include="Services\InfoService.cs" />
+    <Compile Include="Services\SafetyCheckService.cs" />
     <Compile Include="swp8\Bootstrap\CommunitySqlitePluginBootstrap.cs" />
     <Compile Include="Utilities\AsyncLock.cs" />
     <Compile Include="Utilities\Timer.cs" />

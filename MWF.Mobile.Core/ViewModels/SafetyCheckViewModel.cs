@@ -17,31 +17,33 @@ namespace MWF.Mobile.Core.ViewModels
     {
         #region private/protected members
 
-        protected IStartupService _startupService;
+        protected IInfoService _infoService;
         protected IRepositories _repositories;
         protected INavigationService _navigationService;
         protected NavData<MobileData> _navData;
+        protected ISafetyCheckService _safetyCheckService;
 
         #endregion
 
         #region Construction
 
-        public SafetyCheckViewModel(IStartupService startupService, INavigationService navigationService, IRepositories repositories)
+        public SafetyCheckViewModel(IInfoService infoService, INavigationService navigationService, IRepositories repositories, ISafetyCheckService safetyCheckService)
         {
-            _startupService = startupService;
+            _infoService = infoService;
             _repositories = repositories;
             _navigationService = navigationService;
+            _safetyCheckService = safetyCheckService;
 
             Models.Vehicle vehicle = null;
             Models.Trailer trailer = null;
 
-            vehicle = _repositories.VehicleRepository.GetByID(_startupService.LoggedInDriver.LastVehicleID);
-            _startupService.CurrentVehicle = vehicle;
+            vehicle = _repositories.VehicleRepository.GetByID(_infoService.LoggedInDriver.LastVehicleID);
+            _infoService.CurrentVehicle = vehicle;
 
-            if (_startupService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
+            if (_infoService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
             {
-                trailer = _repositories.TrailerRepository.GetByID(_startupService.LoggedInDriver.LastSecondaryVehicleID);
-                _startupService.CurrentTrailer = trailer;
+                trailer = _repositories.TrailerRepository.GetByID(_infoService.LoggedInDriver.LastSecondaryVehicleID);
+                _infoService.CurrentTrailer = trailer;
             }
 
             SafetyProfileVehicle = _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink).SingleOrDefault();
@@ -51,24 +53,24 @@ namespace MWF.Mobile.Core.ViewModels
 
             this.SafetyCheckItemViewModels = new List<SafetyCheckItemViewModel>();
 
-            _startupService.CurrentVehicleSafetyCheckData = null;
-            _startupService.CurrentTrailerSafetyCheckData = null;
+            _safetyCheckService.CurrentVehicleSafetyCheckData = null;
+            _safetyCheckService.CurrentTrailerSafetyCheckData = null;
 
             if (SafetyProfileVehicle != null && SafetyProfileVehicle.DisplayAtLogon)
             {
-                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileVehicle, _startupService.LoggedInDriver, _startupService.CurrentVehicle, false);
-                _startupService.CurrentVehicleSafetyCheckData = safetyCheckData;
+                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileVehicle, _infoService.LoggedInDriver, _infoService.CurrentVehicle, false);
+                _safetyCheckService.CurrentVehicleSafetyCheckData = safetyCheckData;
             }
 
             if (SafetyProfileTrailer != null && SafetyProfileTrailer.DisplayAtLogon)
             {
-                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileTrailer, _startupService.LoggedInDriver, _startupService.CurrentTrailer, true);
-                _startupService.CurrentTrailerSafetyCheckData = safetyCheckData;
+                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileTrailer, _infoService.LoggedInDriver, _infoService.CurrentTrailer, true);
+                _safetyCheckService.CurrentTrailerSafetyCheckData = safetyCheckData;
             }
 
-            if (_startupService.CurrentTrailerSafetyCheckData == null && _startupService.CurrentVehicleSafetyCheckData == null)
+            if (_safetyCheckService.CurrentTrailerSafetyCheckData == null && _safetyCheckService.CurrentVehicleSafetyCheckData == null)
             {
-                Mvx.Resolve<ICustomUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { _navigationService.MoveToNext(); startupService.CommitSafetyCheckData(); });
+                Mvx.Resolve<ICustomUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", () => { _navigationService.MoveToNext(); _safetyCheckService.CommitSafetyCheckData(); });
             }
         }
 

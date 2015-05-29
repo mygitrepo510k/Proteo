@@ -25,7 +25,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Driver _driver;
         private Trailer _trailer;
         private TrailerItemViewModel _trailerItemViewModel;
-        private IStartupService _startupService;
+        private IInfoService _infoService;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
 
@@ -47,9 +47,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _trailer = new Core.Models.Trailer() { Registration = "TestRegistration", ID = Guid.NewGuid() };
             _trailerItemViewModel = new TrailerItemViewModel() { Trailer = _trailer };
 
-            _startupService = _fixture.Create<StartupService>();
-            _startupService.LoggedInDriver = _driver;
-            _fixture.Inject<IStartupService>(_startupService);
+            _infoService = _fixture.Create<InfoService>();
+            _infoService.LoggedInDriver = _driver;
+            _fixture.Inject<IInfoService>(_infoService);
 
             _currentDriverRepository = new Mock<ICurrentDriverRepository>();
             _currentDriverRepository.Setup(cdr => cdr.GetByID(It.IsAny<Guid>())).Returns(new CurrentDriver());
@@ -98,8 +98,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.TrailerSelectCommand.Execute(_trailerItemViewModel);
 
-            Assert.NotNull(_startupService.LoggedInDriver);
-            Assert.Equal(_trailer.ID, _startupService.LoggedInDriver.LastSecondaryVehicleID);
+            Assert.NotNull(_infoService.LoggedInDriver);
+            Assert.Equal(_trailer.ID, _infoService.LoggedInDriver.LastSecondaryVehicleID);
 
         }
 
@@ -115,8 +115,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.NoTrailerSelectCommand.Execute(null);
 
-            Assert.NotNull(_startupService.LoggedInDriver);
-            Assert.Equal(Guid.Empty, _startupService.LoggedInDriver.LastSecondaryVehicleID);
+            Assert.NotNull(_infoService.LoggedInDriver);
+            Assert.Equal(Guid.Empty, _infoService.LoggedInDriver.LastSecondaryVehicleID);
 
         }
 

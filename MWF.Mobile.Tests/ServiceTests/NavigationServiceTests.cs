@@ -838,8 +838,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -870,8 +870,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, false, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -902,8 +902,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, false, false, true, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -934,8 +934,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -972,11 +972,11 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             var loggedInDriver = _fixture.Create<Core.Models.Driver>();
-            startUpServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
+            infoServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -1014,11 +1014,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, InstructionProgress.NotStarted);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             var loggedInDriver = _fixture.Create<Core.Models.Driver>();
-            startUpServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
+            infoServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
 
             // set the trailer the user has selected to be the same as current trailer (but not the current order)
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -1061,8 +1061,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, InstructionProgress.NotStarted);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             // set the trailer the user has selected to be the same different to the current trailer
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -1100,8 +1100,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
-            var startUpService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(startUpService);
+            var startUpService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(startUpService);
 
             var navData = new NavData<MobileData>() { Data = mobileData };
             navData.OtherData["UpdatedTrailer"] = startUpService.CurrentTrailer;
@@ -1147,15 +1147,16 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            var safetyCheckServiceMock = _fixture.InjectNewMock<ISafetyCheckService>();
 
-            startUpServiceMock.SetupProperty(x => x.CurrentTrailer);
-            startUpServiceMock.SetupProperty(x => x.CurrentTrailerSafetyCheckData);
+            infoServiceMock.SetupProperty(x => x.CurrentTrailer);
+            safetyCheckServiceMock.SetupProperty(x => x.CurrentTrailerSafetyCheckData);
 
-            startUpServiceMock.Object.CurrentTrailer = _fixture.Create<Core.Models.Trailer>();
+            infoServiceMock.Object.CurrentTrailer = _fixture.Create<Core.Models.Trailer>();
 
-            startUpServiceMock.SetupProperty(x => x.LoggedInDriver);
-            startUpServiceMock.Object.LoggedInDriver = _fixture.Create<Core.Models.Driver>();
+            infoServiceMock.SetupProperty(x => x.LoggedInDriver);
+            infoServiceMock.Object.LoggedInDriver = _fixture.Create<Core.Models.Driver>();
 
             var navData = new NavData<MobileData>() { Data = mobileData };
             navData.OtherData["UpdatedTrailer"] = trailer;
@@ -1176,20 +1177,20 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(InstructionViewModel), request.ViewModelType);
 
             // should have updated the trailer on the order
-            Assert.Equal(startUpServiceMock.Object.CurrentTrailer.Registration, mobileData.Order.Additional.Trailer.TrailerId);
+            Assert.Equal(infoServiceMock.Object.CurrentTrailer.Registration, mobileData.Order.Additional.Trailer.TrailerId);
 
             // datachunk service should have been hit to send the revised trailer data chunk
             _mockDataChunkService.Verify(mds => mds.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.Is<MobileData>(md => md == mobileData), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(b => !b), It.Is<bool>(b => b)));
 
             // should have set the current trailer
-            Assert.Equal(startUpServiceMock.Object.CurrentTrailer, trailer);
-            Assert.Equal(startUpServiceMock.Object.LoggedInDriver.LastSecondaryVehicleID, trailer.ID);
+            Assert.Equal(infoServiceMock.Object.CurrentTrailer, trailer);
+            Assert.Equal(infoServiceMock.Object.LoggedInDriver.LastSecondaryVehicleID, trailer.ID);
             
             // should have set the safety check data for the trailer
-            Assert.Equal(updatedSafetyCheckData, startUpServiceMock.Object.CurrentTrailerSafetyCheckData);
+            Assert.Equal(updatedSafetyCheckData, safetyCheckServiceMock.Object.CurrentTrailerSafetyCheckData);
 
             // check the safety check data was commited
-            startUpServiceMock.Verify(ss => ss.CommitSafetyCheckData(true));
+            safetyCheckServiceMock.Verify(ss => ss.CommitSafetyCheckData(true));
         }
 
         #endregion
@@ -1249,11 +1250,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, true, true, false, false, true, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             var loggedInDriver = _fixture.Create<Core.Models.Driver>();
-            startUpServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
+            infoServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
 
             var navData = new NavData<MobileData>() { Data = mobileData };
 
@@ -1297,8 +1298,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, null);
 
             // current trailer will be different to that on the order
-            var startUpService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(startUpService);
+            var startUpService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(startUpService);
 
             var navData = new NavData<MobileData>() { Data = mobileData };
 
@@ -1334,8 +1335,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, true, true, false, false, true, null);
 
             // current trailer will be different to that on the order
-            var startUpService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(startUpService);
+            var startUpService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(startUpService);
 
             var navData = new NavData<MobileData>() { Data = mobileData };
 
@@ -1372,8 +1373,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
-            var startUpService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(startUpService);
+            var startUpService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(startUpService);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -1406,8 +1407,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, false, null);
 
-            var startUpService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(startUpService);
+            var startUpService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(startUpService);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -1440,8 +1441,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
 
-            var startUpService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(startUpService);
+            var startUpService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(startUpService);
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // different trailer
@@ -1474,8 +1475,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
-            var startUpService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(startUpService);
+            var startUpService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(startUpService);
 
             var navData = new NavData<MobileData>() { Data = mobileData };
             navData.OtherData["UpdatedTrailer"] = startUpService.CurrentTrailer;
@@ -1514,11 +1515,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, false, false, true, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             var loggedInDriver = _fixture.Create<Core.Models.Driver>();
-            startUpServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
+            infoServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -1554,11 +1555,11 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             var loggedInDriver = _fixture.Create<Core.Models.Driver>();
-            startUpServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
+            infoServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -1595,8 +1596,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
-            var startUpService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(startUpService);
+            var startUpService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(startUpService);
 
             var navData = new NavData<MobileData>() { Data = mobileData };
             navData.OtherData["UpdatedTrailer"] = startUpService.CurrentTrailer;
@@ -1640,8 +1641,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
-            var startUpService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(startUpService);
+            var startUpService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(startUpService);
 
             var navData = new NavData<MobileData>() { Data = mobileData };
             navData.OtherData["UpdatedTrailer"] = startUpService.CurrentTrailer;
@@ -1682,15 +1683,16 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            var safetyCheckServiceMock = _fixture.InjectNewMock<ISafetyCheckService>();
 
-            startUpServiceMock.SetupProperty(x => x.CurrentTrailer);
-            startUpServiceMock.SetupProperty(x => x.CurrentTrailerSafetyCheckData);
+            infoServiceMock.SetupProperty(x => x.CurrentTrailer);
+            safetyCheckServiceMock.SetupProperty(x => x.CurrentTrailerSafetyCheckData);
 
-            startUpServiceMock.Object.CurrentTrailer = _fixture.Create<Core.Models.Trailer>();
+            infoServiceMock.Object.CurrentTrailer = _fixture.Create<Core.Models.Trailer>();
 
-            startUpServiceMock.SetupProperty(x => x.LoggedInDriver);
-            startUpServiceMock.Object.LoggedInDriver = _fixture.Create<Core.Models.Driver>();
+            infoServiceMock.SetupProperty(x => x.LoggedInDriver);
+            infoServiceMock.Object.LoggedInDriver = _fixture.Create<Core.Models.Driver>();
 
             var navData = new NavData<MobileData>() { Data = mobileData };
             navData.OtherData["UpdatedTrailer"] = trailer;
@@ -1710,20 +1712,20 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(InstructionCommentViewModel), request.ViewModelType);
 
             // should have updated the trailer on the order
-            Assert.Equal(startUpServiceMock.Object.CurrentTrailer.Registration, mobileData.Order.Additional.Trailer.TrailerId);
+            Assert.Equal(infoServiceMock.Object.CurrentTrailer.Registration, mobileData.Order.Additional.Trailer.TrailerId);
 
             // datachunk service should have been hit to send the revised trailer data chunk
             _mockDataChunkService.Verify(mds => mds.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.Is<MobileData>(md => md == mobileData), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(b => !b), It.Is<bool>(b => b)));
 
             // should have set the current trailer
-            Assert.Equal(startUpServiceMock.Object.CurrentTrailer, trailer);
-            Assert.Equal(startUpServiceMock.Object.LoggedInDriver.LastSecondaryVehicleID, trailer.ID);
+            Assert.Equal(infoServiceMock.Object.CurrentTrailer, trailer);
+            Assert.Equal(infoServiceMock.Object.LoggedInDriver.LastSecondaryVehicleID, trailer.ID);
 
             // should have set the safety check data for the trailer
-            Assert.Equal(updatedSafetyCheckData, startUpServiceMock.Object.CurrentTrailerSafetyCheckData);
+            Assert.Equal(updatedSafetyCheckData, safetyCheckServiceMock.Object.CurrentTrailerSafetyCheckData);
 
             // check the safety check data was commited
-            startUpServiceMock.Verify(ss => ss.CommitSafetyCheckData(true));
+            safetyCheckServiceMock.Verify(ss => ss.CommitSafetyCheckData(true));
         }
 
         // Tests that that when the instruction safety check signature screen is completed and there are faults the user is directed 
@@ -1745,15 +1747,16 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            var safetyCheckServiceMock = _fixture.InjectNewMock<ISafetyCheckService>();
 
-            startUpServiceMock.SetupProperty(x => x.CurrentTrailer);
-            startUpServiceMock.SetupProperty(x => x.CurrentTrailerSafetyCheckData);
+            infoServiceMock.SetupProperty(x => x.CurrentTrailer);
+            safetyCheckServiceMock.SetupProperty(x => x.CurrentTrailerSafetyCheckData);
             
-            startUpServiceMock.Object.CurrentTrailer = _fixture.Create<Core.Models.Trailer>();
+            infoServiceMock.Object.CurrentTrailer = _fixture.Create<Core.Models.Trailer>();
 
-            startUpServiceMock.SetupProperty(x => x.LoggedInDriver);
-            startUpServiceMock.Object.LoggedInDriver = _fixture.Create<Core.Models.Driver>();
+            infoServiceMock.SetupProperty(x => x.LoggedInDriver);
+            infoServiceMock.Object.LoggedInDriver = _fixture.Create<Core.Models.Driver>();
 
 
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -1778,20 +1781,20 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(InstructionCommentViewModel), request.ViewModelType);
 
             // should have updated the trailer on the order
-            Assert.Equal(startUpServiceMock.Object.CurrentTrailer.Registration, mobileData.Order.Additional.Trailer.TrailerId);
+            Assert.Equal(infoServiceMock.Object.CurrentTrailer.Registration, mobileData.Order.Additional.Trailer.TrailerId);
 
             // datachunk service should have been hit to send the revised trailer data chunk
             _mockDataChunkService.Verify(mds => mds.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.Is<MobileData>(md => md == mobileData), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(b => !b), It.Is<bool>(b => b)));
 
             // should have set the current trailer
-            Assert.Equal(startUpServiceMock.Object.CurrentTrailer, trailer);
-            Assert.Equal(startUpServiceMock.Object.LoggedInDriver.LastSecondaryVehicleID, trailer.ID);
+            Assert.Equal(infoServiceMock.Object.CurrentTrailer, trailer);
+            Assert.Equal(infoServiceMock.Object.LoggedInDriver.LastSecondaryVehicleID, trailer.ID);
 
             // should have set the safety check data for the trailer
-            Assert.Equal(updatedSafetyCheckData, startUpServiceMock.Object.CurrentTrailerSafetyCheckData);
+            Assert.Equal(updatedSafetyCheckData, safetyCheckServiceMock.Object.CurrentTrailerSafetyCheckData);
 
             // check the safety check data was commited
-            startUpServiceMock.Verify(ss => ss.CommitSafetyCheckData(true));
+            safetyCheckServiceMock.Verify(ss => ss.CommitSafetyCheckData(true));
         }
 
         #endregion
@@ -2252,11 +2255,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, null);
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
-            var startUpServiceMock = _fixture.InjectNewMock<IStartupService>();
-            startUpServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
+            var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
+            infoServiceMock.Setup(ss => ss.CurrentTrailer).Returns(trailer);
 
             var loggedInDriver = _fixture.Create<Core.Models.Driver>();
-            startUpServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
+            infoServiceMock.Setup(ss => ss.LoggedInDriver).Returns(loggedInDriver);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -2764,10 +2767,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             var safetyProfileRepositoryMock = _fixture.InjectNewMock<ISafetyProfileRepository>();
             safetyProfileRepositoryMock.Setup(s => s.GetAll()).Returns(new List<SafetyProfile>() {safetyProfile}) ;
 
-            var startupService = Mock.Of<IStartupService>(s => 
+            var infoService = Mock.Of<IInfoService>(s => 
                                                           s.LoggedInDriver.LastVehicleID == vehicle.ID &&
                                                           s.CurrentVehicle == vehicle);
-            _fixture.Inject<IStartupService>(startupService);
+            _fixture.Inject<IInfoService>(infoService);
 
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -2786,9 +2789,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             var safetyProfileRepositoryMock = _fixture.InjectNewMock<ISafetyProfileRepository>();
             safetyProfileRepositoryMock.Setup(s => s.GetAll()).Returns(new List<SafetyProfile>());
 
-            var startupService = Mock.Of<IStartupService>(s => s.LoggedInDriver.LastVehicleID == vehicle.ID &&
+            var infoService = Mock.Of<IInfoService>(s => s.LoggedInDriver.LastVehicleID == vehicle.ID &&
                                                           s.CurrentVehicle == vehicle);
-            _fixture.Inject<IStartupService>(startupService);
+            _fixture.Inject<IInfoService>(infoService);
 
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -2814,12 +2817,15 @@ namespace MWF.Mobile.Tests.ServiceTests
                latestSafetyCheck.VehicleSafetyCheck.Faults[0].Status = Core.Enums.SafetyCheckStatus.Failed;               
             }
 
-            var startupService = Mock.Of<IStartupService>(s => 
+            var infoService = Mock.Of<IInfoService>(s => 
                                                           s.LoggedInDriver == _fixture.Create<Driver>() &&
-                                                          s.CurrentVehicle == _fixture.Create<Vehicle>() &&
-                                                          s.GetCurrentSafetyCheckData() == safetyCheckData  );
+                                                          s.CurrentVehicle == _fixture.Create<Vehicle>());      
 
-            _fixture.Inject<IStartupService>(startupService);
+            _fixture.Inject<IInfoService>(infoService);
+
+            var safetyCheckService = Mock.Of<ISafetyCheckService>(ss => ss.GetCurrentSafetyCheckData() == safetyCheckData);
+            _fixture.Inject<ISafetyCheckService>(safetyCheckService);
+
 
         }
 

@@ -25,7 +25,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
     {
 
         private IFixture _fixture;
-        private IStartupService _startupService;
+        private IInfoService _infoService;
         private Mock<INavigationService> _mockNavigationService;
         private SafetyCheckFault _vehicleSafetyCheckFault;
         private SafetyCheckFault _trailerSafetyCheckFault;
@@ -45,8 +45,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-            _startupService = _fixture.Create<StartupService>();
-            _fixture.Inject<IStartupService>(_startupService);
+            _infoService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(_infoService);
 
 
             _pictureBytes = new byte[] {1, 2, 3, 4};

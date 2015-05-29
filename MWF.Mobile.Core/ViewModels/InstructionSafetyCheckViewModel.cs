@@ -20,9 +20,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public InstructionSafetyCheckViewModel(IStartupService startupService, INavigationService navigationService, IRepositories repositories)
+        public InstructionSafetyCheckViewModel(IInfoService infoService, INavigationService navigationService, IRepositories repositories)
         {
-            _startupService = startupService;
+            _infoService = infoService;
             _repositories = repositories;
             _navigationService = navigationService;
           
@@ -45,7 +45,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (SafetyProfileTrailer != null)
             {
-                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileTrailer, _startupService.LoggedInDriver, trailer, true);
+                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileTrailer, _infoService.LoggedInDriver, trailer, true);
                 _navData.OtherData["UpdatedTrailerSafetyCheckData"] = safetyCheckData;
             }
 

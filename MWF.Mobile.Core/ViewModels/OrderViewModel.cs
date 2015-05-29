@@ -26,7 +26,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IRepositories _repositories;
         private readonly IConfigRepository _configRepository;
 
-        private IMainService _mainService;
+        private IInfoService _infoService;
         private MobileData _mobileData;
         private MWFMobileConfig _mobileConfig;
         private Item _order;
@@ -36,11 +36,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
-        public OrderViewModel(INavigationService navigationService, IRepositories repositories, IMainService mainService)
+        public OrderViewModel(INavigationService navigationService, IRepositories repositories, IInfoService infoService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
-            _mainService = mainService;
+            _infoService = infoService;
             _configRepository = repositories.ConfigRepository;
         }
 
@@ -171,7 +171,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                     {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted");
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
                         _navigationService.GoToManifest();
                     }
                 }

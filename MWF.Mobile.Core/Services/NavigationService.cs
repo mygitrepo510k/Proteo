@@ -1052,7 +1052,7 @@ namespace MWF.Mobile.Core.Services
                 var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
                 var deliveryOptions = mobileNavData.GetWorseCaseDeliveryOptions();
 
-                if (((additionalContent.CustomerNameRequiredForDelivery || additionalContent.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
+                if (((deliveryOptions.CustomerNameRequiredForDelivery || deliveryOptions.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
                    ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
                 {
                     this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);

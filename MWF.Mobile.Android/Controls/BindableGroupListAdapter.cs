@@ -34,7 +34,7 @@ namespace MWF.Mobile.Android.Controls
 			}
 		}
 
-		void OnItemsSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
+		protected override void OnItemsSourceCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
 			FlattenAndSetSource(_itemsSource);
 		}

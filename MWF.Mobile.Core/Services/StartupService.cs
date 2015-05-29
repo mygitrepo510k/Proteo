@@ -18,15 +18,28 @@ namespace MWF.Mobile.Core.Services
         private readonly Repositories.IRepositories _repositories = null;
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IGpsService _gpsService = null;
+        private readonly IInfoService _infoService = null;
 
-        public StartupService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService)
+        public StartupService(Repositories.IRepositories repositories, IGatewayQueuedService gatewayQueuedService, IGpsService gpsService, IInfoService infoService)
         {
             _repositories = repositories;
             _gatewayQueuedService = gatewayQueuedService;
             _gpsService = gpsService;
+            _infoService = infoService;
         }
 
-        public Driver LoggedInDriver { get; set; }
+        public Driver LoggedInDriver
+        {
+            get
+            {
+                return _infoService.LoggedInDriver;
+            }
+            set
+            {
+                _infoService.LoggedInDriver = value;
+            }
+        }
+
         public SafetyCheckData CurrentVehicleSafetyCheckData { get; set; }
         public SafetyCheckData CurrentTrailerSafetyCheckData { get; set; }
         public Vehicle CurrentVehicle { get; set; }

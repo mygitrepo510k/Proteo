@@ -88,6 +88,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Inject(mockDriverRepo);
 
+            var infoService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(infoService);
             var startUpService = _fixture.Create<StartupService>();
             _fixture.Inject<IStartupService>(startUpService);
 

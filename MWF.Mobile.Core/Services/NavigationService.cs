@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
@@ -42,7 +43,8 @@ namespace MWF.Mobile.Core.Services
         ICloseApplication _closeApplication;
         private IDataChunkService _dataChunkService;
         private Timer _loginSessionTimer;
-
+        private readonly IMvxMessenger _messenger = null;
+        private MvxSubscriptionToken _notificationToken;
 
         #endregion
 
@@ -55,7 +57,8 @@ namespace MWF.Mobile.Core.Services
             IRepositories repositories,
             IGatewayPollingService gatewayPollingService,
             IMainService mainService,
-            IDataChunkService dataChunkService)
+            IDataChunkService dataChunkService,
+            IMvxMessenger messenger)
         {
             _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<NavData>>();
             _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<NavData>>();
@@ -68,6 +71,11 @@ namespace MWF.Mobile.Core.Services
             _startupService = startupService;
             _closeApplication = closeApplication;
             _dataChunkService = dataChunkService;
+            _messenger = messenger;
+
+            _notificationToken = Mvx.Resolve<IMvxMessenger>().Subscribe<Messages.InvalidLicenseNotificationMessage>(m =>
+                this.InvalidLicenseLogout()
+             );
 
             SetMappings();
         }
@@ -292,6 +300,17 @@ namespace MWF.Mobile.Core.Services
             {
                 DoLogout(navData);
             }
+        }
+
+        private async void InvalidLicenseLogout()
+        {
+            await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Your license is no longer valid. Logging out.");
+
+            _startupService.LoggedInDriver.IsLicensed = false;
+            _repositories.DriverRepository.Update(_startupService.LoggedInDriver);
+
+            DoLogout(this.CurrentNavData);
+
         }
 
         private void DoLogout(NavData navData)

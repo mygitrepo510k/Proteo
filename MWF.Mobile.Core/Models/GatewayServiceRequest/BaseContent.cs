@@ -14,6 +14,7 @@ namespace MWF.Mobile.Core.Models.GatewayServiceRequest
         public string Password { get; set; }
         public string MobileApplication { get; set; }
         public string Version { get; set; }
+        public Guid? DriverID { get; set; }
     }
 
 }

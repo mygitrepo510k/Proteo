@@ -46,13 +46,30 @@ namespace MWF.Mobile.Core.Services
                 driver = GetMatchingDriver(passcode);
             }
 
-            if (driver != null)
+            // the passcode doesn't match any driver we know about
+            if (driver == null)
+                 return new AuthenticationResult { Success = false, AuthenticationFailedMessage = "The driver passcode you submitted doesn't exist, check the passcode and try again." };
+
+            // check if driver is licensed
+            if (await IsLicensed(driver))
                 return new AuthenticationResult { Success = true, AuthenticationFailedMessage = null,  Driver = driver };
             else
-                return new AuthenticationResult { Success = false, AuthenticationFailedMessage = "The driver passcode you submitted doesn't exist, check the passcode and try again." };
+                return new AuthenticationResult { Success = false, AuthenticationFailedMessage = "Request for user license failed. Please contact Proteo for licensing queries." };
         }
 
         #region Private Methods
+
+        private async Task<bool> IsLicensed(Driver driver)
+        {
+            if (_reachability.IsConnected())
+
+            {
+                 driver.IsLicensed = await _gatewayService.LicenceCheckAsync(driver.ID);
+                 _driverRepository.Update(driver);
+            }
+
+            return driver.IsLicensed;
+        }
 
         private Driver GetMatchingDriver(string passcode)
         {

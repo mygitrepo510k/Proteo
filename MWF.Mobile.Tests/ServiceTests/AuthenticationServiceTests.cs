@@ -45,11 +45,15 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
         [Theory]
-        [InlineData("matching", false, true, "matching", true)]             // Passcode exists in local database, shouldn't connect to Bluesphere
-        [InlineData("not_matching", false, false, "matching", false)]       // Passcode doesn't exist in local database, but can't connect to bluesphere
-        [InlineData("not_matching", true, true, "matching", true)]          // Passcode doesn't exist in local database, but does in Bluesphere. Can successfully connect to bluesphere.        
-        [InlineData("not_matching", true, true, "not_matching", false)]     // Passcode doesn't exist in local database, doesn't exist in Bluesphere either.
-        public async Task AuthenticationService_Authenticate(string driversFromDB, bool shouldUpdateFromBluesphere, bool isConnected, string driversFromBluesphere, bool expectedResult)
+        [InlineData("matching", false, true, "matching", true, true, true, true)]               // Passcode exists in local database (shouldn't connect to Bluesphere) driver is licensed
+        [InlineData("matching", false, true, "matching", false, true, true, false)]             // Passcode exists in local database (shouldn't connect to Bluesphere) driver is not licensed
+        [InlineData("not_matching", false, false, "matching", false, false, false, false)]      // Passcode doesn't exist in local database, but can't connect to bluesphere
+        [InlineData("not_matching", true, true, "matching", true, true, true, true)]            // Passcode doesn't exist in local database, but does in Bluesphere. Can successfully connect to bluesphere, driver is licensed
+        [InlineData("not_matching", true, true, "matching", false, true, true, false)]          // Passcode doesn't exist in local database, but does in Bluesphere. Can successfully connect to bluesphere, driver is not licensed  
+        [InlineData("not_matching", true, true, "not_matching", false, false, false, false)]    // Passcode doesn't exist in local database, doesn't exist in Bluesphere either.
+        [InlineData("matching", false, false, "matching", false, true, false, true)]            // Passcode exists in local database (shouldn't connect to Bluesphere) can't connect to bluesphere, driver was previously licensed
+        [InlineData("matching", false, false, "matching", false, false, false, false)]          // Passcode exists in local database (shouldn't connect to Bluesphere) can't connect to bluesphere, driver was not previously licensed
+        public async Task AuthenticationService_Authenticate(string driversFromDB, bool shouldUpdateFromBluesphere, bool isConnected, string driversFromBluesphere, bool isCurrentlyLicensed, bool waspreviouslyLicensed, bool shouldUpdateRepository, bool expectedResult)
         {
             base.ClearAll();
 
@@ -62,6 +66,12 @@ namespace MWF.Mobile.Tests.ServiceTests
             Mock<IDriverRepository> driverRepositoryMock = new Mock<IDriverRepository>();
             driverRepositoryMock.Setup(dr => dr.GetAll()).ReturnsInOrder(GetDrivers(driversFromDB), GetDrivers(driversFromBluesphere));
             _fixture.Inject<IDriverRepository>(driverRepositoryMock.Object);
+
+            // set up the gaeway service license check
+            _gatewayServiceMock.Setup(gsm => gsm.LicenceCheckAsync(It.Is<Guid>(g => g == _matchingPasscodes.First().ID))).Returns(Task.FromResult<bool>(isCurrentlyLicensed));
+
+            //set up whether the driver has been previously licensed successfully
+            _matchingPasscodes.First().IsLicensed = waspreviouslyLicensed;
 
             var service = _fixture.Create<AuthenticationService>();
             var result = await service.AuthenticateAsync("9999");
@@ -77,6 +87,11 @@ namespace MWF.Mobile.Tests.ServiceTests
                 //driver repostory should have been updated to as part of bluesphere refresh
                 driverRepositoryMock.Verify(dr => dr.DeleteAll(), Times.Once);
                 driverRepositoryMock.Verify(dr => dr.Insert(It.IsAny<IEnumerable<Driver>>()), Times.Once);
+            }
+
+            if(shouldUpdateRepository)
+            {
+                driverRepositoryMock.Verify(drm => drm.Update(It.Is<Driver>(d => d == _matchingPasscodes.First())));
             }
 
         }

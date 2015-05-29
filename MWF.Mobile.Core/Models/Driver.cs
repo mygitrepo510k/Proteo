@@ -41,6 +41,8 @@ namespace MWF.Mobile.Core.Models
 
         public DateTime LastLoggedOn { get; set; }
 
+        public bool IsLicensed { get; set; }
+
     }
 
 }

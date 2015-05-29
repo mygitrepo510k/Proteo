@@ -107,6 +107,7 @@
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Helpers\SMP.cs" />
+    <Compile Include="Messages\InvalidLicenseNotificationMessage.cs" />
     <Compile Include="Messages\GatewayInstructionNotificationMessage.cs" />
     <Compile Include="Messages\GatewayQueueTimerCommandMessage.cs" />
     <Compile Include="Messages\GatewayPollTimerCommandMessage.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Models\GatewayServiceRequest\BaseContent.cs" />
     <Compile Include="Models\GatewayServiceRequest\Content.cs" />
     <Compile Include="Models\GatewayServiceRequest\DeviceInfo.cs" />
+    <Compile Include="Models\GatewayServiceRequest\LicenseCheckMessage.cs" />
     <Compile Include="Models\GatewayServiceRequest\DeviceMessage.cs" />
     <Compile Include="Models\GatewayServiceRequest\FileParameter.cs" />
     <Compile Include="Models\GatewayServiceRequest\Parameter.cs" />
@@ -226,7 +228,9 @@
     <Compile Include="Services\DataChunkService.cs" />
     <Compile Include="Services\IDataChunkService.cs" />
     <Compile Include="Services\IImageUploadService.cs" />
+    <Compile Include="Services\IInfoService.cs" />
     <Compile Include="Services\ImageUploadService.cs" />
+    <Compile Include="Services\InfoService.cs" />
     <Compile Include="Services\LoggingService.cs" />
     <Compile Include="Services\ILoggingService.cs" />
     <Compile Include="Services\IMainService.cs" />

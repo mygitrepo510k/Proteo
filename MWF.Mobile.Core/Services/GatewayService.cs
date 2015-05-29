@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.GatewayServiceRequest;
@@ -22,23 +23,31 @@ namespace MWF.Mobile.Core.Services
         private readonly string _gatewayDeviceCreateUrl = null;
         private readonly string _gatewayConfigRequestUrl = null;
         private readonly string _gatewayLogMessageUrl = null;
+        private readonly string _gatewayLicenceCheckUrl = null;
         private readonly IDeviceRepository _deviceRepository;
+        private readonly IInfoService _infoService;
+        private readonly IMvxMessenger _messenger = null;
 
-        public GatewayService(IDeviceInfo deviceInfo, IHttpService httpService, IRepositories repositories)
+        public GatewayService(IDeviceInfo deviceInfo, IHttpService httpService, IRepositories repositories, IInfoService infoService, IMvxMessenger messenger)
         {
             _deviceInfo = deviceInfo;
             _httpService = httpService;
+            _infoService = infoService;
+            _messenger = messenger;
 
             //TODO: read this from config or somewhere?
             _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
             _gatewayDeviceCreateUrl = "http://87.117.243.226:7090/api/gateway/createdevice";
             _gatewayConfigRequestUrl = "http://87.117.243.226:7090/api/gateway/configrequest";
             _gatewayLogMessageUrl = "http://87.117.243.226:7090/api/gateway/logmessage";
+            _gatewayLicenceCheckUrl = "http://87.117.243.226:7090/api/gateway/systemcheck";
 
-            //Local url, will need to change the station number
-            //gatewayDeviceRequestUrl = "http://proteo-dev3:17337/api/gateway/devicerequest";
-            //_gatewayLogMessageUrl = "http://proteo-dev3:17337/api/gateway/logmessage";
-            //_gatewayConfigRequestUrl = "http://proteo-dev3:17337/api/gateway/configrequest";
+            //Local url, will need to change your own IP
+            //_gatewayDeviceCreateUrl = "http://192.168.3.133:17337/api/gateway/createdevice";
+            //_gatewayDeviceRequestUrl = "http://192.168.3.133:17337/api/gateway/devicerequest";
+            //_gatewayLogMessageUrl = "http://192.168.3.133:17337/api/gateway/logmessage";
+            //_gatewayConfigRequestUrl = "http://192.168.3.133:17337/api/gateway/configrequest";
+            //_gatewayLicenceCheckUrl = "http://192.168.3.133:17337/api/gateway/systemcheck";
 
 
             _deviceRepository = repositories.DeviceRepository;
@@ -143,6 +152,14 @@ namespace MWF.Mobile.Core.Services
             return response;
         }
 
+        public async Task<bool> LicenceCheckAsync(Guid driverID)
+        {
+            LicenceCheckMessage licenceCheckMessage = new LicenceCheckMessage() { DriverID = driverID };
+
+            var response = await _httpService.PostAsJsonAsync<LicenceCheckMessage, HttpStatusCode>(licenceCheckMessage, _gatewayLicenceCheckUrl);
+            return response.Succeeded;
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -158,10 +175,19 @@ namespace MWF.Mobile.Core.Services
         {
             var requestContent = CreateRequestContent(command, parameters);
             var response = await this.PostAsync<T>(requestContent);
+
+            if (!response.Succeeded && response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                _messenger.Publish(new Messages.InvalidLicenseNotificationMessage(this));
+                return new ServiceCallResult<T> { Result = default(T) };
+            }
+
             var responseActions = response.Content.Actions;
 
             if (!response.Succeeded || responseActions.Count() != 1)
+            {
                 throw new Exception("No actions returned from Gateway service call.");
+            }
 
             var responseAction = responseActions.First();
 
@@ -207,6 +233,8 @@ namespace MWF.Mobile.Core.Services
                 Password = _deviceInfo.GatewayPassword,
                 MobileApplication = _deviceInfo.MobileApplication,
                 Actions = actions,
+                DriverID = (_infoService.LoggedInDriver!=null) ? _infoService.LoggedInDriver.ID : (Guid?) null
+              
             };
         }
 

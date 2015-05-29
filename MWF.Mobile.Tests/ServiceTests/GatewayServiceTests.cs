@@ -8,8 +8,12 @@ using Moq;
 using Xunit;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Services;
+using Cirrious.MvvmCross.Plugins.Messenger;
+using MWF.Mobile.Tests.Helpers;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
@@ -22,6 +26,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         private IFixture _fixture;
         private Mock<IGatewayQueueItemRepository> _mockQueueItemRepository;
+        private IInfoService _infoService;
+        private Mock<IMvxMessenger> _messengerMock;
 
         protected override void AdditionalSetup()
         {
@@ -31,17 +37,21 @@ namespace MWF.Mobile.Tests.ServiceTests
             mockDeviceInfo.SetupGet(m => m.GatewayPassword).Returns("fleetwoodmobile");
             mockDeviceInfo.SetupGet(m => m.MobileApplication).Returns("Orchestrator");
             _fixture.Inject<Core.Services.IDeviceInfo>(mockDeviceInfo.Object);
+             
+
+            // set up info service to have a logged in driver who is licensed
+            _infoService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(_infoService);
+            //(relies on driver TEST TEST (on Proteo test site) not being marked as revoked)
+            _infoService.LoggedInDriver.ID = new Guid("7B5657F7-A0C3-4CAF-AA5F-D76FE942074B");
             
-            //_fixture.Register<Core.Services.IDeviceInfoService>(mockDeviceInfoService.Object);
-
-
-
-
             List<Device> devices = new List<Device>() { new Device() { DeviceIdentifier = "021PROTEO0000001" } };
             IDeviceRepository repo = Mock.Of<IDeviceRepository>(dr => dr.GetAll() == devices);
             IRepositories repos = Mock.Of<IRepositories>(r => r.DeviceRepository == repo &&
                                                               r.GatewayQueueItemRepository == _mockQueueItemRepository.Object);
             _fixture.Register<IRepositories>(() => repos);
+
+            _messengerMock = _fixture.InjectNewMock<IMvxMessenger>();
 
 
         }
@@ -155,6 +165,59 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(2, driverInstructions.Count());
             Assert.Equal(driverId, driverInstructions.First().DriverId);
         }
+
+        /// <summary>
+        /// End-to-end test of gateway service license check
+        /// </summary>
+        [Fact]
+        public async Task GatewayService_EndToEnd_LicenseCheck_InvalidLicense()
+        {
+            base.ClearAll();
+
+            _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = _fixture.Create<Core.Services.GatewayService>();
+            bool isLicensed = await service.LicenceCheckAsync(Guid.NewGuid());
+
+            Assert.False(isLicensed);
+        }
+
+        /// <summary>
+        /// End-to-end test of gateway service license check (relies on driver TEST TEST (on Proteo test site) not being marked as revoked)
+        /// </summary>
+        [Fact]
+        public async Task GatewayService_EndToEnd_LicenseCheck_ValidLicense()
+        {
+            base.ClearAll();
+
+            _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = _fixture.Create<Core.Services.GatewayService>();
+            bool isLicensed = await service.LicenceCheckAsync(new Guid("7B5657F7-A0C3-4CAF-AA5F-D76FE942074B"));
+
+            Assert.True(isLicensed);
+        }
+
+
+        /// <summary>
+        /// End to end test of gateway service, checking that when a driver is no longer licensed, the gateway service
+        /// instigates actions to log the user out
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task GatewayService_EndToEnd_InvalidLicenseDuringSyncToServer()
+        {
+            base.ClearAll();
+
+
+            Guid driverId = Guid.NewGuid();
+            _infoService.LoggedInDriver.ID = driverId;
+            _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
+            var service = _fixture.Create<Core.Services.GatewayService>();
+            var driverInstructions = await service.GetDriverInstructions("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);
+
+            _messengerMock.Verify(mm => mm.Publish(It.IsAny<InvalidLicenseNotificationMessage>()));
+
+        }
+
     }
 
 }

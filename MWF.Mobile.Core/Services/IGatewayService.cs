@@ -24,6 +24,7 @@ namespace MWF.Mobile.Core.Services
         Task<Models.MWFMobileConfig> GetConfig();
         Task<bool> CreateDevice();
         Task<HttpResult> PostLogMessageAsync(DeviceLogMessage log);
+        Task<bool> LicenceCheckAsync(Guid driverID);
     }
 
 }

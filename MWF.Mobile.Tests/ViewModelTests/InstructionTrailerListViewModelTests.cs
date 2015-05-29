@@ -53,6 +53,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _trailer = new Core.Models.Trailer() { Registration = "TestRegistration", ID = Guid.NewGuid() };
             _trailerItemViewModel = new TrailerItemViewModel() { Trailer = _trailer };
 
+            var infoService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(infoService);
             _startupService = _fixture.Create<StartupService>();
             _fixture.Inject<IStartupService>(_startupService);
 

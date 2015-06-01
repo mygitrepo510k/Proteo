@@ -10,13 +10,10 @@ namespace MWF.Mobile.Core.Converters
 {
     public class DateToTextTimeValueConverter : MvxValueConverter<DateTime,string>
     {
+
         protected override string Convert(DateTime value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value == default(DateTime))
-            {
-                return "";
-            }
-            return value.ToString("HH:mm");
+            return value == default(DateTime) ? string.Empty : value.ToString("HH:mm");
         }
 
     }

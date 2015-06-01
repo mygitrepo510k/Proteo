@@ -520,8 +520,15 @@ namespace MWF.Mobile.Core.Services
                 var config = _repositories.ConfigRepository.Get();
                 var sessionTimeoutInSeconds = config.SessionTimeoutInSeconds;
 
-                if (config.SessionTimeoutInSeconds > 0)
-                    _loginSessionTimer = new Timer(state => this.DoLogout(null), null, config.SessionTimeoutInSeconds * 1000);
+                if (sessionTimeoutInSeconds > 0)
+                    _loginSessionTimer = new Timer(
+                        async state =>
+                        {
+                            await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Your login session has expired.");
+                            this.DoLogout(null);
+                        },
+                        null,
+                        sessionTimeoutInSeconds * 1000);
             }
             else
                 _loginSessionTimer.Reset();

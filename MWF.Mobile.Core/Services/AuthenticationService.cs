@@ -42,7 +42,7 @@ namespace MWF.Mobile.Core.Services
             // driver not in local DB, update from BlueSphere (if we can)
             if (driver == null && _reachability.IsConnected())
             {
-                await UpdateDrivers();
+                await UpdateDriversAsync();
                 driver = GetMatchingDriver(passcode);
             }
 
@@ -76,7 +76,7 @@ namespace MWF.Mobile.Core.Services
             return _driverRepository.GetAll().SingleOrDefault(x => x.Passcode == passcode);
         }
 
-        private async Task UpdateDrivers()
+        private async Task UpdateDriversAsync()
         {
             IEnumerable<Driver> drivers = await _gatewayService.GetDrivers();
             _driverRepository.DeleteAll();

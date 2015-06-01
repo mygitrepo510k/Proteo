@@ -79,13 +79,6 @@ namespace MWF.Mobile.Core.ViewModels
             set { _passcode = value; RaisePropertyChanged(() => Passcode); }
         }
 
-        private bool _isAuthenticating = false;
-        public bool IsAuthenticating
-        {
-            get { return _isAuthenticating; }
-            set { _isAuthenticating = value; RaisePropertyChanged(() => IsAuthenticating); }
-        }
-
         private MvxCommand _loginCommand;
         public System.Windows.Input.ICommand LoginCommand
         {
@@ -111,10 +104,10 @@ namespace MWF.Mobile.Core.ViewModels
                 return;
             }
 
-            await Authenticate();
+            await AuthenticateAsync();
         }
 
-        private async Task Authenticate()
+        private async Task AuthenticateAsync()
         {
             IsBusy = true;
             AuthenticationResult result;

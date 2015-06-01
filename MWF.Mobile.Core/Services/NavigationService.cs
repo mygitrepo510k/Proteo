@@ -154,7 +154,7 @@ namespace MWF.Mobile.Core.Services
 
         public bool BackNavActionExists(Type activityType, Type fragmentType)
         {
-            if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
+            if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityViewModel, BaseFragmentViewModel");
 
             var key = CreateKey(activityType, fragmentType);
             return _backwardNavActionDictionary.ContainsKey(key);
@@ -172,7 +172,7 @@ namespace MWF.Mobile.Core.Services
 
         public Action<NavData> GetNavAction(Type activityType, Type fragmentType)
         {
-            if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
+            if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityViewModel, BaseFragmentViewModel");
 
             var key = CreateKey(activityType, fragmentType);
             return GetNavActionWithKey(_forwardNavActionDictionary, key);
@@ -181,7 +181,7 @@ namespace MWF.Mobile.Core.Services
 
         public Action<NavData> GetBackNavAction(Type activityType, Type fragmentType)
         {
-            if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityviewModel, BaseFragmentViewModel");
+            if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityViewModel, BaseFragmentViewModel");
 
             var key = CreateKey(activityType, fragmentType);
             return GetNavActionWithKey(_backwardNavActionDictionary, key);
@@ -424,6 +424,7 @@ namespace MWF.Mobile.Core.Services
         {
             return typeof(BaseActivityViewModel).IsAssignableFrom(activityType) && typeof(BaseFragmentViewModel).IsAssignableFrom(fragmentType);
         }
+
         private bool IsDestinationTypeValid(Type destType)
         {
             return typeof(MvxViewModel).IsAssignableFrom(destType);
@@ -1022,6 +1023,9 @@ namespace MWF.Mobile.Core.Services
             // Failed safety checks Trailer select was via the "Change Trailer" button
             if (SafetyCheckStatus == Enums.SafetyCheckStatus.Failed || navData.OtherData.IsDefined("IsTrailerEditFromInstructionScreen"))
             {
+                if (SafetyCheckStatus == Enums.SafetyCheckStatus.Failed)
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("As a result of the safety check failure you will be returned to the instruction screen.", "Failed Safety Check");
+
                 mobileNavData.OtherData["IsTrailerEditFromInstructionScreen"] = null;
                 this.ShowViewModel<InstructionViewModel>(mobileNavData);
                 return;
@@ -1032,10 +1036,7 @@ namespace MWF.Mobile.Core.Services
                 await CompleteInstructionTrailerSelection(mobileNavData);
                 return;
             }
-
-
         }
-
 
         public async void InstructionClaused_CustomAction(NavData navData)
         {

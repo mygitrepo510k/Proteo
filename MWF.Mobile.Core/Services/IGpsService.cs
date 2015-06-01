@@ -11,7 +11,7 @@ namespace MWF.Mobile.Core.Services
     public interface IGpsService
     {
         string GetSmpData(ReportReason reportReason);
-        double GetLongitude();
-        double GetLatitude();
+        double? GetLongitude();
+        double? GetLatitude();
     }
 }

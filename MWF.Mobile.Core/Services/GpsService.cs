@@ -65,14 +65,14 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        public double GetLongitude()
+        public double? GetLongitude()
         {
-            return _location.Coordinates.Longitude;
+            return _location == null ? (double?)null : _location.Coordinates.Longitude;
         }
 
-        public double GetLatitude()
+        public double? GetLatitude()
         {
-            return _location.Coordinates.Latitude;
+            return _location == null ? (double?)null : _location.Coordinates.Latitude;
         }
 
         #endregion

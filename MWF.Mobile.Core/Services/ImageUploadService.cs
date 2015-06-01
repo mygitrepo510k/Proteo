@@ -90,8 +90,8 @@ namespace MWF.Mobile.Core.Services
                 postParameters.Add("DriverName", imageUpload.DriverTitle);
                 postParameters.Add("PhotoComment", string.IsNullOrEmpty(imageUpload.Comment) ? string.Empty : imageUpload.Comment);
                 postParameters.Add("PhotoDateTime", imageUpload.DateTimeOfUpload.ToString("o"));
-                postParameters.Add("Latitude", _gpsService.GetLatitude().ToString());
-                postParameters.Add("Longitude", _gpsService.GetLongitude().ToString());
+                postParameters.Add("Latitude", (_gpsService.GetLatitude() ?? 0d).ToString());
+                postParameters.Add("Longitude", (_gpsService.GetLongitude() ?? 0d).ToString());
                 postParameters.Add("MobileApplicationDataIds", (imageUpload.MobileApplicationIDs == null) ? string.Empty : string.Join(",", imageUpload.MobileApplicationIDs.Select( x => x.ToString())));
                 postParameters.Add("HEOrderIds", string.IsNullOrWhiteSpace(imageUpload.OrderIDs) ? string.Empty : imageUpload.OrderIDs.ToString());
 

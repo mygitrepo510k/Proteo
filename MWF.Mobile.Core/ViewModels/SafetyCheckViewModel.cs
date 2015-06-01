@@ -204,9 +204,26 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Safety checklist"; }
         }
 
-        public Task<bool> OnBackButtonPressed()
+
+
+        public async Task<bool> OnBackButtonPressed()
         {
-            return Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("All information you have entered will be lost, do you wish to continue?", "Abandon safety check!", "Continue");
+            bool continueWithBackPress = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("All information you have entered will be lost, do you wish to continue?", "Abandon safety check!", "Continue");
+
+            if (continueWithBackPress)
+            {
+                if (_navigationService.IsBackActionDefined())
+                {
+
+                    _navigationService.GoBack();
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
+
         }
 
         #endregion

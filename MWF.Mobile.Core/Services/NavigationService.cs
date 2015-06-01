@@ -42,6 +42,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IGatewayQueuedService _gatewayQueuedService = null;
         private readonly IGpsService _gpsService = null;
         private ICustomPresenter _presenter;
+        private bool _inLogoutSafetyCheck = false;
         
         IRepositories _repositories;
         ICloseApplication _closeApplication;      
@@ -301,6 +302,7 @@ namespace MWF.Mobile.Core.Services
             if ((VehicleSafetyProfile != null && VehicleSafetyProfile.DisplayAtLogoff)
                 || (TrailerSafetyProfile != null && TrailerSafetyProfile.DisplayAtLogoff))
             {
+                _inLogoutSafetyCheck = true;
                 this.ShowViewModel<SafetyCheckViewModel>();
             }
             else
@@ -547,12 +549,13 @@ namespace MWF.Mobile.Core.Services
             InsertNavAction<StartupViewModel, PasscodeViewModel>(typeof(VehicleListViewModel));
             InsertNavAction<StartupViewModel, VehicleListViewModel>(typeof(TrailerListViewModel));
             InsertNavAction<StartupViewModel, TrailerListViewModel>(typeof(SafetyCheckViewModel));
-            InsertCustomNavAction<StartupViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);        //to odometer, signature screen or main activity (manifest)
+            InsertCustomNavAction<StartupViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);        //to odometer, signature screen or main activity (manifest)      
 
             InsertNavAction<StartupViewModel, OdometerViewModel>(typeof(SafetyCheckSignatureViewModel));
             InsertCustomNavAction<StartupViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_Login); //to either main activity (manifest) or back to driver passcode
 
             InsertCustomBackNavAction<StartupViewModel, PasscodeViewModel>(CloseApplication);               //Back from passcode closes app
+            
 
             // Main Activity
             InsertCustomBackNavAction<MainViewModel, ManifestViewModel>(Logout_Action); // Back from manifest sends back to startup activity
@@ -585,11 +588,13 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, InstructionTrunkProceedViewModel>(InstructionTrunkProceed_CustomAction);
 
             InsertCustomNavAction<MainViewModel, InboxViewModel>(Inbox_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, SafetyCheckViewModel>(SafetyCheck_CustomBackAction);
+
 
             // safety check on logout sequence
             InsertCustomNavAction<MainViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);
             InsertNavAction<MainViewModel, OdometerViewModel>(typeof(SafetyCheckSignatureViewModel));
-            InsertCustomNavAction<MainViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_Logout);
+            InsertCustomNavAction<MainViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_SidebarLogout);
 
             // Side bar Activity
             InsertCustomNavAction<MainViewModel, SidebarCameraViewModel>(SidebarNavigation_CustomAction);
@@ -662,15 +667,26 @@ namespace MWF.Mobile.Core.Services
         }
 
         /// <summary>
-        /// Commits the safety check and does the logout
+        /// Commits the safety check and does the logout if we were doing a logout sfaety check
+        ///  Otherwise this must have have been a safety check from the sidebar so go back to manifestscreen
         /// </summary>
-        public void Signature_CustomAction_Logout(NavData navData)
+        public void Signature_CustomAction_SidebarLogout(NavData navData)
         {
+            if (_inLogoutSafetyCheck)
+            {
 
-            // commit safety check data to repositories and bluesphere
-            _safetyCheckService.CommitSafetyCheckData();
+                // commit safety check data to repositories and bluesphere
+                _safetyCheckService.CommitSafetyCheckData();
+                DoLogout(navData);
+                _inLogoutSafetyCheck = false;
+            }
+            else
+            {
+                this.ShowViewModel<ManifestViewModel>();
+            }
 
-            DoLogout(navData);
+            
+
         }
 
         /// <summary>
@@ -1127,6 +1143,14 @@ namespace MWF.Mobile.Core.Services
         #endregion Custom Mapping Actions
 
         #region CustomBackActions
+
+
+        public void SafetyCheck_CustomBackAction(NavData navData)
+        {
+            _inLogoutSafetyCheck = false;
+            this.ShowViewModel<ManifestViewModel>();
+        }
+
 
         public void Instruction_CustomBackAction(NavData navData)
         {

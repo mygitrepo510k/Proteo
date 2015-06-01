@@ -2751,6 +2751,58 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(BarcodeScanningViewModel), request.ViewModelType);
         }
 
+        [Fact]
+        public void NavigationService_Mappings_LogoutSafetyCheck()
+        {
+            base.ClearAll();
+
+            //presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionViewModel>());
+
+
+            SetUpLogOffSafetyCheckRequired(true);
+            var service = _fixture.Create<NavigationService>();
+
+
+            // Move to the next view model
+            service.Logout_Action(null);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(SafetyCheckViewModel), request.ViewModelType);
+
+
+
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_NoLogoutSafetyCheck()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionViewModel>());
+
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+            SetUpLogOffSafetyCheckRequired(false);
+            var service = _fixture.Create<NavigationService>();
+
+
+            // Move to the next view model
+            service.Logout_Action(null);
+
+            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(StartupViewModel), request.ViewModelType);
+        }
+
 
         #endregion
 
@@ -2768,6 +2820,27 @@ namespace MWF.Mobile.Tests.ServiceTests
             safetyProfileRepositoryMock.Setup(s => s.GetAll()).Returns(new List<SafetyProfile>() {safetyProfile}) ;
 
             var infoService = Mock.Of<IInfoService>(s => 
+                                                          s.LoggedInDriver.LastVehicleID == vehicle.ID &&
+                                                          s.CurrentVehicle == vehicle);
+            _fixture.Inject<IInfoService>(infoService);
+
+
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+
+        }
+
+        private void SetUpLogOffSafetyCheckRequired(bool required)
+        {
+            //create vehicle and a safety profile that link together in repositories
+            var vehicle = _fixture.Create<Vehicle>();
+            var safetyProfile = _fixture.Create<SafetyProfile>();
+            safetyProfile.IntLink = vehicle.SafetyCheckProfileIntLink;
+            safetyProfile.DisplayAtLogoff = required;
+
+            var safetyProfileRepositoryMock = _fixture.InjectNewMock<ISafetyProfileRepository>();
+            safetyProfileRepositoryMock.Setup(s => s.GetAll()).Returns(new List<SafetyProfile>() { safetyProfile });
+
+            var infoService = Mock.Of<IInfoService>(s =>
                                                           s.LoggedInDriver.LastVehicleID == vehicle.ID &&
                                                           s.CurrentVehicle == vehicle);
             _fixture.Inject<IInfoService>(infoService);

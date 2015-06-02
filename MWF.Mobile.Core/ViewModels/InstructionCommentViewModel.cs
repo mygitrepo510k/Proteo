@@ -5,6 +5,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class InstructionCommentViewModel
-        : BaseInstructionNotificationViewModel
+        : BaseInstructionNotificationViewModel, IBackButtonHandler
     {
         #region Private Fields
 
@@ -141,6 +142,25 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #endregion BaseInstructionNotificationViewModel Overrides
+
+        #region IBackButtonHandler Implementation
+
+        public Task<bool> OnBackButtonPressed()
+        {
+            if (_mobileData.Order.Type == Enums.InstructionType.Deliver)
+            {
+                // Delivery, continue back using normal backstack mechanism
+                return Task.FromResult(true);
+            }
+            else
+            {
+                // Cellection, use custom back mapping action to skip the select trailer workflow
+                _navigationService.GoBack(_navData);
+                return Task.FromResult(false);
+            }
+        }
+
+        #endregion IBackButtonHandler Implementation
 
     }
 }

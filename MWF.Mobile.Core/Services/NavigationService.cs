@@ -438,8 +438,13 @@ namespace MWF.Mobile.Core.Services
 
             if (isConfirmed)
             {
+                navData.OtherData["VisitedCommentScreen"] = true;
                 advanceToCommentScreen = true;
                 this.ShowViewModel<InstructionCommentViewModel>(navData);
+            }
+            else
+            {
+                navData.OtherData["VisitedCommentScreen"] = null;
             }
 
             return advanceToCommentScreen;
@@ -583,10 +588,12 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, BarcodeScanningViewModel>(Barcode_CustomAction);
 
             InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomBackAction);
 
             InsertCustomNavAction<MainViewModel, InstructionClausedViewModel>(InstructionClaused_CustomAction);
 
             InsertCustomNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomBackAction);
 
             InsertCustomBackNavAction<MainViewModel, OrderViewModel>(Order_CustomBackAction);
             InsertNavAction<MainViewModel, OrderViewModel>(typeof(ReviseQuantityViewModel));
@@ -1090,6 +1097,15 @@ namespace MWF.Mobile.Core.Services
         }
 
         /// <summary>
+        /// Going back from the instruction comment screen we should skip back to instruction on site
+        /// so as to avoid going back through the select trailer/safety check workflow (note: collection only)
+        /// </summary>
+        public void InstructionComment_CustomBackAction(NavData navData)
+        {
+           ShowViewModel<InstructionOnSiteViewModel>(navData);
+        }
+
+        /// <summary>
         /// Instruction signature screen, complete instruction and go back to manifest screen
         /// </summary>
         public void InstructionSignature_CustomAction(NavData navData)
@@ -1099,6 +1115,24 @@ namespace MWF.Mobile.Core.Services
                 var mobileNavData = navData as NavData<MobileData>;
                 CompleteInstruction(mobileNavData);
             }
+        }
+
+        /// <summary>
+        /// Going back from the instruction signature screen we should skip back to instruction on site 
+        /// so as to avoid going back through the select trailer/safety check workflow (note: collection only)
+        /// </summary>
+        public void InstructionSignature_CustomBackAction(NavData navData)
+        {
+
+            if (navData.OtherData.IsDefined("VisitedCommentScreen"))
+            {
+                ShowViewModel<InstructionCommentViewModel>(navData);
+            }
+            else
+            {
+                ShowViewModel<InstructionOnSiteViewModel>(navData);
+            }
+          
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Android.Content;
+using Android.Content.PM;
 using Cirrious.CrossCore;
 using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Droid.Platform;
@@ -51,7 +52,7 @@ namespace MWF.Mobile.Android
             base.InitializeLastChance();
 
             Mvx.RegisterSingleton<IReachability>(() => new Reachability());
-            Mvx.RegisterSingleton<IDeviceInfo>(() => new DeviceInfo());
+            Mvx.RegisterSingleton<IDeviceInfo>(() => new DeviceInfo { SoftwareVersion = this.GetSoftwareVersion() });
             Mvx.RegisterSingleton<IToast>(() => new Portable.Toast());
             Mvx.RegisterSingleton<ISound>(() => new Portable.Sound());
             Mvx.RegisterSingleton<IVibrate>(() => new Portable.Vibrate());
@@ -60,6 +61,7 @@ namespace MWF.Mobile.Android
             Mvx.RegisterSingleton<ILaunchPhone>(() => new Portable.LaunchPhone());
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
         }
 
         protected override System.Collections.Generic.List<System.Reflection.Assembly> ValueConverterAssemblies
@@ -101,6 +103,18 @@ namespace MWF.Mobile.Android
         private void PublishExceptionToLog(Exception exception)
         {
             Mvx.Resolve<Cirrious.MvvmCross.Plugins.Messenger.IMvxMessenger>().Publish(new MWF.Mobile.Core.Messages.TopLevelExceptionHandlerMessage(this, exception));
+        }
+
+        private PackageInfo GetPackageInfo()
+        {
+            var context = this.ApplicationContext;
+            var packageName = context.PackageName;
+            return context.PackageManager.GetPackageInfo(packageName, 0);
+        }
+
+        private string GetSoftwareVersion()
+        {
+            return this.GetPackageInfo().VersionName;
         }
 
     }

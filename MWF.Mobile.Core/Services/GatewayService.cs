@@ -76,7 +76,7 @@ namespace MWF.Mobile.Core.Services
 
         public async Task<bool> CreateDevice()
         {
-            var deviceInfo = new DeviceInfo()
+            var deviceInfo = new DeviceInfo
             {
                 IMEI = _deviceInfo.IMEI,
                 DeviceIdentifier = _deviceInfo.GetDeviceIdentifier(),
@@ -84,8 +84,10 @@ namespace MWF.Mobile.Core.Services
                 Manufacturer = _deviceInfo.Manufacturer,
                 Model = _deviceInfo.Model,
                 Platform = _deviceInfo.Platform,
-                Password = _deviceInfo.GatewayPassword
+                SoftwareVersion = _deviceInfo.SoftwareVersion,
+                Password = _deviceInfo.GatewayPassword,
             };
+
             var response = await _httpService.PostAsJsonAsync<DeviceInfo, HttpStatusCode>(deviceInfo, _gatewayDeviceCreateUrl);
             return (response.StatusCode != HttpStatusCode.InternalServerError);
         }

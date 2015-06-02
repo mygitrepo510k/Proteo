@@ -86,5 +86,7 @@ namespace MWF.Mobile.Android.Portable
             get { return "Orchestrator"; }
         }
 
+        public string SoftwareVersion { get; internal set; }
+
     }
 }

@@ -10,6 +10,7 @@ namespace MWF.Mobile.Core.Services
     public interface IDeviceInfo
     {
         string GatewayPassword { get; }
+
         string MobileApplication { get; }
 
         string GetDeviceIdentifier();
@@ -28,6 +29,7 @@ namespace MWF.Mobile.Core.Services
 
         string Manufacturer { get; }
 
+        string SoftwareVersion { get; }
     }
 
 }

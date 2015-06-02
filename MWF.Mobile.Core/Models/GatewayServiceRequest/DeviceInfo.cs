@@ -14,6 +14,7 @@ namespace MWF.Mobile.Core.Models.GatewayServiceRequest
         public string Manufacturer { get; set; }
         public string Model { get; set; }
         public string Platform { get; set; }
+        public string SoftwareVersion { get; set; }
         public string Password { get; set; }
     }
 }

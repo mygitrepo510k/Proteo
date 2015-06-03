@@ -8,6 +8,7 @@ using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using Cirrious.CrossCore;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -80,6 +81,11 @@ namespace MWF.Mobile.Core.ViewModels
         public string CustomerCodeLabel
         {
             get { return "Customer Code"; }
+        }
+
+        public string VersionText
+        {
+            get { return string.Format("Version: {0}           DeviceID: {1}",Mvx.Resolve<IDeviceInfo>().SoftwareVersion, Mvx.Resolve<IDeviceInfo>().GetDeviceIdentifier()); }
         }
 
         private bool _isBusy = false;

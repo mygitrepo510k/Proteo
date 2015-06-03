@@ -62,6 +62,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Submit"; }
         }
 
+        public string VersionText
+        {
+            get { return string.Format("Version: {0}           DeviceID: {1}", Mvx.Resolve<IDeviceInfo>().SoftwareVersion, Mvx.Resolve<IDeviceInfo>().GetDeviceIdentifier()); }
+        }
+
         public string ProgressTitle
         {
             get { return "Checking Passcode..."; }

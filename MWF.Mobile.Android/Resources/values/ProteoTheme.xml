@@ -35,6 +35,13 @@
     <item name = "android:textSize">20dp</item>
   </style>
 
+  <style name = "Proteo.TextView.VersionFooter" parent="style/Proteo">
+    <item name = "android:layout_marginTop">5dp</item>
+    <item name = "android:layout_alignParentBottom">true</item>
+    <item name = "android:textSize">10dp</item>
+    <item name ="android:textColor">#b8b8b8</item>
+  </style>
+
   <style name = "Proteo.TextView.Instructions" parent="style/Proteo">
     <item name = "android:textSize">10dp</item>
     <item name = "android:layout_marginBottom">5dp</item>

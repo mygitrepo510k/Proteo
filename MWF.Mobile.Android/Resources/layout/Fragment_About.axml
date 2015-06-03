@@ -5,39 +5,51 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
     <TextView
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textSize="30.0dp"
+        android:textSize="20.0dp"
+        local:MvxBind="Text 'Device Identifier: ' + AndroidId" />
+    <TextView
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="20.0dp"
+        local:MvxBind="Text 'Os Verison: ' + OsVersion" />
+    <TextView
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="20.0dp"
         local:MvxBind="Text 'IMEI: ' + IMEI" />
     <TextView
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textSize="30.0dp"
+        android:textSize="20.0dp"
         local:MvxBind="Text 'SerialNumber: ' + SerialNumber" />
     <TextView
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textSize="30.0dp"
-        local:MvxBind="Text 'AndroidId: ' + AndroidId" />
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textSize="30.0dp"
-        local:MvxBind="Text 'OsVerison: ' + OsVersion" />
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textSize="30.0dp"
+        android:textSize="20.0dp"
         local:MvxBind="Text 'Model: ' + Model" />
     <TextView
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textSize="30.0dp"
+        android:textSize="20.0dp"
         local:MvxBind="Text 'Manufacturer: ' + Manufacturer" />
 </LinearLayout>

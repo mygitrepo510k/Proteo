@@ -6,11 +6,23 @@ using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
+using Cirrious.CrossCore;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class AboutViewModel : MvxViewModel
+    public class AboutViewModel : BaseFragmentViewModel
     {
+
+        public AboutViewModel(IDeviceInfo deviceIdentifier)
+        {
+            IMEI = Mvx.Resolve<IDeviceInfo>().IMEI;
+            AndroidId = Mvx.Resolve<IDeviceInfo>().AndroidId;
+            SerialNumber = Mvx.Resolve<IDeviceInfo>().SerialNumber;
+            OsVersion = Mvx.Resolve<IDeviceInfo>().OsVersion;
+            Model = Mvx.Resolve<IDeviceInfo>().Model;
+            Manufacturer = Mvx.Resolve<IDeviceInfo>().Manufacturer;
+        }
+
         private string _imei;
         public string IMEI
         {
@@ -52,16 +64,15 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _manufacturer; }
             set { _manufacturer = value; RaisePropertyChanged(() => Manufacturer); }
         }
-        
-                
-        public AboutViewModel(IDeviceInfo deviceIdentifier)
+
+        public string HeadingText
         {
-            IMEI = deviceIdentifier.IMEI;
-            AndroidId = deviceIdentifier.AndroidId;
-            SerialNumber = deviceIdentifier.SerialNumber;
-            OsVersion = deviceIdentifier.OsVersion;
-            Model = deviceIdentifier.Model;
-            Manufacturer = deviceIdentifier.Manufacturer;
+            get { return "Device Details"; }
+        }
+
+        public override string FragmentTitle
+        {
+            get { return "About"; }
         }
     }
 }

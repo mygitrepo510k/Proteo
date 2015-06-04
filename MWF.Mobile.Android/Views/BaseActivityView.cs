@@ -31,6 +31,9 @@ namespace MWF.Mobile.Android.Views
 
         protected IDictionary<Type, Type> _supportedFragmentViewModels;
 
+        protected const string _hockeyAppID = "2b3564134089f04b9c27adf7d2026e16";
+        protected const string _hockeyAppSecret = "3a6e8e2d9c8d3d46b747c021f9daebe8";
+
         #endregion
 
         #region Construction
@@ -58,6 +61,15 @@ namespace MWF.Mobile.Android.Views
 
             this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
 
+            HockeyApp.UpdateManager.Register(this, _hockeyAppID, true);
+
+        }
+
+        protected override void OnPause()
+        {
+            base.OnPause();
+
+            HockeyApp.UpdateManager.Unregister();
         }
 
         public override void StartActivity(Intent intent)

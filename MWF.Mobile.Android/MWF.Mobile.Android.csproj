@@ -139,6 +139,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MvvmCross.HotTuna.Plugin.Visibility.3.2.2\lib\MonoAndroid\Cirrious.MvvmCross.Plugins.Visibility.Droid.dll</HintPath>
     </Reference>
+    <Reference Include="HockeyApp.Android">
+      <HintPath>..\Components\hockeyappandroid-3.5.0\lib\android\HockeyApp.Android.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
     <Reference Include="SignaturePad.Android">
@@ -494,6 +497,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <XamarinComponentReference Include="hockeyappandroid">
+      <Visible>False</Visible>
+      <Version>3.5.0</Version>
+    </XamarinComponentReference>
     <XamarinComponentReference Include="signature-pad">
       <Visible>False</Visible>
       <Version>1.3.3</Version>

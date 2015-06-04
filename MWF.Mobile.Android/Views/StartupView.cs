@@ -44,6 +44,8 @@ namespace MWF.Mobile.Android.Views
            // var pollTimerServiceIntent = new Intent(this, typeof(Services.GatewayPollTimerService));
            // StartService(pollTimerServiceIntent);
 
+            HockeyApp.LoginManager.Register(this, _hockeyAppID, _hockeyAppSecret, HockeyApp.LoginManager.LoginModeValidate, this.Class);
+
         }
 
         #endregion

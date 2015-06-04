@@ -57,7 +57,6 @@ namespace MWF.Mobile.Android.Views
                 { typeof(Core.ViewModels.InstructionSafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) }
             };
 
-        private const string _hockeyAppID = "2b3564134089f04b9c27adf7d2026e16";
 
         #endregion
 

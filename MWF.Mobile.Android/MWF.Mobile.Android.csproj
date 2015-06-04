@@ -190,6 +190,7 @@
     <Compile Include="Helpers\CustomActionBarDrawerToggle.cs" />
     <Compile Include="Helpers\ListViewChildMeasurer.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
+    <Compile Include="Portable\CheckForSoftwareUpdates.cs" />
     <Compile Include="Portable\CloseApplication.cs" />
     <Compile Include="Portable\CustomUserInteraction.cs" />
     <Compile Include="Portable\DeviceInfo.cs" />

@@ -68,6 +68,8 @@ namespace MWF.Mobile.Core.ViewModels
 
             _initialised = true;
 
+            Mvx.Resolve<ICheckForSoftwareUpdates>().Check();
+
             CreateSections();
             RefreshInstructions();
 

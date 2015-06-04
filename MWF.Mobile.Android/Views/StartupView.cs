@@ -45,10 +45,29 @@ namespace MWF.Mobile.Android.Views
            // StartService(pollTimerServiceIntent);
 
             HockeyApp.LoginManager.Register(this, _hockeyAppID, _hockeyAppSecret, HockeyApp.LoginManager.LoginModeValidate, this.Class);
+            CheckForUpdates();
+        }
 
+        protected override void OnResume()
+        {
+            base.OnResume();
+
+            CheckForUpdates();
+        }
+
+        protected override void OnPause()
+        {
+            base.OnPause();
+
+            HockeyApp.UpdateManager.Unregister();
         }
 
         #endregion
+
+        private void CheckForUpdates()
+        {
+            HockeyApp.UpdateManager.Register(this, _hockeyAppID, true);
+        }
 
         #region Fragment Host
 

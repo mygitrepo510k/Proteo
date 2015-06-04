@@ -61,15 +61,6 @@ namespace MWF.Mobile.Android.Views
 
             this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
 
-            HockeyApp.UpdateManager.Register(this, _hockeyAppID, true);
-
-        }
-
-        protected override void OnPause()
-        {
-            base.OnPause();
-
-            HockeyApp.UpdateManager.Unregister();
         }
 
         public override void StartActivity(Intent intent)
@@ -227,6 +218,7 @@ namespace MWF.Mobile.Android.Views
         {
             this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
         }
+
 
         #endregion
 

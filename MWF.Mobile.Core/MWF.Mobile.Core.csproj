@@ -180,6 +180,7 @@
     <Compile Include="Models\VerbProfile.cs" />
     <Compile Include="Models\ApplicationProfile.cs" />
     <Compile Include="Models\VerbProfileItem.cs" />
+    <Compile Include="Portable\ICheckForSoftwareUpdates.cs" />
     <Compile Include="Portable\ICustomUserInteraction.cs" />
     <Compile Include="Portable\ILaunchPhone.cs" />
     <Compile Include="Portable\IReachability.cs" />

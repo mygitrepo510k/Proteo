@@ -113,6 +113,8 @@ namespace MWF.Mobile.Core.Services
                     safetyCheck.SMP = smp;
                     safetyCheck.Mileage = _infoService.Mileage;
                     safetyCheck.EffectiveDate = effectiveDateTime;
+
+                    safetyCheckDataToSubmit.Add(safetyCheck);
                 }
 
                 if (safetyCheckDataToSubmit.Any())

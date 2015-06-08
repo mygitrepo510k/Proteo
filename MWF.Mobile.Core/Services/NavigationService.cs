@@ -609,7 +609,7 @@ namespace MWF.Mobile.Core.Services
             // safety check on logout sequence
             InsertCustomNavAction<MainViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);
             InsertNavAction<MainViewModel, OdometerViewModel>(typeof(SafetyCheckSignatureViewModel));
-            InsertCustomNavAction<MainViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_SidebarLogout);
+            InsertCustomNavAction<MainViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_Sidebar);
 
             // Side bar Activity
             InsertCustomNavAction<MainViewModel, SidebarCameraViewModel>(SidebarNavigation_CustomAction);
@@ -685,23 +685,20 @@ namespace MWF.Mobile.Core.Services
         /// Commits the safety check and does the logout if we were doing a logout sfaety check
         ///  Otherwise this must have have been a safety check from the sidebar so go back to manifestscreen
         /// </summary>
-        public void Signature_CustomAction_SidebarLogout(NavData navData)
+        public void Signature_CustomAction_Sidebar(NavData navData)
         {
+            // commit safety check data to repositories and bluesphere
+            _safetyCheckService.CommitSafetyCheckData();
+
             if (_inLogoutSafetyCheck)
             {
-
-                // commit safety check data to repositories and bluesphere
-                _safetyCheckService.CommitSafetyCheckData();
-                DoLogout(navData);
+                this.DoLogout(navData);
                 _inLogoutSafetyCheck = false;
             }
             else
             {
                 this.ShowViewModel<ManifestViewModel>();
             }
-
-            
-
         }
 
         /// <summary>

@@ -32,6 +32,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         private IFixture _fixture;
         private MockDispatcher _mockViewDispatcher;
+        private Mock<ICheckForSoftwareUpdates> _mockCheckForSoftwareUpdates;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
 
@@ -45,12 +46,13 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         protected override void AdditionalSetup()
         {
-
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Complete Instruction");
             _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.Is<string>(s => s == "Change Trailer?"), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<ICustomUserInteraction, bool>(true);
             _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.Is<string>(s => s == "Do you want to enter a comment for this instruction?"), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<ICustomUserInteraction, bool>(true);
+
+            _mockCheckForSoftwareUpdates = Ioc.RegisterNewMock<ICheckForSoftwareUpdates>();
 
             Ioc.RegisterSingleton<IMvxStringToTypeParser>(new MvxStringToTypeParser());
 

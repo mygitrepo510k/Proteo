@@ -30,7 +30,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMobileDataRepository> _mobileDataRepoMock;
         private Mock<IApplicationProfileRepository> _mockApplicationProfile;
         private Mock<IMvxMessenger> _mockMessenger;
-        
+        private Mock<ICheckForSoftwareUpdates> _mockCheckForSoftwareUpdates;
 
         protected override void AdditionalSetup()
         {
@@ -59,6 +59,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
             _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
             _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+
+            _mockCheckForSoftwareUpdates = Ioc.RegisterNewMock<ICheckForSoftwareUpdates>();
         }
 
         /// <summary>

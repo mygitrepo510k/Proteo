@@ -48,13 +48,6 @@ namespace MWF.Mobile.Android.Views
             CheckForUpdates();
         }
 
-        protected override void OnResume()
-        {
-            base.OnResume();
-
-            CheckForUpdates();
-        }
-
         protected override void OnPause()
         {
             base.OnPause();

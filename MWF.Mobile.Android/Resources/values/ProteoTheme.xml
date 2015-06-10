@@ -220,7 +220,7 @@
   <style name="Proteo.ImageView.MWFLogo" parent="@android:style/Theme.Holo.Light">
     <item name = "android:layout_width">227.5dp</item>
     <item name = "android:layout_height">117.0dp</item>
-    <item name = "android:src">@drawable/mwf_logo</item>
+    <item name = "android:src">@drawable/proteo_mobile_white</item>
     <item name = "android:gravity">center_horizontal</item>
   </style>
 

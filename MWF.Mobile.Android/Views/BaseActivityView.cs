@@ -31,8 +31,8 @@ namespace MWF.Mobile.Android.Views
 
         protected IDictionary<Type, Type> _supportedFragmentViewModels;
 
-        protected const string _hockeyAppID = "2b3564134089f04b9c27adf7d2026e16";
-        protected const string _hockeyAppSecret = "3a6e8e2d9c8d3d46b747c021f9daebe8";
+        protected const string _hockeyAppID = "7cf7fc0dba2bf468cec55795c004d77d";
+        protected const string _hockeyAppSecret = "e9fd0e20c666a1306f14192046232cd7";
 
         #endregion
 

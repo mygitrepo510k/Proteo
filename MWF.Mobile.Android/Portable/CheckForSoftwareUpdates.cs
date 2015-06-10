@@ -18,7 +18,7 @@ namespace MWF.Mobile.Android.Portable
     public class CheckForSoftwareUpdates
         : ICheckForSoftwareUpdates
     {
-        protected const string _hockeyAppID = "2b3564134089f04b9c27adf7d2026e16";
+        protected const string _hockeyAppID = "7cf7fc0dba2bf468cec55795c004d77d";
 
         protected Activity CurrentActivity
         {

@@ -6,7 +6,7 @@ namespace MWF.Mobile.Android
 {
 
     [Activity(
-		Label = "Mobile worker flow"
+		Label = "Proteo Mobile"
 		, MainLauncher = true
 		, Icon = "@drawable/icon"
 		, Theme = "@style/Theme.Splash"

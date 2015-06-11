@@ -43,7 +43,8 @@ namespace MWF.Mobile.Core.ViewModels
         private ManifestSectionViewModel _nonActiveInstructionsSection;
         private ManifestSectionViewModel _activeInstructionsSection;
         private ManifestSectionViewModel _messageSection;
-        private ApplicationProfile _appProfile;
+        private int? _displayRetention = null;
+        private int? _displaySpan = null;
         private bool _initialised;
 
         #endregion
@@ -53,7 +54,6 @@ namespace MWF.Mobile.Core.ViewModels
         public ManifestViewModel(IRepositories repositories, INavigationService navigationService, IReachability reachability, IToast toast,
                                  IGatewayPollingService gatewayPollingService, IGatewayQueuedService gatewayQueuedService, IInfoService infoService)
         {
-
             _mobileDataRepository = repositories.MobileDataRepository;
             _applicationProfileRepository = repositories.ApplicationRepository;
 
@@ -64,15 +64,12 @@ namespace MWF.Mobile.Core.ViewModels
             _gatewayQueuedService = gatewayQueuedService;
             _infoService = infoService;
 
-            _appProfile = _applicationProfileRepository.GetAll().First();
-
             _initialised = true;
 
             Mvx.Resolve<ICheckForSoftwareUpdates>().Check();
 
             CreateSections();
             RefreshInstructions();
-
         }
 
         private void CreateSections()
@@ -99,7 +96,6 @@ namespace MWF.Mobile.Core.ViewModels
             };
 
             Sections.Add(_messageSection);
-
         }
 
         #endregion
@@ -156,14 +152,28 @@ namespace MWF.Mobile.Core.ViewModels
             if (!_initialised)
                 return;
 
-            var today = DateTime.Now;
+            var today = DateTime.Today;
 
             // get instruction data models from repository and order them
             var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_infoService.LoggedInDriver.ID);
             var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_infoService.LoggedInDriver.ID);
 
-            activeInstructionsDataModels = activeInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
-            nonActiveInstructionsDataModels = nonActiveInstructionsDataModels.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
+            if (!_displayRetention.HasValue || !_displaySpan.HasValue)
+            {
+                var applicationProfile = _applicationProfileRepository.GetAll().First();
+                _displayRetention = applicationProfile.DataRetention;
+                _displaySpan = applicationProfile.DataSpan;
+            }
+
+            activeInstructionsDataModels =
+                activeInstructionsDataModels
+                .Where(i => i.EffectiveDate < today.AddDays(_displaySpan.Value) && i.EffectiveDate > today.AddDays(-_displayRetention.Value))
+                .OrderBy(x => x.EffectiveDate);
+
+            nonActiveInstructionsDataModels =
+                nonActiveInstructionsDataModels
+                .Where(i => i.EffectiveDate < today.AddDays(_displaySpan.Value) && i.EffectiveDate > today.AddDays(-_displayRetention.Value))
+                .OrderBy(x => x.EffectiveDate);
 
             var messageDataModels = _mobileDataRepository.GetNonCompletedMessages(_infoService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
 

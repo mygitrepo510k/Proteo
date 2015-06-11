@@ -33,9 +33,10 @@ namespace MWF.Mobile.Core.Services
         private Timer _timer;
         private readonly IInfoService _infoService;
         IDataChunkService _dataChunkService;
-        private readonly AsyncLock _lock = new AsyncLock(); 
+        private readonly AsyncLock _lock = new AsyncLock();
 
-        private int _dataSpan = -1;
+        private int? _dataRetention = null;
+        private int? _dataSpan = null;
 
         public GatewayPollingService(
             IDeviceInfo deviceInfo,
@@ -96,13 +97,19 @@ namespace MWF.Mobile.Core.Services
                 if (!_reachability.IsConnected())
                     return;
 
-                IEnumerable<MobileData> instructions = new List<MobileData>();
+                if (!_dataRetention.HasValue || !_dataSpan.HasValue)
+                {
+                    var applicationProfile = _repositories.ApplicationRepository.GetAll().First();
+                    _dataRetention = applicationProfile.DataRetention;
+                    _dataSpan = applicationProfile.DataSpan;
+                }
 
                 // Call to BlueSphere to check for instructions
-                instructions = await _gatewayService.GetDriverInstructions(_infoService.CurrentVehicle.Registration,
-                                                                           _infoService.LoggedInDriver.ID,
-                                                                           DateTime.Now,
-                                                                           DateTime.Now.AddDays(DataSpan));
+                var instructions = await _gatewayService.GetDriverInstructions(
+                    _infoService.CurrentVehicle.Registration,
+                    _infoService.LoggedInDriver.ID,
+                    DateTime.Today.AddDays(_dataRetention.Value),
+                    DateTime.Today.AddDays(_dataSpan.Value));
 
                 Mvx.Trace("Successfully pulled instructions.");
 
@@ -210,16 +217,6 @@ namespace MWF.Mobile.Core.Services
             });
 
             _gatewayQueuedService.AddToQueue(syncAckActions);
-        }
-
-        public int DataSpan
-        {
-
-            get
-            {
-                return (_dataSpan < 0) ? _dataSpan = _repositories.ApplicationRepository.GetAll().First().DataSpan : _dataSpan;
-            }
-
         }
 
         private void PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand command, Guid instructionID)

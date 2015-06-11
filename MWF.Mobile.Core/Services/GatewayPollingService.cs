@@ -108,7 +108,7 @@ namespace MWF.Mobile.Core.Services
                 var instructions = await _gatewayService.GetDriverInstructions(
                     _infoService.CurrentVehicle.Registration,
                     _infoService.LoggedInDriver.ID,
-                    DateTime.Today.AddDays(_dataRetention.Value),
+                    DateTime.Today.AddDays(-_dataRetention.Value),
                     DateTime.Today.AddDays(_dataSpan.Value));
 
                 Mvx.Trace("Successfully pulled instructions.");

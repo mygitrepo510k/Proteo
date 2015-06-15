@@ -60,7 +60,10 @@ namespace MWF.Mobile.Core.ViewModels
             //Demo.ProteoEnterprise Customer Code
             //_userInteraction.Confirm("DEBUGGING: use the Proteo Demo customer code?", (bool ok) => { if (ok) this.CustomerCode = "DB78C027-CA85-4DF3-A25A-760562C4EEB5"; });
             //Fagan & Whalley
-            _userInteraction.Confirm("DEBUGGING: use the Fagan & Whalley customer code?", (bool ok) => { if (ok) this.CustomerCode = "B448BEF1-9320-4AAB-A529-06605A288A96"; });
+            //_userInteraction.Confirm("DEBUGGING: use the Fagan & Whalley customer code?", (bool ok) => { if (ok) this.CustomerCode = "B448BEF1-9320-4AAB-A529-06605A288A96"; });
+            //Bomfords
+            _userInteraction.Confirm("DEBUGGING: use the Bomfords customer code?", (bool ok) => { if (ok) this.CustomerCode = "0DA9F71D-3A0F-4351-BCE1-A49D2D9AECC1"; });
+
 #endif
         }
 
@@ -199,13 +202,15 @@ namespace MWF.Mobile.Core.ViewModels
             
             foreach (var verbProfileTitle in verbProfileTitles)
             {
-                verbProfiles.Add(await _gatewayService.GetVerbProfile(verbProfileTitle));
+                var verbProfile = await _gatewayService.GetVerbProfile(verbProfileTitle);
+                if (verbProfile != null) 
+                    verbProfiles.Add(verbProfile);
             }          
 
             _dataService.RunInTransaction( connection =>
             {
                 //TODO: Store the customer title? Need to get the customer title from somewhere.
-                _customerRepository.Insert(new Customer() { ID = new Guid(), CustomerCode = CustomerCode }, connection);
+                _customerRepository.Insert(new Customer() { ID = Guid.NewGuid(), CustomerCode = CustomerCode }, connection);
                 _deviceRepository.Insert(device, connection);
                 _verbProfileRepository.Insert(verbProfiles, connection);
                 _applicationProfileRepository.Insert(applicationProfile, connection);

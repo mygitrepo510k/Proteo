@@ -119,11 +119,12 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public bool IsDelivery
+        public bool IsDeliveryAddEnabled
         {
             get
             {
-                return _mobileData.Order.Type == Enums.InstructionType.Deliver;
+                return _mobileData.Order.Type == Enums.InstructionType.Deliver 
+                    && _repositories.ConfigRepository.Get().DeliveryAdd;
             }
         }
 

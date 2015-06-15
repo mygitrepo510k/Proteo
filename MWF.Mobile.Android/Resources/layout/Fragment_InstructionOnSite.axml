@@ -34,7 +34,7 @@
     <Button
         android:id="@+id/ButtonAddDeliveries"
         style="@style/Proteo.Button"
-        local:MvxBind="Text AddDeliveriesButtonLabel; Click AddDeliveriesCommand; Visible IsDelivery"
+        local:MvxBind="Text AddDeliveriesButtonLabel; Click AddDeliveriesCommand; Visible IsDeliveryAddEnabled"
         android:layout_above="@+id/ButtonAdvanceInstructionComment" />
     <Button
         android:id="@+id/ButtonAdvanceInstructionComment"

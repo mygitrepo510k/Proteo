@@ -12,6 +12,11 @@ namespace MWF.Mobile.Core.Models.Instruction
         public Additional()
         {
             ID = Guid.NewGuid();
+            //If the xml isn't sent down for customer and signature confirmation then they are set to true. (Currently happens for Bomford style)
+            CustomerNameRequiredForCollection = true;
+            CustomerNameRequiredForDelivery = true;
+            CustomerSignatureRequiredForCollection = true;
+            CustomerSignatureRequiredForDelivery = true;
         }
 
         [Unique]

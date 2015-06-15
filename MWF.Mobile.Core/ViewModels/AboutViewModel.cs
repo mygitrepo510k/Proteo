@@ -21,6 +21,14 @@ namespace MWF.Mobile.Core.ViewModels
             OsVersion = Mvx.Resolve<IDeviceInfo>().OsVersion;
             Model = Mvx.Resolve<IDeviceInfo>().Model;
             Manufacturer = Mvx.Resolve<IDeviceInfo>().Manufacturer;
+            SoftwareVersion = Mvx.Resolve<IDeviceInfo>().SoftwareVersion;
+        }
+
+        private string _softwareVersion;
+        public string SoftwareVersion
+        {
+            get { return _softwareVersion; }
+            set { _softwareVersion = value; RaisePropertyChanged(() => SoftwareVersion); }
         }
 
         private string _imei;

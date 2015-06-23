@@ -49,7 +49,14 @@ namespace MWF.Mobile.Core.Models.Instruction
        // [XmlAttribute("title")]
         public string Title { get; set; }
 
-        [XmlAttribute("effectivedate")]
+        [XmlIgnore]
         public DateTime EffectiveDate { get; set; }
+
+        [XmlAttribute("effectivedate")]
+        public string EffectiveDateString
+        {
+            get { return this.EffectiveDate.ToLocalTime().ToString("u"); }
+            set { this.EffectiveDate = DateTime.Parse(value); }
+        }
     }
 }

@@ -20,8 +20,15 @@ namespace MWF.Mobile.Core.Models.Instruction
         [XmlAttribute("vehiclereg")]
         public string VehicleRegistration { get; set; }
 
-        [XmlAttribute("effectivedate")]
+        [XmlIgnore]
         public DateTime EffectiveDate { get; set; }
+
+        [XmlAttribute("effectivedate")]
+        public string EffectiveDateString
+        {
+            get { return this.EffectiveDate.ToLocalTime().ToString("u"); }
+            set { this.EffectiveDate = DateTime.Parse(value); }
+        }
 
         [XmlAttribute("activity")]
         public int Activity { get; set; }

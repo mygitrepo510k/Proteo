@@ -131,8 +131,8 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _barcodeInput; }
             set 
             {
-
-                _barcodeInput = value; 
+                //Scanner adds newline when setting NewLine ways is set to Model second.
+                _barcodeInput = value.TrimEnd('\n'); 
                 CheckScanInput(); 
             }
         }

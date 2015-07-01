@@ -21,6 +21,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IGatewayService _gatewayService = null;
         private readonly IReachability _reachability = null;
         private readonly ICloseApplication _closeApplication = null;
+        private bool _isSubmitting = false;
         
         private MvxSubscriptionToken _notificationToken;
 
@@ -69,37 +70,50 @@ namespace MWF.Mobile.Core.Services
 
         public async Task UploadLoggedEventsAsync()
         {
-            var events = _loggedRepository.GetAll().OrderBy(e => e.LogDateTime).ToList();
 
-            if (events.Any())
+            if (_isSubmitting)
+                return;
+
+            _isSubmitting = true;
+
+            try
             {
+                var events = _loggedRepository.GetAll().OrderBy(e => e.LogDateTime).ToList();
 
-                if (!_reachability.IsConnected())
-                    return;
-
-                var deviceIdentifier = _deviceInfo.GetDeviceIdentifier();
-                
-
-                foreach (var e in events)
+                if (events.Any())
                 {
-                    var deviceMessage = new DeviceLogMessage
-                    {
-                        Message = e.Message,
-                        LogDateTime = e.LogDateTime,
-                        DeviceIdentifier = deviceIdentifier
-                    };
 
-                    var response = await _gatewayService.PostLogMessageAsync(deviceMessage);
+                    if (!_reachability.IsConnected())
+                        return;
 
-                    if (response.Succeeded)
-                        _loggedRepository.Delete(e);
-                    else
+                    var deviceIdentifier = _deviceInfo.GetDeviceIdentifier();
+
+
+                    foreach (var e in events)
                     {
-                        var message = "Error uploading log file.";
-                        Mvx.Resolve<ICustomUserInteraction>().Alert(message);
-                        break;
+                        var deviceMessage = new DeviceLogMessage
+                        {
+                            Message = e.Message,
+                            LogDateTime = e.LogDateTime,
+                            DeviceIdentifier = deviceIdentifier
+                        };
+
+                        var response = await _gatewayService.PostLogMessageAsync(deviceMessage);
+
+                        if (response.Succeeded)
+                            _loggedRepository.Delete(e);
+                        else
+                        {
+                            var message = "Error uploading log file.";
+                            Mvx.Resolve<ICustomUserInteraction>().Alert(message);
+                            break;
+                        }
                     }
                 }
+            }
+            finally
+            {
+                _isSubmitting = false;
             }
         }
 

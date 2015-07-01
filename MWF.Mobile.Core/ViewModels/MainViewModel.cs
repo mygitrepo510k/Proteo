@@ -115,7 +115,7 @@ namespace MWF.Mobile.Core.ViewModels
                 new MenuViewModel
                 {
                     Option = Option.About,
-                    Text = "About"    
+                    Text = "About"   
                 }
             };
         }

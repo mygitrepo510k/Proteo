@@ -120,8 +120,8 @@ namespace MWF.Mobile.Core.Services
 
         public async Task UploadQueueAsync()
         {
-            await _loggingService.UploadLoggedEventsAsync();
             await SubmitQueueAsync();
+            await _loggingService.UploadLoggedEventsAsync();     
         }
 
         private async Task SubmitQueueAsync()

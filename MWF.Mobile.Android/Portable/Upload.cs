@@ -19,23 +19,30 @@ using Cirrious.CrossCore.Droid.Platform;
 
 namespace MWF.Mobile.Android.Portable
 {
-    class Upload : IUpload
+    public class Upload : IUpload
     {
-        protected Activity CurrentActivity
+        public async Task<bool> UploadFile(System.Uri address,string username, string password, string path)
         {
-            get { return Mvx.Resolve<IMvxAndroidCurrentTopActivity>().Activity; }
-        }
-
-        public bool UploadFile(System.Uri address,string username, string password, string path)
-        {
-            FileInfo fileInfo = new FileInfo(path);
+            string dirPath = GetParentUriString(address);
 
             WebClient wc = new WebClient();
-            wc.Credentials = new NetworkCredential(username, password);
+            var credentials = new NetworkCredential(username, password);
+            wc.Credentials = credentials;
             bool success = false;
             try
             {
-                wc.UploadFile(address, path);
+                // If ftp directory for device doesn't exist then create it
+                if (! (await FtpDirectoryExists(dirPath, credentials)))
+                {
+                    bool createdDirOK = await CreateFtpDir(dirPath, credentials);
+                    if (!createdDirOK)
+                    {
+                        return false;
+                    }
+                }
+
+                // upload the file
+                await wc.UploadFileTaskAsync(address, path);
                 success = true;
             }
             catch (Exception ex)
@@ -46,6 +53,63 @@ namespace MWF.Mobile.Android.Portable
             return success;
 
 
+        }
+
+        /// <summary>
+        /// Get the parent directory of the file specified in the uri
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        static string GetParentUriString(System.Uri uri)
+        {
+            var uriString = uri.AbsoluteUri.Remove(uri.AbsoluteUri.Length - uri.Segments.Last().Length);
+            return uriString.Substring(0, uriString.LastIndexOf('/'));
+        }
+
+
+        /// <summary>
+        /// Checks whether the the specified directory exists at the ftp location
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="credentials"></param>
+        /// <returns></returns>
+        private async Task<bool> FtpDirectoryExists(string path, NetworkCredential credentials)
+        {
+            try
+            {
+                var request = WebRequest.Create(path);
+                request.Credentials = credentials;
+                request.Method = WebRequestMethods.Ftp.GetDateTimestamp;
+
+                WebResponse response = await request.GetResponseAsync();
+
+            }
+            catch (WebException ex)
+            {
+                FtpWebResponse response = (FtpWebResponse)ex.Response;
+                if (response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                    return false;
+                else
+                    return true;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// creates the directory as specified in the path at the ftp location
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="credentials"></param>
+        /// <returns></returns>
+        private async Task<bool> CreateFtpDir(string path, NetworkCredential credentials)
+        {
+                WebRequest ftpReq = WebRequest.Create(path) as FtpWebRequest;
+                ftpReq.Method = WebRequestMethods.Ftp.MakeDirectory;
+                ftpReq.Credentials = credentials;
+                WebResponse response = await ftpReq.GetResponseAsync();
+                FtpWebResponse ftpResponse = response as FtpWebResponse;
+                return ftpResponse.StatusCode == FtpStatusCode.CommandOK;
+   
         }
 
     }

@@ -31,7 +31,7 @@ namespace MWF.Mobile.Android.Views
         protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
             {
                 { typeof(Core.ViewModels.AboutViewModel), typeof(Fragments.AboutFragment)},
-                 { typeof(Core.ViewModels.DiagnosticsViewModel), typeof(Fragments.DiagnosticsFragment)},
+                { typeof(Core.ViewModels.DiagnosticsViewModel), typeof(Fragments.DiagnosticsFragment)},
                 { typeof(Core.ViewModels.BarcodeScanningViewModel), typeof(Fragments.BarcodeFragment)},
                 { typeof(Core.ViewModels.BarcodeStatusViewModel), typeof(Fragments.BarcodeStatusFragment)},
                 { typeof(Core.ViewModels.DisplaySafetyCheckViewModel), typeof(Fragments.DisplaySafetyCheckFragment)},

@@ -119,8 +119,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void SendDiagnostics()
         {
-            NavData<DiagnosticsViewModel> _navData = new NavData<DiagnosticsViewModel>();
-            _navigationService.ShowModalViewModel<DiagnosticsViewModel, bool>(this, _navData, null);
+            NavData<object> navData = new NavData<object>();
+            navData.OtherData["Diagnostics"] = true;         
+            _navigationService.MoveToNext(navData);
         }
 
 

@@ -42,9 +42,6 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             
             _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
-
-            //Hide the action bar
-            this.Activity.ActionBar.Hide();
             
             base.OnViewCreated(view, savedInstanceState);
             var set = this.CreateBindingSet<DiagnosticsFragment, DiagnosticsViewModel>();

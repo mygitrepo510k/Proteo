@@ -14,24 +14,23 @@ using MWF.Mobile.Core.ViewModels.Interfaces;
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class DiagnosticsViewModel : BaseFragmentViewModel, IModalViewModel<bool>
+    public class DiagnosticsViewModel : BaseFragmentViewModel
     {
+
+        #region private members
 
         private readonly IDataService _dataService;
         private readonly IReachability _reachability;
         private readonly ICustomUserInteraction _userInteraction;
         private readonly INavigationService _navigationService;
         private readonly IDiagnosticsService _diagnosticsService;
-
         private readonly IApplicationProfileRepository _applicationProfileRepository;
-        private readonly ICustomerRepository _customerRepository; 
-        private readonly IDeviceRepository _deviceRepository;
-        private readonly IDriverRepository _driverRepository;
-        private readonly ISafetyProfileRepository _safetyProfileRepository;
-        private readonly ITrailerRepository _trailerRepository;
-        private readonly IVehicleRepository _vehicleRepository;
-        private readonly IVerbProfileRepository _verbProfileRepository;
         private readonly IConfigRepository _configRepository;
+        private string _unexpectedErrorMessage = "Unfortunately, there was an error uploading diagnostic data. Please try restarting the device and try again.";
+
+        #endregion
+
+        #region construction
 
         public DiagnosticsViewModel(IReachability reachability, IDataService dataService, IRepositories repositories, ICustomUserInteraction userInteraction, INavigationService navigationService, IDiagnosticsService diagnosticsService)
         {
@@ -40,12 +39,14 @@ namespace MWF.Mobile.Core.ViewModels
             _userInteraction = userInteraction;
             _navigationService = navigationService;
             _diagnosticsService = diagnosticsService;
-
             _applicationProfileRepository = repositories.ApplicationRepository;
             _configRepository = repositories.ConfigRepository;
 
-
         }
+
+        #endregion
+
+        #region public properties
 
         public override int GetHashCode()
         {
@@ -68,7 +69,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string DiagnosticsMessageLabel
         {
-            get { return "Push the Send button to send diagnostic information to Proteo"; }
+            get { return "Push send to upload diagnostic information to Proteo."; }
         }
 
         public string VersionText
@@ -90,23 +91,22 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressMessage
         {
-            get { return "The data is being uploaded please wait.";  }
+            get { return "Diagnostic data is being uploaded, please wait.";  }
         }
 
-        private MvxCommand _sendDiagnostocsCommand;
+        private MvxCommand _sendDiagnosticsCommand;
         public System.Windows.Input.ICommand SendDiagnosticsCommand
         {
             get
             {
-                _sendDiagnostocsCommand = _sendDiagnostocsCommand ?? new MvxCommand(async () => await UploadDiagnosticsAsync());
-                return _sendDiagnostocsCommand;
+                _sendDiagnosticsCommand = _sendDiagnosticsCommand ?? new MvxCommand(async () => await UploadDiagnosticsAsync());
+                return _sendDiagnosticsCommand;
             }
         }
 
-      
-        private string _errorMessage;
-        private string _unexpectedErrorMessage = "Unfortunately, there was a problem setting up your device, try restarting the device and try again.";
+        #endregion
 
+        #region private methods
 
         private async Task UploadDiagnosticsAsync()
         {
@@ -120,51 +120,34 @@ namespace MWF.Mobile.Core.ViewModels
                 bool success = false;
                 try
                 {
-                    success = this.UploadDiagnostics();
+                    success = await this.UploadDiagnostics();
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
                     success = false;
-                    _errorMessage = _unexpectedErrorMessage;
                 }
 
                 this.IsBusy = false;
 
                 if (success)
                 {
-                    _userInteraction.Alert("The support information has been uploaded", null, "Support");
+                    _userInteraction.Alert("Support diagnostic information uploaded successfully.", null, "Upload Complete");
                     _navigationService.MoveToNext();
                 }
-                else await _userInteraction.AlertAsync(_errorMessage);
+                else await _userInteraction.AlertAsync(_unexpectedErrorMessage);
             }
         }
      
 
-        private bool UploadDiagnostics()
+        private async Task<bool> UploadDiagnostics()
         {
-            // get the database
             var dbFile = _dataService.GetDBConnection();
-            var path = dbFile.DatabasePath;
-           
-           var success =  _diagnosticsService.UploadDiagnostics(path);
-
-            return success;
+            var path = dbFile.DatabasePath;        
+            return await _diagnosticsService.UploadDiagnostics(path);
 
         }
 
-        public void Cancel()
-        {
-           // throw new NotImplementedException();
-        }
-
-        public void ReturnResult(bool result)
-        {
-           // throw new NotImplementedException();
-        }
-
-        // returns false if the customer code is not known
-        public Guid MessageId { get; set; }
-
+        #endregion
 
     }
 }

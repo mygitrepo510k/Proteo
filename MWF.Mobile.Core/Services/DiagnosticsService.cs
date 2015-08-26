@@ -44,7 +44,7 @@ namespace MWF.Mobile.Core.Services
         /// This method uploads the databse to the FTP server under the Android Device ID
         /// </summary>
         /// <param name="databasePath">The locations of the mySql Database</param>
-        public bool UploadDiagnostics(string databasePath)
+        public async Task<bool> UploadDiagnostics(string databasePath)
         {
 
             if (!_reachability.IsConnected())
@@ -63,7 +63,7 @@ namespace MWF.Mobile.Core.Services
             try
             {
                 var uri = string.Format("{0}/{1}/{2}",config.FtpUrl ,_deviceInfo.AndroidId, Path.GetFileName(databasePath));
-                success = _upload.UploadFile(new Uri(uri),config.FtpUsername, config.FtpPassword, databasePath);
+                success = await _upload.UploadFile(new Uri(uri),config.FtpUsername, config.FtpPassword, databasePath);
             }
             catch(Exception ex)
             {

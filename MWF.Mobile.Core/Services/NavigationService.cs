@@ -558,8 +558,9 @@ namespace MWF.Mobile.Core.Services
         private void SetMappings()
         {
             // StartUp Activity
-            InsertNavAction<StartupViewModel, CustomerCodeViewModel>(typeof(PasscodeViewModel));
-            InsertNavAction<StartupViewModel, PasscodeViewModel>(typeof(VehicleListViewModel));
+            InsertNavAction<StartupViewModel, CustomerCodeViewModel>(typeof(PasscodeViewModel));          
+            InsertCustomNavAction<StartupViewModel, PasscodeViewModel>(Passcode_CustomAction);
+            InsertNavAction<StartupViewModel, DiagnosticsViewModel>(typeof(PasscodeViewModel));
             InsertNavAction<StartupViewModel, VehicleListViewModel>(typeof(TrailerListViewModel));
             InsertNavAction<StartupViewModel, TrailerListViewModel>(typeof(SafetyCheckViewModel));
             InsertCustomNavAction<StartupViewModel, SafetyCheckViewModel>(SafetyCheck_CustomAction);        //to odometer, signature screen or main activity (manifest)      
@@ -619,9 +620,6 @@ namespace MWF.Mobile.Core.Services
             InsertCustomBackNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustomAction);
 
             InsertCustomNavAction<MainViewModel, DiagnosticsViewModel>(SidebarNavigation_CustomAction);
-            InsertNavAction<StartupViewModel, DiagnosticsViewModel>(typeof(PasscodeViewModel));
-
-            InsertCustomBackNavAction<MainViewModel, DiagnosticsViewModel>(SidebarNavigation_CustomAction); 
 
         }
 
@@ -635,6 +633,19 @@ namespace MWF.Mobile.Core.Services
         {
             _closeApplication.CloseApp();
         }
+
+        public void Passcode_CustomAction(NavData navData)
+        {
+            if (navData != null)
+            {
+                MoveTo(typeof(DiagnosticsViewModel), navData);
+            }
+            else
+            {
+                MoveTo(typeof(VehicleListViewModel), navData);
+            }
+        }
+
 
         /// <summary>
         /// Safety Check screen goes to main activity (manifest) if there are no profiles

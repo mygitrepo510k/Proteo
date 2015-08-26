@@ -60,6 +60,7 @@ namespace MWF.Mobile.Android
             Mvx.RegisterSingleton<ICustomUserInteraction>(() => new Portable.CustomUserInteraction());
             Mvx.RegisterSingleton<ICheckForSoftwareUpdates>(() => new Portable.CheckForSoftwareUpdates());
             Mvx.RegisterSingleton<ILaunchPhone>(() => new Portable.LaunchPhone());
+            Mvx.RegisterSingleton<IUpload>(() => new Portable.Upload());
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 

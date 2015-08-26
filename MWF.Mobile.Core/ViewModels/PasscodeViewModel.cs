@@ -90,6 +90,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return (_loginCommand = _loginCommand ?? new MvxCommand(async () => await LoginAsync())); }
         }
 
+        private MvxCommand _sendDiagnosticsCommand;
+        public System.Windows.Input.ICommand SendDiagnosticsCommand
+        {
+            get { return (_sendDiagnosticsCommand = _sendDiagnosticsCommand ?? new MvxCommand(() => SendDiagnostics()));}
+        }
         public override string FragmentTitle
         {
             get { return "Passcode"; }
@@ -111,6 +116,13 @@ namespace MWF.Mobile.Core.ViewModels
 
             await AuthenticateAsync();
         }
+
+        private void SendDiagnostics()
+        {
+            NavData<DiagnosticsViewModel> _navData = new NavData<DiagnosticsViewModel>();
+            _navigationService.ShowModalViewModel<DiagnosticsViewModel, bool>(this, _navData, null);
+        }
+
 
         private async Task AuthenticateAsync()
         {

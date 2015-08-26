@@ -618,7 +618,10 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustomAction);
             InsertCustomBackNavAction<MainViewModel, DisplaySafetyCheckViewModel>(SidebarNavigation_CustomAction);
 
+            InsertCustomNavAction<MainViewModel, DiagnosticsViewModel>(SidebarNavigation_CustomAction);
+            InsertNavAction<StartupViewModel, DiagnosticsViewModel>(typeof(PasscodeViewModel));
 
+            InsertCustomBackNavAction<MainViewModel, DiagnosticsViewModel>(SidebarNavigation_CustomAction); 
 
         }
 

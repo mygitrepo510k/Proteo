@@ -9,21 +9,12 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
-        <ImageView
-            style="@style/Proteo.ImageView.MWFLogo" />
         <TextView
             style="@style/Proteo.TextView.MainHeading"
-            local:MvxBind="Text PasscodeLabel" />
-        <EditText
-            style="@style/Proteo.EditText.NumberPasscode"
-            android:id="@+id/editTextPasscode"
-            android:imeOptions="actionDone"
-            android:singleLine="true"
-            local:MvxBind="Text Passcode" />
+            local:MvxBind="Text DiagnosticsMessageLabel" />
         <Button
             style="@style/Proteo.Button"
-            android:id="@+id/buttonPasscode"
-            local:MvxBind="Text PasscodeButtonLabel; Click LoginCommand; LongClick SendDiagnosticsCommand" />
+            local:MvxBind="Text EnterButtonLabel; Click SendDiagnosticsCommand" />
     </LinearLayout>
     <TextView
         style="@style/Proteo.TextView.VersionFooter"

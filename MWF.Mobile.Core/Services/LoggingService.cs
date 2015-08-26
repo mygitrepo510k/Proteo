@@ -68,6 +68,18 @@ namespace MWF.Mobile.Core.Services
             _loggedRepository.Insert(loggedEvent);
         }
 
+        public void LogEvent(string eventDescription, Enums.LogType type, params object[] args)
+        {
+            var loggedEvent = new LogMessage
+            {
+                LogDateTime = DateTime.Now.ToLocalTime(),
+                Message = string.Format("{0} - {1}", type.ToString(), string.Format(eventDescription, args)),
+                LogType = type
+            };
+
+            _loggedRepository.Insert(loggedEvent);
+        }
+
         public async Task UploadLoggedEventsAsync()
         {
 

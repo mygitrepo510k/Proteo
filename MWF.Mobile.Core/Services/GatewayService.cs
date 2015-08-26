@@ -71,6 +71,11 @@ namespace MWF.Mobile.Core.Services
                 Password = _deviceInfo.GatewayPassword
             };
             var response = await _httpService.PostAsJsonAsync<DeviceInfo, MWFMobileConfig>(deviceInfo, _gatewayConfigRequestUrl);
+            response.Content.FtpUrl = "ftp://updates.proteotoughtouch.com";
+            response.Content.FtpUsername = "TTUpdate";
+            response.Content.FtpPassword = "proteo.tough.touch";
+            response.Content.FtpPort = 21;
+
             return response.Content;
         }
 

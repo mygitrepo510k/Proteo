@@ -29,7 +29,8 @@ namespace MWF.Mobile.Core.ViewModels
             RunNewSafetyCheck,
             Manifest,
             Inbox,
-            About
+            About,
+            Diagnostics 
         }
 
         #region Constructor
@@ -116,6 +117,11 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     Option = Option.About,
                     Text = "About"   
+                },
+                 new MenuViewModel
+                {
+                    Option = Option.Diagnostics,
+                    Text = "Support"
                 }
             };
         }
@@ -148,6 +154,9 @@ namespace MWF.Mobile.Core.ViewModels
                     break;
                 case Option.About:
                     this.ShowViewModel<AboutViewModel>();
+                    break;
+                case Option.Diagnostics:
+                    this.ShowViewModel<DiagnosticsViewModel>();
                     break;
                 default:
                     break;

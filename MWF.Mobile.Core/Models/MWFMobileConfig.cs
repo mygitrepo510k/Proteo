@@ -22,5 +22,10 @@ namespace MWF.Mobile.Core.Models
         public string SafetyCheckDiscretionaryText { get; set; }
         public string HEUrl { get; set; }
         public int SessionTimeoutInSeconds { get; set; }
+        public string FtpUrl { get; set; }
+        public int FtpPort { get; set; }
+        public string FtpUsername { get; set; }
+        public string FtpPassword { get; set; }
     }
+   
 }

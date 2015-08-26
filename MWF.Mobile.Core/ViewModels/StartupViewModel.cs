@@ -53,6 +53,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void SetInitialViewModel()
         {
+
+
             var customerRepository = _repositories.CustomerRepository;
 
             if (customerRepository.GetAll().Any())

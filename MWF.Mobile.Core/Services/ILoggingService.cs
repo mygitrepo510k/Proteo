@@ -10,6 +10,7 @@ namespace MWF.Mobile.Core.Services
     {
         void LogEvent(Exception exception);
         void LogEvent(string eventDescription, Enums.LogType type);
+        void LogEvent(string eventDescription, Enums.LogType type, params object[] args);
         Task UploadLoggedEventsAsync();
     }
 }

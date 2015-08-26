@@ -81,6 +81,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Firmin|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug Firmin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
     <None Include="app.config" />
@@ -193,6 +202,7 @@
     <Compile Include="Portable\IReachability.cs" />
     <Compile Include="Portable\ISound.cs" />
     <Compile Include="Portable\IToast.cs" />
+    <Compile Include="Portable\IUpload.cs" />
     <Compile Include="Portable\IVibrate.cs" />
     <Compile Include="Portable\IDisposable.cs" />
     <Compile Include="Portable\IVisible.cs" />
@@ -235,7 +245,9 @@
     <Compile Include="Services\AuthenticationService.cs" />
     <Compile Include="Services\DataChunkService.cs" />
     <Compile Include="Services\IDataChunkService.cs" />
+    <Compile Include="Services\IDiagnosticsService.cs" />
     <Compile Include="Services\IImageUploadService.cs" />
+    <Compile Include="Services\DiagnosticsService.cs" />
     <Compile Include="Services\ImageUploadService.cs" />
     <Compile Include="Services\ISafetyCheckService.cs" />
     <Compile Include="Services\LoggingService.cs" />
@@ -265,6 +277,7 @@
     <Compile Include="ViewModels\BarcodeItemViewModel.cs" />
     <Compile Include="ViewModels\BarcodeSectionViewModel.cs" />
     <Compile Include="ViewModels\BarcodeScanningViewModel.cs" />
+    <Compile Include="ViewModels\DiagnosticsViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\InstructionAddDeliveriesViewModel.cs" />
     <Compile Include="ViewModels\BaseInstructionNotificationViewModel.cs" />
@@ -364,12 +377,6 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

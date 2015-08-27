@@ -38,7 +38,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
-            _fixture.Register<IDeviceInfo>(() => Mock.Of<IDeviceInfo>(di => di.IMEI == _imei &&
+            _fixture.Register<IDeviceInfo>(() => Mock.Of<IDeviceInfo>(di => di.AndroidId == _imei &&
                                                                             di.SoftwareVersion == _softwareVersion));
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == _isConnected));
             _mockUserInteraction = _fixture.InjectNewMock<ICustomUserInteraction>();

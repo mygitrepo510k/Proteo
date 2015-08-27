@@ -18,6 +18,7 @@ using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using support = Android.Support.V4.App;
 using MWF.Mobile.Android.Helpers;
+using System.IO;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -31,6 +32,11 @@ namespace MWF.Mobile.Android.Views
 
         protected override void OnCreate(Bundle bundle)
         {
+
+#if DEBUG
+            new DebugDBHelper().CopyDebugDatabaseIfPresent(Resources.Assets);
+#endif
+
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.Page_Startup);
 
@@ -46,6 +52,7 @@ namespace MWF.Mobile.Android.Views
 
             HockeyApp.LoginManager.Register(this, _hockeyAppID, _hockeyAppSecret, HockeyApp.LoginManager.LoginModeValidate, this.Class);
             CheckForUpdates();
+
         }
 
         protected override void OnPause()

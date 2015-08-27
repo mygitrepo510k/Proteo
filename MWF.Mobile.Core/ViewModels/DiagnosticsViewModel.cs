@@ -69,7 +69,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string VersionText
         {
-            get { return string.Format("Version: {0}           DeviceID: {1}",_deviceInfo.SoftwareVersion, _deviceInfo.IMEI); }
+            get { return string.Format("Version: {0}           DeviceID: {1}",_deviceInfo.SoftwareVersion, _deviceInfo.AndroidId); }
         }
 
         private bool _isBusy = false;

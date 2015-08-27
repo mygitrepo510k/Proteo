@@ -41,6 +41,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _fixture.OmitProperty("EffectiveDateString");
 
             IDriverRepository driverRepo = Mock.Of<IDriverRepository>(dr => dr.GetByID(It.IsAny<Guid>()) == _fixture.Create<Driver>());
             IVehicleRepository vehicleRepo = Mock.Of<IVehicleRepository>(vr => vr.GetByID(It.IsAny<Guid>()) == _fixture.Create<Vehicle>());

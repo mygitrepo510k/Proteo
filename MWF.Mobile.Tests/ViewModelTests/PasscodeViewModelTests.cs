@@ -68,6 +68,29 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         /// <summary>
+        /// Tests that when the SendDiagnostics command is used the navigation service is called
+        /// </summary>
+        [Fact]
+        public void PasscodeVM_SendDiagnosticsCommand()
+        {
+            base.ClearAll();
+
+            var navigationServiceMock = new Mock<INavigationService>();
+            navigationServiceMock.Setup(ns => ns.MoveToNext(It.IsAny<NavData>()));
+            _fixture.Inject<INavigationService>(navigationServiceMock.Object);
+
+            var vm = _fixture.Create<PasscodeViewModel>();
+
+
+            vm.SendDiagnosticsCommand.Execute(null);
+
+
+            // check that the navigation service was called
+            navigationServiceMock.Verify(ns => ns.MoveToNext(It.Is<NavData>(nd=> nd.OtherData["Diagnostics"] != null)), Times.Once);
+
+        }
+
+        /// <summary>
         /// Tests that on successful authentication a driver 
         /// </summary>
         [Fact]

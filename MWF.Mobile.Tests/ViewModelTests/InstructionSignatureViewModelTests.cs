@@ -42,6 +42,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _fixture.OmitProperty("EffectiveDateString");
 
             _mobileData = _fixture.Create<MobileData>();
 

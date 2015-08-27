@@ -477,6 +477,57 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
+        public void NavigationService_Mappings_PasscodeToDiagnostics()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as a StartUpViewModel,  current fragment model a passcode model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<PasscodeViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var service = _fixture.Create<NavigationService>();
+
+            // Move to the next view model
+            NavData<object> navData = new NavData<object>();
+            navData.OtherData["Diagnostics"] = true;
+            service.MoveToNext(navData);
+
+            //Check that the diagnostics view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(DiagnosticsViewModel), request.ViewModelType);
+
+        }
+
+        [Fact]
+        public void NavigationService_Mappings_DiagnosticsToPasscode()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as a StartUpViewModel,  current fragment model a diagnostics model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<DiagnosticsViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var service = _fixture.Create<NavigationService>();
+
+            // Move to the next view model
+            service.MoveToNext();
+
+            //Check that the passcode view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(PasscodeViewModel), request.ViewModelType);
+
+        }
+
+
+        [Fact]
         public void NavigationService_Mappings_VehicleList()
         {
             base.ClearAll();
@@ -1162,7 +1213,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var navData = new NavData<MobileData>() { Data = mobileData };
             navData.OtherData["UpdatedTrailer"] = trailer;
-            var updatedSafetyCheckData = navData.OtherData["UpdatedTrailerSafetyCheckData"] = _fixture.Create<SafetyCheckData>();
+            var updatedSafetyCheckData = navData.OtherData["UpdatedTrailerSafetyCheckData"] = _fixture.Build<SafetyCheckData>().Without(s => s.EffectiveDateString).Create<SafetyCheckData>();
             navData.OtherData["IsTrailerEditFromInstructionScreen"] = true;
 
             var service = _fixture.Create<NavigationService>();
@@ -1698,7 +1749,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var navData = new NavData<MobileData>() { Data = mobileData };
             navData.OtherData["UpdatedTrailer"] = trailer;
-            var updatedSafetyCheckData = navData.OtherData["UpdatedTrailerSafetyCheckData"] = _fixture.Create<SafetyCheckData>();
+            var updatedSafetyCheckData = navData.OtherData["UpdatedTrailerSafetyCheckData"] = _fixture.Build<SafetyCheckData>().Without(s => s.EffectiveDateString).Create<SafetyCheckData>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -1765,7 +1816,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             navData.OtherData["UpdatedTrailer"] = trailer;
 
             SafetyCheckData updatedSafetyCheckData;
-            navData.OtherData["UpdatedTrailerSafetyCheckData"] = updatedSafetyCheckData = _fixture.Create<SafetyCheckData>();
+            navData.OtherData["UpdatedTrailerSafetyCheckData"] = updatedSafetyCheckData = _fixture.Build<SafetyCheckData>().Without(s => s.EffectiveDateString).Create<SafetyCheckData>();
             //add a failed check
             updatedSafetyCheckData.Faults.Add(new SafetyCheckFault() { Status = SafetyCheckStatus.Failed });
 
@@ -2805,6 +2856,30 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(StartupViewModel), request.ViewModelType);
         }
 
+        [Fact]
+        public void NavigationService_Mappings_DiagnosticsToManifest()
+        {
+            base.ClearAll();
+
+            // presenter will report the current activity view model as a mainViewModel,  current fragment model a diagnostics model
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
+                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
+                                                                cp.CurrentFragmentViewModel == _fixture.Create<DiagnosticsViewModel>());
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+
+            var service = _fixture.Create<NavigationService>();
+
+            // Move to the next view model
+            service.MoveToNext();
+
+            //Check that the manifest view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
+
+        }
+
 
         #endregion
 
@@ -2876,7 +2951,11 @@ namespace MWF.Mobile.Tests.ServiceTests
         private void SetUpSafetyCheckData(bool faults)
         {
             // Create safety check
-            var latestSafetyCheck = _fixture.Create<LatestSafetyCheck>();
+            var latestSafetyCheck = _fixture.Build<SafetyCheckData>().Without(s => s.EffectiveDateString).Create<LatestSafetyCheck>();
+
+            //omit properties causing circular dependencies
+            var safetyCheckViewModel = _fixture.Build<SafetyCheckViewModel>().Without(s => s.SafetyCheckItemViewModels).Create<SafetyCheckViewModel>();
+
             IEnumerable<SafetyCheckData> safetyCheckData = new List<SafetyCheckData>() { latestSafetyCheck.VehicleSafetyCheck };
 
             if (!faults)

@@ -43,6 +43,16 @@ namespace MWF.Mobile.Tests.Helpers
             return newMock;
         }
 
+        public static void OmitProperty<T>(this IFixture fixture, string propertyName) where T : class
+        {
+            fixture.Customizations.Add(new OmitPropertySpecimenBuilder<T>(propertyName));
+        }
+
+        public static void OmitProperty(this IFixture fixture, string propertyName)
+        {
+            fixture.Customizations.Add(new OmitPropertySpecimenBuilder(propertyName));
+        }
+
         public static MobileData SetUpInstruction(this IFixture fixture, MWF.Mobile.Core.Enums.InstructionType instructionType,
             bool isBypassCommentScreen, bool isTrailerConfirmationRequired, bool isCustomerNameRequired, bool isCustomerSignatureRequired, bool isScanRequiredForCollection, bool isScanRequiredForDelivery, bool BypassCleanClausedScreen, MWF.Mobile.Core.Enums.InstructionProgress? instructionProgress)
         {
@@ -139,7 +149,14 @@ namespace MWF.Mobile.Tests.Helpers
             return userInteractionMock;
         }
 
+
+
         #endregion
 
     }
+
+
+
+
+
 }

@@ -161,8 +161,8 @@ namespace MWF.Mobile.Core.ViewModels
             if (!_displayRetention.HasValue || !_displaySpan.HasValue)
             {
                 var applicationProfile = _applicationProfileRepository.GetAll().First();
-                _displayRetention = applicationProfile.DataRetention;
-                _displaySpan = applicationProfile.DataSpan;
+                _displayRetention = applicationProfile.DisplayRetention;
+                _displaySpan = applicationProfile.DisplaySpan;
             }
 
             activeInstructionsDataModels =

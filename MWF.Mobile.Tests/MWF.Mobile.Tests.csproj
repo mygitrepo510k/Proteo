@@ -123,6 +123,7 @@
     <Compile Include="Converters\JsonWrappedListConverterTests.cs" />
     <Compile Include="Helpers\MockITableQuery.cs" />
     <Compile Include="Helpers\MoqExtensions.cs" />
+    <Compile Include="Helpers\OmitPropertySpecimentBuilder.cs" />
     <Compile Include="MockDispatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryTests\BaseRepositoryTests.cs" />

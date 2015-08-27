@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using Moq;
@@ -15,6 +16,7 @@ using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Core.ViewModels.Navigation;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
+using MWF.Mobile.Tests.Helpers;
 
 namespace MWF.Mobile.Tests.ViewModels.Navigation
 {
@@ -31,6 +33,7 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
         protected override void AdditionalSetup()
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _fixture.OmitProperty<MobileApplicationDataChunkContentActivity>("EffectiveDateString");
 
             _mobileDataRepositoryMock = new Mock<IMobileDataRepository>();
             _fixture.Inject<IMobileDataRepository>(_mobileDataRepositoryMock.Object);
@@ -299,4 +302,6 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
        
         #endregion    
     }
+
+   
 }

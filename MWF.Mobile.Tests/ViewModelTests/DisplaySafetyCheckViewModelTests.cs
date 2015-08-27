@@ -36,6 +36,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         protected override void AdditionalSetup()
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _fixture.OmitProperty("EffectiveDateString");
 
             _latestSafetyCheck = _fixture.Create<LatestSafetyCheck>();
             _mobileData = _fixture.Create<MobileData>();

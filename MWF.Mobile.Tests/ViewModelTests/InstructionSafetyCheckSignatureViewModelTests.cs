@@ -51,6 +51,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _fixture.OmitProperty("EffectiveDateString");
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels));
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyProfileVehicle));
             _fixture.Customize<SafetyCheckFault>( vm =>vm.With( x => x.Status, Core.Enums.SafetyCheckStatus.Passed));

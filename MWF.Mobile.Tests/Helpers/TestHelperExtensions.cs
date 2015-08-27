@@ -12,7 +12,7 @@ using Ploeh.AutoFixture;
 
 namespace MWF.Mobile.Tests.Helpers
 {
-    public static class TextHelperExtensions
+    public static class TestHelperExtensions
     {
         // Allows specification of different return values from a mock on subsequent calls of a method
         public static void ReturnsInOrder<T, TResult>(this ISetup<T, TResult> setup,  params object[] results) where T : class

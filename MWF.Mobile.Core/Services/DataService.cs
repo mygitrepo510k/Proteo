@@ -51,6 +51,14 @@ namespace MWF.Mobile.Core.Services
         {
            return _connectionFactory.Create(DBNAME);
         }
+
+        public string DatabasePath
+        {
+            get
+            {
+                return GetDBConnection().DatabasePath;
+            }
+        }
         
         #endregion
 

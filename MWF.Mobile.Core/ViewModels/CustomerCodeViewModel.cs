@@ -88,7 +88,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string VersionText
         {
-            get { return string.Format("Version: {0}           DeviceID: {1}",Mvx.Resolve<IDeviceInfo>().SoftwareVersion, Mvx.Resolve<IDeviceInfo>().GetDeviceIdentifier()); }
+            get { return string.Format("Version: {0}           DeviceID: {1}",Mvx.Resolve<IDeviceInfo>().SoftwareVersion, Mvx.Resolve<IDeviceInfo>().IMEI); }
         }
 
         private bool _isBusy = false;

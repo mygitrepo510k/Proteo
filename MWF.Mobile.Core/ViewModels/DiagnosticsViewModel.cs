@@ -26,13 +26,14 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IDiagnosticsService _diagnosticsService;
         private readonly IApplicationProfileRepository _applicationProfileRepository;
         private readonly IConfigRepository _configRepository;
+        private readonly IDeviceInfo _deviceInfo;
         private string _unexpectedErrorMessage = "Unfortunately, there was an error uploading diagnostic data. Please try restarting the device and try again.";
 
         #endregion
 
         #region construction
 
-        public DiagnosticsViewModel(IReachability reachability, IDataService dataService, IRepositories repositories, ICustomUserInteraction userInteraction, INavigationService navigationService, IDiagnosticsService diagnosticsService)
+        public DiagnosticsViewModel(IReachability reachability, IDataService dataService, IRepositories repositories, ICustomUserInteraction userInteraction, INavigationService navigationService, IDiagnosticsService diagnosticsService, IDeviceInfo deviceInfo)
         {
             _dataService = dataService;
             _reachability = reachability;
@@ -41,6 +42,7 @@ namespace MWF.Mobile.Core.ViewModels
             _diagnosticsService = diagnosticsService;
             _applicationProfileRepository = repositories.ApplicationRepository;
             _configRepository = repositories.ConfigRepository;
+            _deviceInfo = deviceInfo;
 
         }
 
@@ -53,14 +55,7 @@ namespace MWF.Mobile.Core.ViewModels
             return base.GetHashCode();
         }
 
-        public override string FragmentTitle { get { return "Customer Code"; } }
-
-        private string _customerCode = string.Empty;
-        public string CustomerCode
-        {
-            get { return _customerCode; }
-            set { _customerCode = value; RaisePropertyChanged(() => CustomerCode); }
-        }
+        public override string FragmentTitle { get { return "Send Diagnostics"; } }
 
         public string EnterButtonLabel
         {
@@ -74,7 +69,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string VersionText
         {
-            get { return string.Format("Version: {0}           DeviceID: {1}",Mvx.Resolve<IDeviceInfo>().SoftwareVersion, Mvx.Resolve<IDeviceInfo>().GetDeviceIdentifier()); }
+            get { return string.Format("Version: {0}           DeviceID: {1}",_deviceInfo.SoftwareVersion, _deviceInfo.IMEI); }
         }
 
         private bool _isBusy = false;
@@ -141,10 +136,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task<bool> UploadDiagnostics()
         {
-            var dbFile = _dataService.GetDBConnection();
-            var path = dbFile.DatabasePath;        
-            return await _diagnosticsService.UploadDiagnostics(path);
-
+            return await _diagnosticsService.UploadDiagnostics(_dataService.DatabasePath);
         }
 
         #endregion

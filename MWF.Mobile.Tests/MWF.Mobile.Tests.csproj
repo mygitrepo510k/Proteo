@@ -137,6 +137,7 @@
     <Compile Include="RepositoryTests\TestModels\ParentEntity.cs" />
     <Compile Include="ServiceTests\CustomIUserInteraction.cs" />
     <Compile Include="ServiceTests\ImageUploadServiceTests.cs" />
+    <Compile Include="ServiceTests\DiagnosticsServiceTests.cs" />
     <Compile Include="ServiceTests\LoggingServiceTests.cs" />
     <Compile Include="ServiceTests\DataChunkServiceTests.cs" />
     <Compile Include="ServiceTests\NavigationServiceTests.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="ViewModelTests\ManifestViewModelTests.cs" />
     <Compile Include="ViewModelTests\Navigation\NavDataHelperTests.cs" />
     <Compile Include="ViewModelTests\OrderViewModelTests.cs" />
+    <Compile Include="ViewModelTests\DiagnosticsViewModelTests.cs" />
     <Compile Include="ViewModelTests\ReviseQuantityViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionSafetyCheckViewModelTests .cs" />
     <Compile Include="ViewModelTests\SafetyCheckFaultViewModelTests.cs" />

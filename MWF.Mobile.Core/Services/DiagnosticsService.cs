@@ -20,7 +20,6 @@ namespace MWF.Mobile.Core.Services
         private readonly Repositories.IRepositories _repositories = null;
         private readonly ILoggingService _loggingService = null;
         private readonly IReachability _reachability = null;
-        private readonly IHttpService _httpService = null;
         private readonly IDeviceInfo _deviceInfo = null;
         private readonly IUpload _upload = null;
 
@@ -28,14 +27,12 @@ namespace MWF.Mobile.Core.Services
             Repositories.IRepositories repositories,
             ILoggingService loggingService,
             IReachability reachability,
-            IHttpService httpService, 
             IDeviceInfo deviceInfo,
             IUpload upload)
         {
             _repositories = repositories;
             _loggingService = loggingService;
             _reachability = reachability;
-            _httpService = httpService;
             _deviceInfo = deviceInfo;
             _upload = upload;
         }
@@ -52,9 +49,12 @@ namespace MWF.Mobile.Core.Services
 
             var config = _repositories.ConfigRepository.Get();
 
-            if (config == null && string.IsNullOrWhiteSpace(config.FtpUrl))
+            if (config == null || 
+                string.IsNullOrWhiteSpace(config.FtpUrl) ||
+                string.IsNullOrWhiteSpace(config.FtpUsername) ||
+                string.IsNullOrWhiteSpace(config.FtpPassword))
             {
-                Mvx.Resolve<ICustomUserInteraction>().Alert("Your Ftp Url has not been setup, you cannot upload support data unless it has been setup.");
+                Mvx.Resolve<ICustomUserInteraction>().Alert("Your FTP credentials have not been set up, you cannot upload support data until they have been set up.");
                 return false;
             }
 
@@ -62,8 +62,9 @@ namespace MWF.Mobile.Core.Services
 
             try
             {
-                var uri = string.Format("{0}/{1}/{2}",config.FtpUrl ,_deviceInfo.AndroidId, Path.GetFileName(databasePath));
-                success = await _upload.UploadFile(new Uri(uri),config.FtpUsername, config.FtpPassword, databasePath);
+                var uriString = string.Format("{0}/{1}/{2}",config.FtpUrl ,_deviceInfo.AndroidId, Path.GetFileName(databasePath));
+                var uri = new Uri(uriString);
+                success = await _upload.UploadFile(uri ,config.FtpUsername, config.FtpPassword, databasePath);
             }
             catch(Exception ex)
             {

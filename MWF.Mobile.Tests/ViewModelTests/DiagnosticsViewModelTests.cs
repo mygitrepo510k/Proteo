@@ -1,0 +1,127 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Cirrious.CrossCore.Core;
+using Cirrious.MvvmCross.Test.Core;
+using Cirrious.MvvmCross.Views;
+using Moq;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
+using Xunit;
+using MWF.Mobile.Tests.Helpers;
+using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+
+namespace MWF.Mobile.Tests.ViewModelTests
+{
+    
+    public class DiagnosticsViewModelTests
+        : MvxIoCSupportingTest
+    {
+
+        private IFixture _fixture;
+        private Mock<ICustomUserInteraction> _mockUserInteraction;
+        private string _softwareVersion = "1.1";
+        private string _imei = "SDFSDSADDASDD";
+        private string _dbPath = "somedbpath";
+        private bool _isConnected = true;
+        private Mock<IDiagnosticsService> _mockDiagnosticsService;
+        private Mock<IDataService> _mockDataService;
+
+
+        protected override void AdditionalSetup()
+        {
+
+            _fixture = new Fixture().Customize(new AutoMoqCustomization());
+            _fixture.Register<IDeviceInfo>(() => Mock.Of<IDeviceInfo>(di => di.IMEI == _imei &&
+                                                                            di.SoftwareVersion == _softwareVersion));
+            _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == _isConnected));
+            _mockUserInteraction = _fixture.InjectNewMock<ICustomUserInteraction>();
+
+            _mockDiagnosticsService = _fixture.InjectNewMock<IDiagnosticsService>();
+
+            _mockDiagnosticsService.Setup(ds => ds.UploadDiagnostics(It.IsAny<string>())).Returns(Task.FromResult<bool>(true));
+
+
+            _mockDataService = _fixture.InjectNewMock<IDataService>();
+            _mockDataService.Setup(ds => ds.DatabasePath).Returns(_dbPath);
+
+
+        }
+
+        /// <summary>
+        /// Tests that the version text is correct
+        /// </summary>
+        [Fact]
+        public void DiagnosticsViewModel_VersionText()
+        {
+            base.ClearAll();
+
+            var dvm = _fixture.Create<DiagnosticsViewModel>();
+      
+            // check that the version text is correct
+            string versionText = string.Format("Version: {0}           DeviceID: {1}", _softwareVersion, _imei);
+            Assert.Equal(versionText, dvm.VersionText);
+
+        }
+
+
+
+        [Fact]
+        public void DiagnosticsViewModel_SendDiagnosticsCommand_NotConnected()
+        {
+            base.ClearAll();
+
+            _isConnected = false;
+
+            var dvm = _fixture.Create<DiagnosticsViewModel>();
+
+            dvm.SendDiagnosticsCommand.Execute(null);
+
+            _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s.StartsWith("You need a connection to the internet to submit diagnostics.")), It.IsAny<string>(), It.IsAny<string>()));
+
+        }
+
+        [Fact]
+        public void DiagnosticsViewModel_SendDiagnosticsCommand_Successful()
+        {
+            base.ClearAll();
+
+            var dvm = _fixture.Create<DiagnosticsViewModel>();
+
+            dvm.SendDiagnosticsCommand.Execute(null);
+
+            _mockDiagnosticsService.Verify(ds => ds.UploadDiagnostics(It.Is<string>(s => s == _dbPath )));
+
+            _mockUserInteraction.Verify(ui => ui.Alert(It.Is<string>(s => s.StartsWith("Support diagnostic information uploaded successfully")), It.IsAny<System.Action>(), It.IsAny<string>(), It.IsAny<string>()));
+
+        }
+
+
+        [Fact]
+        public void DiagnosticsViewModel_SendDiagnosticsCommand_Unsuccessful()
+        {
+            base.ClearAll();
+
+            _mockDiagnosticsService.Setup(ds => ds.UploadDiagnostics(It.IsAny<string>())).Returns(Task.FromResult<bool>(false));
+
+            var dvm = _fixture.Create<DiagnosticsViewModel>();
+
+            dvm.SendDiagnosticsCommand.Execute(null);
+
+            _mockDiagnosticsService.Verify(ds => ds.UploadDiagnostics(It.Is<string>(s => s == _dbPath)));
+
+            _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s.StartsWith("Unfortunately, there was an error uploading diagnostic data")), It.IsAny<string>(), It.IsAny<string>()));
+
+        }
+
+
+
+    }
+
+}

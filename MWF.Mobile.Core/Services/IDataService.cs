@@ -7,5 +7,6 @@ namespace MWF.Mobile.Core.Services
     {
         ISQLiteConnection GetDBConnection();
         void RunInTransaction(Action<ISQLiteConnection> action);
+        string DatabasePath { get; }
     }
 }

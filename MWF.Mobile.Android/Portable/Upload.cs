@@ -108,7 +108,7 @@ namespace MWF.Mobile.Android.Portable
                 ftpReq.Credentials = credentials;
                 WebResponse response = await ftpReq.GetResponseAsync();
                 FtpWebResponse ftpResponse = response as FtpWebResponse;
-                return ftpResponse.StatusCode == FtpStatusCode.CommandOK;
+                return ftpResponse.StatusCode == FtpStatusCode.CommandOK || ftpResponse.StatusCode == FtpStatusCode.PathnameCreated;
    
         }
 

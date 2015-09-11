@@ -22,6 +22,7 @@ namespace MWF.Mobile.Core.Services
         private readonly IReachability _reachability = null;
         private readonly ICloseApplication _closeApplication = null;
         private bool _isSubmitting = false;
+        private const int MAX_MESSAGE_LENGTH = 6000;
         
         private MvxSubscriptionToken _notificationToken;
 
@@ -105,27 +106,44 @@ namespace MWF.Mobile.Core.Services
                     {
                         var deviceMessage = new DeviceLogMessage
                         {
-                            Message = e.Message,
+                            Message = e.Message.Substring(0, MAX_MESSAGE_LENGTH),
                             LogDateTime = e.LogDateTime,
                             DeviceIdentifier = deviceIdentifier
                         };
 
-                        var response = await _gatewayService.PostLogMessageAsync(deviceMessage);
-
-                        if (response.Succeeded)
-                            _loggedRepository.Delete(e);
-                        else
+                        try
                         {
-                            var message = "Error uploading log file.";
-                            Mvx.Resolve<ICustomUserInteraction>().Alert(message);
-                            break;
+
+
+                            var response = await _gatewayService.PostLogMessageAsync(deviceMessage);
+
+                            if (!response.Succeeded)
+                            {
+                                HandleLoggingFailure(e, events);
+                            }
                         }
+                        catch(Exception)
+                        {
+                            HandleLoggingFailure(e, events);
+                        }
+
+                        _loggedRepository.Delete(e);
+                       
                     }
                 }
             }
             finally
             {
                 _isSubmitting = false;
+            }
+        }
+
+        private void HandleLoggingFailure(LogMessage failedLogMessage, List<LogMessage> currentMessages)
+        {
+            if (!currentMessages.Any(m => m.LogType == Enums.LogType.LogFailure))
+            {
+                string logMessage = ("An error occured trying to upload at least one log message. Those log messages has been deleted.");
+                LogEvent(logMessage, Enums.LogType.LogFailure);
             }
         }
 

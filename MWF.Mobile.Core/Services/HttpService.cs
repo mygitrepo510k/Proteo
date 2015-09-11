@@ -40,7 +40,7 @@ namespace MWF.Mobile.Core.Services
             {
                 var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
 
-                if (response.Content != null)
+                if (response.IsSuccessStatusCode && response.Content != null)
                     result.Content = await response.Content.ReadAsAsync<TResponse>();
 
                 return result;

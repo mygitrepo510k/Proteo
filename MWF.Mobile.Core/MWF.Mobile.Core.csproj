@@ -93,7 +93,9 @@
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
@@ -277,6 +279,7 @@
     <Compile Include="ViewModels\BarcodeItemViewModel.cs" />
     <Compile Include="ViewModels\BarcodeSectionViewModel.cs" />
     <Compile Include="ViewModels\BarcodeScanningViewModel.cs" />
+    <Compile Include="ViewModels\ConfirmTimesViewModel.cs" />
     <Compile Include="ViewModels\DiagnosticsViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\InstructionAddDeliveriesViewModel.cs" />

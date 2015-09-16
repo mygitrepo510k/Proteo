@@ -152,6 +152,7 @@
     <Compile Include="ServiceTests\GatewayServiceTests.cs" />
     <Compile Include="ViewModelTests\DisplaySafetyCheckViewModelTests.cs" />
     <Compile Include="ViewModelTests\InboxViewModelTests.cs" />
+    <Compile Include="ViewModelTests\ConfirmTimesViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionCommentViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionAddDeliveriesViewModelTests.cs" />
     <Compile Include="ViewModelTests\InstructionOnSiteViewModelTests.cs" />
@@ -176,7 +177,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

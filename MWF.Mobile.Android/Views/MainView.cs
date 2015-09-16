@@ -55,7 +55,8 @@ namespace MWF.Mobile.Android.Views
                 { typeof(Core.ViewModels.SafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) },
                 { typeof(Core.ViewModels.SidebarCameraViewModel),typeof(Fragments.SideBarCameraFragment)}, 
 			    { typeof(Core.ViewModels.SafetyCheckFaultViewModel), typeof(Fragments.SafetyCheckFaultFragment)},
-                { typeof(Core.ViewModels.InstructionSafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) }
+                { typeof(Core.ViewModels.InstructionSafetyCheckSignatureViewModel), typeof(Fragments.SafetyCheckSignatureFragment) },
+                { typeof(Core.ViewModels.ConfirmTimesViewModel), typeof(Fragments.ConfirmTimesFragment) }
             };
 
 

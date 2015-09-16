@@ -76,7 +76,7 @@ namespace MWF.Mobile.Core.Services
         public void StartPollingTimer()
         {
             if (_timer == null)
-                _timer = new Timer(TimerCallback, null, 30000);
+                _timer = new Timer(TimerCallback, null, 60000);
         }
 
         public void StopPollingTimer()

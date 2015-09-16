@@ -483,7 +483,9 @@ namespace MWF.Mobile.Core.Services
             Mvx.Resolve<ICustomUserInteraction>().Confirm("Do you wish to complete?", isConfirmed =>
             {
                 if (isConfirmed)
+                {
                     SendMobileData(navData);
+                }
 
             }, "Complete Instruction", "Confirm", "Cancel");
         }
@@ -590,11 +592,15 @@ namespace MWF.Mobile.Core.Services
 
             InsertCustomNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomAction);
             InsertCustomBackNavAction<MainViewModel, InstructionCommentViewModel>(InstructionComment_CustomBackAction);
+            
 
             InsertCustomNavAction<MainViewModel, InstructionClausedViewModel>(InstructionClaused_CustomAction);
 
             InsertCustomNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomAction);
             InsertCustomBackNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomBackAction);
+
+            InsertCustomNavAction<MainViewModel, ConfirmTimesViewModel>(ConfirmTimes_CustomAction);
+            InsertCustomBackNavAction<MainViewModel, ConfirmTimesViewModel>(ConfirmTimes_CustomBackAction);
 
             InsertCustomBackNavAction<MainViewModel, OrderViewModel>(Order_CustomBackAction);
             InsertNavAction<MainViewModel, OrderViewModel>(typeof(ReviseQuantityViewModel));
@@ -762,6 +768,8 @@ namespace MWF.Mobile.Core.Services
                     var mobileDataNav = (NavData<MobileData>)navData;
                     // send "onsite" data chunk 
                     _dataChunkService.SendDataChunk(mobileDataNav.GetDataChunk(), mobileDataNav.Data, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                    if (mobileDataNav.Data.ProgressState == Enums.InstructionProgress.OnSite)
+                        mobileDataNav.Data.OnSiteDateTime = DateTime.Now;
 
                     ShowViewModel<InstructionOnSiteViewModel>(mobileDataNav);
                 }
@@ -847,7 +855,8 @@ namespace MWF.Mobile.Core.Services
                     return;
                 }
 
-                CompleteInstruction(mobileNavData);
+                this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
+                //CompleteInstruction(mobileNavData);
 
             }
         }
@@ -916,7 +925,8 @@ namespace MWF.Mobile.Core.Services
                 return;
             }
 
-            CompleteInstruction(mobileNavData);
+            this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
+            //CompleteInstruction(mobileNavData);
             return;
         }
 
@@ -1012,7 +1022,8 @@ namespace MWF.Mobile.Core.Services
                 return;
             }
 
-            CompleteInstruction(mobileNavData);
+            this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
+            //CompleteInstruction(mobileNavData);
         }
 
 
@@ -1078,7 +1089,8 @@ namespace MWF.Mobile.Core.Services
                 return;
             }
 
-            CompleteInstruction(mobileNavData);
+            this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
+            //CompleteInstruction(mobileNavData);
         }
 
         /// <summary>
@@ -1101,9 +1113,21 @@ namespace MWF.Mobile.Core.Services
                     return;
                 }
 
+                this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
+
+
+            }
+        }
+        /// <summary>
+        /// We always show this screen 
+        /// </summary>
+        /// <param name="navData"></param>
+        public void ConfirmTimes_CustomAction(NavData navData)
+        {
+            if (navData is NavData<MobileData>)
+            {
+                var mobileNavData = navData as NavData<MobileData>;
                 CompleteInstruction(mobileNavData);
-
-
             }
         }
 
@@ -1123,8 +1147,8 @@ namespace MWF.Mobile.Core.Services
         {
             if (navData is NavData<MobileData>)
             {
-                var mobileNavData = navData as NavData<MobileData>;
-                CompleteInstruction(mobileNavData);
+                ShowViewModel<ConfirmTimesViewModel>(navData);
+                //CompleteInstruction(mobileNavData);
             }
         }
 
@@ -1146,6 +1170,19 @@ namespace MWF.Mobile.Core.Services
           
         }
 
+        public void ConfirmTimes_CustomBackAction(NavData navData)
+        {
+
+            if (navData.OtherData.IsDefined("VisitedCommentScreen"))
+            {
+                ShowViewModel<InstructionCommentViewModel>(navData);
+            }
+            else
+            {
+                ShowViewModel<InstructionOnSiteViewModel>(navData);
+            }
+
+        }
         /// <summary>
         /// Instruction TrunkTo/Proceed screens, completes the instruction and goes back to manifest screen
         /// </summary>
@@ -1177,7 +1214,8 @@ namespace MWF.Mobile.Core.Services
                     }
                 }
 
-                CompleteInstruction(mobileNavData);
+                this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
+                //CompleteInstruction(mobileNavData);
             }
         }
 

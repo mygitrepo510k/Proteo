@@ -170,8 +170,13 @@ namespace MWF.Mobile.Core.Services
                     case Enums.InstructionProgress.Complete:
                         smp = _gpsService.GetSmpData(Enums.ReportReason.Complete);
                         dataChunkActivity.Title = "COMPLETE";
-
                         dataChunk.Title = "COMPLETE";
+
+                        if (mobileData.OnSiteDateTime != DateTime.MinValue)
+                            dataChunkActivity.OverRiddenOnSiteDateTime = mobileData.OnSiteDateTime;
+
+                        if (mobileData.CompleteDateTime != DateTime.MinValue)
+                            dataChunkActivity.OverRiddenCompleteDateTime= mobileData.CompleteDateTime;
 
                         //Delete all instruction types apart from Messages 
                         //they need to be stored so they can be displayed in the Inbox

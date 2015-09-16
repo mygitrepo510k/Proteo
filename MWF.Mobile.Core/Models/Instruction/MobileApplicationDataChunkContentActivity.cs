@@ -30,6 +30,12 @@ namespace MWF.Mobile.Core.Models.Instruction
             set { this.EffectiveDate = DateTime.Parse(value); }
         }
 
+        [XmlAttribute("overriddenOnSiteDateTime")]
+        public DateTime OverRiddenOnSiteDateTime { get; set; }
+
+        [XmlAttribute("overriddenCompleteDateTime")]
+        public DateTime OverRiddenCompleteDateTime { get; set; }
+
         [XmlAttribute("activity")]
         public int Activity { get; set; }
 

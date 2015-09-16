@@ -94,6 +94,10 @@ namespace MWF.Mobile.Core.Models.Instruction
             }
         }
 
+        [XmlIgnore]
+        public DateTime OnSiteDateTime { get; set; }
+        [XmlIgnore]
+        public DateTime CompleteDateTime { get; set; }
         public override string ToString()
         {
             return this.Reference;

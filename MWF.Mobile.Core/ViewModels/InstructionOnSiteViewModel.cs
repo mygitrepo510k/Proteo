@@ -178,6 +178,7 @@ namespace MWF.Mobile.Core.ViewModels
                 if (additionalInstruction.ProgressState != Enums.InstructionProgress.OnSite)
                 {
                     additionalInstruction.ProgressState = Enums.InstructionProgress.OnSite;
+                    _navData.Data.OnSiteDateTime = DateTime.Now;
                     _dataChunkService.SendDataChunk(_navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
                 }
             }

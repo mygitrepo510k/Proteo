@@ -14,7 +14,7 @@ namespace MWF.Mobile.Core.ViewModels
     public class TrailerListViewModel
         : BaseTrailerListViewModel
     {
-
+        private readonly IApplicationProfileRepository _applicationProfileRepository;
 
         public TrailerListViewModel(IGatewayService gatewayService, 
                                     IRepositories repositories, 
@@ -23,6 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
                                     IInfoService infoService, 
                                     INavigationService navigationService) : base(gatewayService, repositories, reachabibilty, toast, infoService, navigationService)
         {
+            _applicationProfileRepository = repositories.ApplicationRepository;
         }
 
         #region Protected/Private Methods
@@ -41,11 +42,17 @@ namespace MWF.Mobile.Core.ViewModels
 
                 try
                 {
-                    await UpdateVehicleListAsync();
-                    await UpdateTrailerListAsync();
-
-                    // Try and update safety profiles before continuing
-                    await UpdateSafetyProfilesAsync();
+                    // we only need to check profiles once a day
+                    var applicationProfile = _applicationProfileRepository.GetAll().First();
+                    if (applicationProfile.LastVehicleAndDriverSync.Day < DateTime.Now.Day)
+                    {
+                        await UpdateVehicleListAsync();
+                        await UpdateTrailerListAsync();
+                        // Try and update safety profiles before continuing
+                        await UpdateSafetyProfilesAsync();
+                        applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
+                        _applicationProfileRepository.Update(applicationProfile);
+                    }
                 }
                 finally
                 {

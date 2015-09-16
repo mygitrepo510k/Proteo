@@ -30,6 +30,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxSubscriptionToken _notificationToken;
         private IMvxMessenger _messenger;
 
+        private readonly IApplicationProfileRepository _applicationProfileRepository;
 
         #endregion
 
@@ -46,6 +47,7 @@ namespace MWF.Mobile.Core.ViewModels
             _infoService = infoService;
 
             _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(async m => await CheckInstructionNotificationAsync(m.Command, m.InstructionID));
+            _applicationProfileRepository = _repositories.ApplicationRepository;
         }
 
         public void Init(NavData<MobileData> navData)
@@ -97,11 +99,19 @@ namespace MWF.Mobile.Core.ViewModels
 
                 try
                 {
-                    await UpdateVehicleListAsync();
-                    await UpdateTrailerListAsync();
+                    // we only need to check profiles once a day
+                    var applicationProfile = _applicationProfileRepository.GetAll().First();
+                    if (applicationProfile.LastVehicleAndDriverSync.Day < DateTime.Now.Day)
+                    {
+                        await UpdateVehicleListAsync();
+                        await UpdateTrailerListAsync();
 
-                    // Try and update safety profiles before continuing
-                    await UpdateSafetyProfilesAsync();
+                        // Try and update safety profiles before continuing
+                        await UpdateSafetyProfilesAsync();
+
+                        applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
+                        _applicationProfileRepository.Update(applicationProfile);
+                    }
                 }
                 finally
                 {

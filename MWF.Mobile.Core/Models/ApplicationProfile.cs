@@ -115,6 +115,8 @@ namespace MWF.Mobile.Core.Models
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool UseTransactions { get; set; }
 
+        [JsonIgnore]
+        public DateTime LastVehicleAndDriverSync { get; set; }
     }
 
 }

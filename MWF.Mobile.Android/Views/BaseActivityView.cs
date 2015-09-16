@@ -60,6 +60,7 @@ namespace MWF.Mobile.Android.Views
             transaction.Commit();
 
             this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
+            HockeyApp.CrashManager.Register(this, _hockeyAppID);
 
         }
 

@@ -70,6 +70,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             CreateSections();
             RefreshInstructions();
+
         }
 
         private void CreateSections()

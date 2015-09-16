@@ -12,6 +12,7 @@ using MWF.Mobile.Android.Portable;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Presentation;
 using MWF.Mobile.Core.Services;
+using Android.Runtime;
 
 namespace MWF.Mobile.Android
 {
@@ -26,6 +27,7 @@ namespace MWF.Mobile.Android
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            HockeyApp.TraceWriter.WriteTrace(e.ExceptionObject);
             Exception topLevelException = (Exception)e.ExceptionObject;
             PublishExceptionToLog(topLevelException);
         }
@@ -63,6 +65,18 @@ namespace MWF.Mobile.Android
             Mvx.RegisterSingleton<IUpload>(() => new Portable.Upload());
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+            
+            AndroidEnvironment.UnhandledExceptionRaiser += (sender, args) =>
+            {
+                HockeyApp.TraceWriter.WriteTrace(args.Exception);
+                args.Handled = true;
+            };
+
+            TaskScheduler.UnobservedTaskException += (sender, args) =>
+            {
+                HockeyApp.TraceWriter.WriteTrace(args.Exception);
+            };
 
         }
 
@@ -104,6 +118,7 @@ namespace MWF.Mobile.Android
 
         private void PublishExceptionToLog(Exception exception)
         {
+            
             Mvx.Resolve<Cirrious.MvvmCross.Plugins.Messenger.IMvxMessenger>().Publish(new MWF.Mobile.Core.Messages.TopLevelExceptionHandlerMessage(this, exception));
         }
 

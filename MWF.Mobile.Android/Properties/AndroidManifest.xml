@@ -3,6 +3,8 @@
 	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="15" />
 	<application android:icon="@drawable/Icon" android:theme="@style/ProteoNoMargins" android:label="Proteo Mobile">
 		<activity android:name="net.hockeyapp.android.UpdateActivity" />
+    <activity android:name="net.hockeyapp.android.FeedbackActivity" />
+    <activity android:name="net.hockeyapp.android.PaintActivity" />
 	</application>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.READ_PHONE_STATE" />

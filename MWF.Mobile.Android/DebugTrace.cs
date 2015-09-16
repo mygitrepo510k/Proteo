@@ -22,7 +22,8 @@ namespace MWF.Mobile.Android
         {
             try
             {
-                Debug.WriteLine(string.Format(tag + ":" + level + ":" + message, args));
+                var _msg = string.Format(tag + ":" + level + ":" + message, args);
+                Debug.WriteLine(_msg);
             }
             catch (FormatException)
             {

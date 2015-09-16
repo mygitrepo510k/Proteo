@@ -60,6 +60,9 @@ namespace MWF.Mobile.Android.Views.Fragments
             onSiteTimePicker.CurrentHour = (Java.Lang.Integer)onSiteDateTime.TimeOfDay.Hours;
             onSiteTimePicker.CurrentMinute = (Java.Lang.Integer)onSiteDateTime.TimeOfDay.Minutes ;
 
+            completeTimePicker.CurrentHour = (Java.Lang.Integer)DateTime.Now.Hour;
+            completeTimePicker.CurrentMinute = (Java.Lang.Integer)DateTime.Now.Minute;
+
             //onSiteDatePicker.UpdateDate(onSiteDateTime.Year, onSiteDateTime.Month, onSiteDateTime.Day);
             onSiteDatePicker.FocusChange += OnSiteDatePicker_FocusChange;
             completeDatePicker.FocusChange += CompleteDatePicker_FocusChange;

@@ -13,6 +13,7 @@ using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Core.ViewModels;
 using Android.Views.InputMethods;
+using MWF.Mobile.Android.Controls;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
@@ -21,6 +22,7 @@ namespace MWF.Mobile.Android.Views.Fragments
     {
         private SearchView _searchView;
         private IMenu optionsMenu;
+        private BindableProgress _bindableProgress;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -68,7 +70,12 @@ namespace MWF.Mobile.Android.Views.Fragments
             //Closes the android keyboard if its still up.
             InputMethodManager mgr = (InputMethodManager)this.Activity.GetSystemService(Context.InputMethodService);
             mgr.HideSoftInputFromWindow(this.View.WindowToken, 0);
-
+            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
+            var set = this.CreateBindingSet<VehicleListFragment, VehicleListViewModel>();
+            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsBusy);
+            set.Bind(_bindableProgress).For(p => p.Message).To(vm => vm.ProgressMessage);
+            set.Bind(_bindableProgress).For(p => p.Title).To(vm => vm.ProgressTitle);
+            set.Apply();
             this.Activity.ActionBar.Show();
             base.OnViewCreated(view, savedInstanceState);
         }

@@ -41,7 +41,6 @@ namespace MWF.Mobile.Core.Services
             }
             var client = new HttpClient(handler);
 
-
             using (var response = await client.SendAsync(request))
             {
                 var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
@@ -59,7 +58,12 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public async Task<HttpResult<TResponse>> SendAsyncPlainResponse<TResponse>(HttpRequestMessage request)
         {
-            var client = new HttpClient();
+            var handler = new HttpClientHandler();
+            if (handler.SupportsAutomaticDecompression)
+            {
+                handler.AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate;
+            }
+            var client = new HttpClient(handler);
 
             using (var response = await client.SendAsync(request))
             {

@@ -67,6 +67,23 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Vehicle"; }
         }
 
+        private bool _isBusy = false;
+        public bool IsBusy
+        {
+            get { return _isBusy; }
+            set { _isBusy = value; RaisePropertyChanged(() => IsBusy); }
+        }
+
+        public string ProgressTitle
+        {
+            get { return "Downloading data..."; }
+        }
+
+        public string ProgressMessage
+        {
+            get { return "Updating Vehicles.."; }
+        }
+
         private int _vehicleListCount;
         public int VehicleListCount
         {
@@ -175,6 +192,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task UpdateVehicleListAsync()
         {
+            this.IsBusy = true;
 
             if (!_reachability.IsConnected())
             {
@@ -211,6 +229,8 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             await UpdateSafetyProfilesAsync();
+            this.IsBusy = false;    
+
         }
         protected async Task UpdateSafetyProfilesAsync()
         {

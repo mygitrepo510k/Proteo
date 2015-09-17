@@ -139,7 +139,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressMessage
         {
-            get { return "Setting up safety check profile..."; }
+            get { return "Updating Trailers..."; }
         }
 
         private MvxCommand<Trailer> _notrailerSelectCommand;
@@ -176,6 +176,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected async Task UpdateTrailerListAsync()
         {
+            this.IsBusy = true;
+            
+                
             if (!_reachability.IsConnected())
             {
                 _toast.Show("No internet connection!");
@@ -218,8 +221,9 @@ namespace MWF.Mobile.Core.ViewModels
                 if (TrailerSearchText != null)
                     FilterList();
             }
-
+            await UpdateVehicleListAsync();
             await UpdateSafetyProfilesAsync();
+            this.IsBusy = false;
         }
 
         protected async Task UpdateSafetyProfilesAsync()
@@ -288,7 +292,13 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 _repositories.VehicleRepository.DeleteAll();
                 _repositories.VehicleRepository.Insert(vehicles);
+                // we need to updat the selected vehicle as the profile could have changed.
+                var currentvehicle = vehicles.First(v => v.ID == _infoService.CurrentVehicle.ID);
+                _infoService.CurrentVehicle = currentvehicle;
             }
+
+           
+
         }
 
         private void GetTrailerModels()

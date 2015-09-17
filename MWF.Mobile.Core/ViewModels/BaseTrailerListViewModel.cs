@@ -218,6 +218,8 @@ namespace MWF.Mobile.Core.ViewModels
                 if (TrailerSearchText != null)
                     FilterList();
             }
+
+            await UpdateSafetyProfilesAsync();
         }
 
         protected async Task UpdateSafetyProfilesAsync()

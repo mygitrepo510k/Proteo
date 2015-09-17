@@ -27,6 +27,7 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IInfoService _infoService;
         private readonly INavigationService _navigationService;
         private readonly ILoggingService _loggingService;
+        private readonly ISafetyProfileRepository _safetyProfileRepository;
 
         public VehicleListViewModel(
             IGatewayService gatewayService, 
@@ -36,7 +37,8 @@ namespace MWF.Mobile.Core.ViewModels
             IInfoService infoService, 
             INavigationService navigationService, 
             ICurrentDriverRepository currentDriverRepository,
-            ILoggingService loggingService)
+            ILoggingService loggingService, 
+            ISafetyProfileRepository safetyProfileRepository)
         {
             _toast = toast;
             _reachability = reachabibilty;
@@ -48,6 +50,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             _currentDriverRepository = currentDriverRepository;
             _vehicleRepository = vehicleRepository;
+            _safetyProfileRepository = safetyProfileRepository;
             Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
             _vehicleListCount = FilteredVehicleCount;
 
@@ -206,6 +209,37 @@ namespace MWF.Mobile.Core.ViewModels
                     }
                 }
             }
+
+            await UpdateSafetyProfilesAsync();
+        }
+        protected async Task UpdateSafetyProfilesAsync()
+        {
+            
+            // First check if we have a internet connection. If we do go and get the latest safety checks from Blue Sphere.
+            if (_reachability.IsConnected())
+            {
+                IEnumerable<SafetyProfile> safetyProfiles = null;
+
+                try
+                {
+                    safetyProfiles = await _gatewayService.GetSafetyProfiles();
+                }
+                catch (TaskCanceledException)
+                {
+                    // Although we have used reachability to determine that there is an available network connection,
+                    // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
+                }
+
+                if (safetyProfiles != null)
+                {
+                    _safetyProfileRepository.DeleteAll();
+                    _safetyProfileRepository.Insert(safetyProfiles);
+                }
+            }
+
+            if (_safetyProfileRepository.GetAll().ToList().Count == 0)
+                Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
         }
     }
+
 }

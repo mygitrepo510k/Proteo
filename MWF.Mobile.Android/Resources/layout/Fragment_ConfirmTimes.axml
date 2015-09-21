@@ -9,57 +9,69 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/linearLayout1">
-        <TextView
-            android:text="On Site"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:id="@+id/textView1" />
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/linearLayout2">
-            <DatePicker
-                android:id="@+id/onSiteDatePicker"
-                android:layout_width="160dip"
+            android:id="@+id/onSiteLinearLayout">
+            <TextView
+                android:text="On Site"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/linearLayout1"
-                android:calendarViewShown="false"
-                local:MvxBind="DateTime OnSiteDateTime" />
-            <TimePicker
-                android:id="@+id/onSiteTimePicker"
-                android:layout_width="wrap_content"
+                android:gravity="left"
+                android:id="@+id/textView1" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/linearLayout1"
-                android:calendarViewShown="false" />
+                android:id="@+id/linearlayout4">
+                <DatePicker
+                    android:id="@+id/onSiteDatePicker"
+                    android:layout_width="160dip"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout1"
+                    android:calendarViewShown="false"
+                    local:MvxBind="DateTime OnSiteDateTime" />
+                <TimePicker
+                    android:id="@+id/onSiteTimePicker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout1"
+                    android:calendarViewShown="false" />
+            </LinearLayout>
         </LinearLayout>
-        <TextView
-            android:text="Complete"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:id="@+id/textView2" />
         <LinearLayout
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/linearLayout2">
-            <DatePicker
-                android:id="@+id/completeDatePicker"
-                android:layout_width="160dip"
+            android:id="@+id/completeLinearLayout">
+            <TextView
+                android:text="Complete"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/linearLayout1"
-                android:calendarViewShown="false"
-                local:MvxBind="DateTime CompleteDateTime" />
-            <TimePicker
-                android:id="@+id/completeTimePicker"
-                android:layout_width="wrap_content"
+                android:gravity="left"
+                android:id="@+id/textView2" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/linearLayout1"
-                android:calendarViewShown="false" />
+                android:id="@+id/linearLayout2">
+                <DatePicker
+                    android:id="@+id/completeDatePicker"
+                    android:layout_width="160dip"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout1"
+                    android:calendarViewShown="false"
+                    local:MvxBind="DateTime CompleteDateTime" />
+                <TimePicker
+                    android:id="@+id/completeTimePicker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/linearLayout1"
+                    android:calendarViewShown="false" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
     <Button

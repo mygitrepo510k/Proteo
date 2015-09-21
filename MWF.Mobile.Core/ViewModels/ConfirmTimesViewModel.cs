@@ -43,6 +43,13 @@ namespace MWF.Mobile.Core.ViewModels
             set { _completeDate = value; RaisePropertyChanged(() => CompleteDateTime); }
         }
 
+        public bool ShowOnSiteConfirmation
+        {
+            get
+            {
+                return (_mobileData.Order.Type == Enums.InstructionType.Collect || _mobileData.Order.Type == Enums.InstructionType.Deliver);
+            }
+        }
 
         public string ConfirmTimesButtonLabel
         {
@@ -140,9 +147,10 @@ namespace MWF.Mobile.Core.ViewModels
             }
             else
             {
-                // Cellection, use custom back mapping action to skip the select trailer workflow
-                _navigationService.GoBack(_navData);
-                return Task.FromResult(false);
+                    // Cellection, use custom back mapping action to skip the select trailer workflow
+                    _navigationService.GoBack(_navData);
+                    return Task.FromResult(false);
+               
             }
         }
 

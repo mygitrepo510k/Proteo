@@ -42,6 +42,7 @@ namespace MWF.Mobile.Core.ViewModels
             _gatewayService = gatewayService;
             _repositories = repositories;
             GetTrailerModels();
+            ProgressMessage = "Updating Trailers.";
         }
 
         #endregion
@@ -137,10 +138,7 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Downloading data..."; }
         }
 
-        public string ProgressMessage
-        {
-            get { return "Updating Trailers..."; }
-        }
+        public string ProgressMessage { get; set; }
 
         private MvxCommand<Trailer> _notrailerSelectCommand;
         public ICommand NoTrailerSelectCommand
@@ -177,8 +175,8 @@ namespace MWF.Mobile.Core.ViewModels
         protected async Task UpdateTrailerListAsync()
         {
             this.IsBusy = true;
-            
-                
+            ProgressMessage = "Updating Trailers.";
+
             if (!_reachability.IsConnected())
             {
                 _toast.Show("No internet connection!");
@@ -228,6 +226,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected async Task UpdateSafetyProfilesAsync()
         {
+            ProgressMessage = "Updating Safety Cehck Profiles.";
             var safetyProfileRepository = _repositories.SafetyProfileRepository;
 
             // First check if we have a internet connection. If we do go and get the latest safety checks from Blue Sphere.
@@ -258,6 +257,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected async Task UpdateVehicleListAsync()
         {
+            ProgressMessage = "Updating Vehicles.";
             if (!_reachability.IsConnected())
             {
                 _toast.Show("No internet connection!");

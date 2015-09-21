@@ -1172,14 +1172,19 @@ namespace MWF.Mobile.Core.Services
 
         public void ConfirmTimes_CustomBackAction(NavData navData)
         {
-
-            if (navData.OtherData.IsDefined("VisitedCommentScreen"))
-            {
-                ShowViewModel<InstructionCommentViewModel>(navData);
-            }
+            var mobileNavData = navData as NavData<MobileData>;
+            if (mobileNavData.Data.Order.Type == Enums.InstructionType.ProceedFrom || mobileNavData.Data.Order.Type == Enums.InstructionType.TrunkTo)
+                GoToManifest();
             else
             {
-                ShowViewModel<InstructionOnSiteViewModel>(navData);
+                if (navData.OtherData.IsDefined("VisitedCommentScreen"))
+                {
+                    ShowViewModel<InstructionCommentViewModel>(navData);
+                }
+                else
+                {
+                    ShowViewModel<InstructionOnSiteViewModel>(navData);
+                }
             }
 
         }

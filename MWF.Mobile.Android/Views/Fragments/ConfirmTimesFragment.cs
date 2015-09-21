@@ -33,6 +33,7 @@ namespace MWF.Mobile.Android.Views.Fragments
         private TimePicker completeTimePicker = null;
         private DatePicker onSiteDatePicker = null;
         private DatePicker completeDatePicker = null;
+        private LinearLayout onSiteLinearLayout = null;
 
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
@@ -45,6 +46,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             completeTimePicker = view.FindViewById<TimePicker>(Resource.Id.completeTimePicker);
             onSiteDatePicker = view.FindViewById<DatePicker>(Resource.Id.onSiteDatePicker);
             completeDatePicker = view.FindViewById<DatePicker>(Resource.Id.completeDatePicker);
+            onSiteLinearLayout = view.FindViewById<LinearLayout>(Resource.Id.onSiteLinearLayout);
 
             // Set to 24 Hour mode
             onSiteTimePicker.SetIs24HourView(Java.Lang.Boolean.True);
@@ -66,6 +68,9 @@ namespace MWF.Mobile.Android.Views.Fragments
             //onSiteDatePicker.UpdateDate(onSiteDateTime.Year, onSiteDateTime.Month, onSiteDateTime.Day);
             onSiteDatePicker.FocusChange += OnSiteDatePicker_FocusChange;
             completeDatePicker.FocusChange += CompleteDatePicker_FocusChange;
+
+            if (!((ConfirmTimesViewModel)this.ViewModel).ShowOnSiteConfirmation)
+                onSiteLinearLayout.Visibility = ViewStates.Gone;
             
         }
 

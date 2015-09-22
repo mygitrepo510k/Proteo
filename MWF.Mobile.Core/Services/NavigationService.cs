@@ -904,7 +904,8 @@ namespace MWF.Mobile.Core.Services
             if (mobileNavData.OtherData.IsDefined("IsProceedFrom"))
             {
                 mobileNavData.OtherData["IsProceedFrom"] = null;
-                CompleteInstruction(mobileNavData);
+                this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
+                //CompleteInstruction(mobileNavData);
                 return;
             }
 

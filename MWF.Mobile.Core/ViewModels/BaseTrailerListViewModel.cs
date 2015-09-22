@@ -138,7 +138,18 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Downloading data..."; }
         }
 
-        public string ProgressMessage { get; set; }
+        private string _progressMessage;
+        public string ProgressMessage {
+            get
+            {
+                return _progressMessage;
+            }
+            set
+            {
+                _progressMessage = value;
+                RaisePropertyChanged(() => ProgressMessage);
+            }
+        }
 
         private MvxCommand<Trailer> _notrailerSelectCommand;
         public ICommand NoTrailerSelectCommand
@@ -219,14 +230,16 @@ namespace MWF.Mobile.Core.ViewModels
                 if (TrailerSearchText != null)
                     FilterList();
             }
+            this.IsBusy = false;
             await UpdateVehicleListAsync();
             await UpdateSafetyProfilesAsync();
-            this.IsBusy = false;
+            
         }
 
         protected async Task UpdateSafetyProfilesAsync()
         {
             ProgressMessage = "Updating Safety Cehck Profiles.";
+            this.IsBusy = true;
             var safetyProfileRepository = _repositories.SafetyProfileRepository;
 
             // First check if we have a internet connection. If we do go and get the latest safety checks from Blue Sphere.
@@ -251,6 +264,8 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
 
+            this.IsBusy = false;
+
             if (safetyProfileRepository.GetAll().ToList().Count == 0)
                 Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
         }
@@ -258,6 +273,7 @@ namespace MWF.Mobile.Core.ViewModels
         protected async Task UpdateVehicleListAsync()
         {
             ProgressMessage = "Updating Vehicles.";
+            this.IsBusy = true;
             if (!_reachability.IsConnected())
             {
                 _toast.Show("No internet connection!");
@@ -296,7 +312,7 @@ namespace MWF.Mobile.Core.ViewModels
                 var currentvehicle = vehicles.First(v => v.ID == _infoService.CurrentVehicle.ID);
                 _infoService.CurrentVehicle = currentvehicle;
             }
-
+            this.IsBusy = false;
            
 
         }

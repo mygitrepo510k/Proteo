@@ -50,8 +50,10 @@ namespace MWF.Mobile.Core.ViewModels
                         await UpdateTrailerListAsync();
                         // Try and update safety profiles before continuing
                         await UpdateSafetyProfilesAsync();
+                        applicationProfile = await _gatewayService.GetApplicationProfile();
                         applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
                         _applicationProfileRepository.Update(applicationProfile);
+                        
                     }
                 }
                 finally

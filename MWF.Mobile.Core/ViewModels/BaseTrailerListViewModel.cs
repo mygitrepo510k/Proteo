@@ -238,7 +238,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected async Task UpdateSafetyProfilesAsync()
         {
-            ProgressMessage = "Updating Safety Cehck Profiles.";
+            ProgressMessage = "Updating Safety Check Profiles.";
             this.IsBusy = true;
             var safetyProfileRepository = _repositories.SafetyProfileRepository;
 

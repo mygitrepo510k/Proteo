@@ -44,12 +44,14 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     // we only need to check profiles once a day
                     var applicationProfile = _applicationProfileRepository.GetAll().First();
-                    if (applicationProfile.LastVehicleAndDriverSync.Day < DateTime.Now.Day)
+                    if (DateTime.Now.Subtract( applicationProfile.LastVehicleAndDriverSync).TotalHours > 23)
                     {
                         await UpdateVehicleListAsync();
                         await UpdateTrailerListAsync();
                         // Try and update safety profiles before continuing
                         await UpdateSafetyProfilesAsync();
+                        ProgressMessage = "Updating Application Profile.";
+                        this.IsBusy = true;
                         applicationProfile = await _gatewayService.GetApplicationProfile();
                         applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
                         _applicationProfileRepository.Update(applicationProfile);

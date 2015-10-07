@@ -104,9 +104,10 @@ namespace MWF.Mobile.Core.Services
 
                     foreach (var e in events)
                     {
+                        int messageLength = e.Message.Length;
                         var deviceMessage = new DeviceLogMessage
                         {
-                            Message = e.Message.Substring(0, MAX_MESSAGE_LENGTH),
+                            Message = e.Message.Substring(0, Math.Min(messageLength, MAX_MESSAGE_LENGTH)),
                             LogDateTime = e.LogDateTime,
                             DeviceIdentifier = deviceIdentifier
                         };

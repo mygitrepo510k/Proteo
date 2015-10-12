@@ -6,6 +6,7 @@ using System.Net.Http.Formatting;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using ModernHttpClient;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -34,7 +35,7 @@ namespace MWF.Mobile.Core.Services
 
         public async Task<HttpResult<TResponse>> SendAsync<TResponse>(HttpRequestMessage request)
         {
-            var handler = new HttpClientHandler();
+            var handler = new NativeMessageHandler();
             if (handler.SupportsAutomaticDecompression)
             {
                 handler.AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate;
@@ -58,7 +59,7 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public async Task<HttpResult<TResponse>> SendAsyncPlainResponse<TResponse>(HttpRequestMessage request)
         {
-            var handler = new HttpClientHandler();
+            var handler = new NativeMessageHandler();
             if (handler.SupportsAutomaticDecompression)
             {
                 handler.AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate;

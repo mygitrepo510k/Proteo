@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using SQLite.Net.Attributes;
 using MWF.Mobile.Core.Models.Attributes;
 using Newtonsoft.Json;
 using System.Xml.Serialization;

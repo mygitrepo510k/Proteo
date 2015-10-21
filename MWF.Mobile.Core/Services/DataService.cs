@@ -1,8 +1,12 @@
-﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+﻿using SQLite.Net;
+using SQLite.Net.Async;
+using SQLite.Net.Attributes;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using System;
-
+using System.Net;
+using System.Diagnostics;
+using System.IO;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -11,46 +15,64 @@ namespace MWF.Mobile.Core.Services
     {
 
         #region Private Members
+        private readonly IDeviceInfo _deviceInfo = null;
 
-        private ISQLiteConnectionFactory _connectionFactory;
         private const string DBNAME = "db.sql";
         //private bool disposed = false; 
 
         #endregion
 
         #region Construction
-
-        public DataService(ISQLiteConnectionFactory connectionFactory)
+        public DataService(IDeviceInfo deviceInfo)
         {
-            _connectionFactory = connectionFactory;
+            _deviceInfo = deviceInfo;
+            _path = Path.Combine(_deviceInfo.DatabasePath, DBNAME);
+            _platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
+            _connectionString = new SQLiteConnectionString(_path, true);
+            _connectionPool = new SQLiteConnectionPool(_platform);
 
-            using (var connection = GetDBConnection())
-            {
-                CreateTablesIfRequired(connection);
-            }
-
+            
+            CreateTablesIfRequired();
         }
 
         #endregion
 
         #region Public Methods
 
-        public void RunInTransaction(Action<ISQLiteConnection> action)
+        public void RunInTransaction(Action action)
         {
-            using (var connection = this.GetDBConnection())
-            {
-                action(connection);
-            }          
+            var conn = this.GetDBConnection();
+            conn.RunInTransaction(action);
+            
         }
 
         #endregion
 
         #region Properties
-
-        public ISQLiteConnection GetDBConnection()
+        private SQLiteConnectionPool _connectionPool = null;
+        private SQLite.Net.Platform.Generic.SQLitePlatformGeneric _platform = null;
+        private SQLite.Net.SQLiteConnectionString _connectionString = null;
+        private string _path = "";
+        private SQLite.Net.SQLiteConnection _connection = null;
+       
+        public SQLite.Net.SQLiteConnection GetDBConnection()
         {
-           return _connectionFactory.Create(DBNAME);
+
+            if (_connection == null)
+            {
+                _connection = new SQLiteConnection(new SQLite.Net.Platform.Generic.SQLitePlatformGeneric(), _path);
+            }
+
+            return _connection;
+           
         }
+
+
+        public SQLiteAsyncConnection GetAsyncDBConnection()
+        {
+            return new SQLiteAsyncConnection(() => _connectionPool.GetConnection(_connectionString));
+        }
+        
 
         public string DatabasePath
         {
@@ -70,38 +92,39 @@ namespace MWF.Mobile.Core.Services
         /// If tables already exist connection.CreateTable handles
         /// this gracefully
         /// </summary>
-        private void CreateTablesIfRequired(ISQLiteConnection connection)
+        private void CreateTablesIfRequired()
         {
-            connection.CreateTable<Additional>();
-            connection.CreateTable<Models.Instruction.Address>();
-            connection.CreateTable<ApplicationProfile>();
-            connection.CreateTable<ConfirmQuantity>();
-            connection.CreateTable<CurrentDriver>();
-            connection.CreateTable<Customer>();
-            connection.CreateTable<DeliveryDescription>();
-            connection.CreateTable<Device>();
-            connection.CreateTable<Driver>();
-            connection.CreateTable<GatewayQueueItem>();
-            connection.CreateTable<Instruction>();
-            connection.CreateTable<Image>();
-            connection.CreateTable<ItemAdditional>();
-            connection.CreateTable<Item>();
-            connection.CreateTable<LatestSafetyCheck>();
-            connection.CreateTable<LogMessage>();
-            connection.CreateTable<MWFMobileConfig>();
-            connection.CreateTable<MobileData>();
-            connection.CreateTable<Order>();
-            connection.CreateTable<SafetyCheckData>();
-            connection.CreateTable<SafetyCheckFault>();
-            connection.CreateTable<SafetyCheckFaultType>();
-            connection.CreateTable<SafetyProfile>();
-            connection.CreateTable<Signature>();
-            connection.CreateTable<Vehicle>();
-            connection.CreateTable<Models.Trailer>();
-            connection.CreateTable<Models.Instruction.Trailer>();
-            connection.CreateTable<VehicleView>();
-            connection.CreateTable<VerbProfile>();
-            connection.CreateTable<VerbProfileItem>();
+            var connection = this.GetAsyncDBConnection();
+            connection.CreateTableAsync<Additional>();
+            connection.CreateTableAsync<Models.Instruction.Address>();
+            connection.CreateTableAsync<ApplicationProfile>();
+            connection.CreateTableAsync<ConfirmQuantity>();
+            connection.CreateTableAsync<CurrentDriver>();
+            connection.CreateTableAsync<Customer>();
+            connection.CreateTableAsync<DeliveryDescription>();
+            connection.CreateTableAsync<Device>();
+            connection.CreateTableAsync<Driver>();
+            connection.CreateTableAsync<GatewayQueueItem>();
+            connection.CreateTableAsync<Instruction>();
+            connection.CreateTableAsync<Image>();
+            connection.CreateTableAsync<ItemAdditional>();
+            connection.CreateTableAsync<Item>();
+            connection.CreateTableAsync<LatestSafetyCheck>();
+            connection.CreateTableAsync<LogMessage>();
+            connection.CreateTableAsync<MWFMobileConfig>();
+            connection.CreateTableAsync<MobileData>();
+            connection.CreateTableAsync<Order>();
+            connection.CreateTableAsync<SafetyCheckData>();
+            connection.CreateTableAsync<SafetyCheckFault>();
+            connection.CreateTableAsync<SafetyCheckFaultType>();
+            connection.CreateTableAsync<SafetyProfile>();
+            connection.CreateTableAsync<Signature>();
+            connection.CreateTableAsync<Vehicle>();
+            connection.CreateTableAsync<Models.Trailer>();
+            connection.CreateTableAsync<Models.Instruction.Trailer>();
+            connection.CreateTableAsync<VehicleView>();
+            connection.CreateTableAsync<VerbProfile>();
+            connection.CreateTableAsync<VerbProfileItem>();
         }
 
         #endregion

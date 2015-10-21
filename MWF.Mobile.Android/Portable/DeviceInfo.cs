@@ -88,5 +88,13 @@ namespace MWF.Mobile.Android.Portable
 
         public string SoftwareVersion { get; internal set; }
 
+        public string DatabasePath
+        {
+            get
+            {
+                return System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+            }
+        }
+
     }
 }

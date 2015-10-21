@@ -214,9 +214,9 @@ namespace MWF.Mobile.Core.ViewModels
 
                 if (vehicles != null)
                 {
-                    _vehicleRepository.DeleteAll();
+                    await _vehicleRepository.DeleteAllAsync();
 
-                    _vehicleRepository.Insert(vehicles);
+                    await _vehicleRepository.InsertAsync(vehicles);
 
                     Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
 
@@ -252,8 +252,8 @@ namespace MWF.Mobile.Core.ViewModels
 
                 if (safetyProfiles != null)
                 {
-                    _safetyProfileRepository.DeleteAll();
-                    _safetyProfileRepository.Insert(safetyProfiles);
+                    await _safetyProfileRepository.DeleteAllAsync();
+                    await _safetyProfileRepository.InsertAsync(safetyProfiles);
                 }
             }
 

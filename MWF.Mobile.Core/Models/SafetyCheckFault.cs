@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using SQLite.Net.Attributes;
 using MWF.Mobile.Core.Converters;
 using MWF.Mobile.Core.Models.Attributes;
 using System.Xml.Serialization;

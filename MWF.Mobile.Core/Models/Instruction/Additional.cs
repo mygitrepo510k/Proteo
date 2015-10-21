@@ -1,5 +1,5 @@
 ﻿using System;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using SQLite.Net.Attributes;
 using MWF.Mobile.Core.Converters;
 using MWF.Mobile.Core.Models.Attributes;
 using MWF.Mobile.Core.Services;

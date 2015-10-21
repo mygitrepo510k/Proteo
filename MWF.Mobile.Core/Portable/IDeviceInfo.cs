@@ -30,6 +30,8 @@ namespace MWF.Mobile.Core.Services
         string Manufacturer { get; }
 
         string SoftwareVersion { get; }
+
+        string DatabasePath { get; }
     }
 
 }

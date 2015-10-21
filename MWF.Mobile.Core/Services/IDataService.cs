@@ -1,12 +1,13 @@
 ﻿using System;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using SQLite.Net;
 
 namespace MWF.Mobile.Core.Services
 {
     public interface IDataService
     {
-        ISQLiteConnection GetDBConnection();
-        void RunInTransaction(Action<ISQLiteConnection> action);
+        SQLiteConnection GetDBConnection();
+        SQLite.Net.Async.SQLiteAsyncConnection GetAsyncDBConnection();
+        void RunInTransaction(Action action);
         string DatabasePath { get; }
     }
 }

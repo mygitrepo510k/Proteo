@@ -1,5 +1,5 @@
 ﻿using System;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using SQLite.Net.Attributes;
 using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Models

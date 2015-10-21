@@ -29,9 +29,7 @@ namespace MWF.Mobile.Core.Repositories
 
             List<MobileData> parentItems;
 
-            using (var connection = _dataService.GetDBConnection())
-            {
-
+            var connection = _dataService.GetDBConnection();
                 parentItems = connection
                    .Table<MobileData>()
                    .Where(m =>
@@ -40,7 +38,6 @@ namespace MWF.Mobile.Core.Repositories
 
                 PopulateChildrenRecursive(parentItems, connection);
 
-            }
 
             parentItems = parentItems.Where(pi =>
                 pi.Order.Type != Enums.InstructionType.OrderMessage).ToList();
@@ -53,8 +50,8 @@ namespace MWF.Mobile.Core.Repositories
 
             List<MobileData> parentItems;
 
-            using (var connection = _dataService.GetDBConnection())
-            {
+            var connection = _dataService.GetDBConnection();
+            
 
                 parentItems = connection
                    .Table<MobileData>()
@@ -64,8 +61,7 @@ namespace MWF.Mobile.Core.Repositories
 
                 PopulateChildrenRecursive(parentItems, connection);
 
-            }
-
+            
             parentItems = parentItems.Where(pi =>
                 pi.Order.Type != Enums.InstructionType.OrderMessage).ToList();
 
@@ -76,9 +72,7 @@ namespace MWF.Mobile.Core.Repositories
         {
             List<MobileData> parentItems;
 
-            using (var connection = _dataService.GetDBConnection())
-            {
-
+            var connection = _dataService.GetDBConnection();
                 parentItems = connection
                     .Table<MobileData>()
                     .Where(m =>
@@ -86,8 +80,7 @@ namespace MWF.Mobile.Core.Repositories
                            (m.ProgressState == Enums.InstructionProgress.NotStarted)).ToList();
 
                 PopulateChildrenRecursive(parentItems, connection);
-            }
-
+            
             parentItems = parentItems.Where(pi =>
                 pi.Order.Type != Enums.InstructionType.OrderMessage).ToList();
 
@@ -111,17 +104,15 @@ namespace MWF.Mobile.Core.Repositories
         {
             List<MobileData> parentItems;
 
-            using (var connection = _dataService.GetDBConnection())
-            {
-
+            var connection = _dataService.GetDBConnection();
+            
                 parentItems = connection
                     .Table<MobileData>()
                     .Where(m =>
                            m.DriverId == driverID).ToList();
 
                 PopulateChildrenRecursive(parentItems, connection);
-            }
-
+            
             parentItems = parentItems.Where(pi =>
                 pi.Order.Type == Enums.InstructionType.OrderMessage).ToList();
 

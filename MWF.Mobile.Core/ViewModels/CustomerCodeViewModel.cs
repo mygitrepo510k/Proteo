@@ -207,8 +207,9 @@ namespace MWF.Mobile.Core.ViewModels
                     verbProfiles.Add(verbProfile);
             }          
 
-            _dataService.RunInTransaction( connection =>
+            _dataService.RunInTransaction( () =>
             {
+                var connection = _dataService.GetDBConnection();
                 //TODO: Store the customer title? Need to get the customer title from somewhere.
                 _customerRepository.Insert(new Customer() { ID = Guid.NewGuid(), CustomerCode = CustomerCode }, connection);
                 _deviceRepository.Insert(device, connection);

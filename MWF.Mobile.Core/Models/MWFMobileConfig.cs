@@ -1,4 +1,4 @@
-﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+﻿using SQLite.Net.Attributes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

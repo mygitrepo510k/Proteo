@@ -1,4 +1,4 @@
-﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+﻿using SQLite.Net.Attributes;
 using MWF.Mobile.Core.Enums;
 using System;
 using System.Collections.Generic;

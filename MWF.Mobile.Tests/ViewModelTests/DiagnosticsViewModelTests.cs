@@ -15,7 +15,7 @@ using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
 using MWF.Mobile.Tests.Helpers;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using SQLite.Net.Attributes;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {

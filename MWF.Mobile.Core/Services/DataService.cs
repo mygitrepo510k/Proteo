@@ -58,12 +58,9 @@ namespace MWF.Mobile.Core.Services
         public SQLite.Net.SQLiteConnection GetDBConnection()
         {
 
-            if (_connection == null)
-            {
-                _connection = new SQLiteConnection(new SQLite.Net.Platform.Generic.SQLitePlatformGeneric(), _path);
-            }
-
-            return _connection;
+               var _conn = new SQLiteConnection(new SQLite.Net.Platform.Generic.SQLitePlatformGeneric(), _path);
+            return _conn;
+            
            
         }
 

@@ -7,7 +7,7 @@ using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Models;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+using SQLite.Net.Attributes;
 using Cirrious.MvvmCross.Community.Plugins.Sqlite.Wpf;
 using Xunit;
 using Ploeh.AutoFixture;

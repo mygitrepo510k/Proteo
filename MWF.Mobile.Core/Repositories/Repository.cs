@@ -39,42 +39,54 @@ namespace MWF.Mobile.Core.Repositories
         {
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            connection.RunInTransaction(() =>
+            try
             {
-                InsertRecursive(entity, connection);
-            });
+                connection.RunInTransaction(() =>
+                {
+                    InsertRecursive(entity, connection);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (transactionConnection == null)
+                    connection.Close();
+            }
 
 
         }
 
-        public async Task InsertAsync(T entity, SQLiteAsyncConnection transactionConnection)
-        {
-            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
 
-            
-            await InsertRecursiveAsync(entity, connection);
-
-
-        }
 
         public virtual void Insert(T entity)
         {
             Insert(entity, null);
         }
 
-        public async virtual Task InsertAsync(T entity)
-        {
-            InsertAsync(entity, null);
-        }
 
         public virtual void Insert(IEnumerable<T> entities, SQLiteConnection transactionConnection)
         {
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            foreach (var entity in entities)
+            try
             {
-                InsertRecursive(entity, connection);
+                foreach (var entity in entities)
+                {
+                    InsertRecursive(entity, connection);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (transactionConnection == null)
+                    connection.Close();
             }
 
 
@@ -108,16 +120,28 @@ namespace MWF.Mobile.Core.Repositories
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            connection.RunInTransaction(() =>
+            try
             {
-                var existingEntity = GetByID(entity.ID);
-                if (existingEntity != null)
+                connection.RunInTransaction(() =>
                 {
-                    Delete(existingEntity);
-                }
+                    var existingEntity = GetByID(entity.ID);
+                    if (existingEntity != null)
+                    {
+                        Delete(existingEntity);
+                    }
 
-                InsertRecursive(entity, connection);
-            });
+                    InsertRecursive(entity, connection);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (transactionConnection == null)
+                    connection.Close();
+            }
 
         }
 
@@ -130,11 +154,22 @@ namespace MWF.Mobile.Core.Repositories
         public virtual void DeleteAll(SQLiteConnection transactionConnection)
         {
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-
-            connection.RunInTransaction(() =>
+            try
             {
-                DeleteAllRecursive(typeof(T), connection);
-            });
+                connection.RunInTransaction(() =>
+                {
+                    DeleteAllRecursive(typeof(T), connection);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (transactionConnection == null)
+                    connection.Close();
+            }
 
         }
 
@@ -154,11 +189,22 @@ namespace MWF.Mobile.Core.Repositories
         {
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            connection.RunInTransaction(() =>
+            try
             {
-                DeleteRecursive(entity, connection);
-            });
-
+                connection.RunInTransaction(() =>
+                {
+                    DeleteRecursive(entity, connection);
+                });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (transactionConnection == null)
+                    connection.Close();
+            }
         }
 
         public virtual void Delete(T entity)
@@ -170,12 +216,23 @@ namespace MWF.Mobile.Core.Repositories
         public virtual IEnumerable<T> GetAll(SQLiteConnection transactionConnection)
         {
 
-            List<T> entities;
+            List<T> entities = null;
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-
-            entities = connection.Table<T>().ToList();
-            if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities, connection);
+            try
+            {
+                entities = connection.Table<T>().ToList();
+                if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities, connection);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (transactionConnection == null)
+                    connection.Close();
+            }
 
             return entities;
         }
@@ -192,22 +249,34 @@ namespace MWF.Mobile.Core.Repositories
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            entity = connection.Table<T>().SingleOrDefault(e => e.ID == ID);
+            try
+            {
+                entity = connection.Table<T>().SingleOrDefault(e => e.ID == ID);
 
-            if (entity != null)
-                if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity, connection);
+                if (entity != null)
+                    if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity, connection);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (transactionConnection == null)
+                    connection.Close();
+            }
 
             return entity;
         }
 
-       
+
 
         public virtual T GetByID(Guid ID)
         {
             return GetByID(ID, null);
         }
 
-        
+
 
         #endregion
 
@@ -341,7 +410,7 @@ namespace MWF.Mobile.Core.Repositories
             }
         }
 
-       
+
 
         /// <summary>
         /// Overload of PopulateChildrenRecursive that deals with
@@ -394,7 +463,7 @@ namespace MWF.Mobile.Core.Repositories
 
         }
 
-     
+
 
         // Deletes all items from the table associated with the specified type
         private void DeleteAllFromTable(Type type, SQLiteConnection connection)
@@ -409,7 +478,7 @@ namespace MWF.Mobile.Core.Repositories
             await connection.ExecuteAsync(command);
         }
 
-  
+
 
 
         // Ensures the property on the child labelled with the foreign key attribute lines up with

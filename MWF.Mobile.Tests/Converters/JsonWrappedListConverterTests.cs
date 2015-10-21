@@ -1,4 +1,4 @@
-﻿using Cirrious.MvvmCross.Community.Plugins.Sqlite;
+﻿using SQLite.Net.Attributes;
 using Cirrious.MvvmCross.Test.Core;
 using MWF.Mobile.Core.Converters;
 using Newtonsoft.Json;

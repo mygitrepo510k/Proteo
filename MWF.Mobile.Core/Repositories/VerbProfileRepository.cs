@@ -16,8 +16,8 @@ namespace MWF.Mobile.Core.Repositories
 
         #region Construction
 
-        public VerbProfileRepository(IDataService dataService, ILoggingService loggingService)
-            : base(dataService, loggingService)
+        public VerbProfileRepository(IDataService dataService)
+            : base(dataService)
         { }
 
 

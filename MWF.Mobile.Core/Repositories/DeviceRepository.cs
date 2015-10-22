@@ -16,8 +16,8 @@ namespace MWF.Mobile.Core.Repositories
 
         #region Construction
 
-        public DeviceRepository(IDataService dataService, ILoggingService loggingService)
-            : base(dataService, loggingService)
+        public DeviceRepository(IDataService dataService)
+            : base(dataService)
         { }
 
 

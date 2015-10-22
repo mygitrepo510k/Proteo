@@ -16,8 +16,8 @@ namespace MWF.Mobile.Core.Repositories
 
         #region Construction
 
-        public TrailerRepository(IDataService dataService, ILoggingService loggingService)
-            : base(dataService, loggingService)
+        public TrailerRepository(IDataService dataService)
+            : base(dataService)
         { }
 
 

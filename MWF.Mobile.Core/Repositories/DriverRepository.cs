@@ -16,8 +16,8 @@ namespace MWF.Mobile.Core.Repositories
 
         #region Construction
 
-        public DriverRepository(IDataService dataService, ILoggingService loggingService)
-            : base(dataService, loggingService)
+        public DriverRepository(IDataService dataService)
+            : base(dataService)
         { }
 
 

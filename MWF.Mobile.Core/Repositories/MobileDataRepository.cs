@@ -12,8 +12,8 @@ namespace MWF.Mobile.Core.Repositories
     public class MobileDataRepository : Repository<MobileData>, IMobileDataRepository
     {
         #region Construction
-        public MobileDataRepository(IDataService dataService, ILoggingService loggingService)
-            : base(dataService, loggingService)
+        public MobileDataRepository(IDataService dataService)
+            : base(dataService)
         { }
 
         #endregion

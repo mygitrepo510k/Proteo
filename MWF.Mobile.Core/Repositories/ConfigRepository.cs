@@ -13,8 +13,8 @@ namespace MWF.Mobile.Core.Repositories
     {
         #region Construction
 
-        public ConfigRepository(IDataService dataService)
-            : base(dataService)
+        public ConfigRepository(IDataService dataService, ILoggingService loggingService)
+            : base(dataService, loggingService)
         { }
 
         #endregion

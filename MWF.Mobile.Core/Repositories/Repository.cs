@@ -22,13 +22,14 @@ namespace MWF.Mobile.Core.Repositories
     {
 
         protected IDataService _dataService;
-
+        protected ILoggingService _loggingService;
 
         #region Construction
 
-        public Repository(IDataService dataService)
+        public Repository(IDataService dataService, ILoggingService loggingService)
         {
             _dataService = dataService;
+            _loggingService  = loggingService;
         }
 
         #endregion
@@ -48,7 +49,7 @@ namespace MWF.Mobile.Core.Repositories
             }
             catch (Exception ex)
             {
-                throw ex;
+                _loggingService.LogEvent(ex);
             }
             finally
             {
@@ -81,7 +82,7 @@ namespace MWF.Mobile.Core.Repositories
             }
             catch (Exception ex)
             {
-                throw ex;
+                _loggingService.LogEvent(ex);
             }
             finally
             {
@@ -135,7 +136,7 @@ namespace MWF.Mobile.Core.Repositories
             }
             catch (Exception ex)
             {
-                throw ex;
+                _loggingService.LogEvent(ex);
             }
             finally
             {
@@ -163,7 +164,7 @@ namespace MWF.Mobile.Core.Repositories
             }
             catch (Exception ex)
             {
-                throw ex;
+                _loggingService.LogEvent(ex);
             }
             finally
             {
@@ -198,7 +199,7 @@ namespace MWF.Mobile.Core.Repositories
             }
             catch (Exception ex)
             {
-                throw ex;
+                _loggingService.LogEvent(ex);
             }
             finally
             {
@@ -226,7 +227,7 @@ namespace MWF.Mobile.Core.Repositories
             }
             catch (Exception ex)
             {
-                throw ex;
+                _loggingService.LogEvent(ex);
             }
             finally
             {
@@ -245,7 +246,7 @@ namespace MWF.Mobile.Core.Repositories
 
         public virtual T GetByID(Guid ID, SQLiteConnection transactionConnection)
         {
-            T entity;
+            T entity = null; ;
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
@@ -258,7 +259,7 @@ namespace MWF.Mobile.Core.Repositories
             }
             catch (Exception ex)
             {
-                throw ex;
+                _loggingService.LogEvent(ex);
             }
             finally
             {

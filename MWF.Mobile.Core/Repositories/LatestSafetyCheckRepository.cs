@@ -16,8 +16,8 @@ namespace MWF.Mobile.Core.Repositories
 
         #region Construction
 
-        public LatestSafetyCheckRepository(IDataService dataService)
-            : base(dataService)
+        public LatestSafetyCheckRepository(IDataService dataService, ILoggingService loggingService)
+            : base(dataService, loggingService)
         { }
 
         #endregion

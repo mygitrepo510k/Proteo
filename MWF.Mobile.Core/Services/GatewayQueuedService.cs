@@ -142,22 +142,24 @@ namespace MWF.Mobile.Core.Services
                     return;
 
                 var queuedItems = _queueItemRepository.GetAllInQueueOrder().ToList();
-
-                foreach (var queuedItem in queuedItems)
+                if (queuedItems != null)
                 {
-                    var submitted = true;
+                    foreach (var queuedItem in queuedItems)
+                    {
+                        var submitted = true;
 
 
-                    if (await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent))
-                        _queueItemRepository.Delete(queuedItem);
-                    else
-                        //TODO: write failure to error log or report in some other way?
-                        submitted = false;
+                        if (await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent))
+                            _queueItemRepository.Delete(queuedItem);
+                        else
+                            //TODO: write failure to error log or report in some other way?
+                            submitted = false;
 
 
-                    //TODO: should we attempt remaining items if one fails or bail out at this point?
-                    if (!submitted)
-                        break;
+                        //TODO: should we attempt remaining items if one fails or bail out at this point?
+                        if (!submitted)
+                            break;
+                    }
                 }
             }
             finally

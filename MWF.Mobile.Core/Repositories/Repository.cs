@@ -46,9 +46,9 @@ namespace MWF.Mobile.Core.Repositories
                     InsertRecursive(entity, connection);
                 });
             }
-            catch (Exception ex)
+            catch (SQLite.Net.SQLiteException ex)
             {
-                throw ex;
+                //throw ex;
             }
             finally
             {
@@ -79,9 +79,9 @@ namespace MWF.Mobile.Core.Repositories
                     InsertRecursive(entity, connection);
                 }
             }
-            catch (Exception ex)
+            catch (SQLite.Net.SQLiteException ex)
             {
-                throw ex;
+                //throw ex;
             }
             finally
             {
@@ -133,9 +133,9 @@ namespace MWF.Mobile.Core.Repositories
                     InsertRecursive(entity, connection);
                 });
             }
-            catch (Exception ex)
+            catch (SQLite.Net.SQLiteException ex)
             {
-                throw ex;
+                //throw ex;
             }
             finally
             {
@@ -161,9 +161,9 @@ namespace MWF.Mobile.Core.Repositories
                     DeleteAllRecursive(typeof(T), connection);
                 });
             }
-            catch (Exception ex)
+            catch (SQLite.Net.SQLiteException ex)
             {
-                throw ex;
+                //throw ex;
             }
             finally
             {
@@ -196,9 +196,9 @@ namespace MWF.Mobile.Core.Repositories
                     DeleteRecursive(entity, connection);
                 });
             }
-            catch (Exception ex)
+            catch (SQLite.Net.SQLiteException ex)
             {
-                throw ex;
+                //throw ex;
             }
             finally
             {
@@ -224,9 +224,9 @@ namespace MWF.Mobile.Core.Repositories
                 entities = connection.Table<T>().ToList();
                 if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities, connection);
             }
-            catch (Exception ex)
+            catch (SQLite.Net.SQLiteException ex)
             {
-                throw ex;
+                //throw ex;
             }
             finally
             {
@@ -245,7 +245,7 @@ namespace MWF.Mobile.Core.Repositories
 
         public virtual T GetByID(Guid ID, SQLiteConnection transactionConnection)
         {
-            T entity;
+            T entity = null;
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
@@ -256,9 +256,9 @@ namespace MWF.Mobile.Core.Repositories
                 if (entity != null)
                     if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity, connection);
             }
-            catch (Exception ex)
+            catch (SQLite.Net.SQLiteException ex)
             {
-                throw ex;
+                //throw ex;
             }
             finally
             {

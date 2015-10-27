@@ -91,12 +91,14 @@ namespace MWF.Mobile.Core.Services
 
             try
             {
-                var events = _loggedRepository.GetAll().ToList();
+                var events = _loggedRepository.GetAll();
+
                 if (events != null && events.Count() > 0)
-                    events = events.OrderBy(e => e.LogDateTime).ToList();
+                    events = events.OrderBy(e => e.LogDateTime);
 
                 if (events.Any())
                 {
+                    
 
                     if (!_reachability.IsConnected())
                         return;
@@ -122,12 +124,12 @@ namespace MWF.Mobile.Core.Services
 
                             if (!response.Succeeded)
                             {
-                                HandleLoggingFailure(e, events);
+                                HandleLoggingFailure(e, events.ToList());
                             }
                         }
                         catch(Exception)
                         {
-                            HandleLoggingFailure(e, events);
+                            HandleLoggingFailure(e, events.ToList());
                         }
 
                         _loggedRepository.Delete(e);

@@ -141,7 +141,8 @@ namespace MWF.Mobile.Core.Services
                 if (!_reachability.IsConnected())
                     return;
 
-                var queuedItems = _queueItemRepository.GetAllInQueueOrder().ToList();
+                IEnumerable<Models.GatewayQueueItem> queuedItems = _queueItemRepository.GetAllInQueueOrder();
+
                 if (queuedItems != null)
                 {
                     foreach (var queuedItem in queuedItems)

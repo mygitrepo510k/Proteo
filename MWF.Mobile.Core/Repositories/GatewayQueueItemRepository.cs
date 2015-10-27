@@ -24,7 +24,12 @@ namespace MWF.Mobile.Core.Repositories
 
         public IEnumerable<GatewayQueueItem> GetAllInQueueOrder()
         {
-            return this.GetAll().OrderBy(gqi => gqi.QueuedDateTime);
+            var r = this.GetAll();
+            IOrderedEnumerable<GatewayQueueItem> retVal = null;
+            if (r != null && r.Count() > 0)
+            {retVal = r.OrderBy(gqi => gqi.QueuedDateTime); }
+
+            return retVal;
         }
 
     }

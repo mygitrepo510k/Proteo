@@ -91,9 +91,11 @@ namespace MWF.Mobile.Core.Services
 
             try
             {
-                var events = _loggedRepository.GetAll().OrderBy(e => e.LogDateTime).ToList();
+                var events = _loggedRepository.GetAll().ToList();
+                if (events != null && events.Count() > 0)
+                    events = events.OrderBy(e => e.LogDateTime).ToList();
 
-                if (events != null && events.Any())
+                if (events.Any())
                 {
 
                     if (!_reachability.IsConnected())

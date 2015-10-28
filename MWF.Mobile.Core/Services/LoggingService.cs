@@ -96,7 +96,7 @@ namespace MWF.Mobile.Core.Services
                 if (events != null && events.Count() > 0)
                     events = events.OrderBy(e => e.LogDateTime);
 
-                if (events.Any())
+                if (events != null && events.Any())
                 {
                     
 

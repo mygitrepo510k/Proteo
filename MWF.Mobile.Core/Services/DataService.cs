@@ -58,10 +58,10 @@ namespace MWF.Mobile.Core.Services
         {
             var platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
 
-            var g = new SQLite.Net.Platform.XamarinAndroid.SQLitePlatformAndroid();
-            g.SQLiteApi.Config(SQLite.Net.Interop.ConfigOption.Serialized);
+            var g = new SQLite.Net.Platform.Generic.SQLiteApiGeneric();
+            g.Config(SQLite.Net.Interop.ConfigOption.Serialized);
             
-            var _conn = new SQLiteConnection(g, _path);
+            var _conn = new SQLiteConnection(platform, _path);
             
             return _conn;
            

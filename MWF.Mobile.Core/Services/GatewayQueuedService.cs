@@ -163,6 +163,10 @@ namespace MWF.Mobile.Core.Services
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                _loggingService.LogEvent(ex);
+            }
             finally
             {
                 _isSubmitting = false;

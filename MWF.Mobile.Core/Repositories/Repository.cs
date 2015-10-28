@@ -49,6 +49,8 @@ namespace MWF.Mobile.Core.Repositories
             catch (SQLite.Net.SQLiteException ex)
             {
                 //throw ex;
+                // if this has failed then attempt again as the database could have been locked.
+
             }
             finally
             {

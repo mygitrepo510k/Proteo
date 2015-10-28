@@ -53,18 +53,17 @@ namespace MWF.Mobile.Core.Services
         private SQLite.Net.Platform.Generic.SQLitePlatformGeneric _platform = null;
         private SQLite.Net.SQLiteConnectionString _connectionString = null;
         private string _path = "";
-        private SQLite.Net.SQLiteConnection _connection = null;
        
         public SQLite.Net.SQLiteConnection GetDBConnection()
         {
             var platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
 
-            var g = new SQLite.Net.Platform.Generic.SQLiteApiGeneric();
-            g.Config(SQLite.Net.Interop.ConfigOption.Serialized);
-            var _conn = new SQLiteConnection(new SQLite.Net.Platform.Generic.SQLitePlatformGeneric(), _path);
+            var g = new SQLite.Net.Platform.XamarinAndroid.SQLitePlatformAndroid();
+            g.SQLiteApi.Config(SQLite.Net.Interop.ConfigOption.Serialized);
+            
+            var _conn = new SQLiteConnection(g, _path);
             
             return _conn;
-            
            
         }
 

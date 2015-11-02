@@ -110,12 +110,20 @@ namespace MWF.Mobile.Core.Services
 
         private void AddToQueue(Models.GatewayServiceRequest.Content requestContent)
         {
-            var serializedContent = JsonConvert.SerializeObject(requestContent);
-            var queueItem = new Models.GatewayQueueItem { ID = Guid.NewGuid(), JsonSerializedRequestContent = serializedContent, QueuedDateTime = DateTime.Now };
-            _queueItemRepository.Insert(queueItem);
+            try
+            {
+                var serializedContent = JsonConvert.SerializeObject(requestContent);
+                var queueItem = new Models.GatewayQueueItem { ID = Guid.NewGuid(), JsonSerializedRequestContent = serializedContent, QueuedDateTime = DateTime.Now };
+                _queueItemRepository.Insert(queueItem);
 
-            // Always attempt to sync with the MWF Mobile Gateway service whenever items are added to the queue (providing the GatewayQueueTimerService has been started)
-            Task.Run(async () => await UploadQueueAsync());
+                // Always attempt to sync with the MWF Mobile Gateway service whenever items are added to the queue (providing the GatewayQueueTimerService has been started)
+                Task.Run(async () => await UploadQueueAsync());
+            }
+            catch (Exception ex)
+            {
+                _loggingService.LogEvent(ex);
+            }
+
         }
 
         public async Task UploadQueueAsync()

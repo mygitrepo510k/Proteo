@@ -227,13 +227,30 @@ namespace MWF.Mobile.Android.Views
 
 public class ProteoCrashListener : HockeyApp.CrashManagerListener
 {
-        public String getUserID
+        public override String UserID
         {
             get
             {
                 return new DeviceInfo().GetDeviceIdentifier() ;
             }
         }
+
+        public override String Contact
+        {
+            get
+            {
+                return new DeviceInfo().GetDeviceIdentifier();
+            }
+        }
+
+        public override String Description
+        {
+            get
+            {
+                return new DeviceInfo().GetDeviceIdentifier();
+            }
+        }
+
 }
 
 }

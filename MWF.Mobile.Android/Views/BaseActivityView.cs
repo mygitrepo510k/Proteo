@@ -16,7 +16,7 @@ using Type = System.Type;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using Android.Support.V4.Widget;
 using Android.Content;
-
+using MWF.Mobile.Android.Portable;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -60,7 +60,7 @@ namespace MWF.Mobile.Android.Views
             transaction.Commit();
 
             this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
-            HockeyApp.CrashManager.Register(this, _hockeyAppID);
+            HockeyApp.CrashManager.Register(this, _hockeyAppID, new ProteoCrashListener());
 
         }
 
@@ -224,5 +224,16 @@ namespace MWF.Mobile.Android.Views
         #endregion
 
     }
+
+public class ProteoCrashListener : HockeyApp.CrashManagerListener
+{
+        public String getUserID
+        {
+            get
+            {
+                return new DeviceInfo().GetDeviceIdentifier() ;
+            }
+        }
+}
 
 }

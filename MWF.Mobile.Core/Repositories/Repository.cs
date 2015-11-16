@@ -39,19 +39,10 @@ namespace MWF.Mobile.Core.Repositories
         {
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            try
-            {
                 connection.RunInTransaction(() =>
                 {
                     InsertRecursive(entity, connection);
                 });
-            }
-            finally
-            {
-                if (transactionConnection == null)
-                    connection.Close();
-            }
-
 
         }
 
@@ -68,18 +59,10 @@ namespace MWF.Mobile.Core.Repositories
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            try
-            {
                 foreach (var entity in entities)
                 {
                     InsertRecursive(entity, connection);
                 }
-            }
-            finally
-            {
-                if (transactionConnection == null)
-                    connection.Close();
-            }
 
 
         }
@@ -112,8 +95,6 @@ namespace MWF.Mobile.Core.Repositories
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            try
-            {
                 connection.RunInTransaction(() =>
                 {
                     var existingEntity = GetByID(entity.ID);
@@ -124,12 +105,6 @@ namespace MWF.Mobile.Core.Repositories
 
                     InsertRecursive(entity, connection);
                 });
-            }
-            finally
-            {
-                if (transactionConnection == null)
-                    connection.Close();
-            }
 
         }
 
@@ -142,18 +117,10 @@ namespace MWF.Mobile.Core.Repositories
         public virtual void DeleteAll(SQLiteConnection transactionConnection)
         {
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-            try
-            {
                 connection.RunInTransaction(() =>
                 {
                     DeleteAllRecursive(typeof(T), connection);
                 });
-            }
-            finally
-            {
-                if (transactionConnection == null)
-                    connection.Close();
-            }
 
         }
 
@@ -173,18 +140,10 @@ namespace MWF.Mobile.Core.Repositories
         {
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            try
-            {
                 connection.RunInTransaction(() =>
                 {
                     DeleteRecursive(entity, connection);
                 });
-            }
-            finally
-            {
-                if (transactionConnection == null)
-                    connection.Close();
-            }
         }
 
         public virtual void Delete(T entity)
@@ -199,16 +158,8 @@ namespace MWF.Mobile.Core.Repositories
             List<T> entities = null;
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-            try
-            {
                 entities = connection.Table<T>().ToList();
                 if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities, connection);
-            }
-            finally
-            {
-                if (transactionConnection == null)
-                    connection.Close();
-            }
 
             return entities;
         }
@@ -225,18 +176,10 @@ namespace MWF.Mobile.Core.Repositories
 
             SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
 
-            try
-            {
                 entity = connection.Table<T>().SingleOrDefault(e => e.ID == ID);
 
                 if (entity != null)
                     if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity, connection);
-            }
-            finally
-            {
-                if (transactionConnection == null)
-                    connection.Close();
-            }
 
             return entity;
         }

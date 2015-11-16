@@ -125,16 +125,18 @@ namespace MWF.Mobile.Core.Services
             }
 
         }
-
+        public object queuelock = new object();
         public async Task UploadQueueAsync()
         {
-            try {
-                await SubmitQueueAsync();
-                await _loggingService.UploadLoggedEventsAsync();
-            }catch(Exception ex)
-            {
-                _loggingService.LogEvent(ex);
-            }
+                try
+                {
+                    await SubmitQueueAsync();
+                    await _loggingService.UploadLoggedEventsAsync();
+                }
+                catch (Exception ex)
+                {
+                    _loggingService.LogEvent(ex);
+                }
         }
 
         private async Task SubmitQueueAsync()

@@ -49,21 +49,22 @@ namespace MWF.Mobile.Core.Services
         #endregion
 
         #region Properties
-        private SQLiteConnectionPool _connectionPool = null;
         private SQLite.Net.Platform.Generic.SQLitePlatformGeneric _platform = null;
         private SQLite.Net.SQLiteConnectionString _connectionString = null;
+        private SQLite.Net.SQLiteConnection _connection = null;
+        private SQLite.Net.SQLiteConnectionPool _connectionPool = null;
         private string _path = "";
        
         public SQLite.Net.SQLiteConnection GetDBConnection()
         {
-            var platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
-
-            var g = new SQLite.Net.Platform.Generic.SQLiteApiGeneric();
-            g.Config(SQLite.Net.Interop.ConfigOption.Serialized);
-            
-            var _conn = new SQLiteConnection(platform, _path);
-            
-            return _conn;
+            if (_connection == null)
+            {
+                var platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
+                var g = new SQLite.Net.Platform.Generic.SQLiteApiGeneric();
+                g.Config(SQLite.Net.Interop.ConfigOption.Serialized);
+                _connection = new SQLiteConnection(platform, _path, SQLite.Net.Interop.SQLiteOpenFlags.ReadWrite | SQLite.Net.Interop.SQLiteOpenFlags.Create | SQLite.Net.Interop.SQLiteOpenFlags.FullMutex);
+            }
+            return _connection;
            
         }
 

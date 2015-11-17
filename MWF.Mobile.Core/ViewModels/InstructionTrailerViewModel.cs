@@ -100,6 +100,8 @@ namespace MWF.Mobile.Core.ViewModels
                 try
                 {
                     // we only need to check profiles once a day
+                    
+
                     var applicationProfile = _applicationProfileRepository.GetAll().First();
                     if (DateTime.Now.Subtract(applicationProfile.LastVehicleAndDriverSync).TotalHours > 23)
                     {

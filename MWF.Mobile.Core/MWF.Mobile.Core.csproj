@@ -366,16 +366,13 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SQLite.Net">
-      <HintPath>..\Components\SQLite.NET\SQLite.Net.dll</HintPath>
+      <HintPath>..\SQLite.NET\SQLite.Net.dll</HintPath>
     </Reference>
     <Reference Include="SQLite.Net.Async">
-      <HintPath>..\Components\SQLite.NET\SQLite.Net.Async.dll</HintPath>
+      <HintPath>..\SQLite.NET\SQLite.Net.Async.dll</HintPath>
     </Reference>
     <Reference Include="SQLite.Net.Platform.Generic">
-      <HintPath>..\Components\SQLite.NET\SQLite.Net.Platform.Generic.dll</HintPath>
-    </Reference>
-    <Reference Include="SQLite.Net.Platform.XamarinAndroid">
-      <HintPath>..\Components\SQLite.NET\SQLite.Net.Platform.XamarinAndroid.dll</HintPath>
+      <HintPath>..\SQLite.NET\SQLite.Net.Platform.Generic.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.dll</HintPath>

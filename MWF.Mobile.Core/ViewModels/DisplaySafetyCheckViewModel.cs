@@ -29,15 +29,12 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion Private Members
 
         #region Construction
-
-        public DisplaySafetyCheckViewModel(IInfoService infoService, INavigationService navigationService, Repositories.IRepositories repositories)
+        public async override void Start()
         {
-            _infoService = infoService;
-            _navigationService = navigationService;
-            _repositories = repositories;
+            base.Start();
             SafetyCheckFaultItemViewModels = new List<DisplaySafetyCheckFaultItemViewModel>();
 
-            _latestSafetyCheckData = _repositories.LatestSafetyCheckRepository.GetForDriver(_infoService.LoggedInDriver.ID);
+            _latestSafetyCheckData = await _repositories.LatestSafetyCheckRepository.GetForDriver(_infoService.LoggedInDriver.ID);
 
             //If there is no safety check data to view, then sends them back to where they came.
             if (_latestSafetyCheckData.VehicleSafetyCheck == null && _latestSafetyCheckData.TrailerSafetyCheck == null)
@@ -52,6 +49,13 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_latestSafetyCheckData.TrailerSafetyCheck != null)
                 GenerateSafetyCheckFaultItems(_latestSafetyCheckData.TrailerSafetyCheck.Faults, true);
+        }
+        public DisplaySafetyCheckViewModel(IInfoService infoService, INavigationService navigationService, Repositories.IRepositories repositories)
+        {
+            _infoService = infoService;
+            _navigationService = navigationService;
+            _repositories = repositories;
+            
         }
 
         #endregion Construction

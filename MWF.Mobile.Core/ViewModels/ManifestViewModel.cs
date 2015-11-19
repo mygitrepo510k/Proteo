@@ -146,7 +146,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private void RefreshInstructions()
+        private async Task RefreshInstructions()
         {
             Mvx.Trace("started refreshing manifest screen");
 
@@ -157,11 +157,12 @@ namespace MWF.Mobile.Core.ViewModels
 
             // get instruction data models from repository and order them
             var activeInstructionsDataModels = await _mobileDataRepository.GetInProgressInstructions(_infoService.LoggedInDriver.ID);
-            var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_infoService.LoggedInDriver.ID);
+            var nonActiveInstructionsDataModels = await _mobileDataRepository.GetNotStartedInstructions(_infoService.LoggedInDriver.ID);
 
             if (!_displayRetention.HasValue || !_displaySpan.HasValue)
             {
-                var applicationProfile = _applicationProfileRepository.GetAll().First();
+                var applicationProfileData = await _applicationProfileRepository.GetAllAsync();
+                var applicationProfile = applicationProfileData.First();
                 _displayRetention = applicationProfile.DisplayRetention;
                 _displaySpan = applicationProfile.DisplaySpan;
             }
@@ -176,7 +177,8 @@ namespace MWF.Mobile.Core.ViewModels
                 .Where(i => i.EffectiveDate < today.AddDays(_displaySpan.Value) && i.EffectiveDate > today.AddDays(-_displayRetention.Value))
                 .OrderBy(x => x.EffectiveDate);
 
-            var messageDataModels = _mobileDataRepository.GetNonCompletedMessages(_infoService.LoggedInDriver.ID).OrderBy(x => x.EffectiveDate);
+            var nonCompletedeMessages = await _mobileDataRepository.GetNonCompletedMessages(_infoService.LoggedInDriver.ID);
+            var messageDataModels = nonCompletedeMessages.OrderBy(x => x.EffectiveDate);
 
             if (activeInstructionsDataModels.ToList().Count == 0)
             {

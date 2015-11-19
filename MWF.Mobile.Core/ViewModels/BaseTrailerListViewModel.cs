@@ -69,7 +69,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return _repositories.VehicleRepository.GetByID(_infoService.LoggedInDriver.LastVehicleID).Registration;
+                return _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID).Result.Registration;
             }
         }
 
@@ -266,7 +266,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             this.IsBusy = false;
 
-            if (safetyProfileRepository.GetAll().ToList().Count == 0)
+            if (safetyProfileRepository.GetAllAsync().Result.ToList().Count == 0)
                 Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
         }
 
@@ -320,7 +320,7 @@ namespace MWF.Mobile.Core.ViewModels
         private void GetTrailerModels()
         {
 
-            this.Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAll().Select(x => new TrailerItemViewModel() 
+            this.Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAllAsync().Result.Select(x => new TrailerItemViewModel() 
                                                                                                         { 
                                                                                                             Trailer = x,
                                                                                                             IsDefault = (string.IsNullOrEmpty(this.DefaultTrailerReg)) ? false : x.Registration == this.DefaultTrailerReg

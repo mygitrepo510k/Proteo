@@ -81,9 +81,9 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService.MoveToNext(_navData);
         }
 
-        private void RefreshPage(Guid ID)
+        private async void RefreshPage(Guid ID)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
             _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
         }

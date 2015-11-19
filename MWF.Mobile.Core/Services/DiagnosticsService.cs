@@ -47,7 +47,7 @@ namespace MWF.Mobile.Core.Services
             if (!_reachability.IsConnected())
                 return false;
 
-            var config = _repositories.ConfigRepository.Get();
+            var config = await _repositories.ConfigRepository.GetAsync();
 
             if (config == null || 
                 string.IsNullOrWhiteSpace(config.FtpUrl) ||

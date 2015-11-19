@@ -113,9 +113,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        private void GetMobileDataFromRepository(Guid parentID, Guid childID)
+        private async void GetMobileDataFromRepository(Guid parentID, Guid childID)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(parentID);
+            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(parentID);
             _order = _mobileData.Order.Items.First(i => i.ID == childID);
             _navData.Data = _mobileData;
             _navData.OtherData["Order"] = _order;

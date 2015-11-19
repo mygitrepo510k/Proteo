@@ -29,25 +29,23 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion
 
         #region construction
-
-        public SafetyCheckSignatureViewModel(Services.IInfoService infoService, Services.IGatewayQueuedService gatewayQueuedService, ICustomUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService, ISafetyCheckService safetyCheckService)
+        public async override void Start()
         {
-            _infoService = infoService;
-            _gatewayQueuedService = gatewayQueuedService;
-            _userInteraction = userInteraction;
-            _navigationService = navigationService;
-            _repositories = repositories;
-            _safetyCheckService = safetyCheckService;
+            base.Start();
 
             // Retrieve the vehicle and trailer safety check data from the startup info service
             _safetyCheckData = _safetyCheckService.GetCurrentSafetyCheckData();
             SafetyProfile safetyProfileVehicle = null;
             SafetyProfile safetyProfileTrailer = null;
 
-            safetyProfileVehicle = repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
+            var data = await _repositories.SafetyProfileRepository.GetAllAsync();
+            safetyProfileVehicle = data.Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
 
             if (_infoService.CurrentTrailer != null)
-                safetyProfileTrailer = repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == _infoService.CurrentTrailer.SafetyCheckProfileIntLink).SingleOrDefault();
+            {
+                var data1 = await _repositories.SafetyProfileRepository.GetAllAsync();
+                safetyProfileTrailer = data1.Where(spt => spt.IntLink == _infoService.CurrentTrailer.SafetyCheckProfileIntLink).SingleOrDefault();
+            }
 
             if (!_safetyCheckData.Any())
                 throw new Exception("Invalid application state - signature screen should not be displayed in cases where there are no safety checks.");
@@ -59,11 +57,11 @@ namespace MWF.Mobile.Core.ViewModels
                || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant)))
                 throw new Exception("Cannot proceed to safety check signature screen because the safety check hasn't been completed");
 
-            DriverName = infoService.LoggedInDriver.DisplayName;
-            VehicleRegistration = infoService.CurrentVehicle.Registration;
-            TrailerRef = infoService.CurrentTrailer == null ? "- no trailer -" : infoService.CurrentTrailer.Registration;
+            DriverName = _infoService.LoggedInDriver.DisplayName;
+            VehicleRegistration = _infoService.CurrentVehicle.Registration;
+            TrailerRef = _infoService.CurrentTrailer == null ? "- no trailer -" : _infoService.CurrentTrailer.Registration;
 
-            var config = repositories.ConfigRepository.Get();
+            var config = await _repositories.ConfigRepository.GetAsync();
             if ((safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant)
                || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant))
             {
@@ -88,6 +86,18 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 this.ConfirmationText = config.SafetyCheckPassText;
             }
+
+        }
+        public SafetyCheckSignatureViewModel(Services.IInfoService infoService, Services.IGatewayQueuedService gatewayQueuedService, ICustomUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService, ISafetyCheckService safetyCheckService)
+        {
+            _infoService = infoService;
+            _gatewayQueuedService = gatewayQueuedService;
+            _userInteraction = userInteraction;
+            _navigationService = navigationService;
+            _repositories = repositories;
+            _safetyCheckService = safetyCheckService;
+
+            
         }
 
         public SafetyCheckSignatureViewModel()

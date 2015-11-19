@@ -86,9 +86,9 @@ namespace MWF.Mobile.Core.Services
         /// <remarks>
         /// Note that submission will only occur if the GatewayQueueTimerService has been started (i.e. by first calling StartQueueTimer())
         /// </remarks>
-        public void AddToQueue(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
+        public async void AddToQueue(string command, Models.GatewayServiceRequest.Parameter[] parameters = null)
         {
-            this.AddToQueue(CreateRequestContent(command, parameters));
+            await this.AddToQueue(await CreateRequestContent(command, parameters));
         }
 
         /// <summary>
@@ -97,15 +97,15 @@ namespace MWF.Mobile.Core.Services
         /// <remarks>
         /// Note that submission will only occur if the GatewayQueueTimerService has been started (i.e. by first calling StartQueueTimer())
         /// </remarks>
-        public void AddToQueue<TData>(string command, TData data, Models.GatewayServiceRequest.Parameter[] parameters = null)
+        public async void AddToQueue<TData>(string command, TData data, Models.GatewayServiceRequest.Parameter[] parameters = null)
             where TData : class
         {
-            this.AddToQueue(CreateRequestContent(command, data, parameters));
+            await this.AddToQueue(await CreateRequestContent(command, data, parameters));
         }
 
-        public void AddToQueue<TData>(IEnumerable<Models.GatewayServiceRequest.Action<TData>> actions) where TData : class
+        public async void AddToQueue<TData>(IEnumerable<Models.GatewayServiceRequest.Action<TData>> actions) where TData : class
         {
-            this.AddToQueue(CreateRequestContent(actions));
+            await this.AddToQueue(await CreateRequestContent(actions));
         }
 
         private async Task AddToQueue(Models.GatewayServiceRequest.Content requestContent)
@@ -154,7 +154,7 @@ namespace MWF.Mobile.Core.Services
                 if (!_reachability.IsConnected())
                     return;
 
-                IEnumerable<Models.GatewayQueueItem> queuedItems = _queueItemRepository.GetAllInQueueOrder();
+                IEnumerable<Models.GatewayQueueItem> queuedItems = await _queueItemRepository.GetAllInQueueOrder();
 
                 if (queuedItems != null)
                 {
@@ -209,10 +209,10 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Create a single-action request's content with data - the data will be serialized as xml
         /// </summary>
-        private Models.GatewayServiceRequest.Content CreateRequestContent<TData>(string command, TData data, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
+        private async Task<Models.GatewayServiceRequest.Content> CreateRequestContent<TData>(string command, TData data, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
             where TData : class
         {
-            return this.CreateRequestContent(new[]
+            return await this.CreateRequestContent(new[]
             {
                 new Core.Models.GatewayServiceRequest.Action<TData>
                 {
@@ -226,7 +226,7 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Create the request content, allowing multiple actions per request and serializing the data
         /// </summary>
-        private Models.GatewayServiceRequest.Content CreateRequestContent<TData>(IEnumerable<Models.GatewayServiceRequest.Action<TData>> actions)
+        private async Task<Models.GatewayServiceRequest.Content> CreateRequestContent<TData>(IEnumerable<Models.GatewayServiceRequest.Action<TData>> actions)
             where TData : class
         {
             var xmlSerializedActions = actions.Select(a => new Models.GatewayServiceRequest.Action
@@ -236,15 +236,15 @@ namespace MWF.Mobile.Core.Services
                 Parameters = a.Parameters,
             });
 
-            return CreateRequestContent(xmlSerializedActions);
+            return await  CreateRequestContent(xmlSerializedActions);
         }
 
         /// <summary>
         /// Create the request content, allowing multiple actions per request
         /// </summary>
-        private Models.GatewayServiceRequest.Content CreateRequestContent(IEnumerable<Models.GatewayServiceRequest.Action> actions)
+        private async Task<Models.GatewayServiceRequest.Content> CreateRequestContent(IEnumerable<Models.GatewayServiceRequest.Action> actions)
         {
-            Models.Device device = _deviceRepository.GetAll().FirstOrDefault();
+            Models.Device device = await _deviceRepository.GetAllAsync().ContinueWith(x => x.Result.FirstOrDefault()) ;
             var deviceIdentifier = device == null ? _deviceInfo.GetDeviceIdentifier() : device.DeviceIdentifier;
 
             return new Core.Models.GatewayServiceRequest.Content

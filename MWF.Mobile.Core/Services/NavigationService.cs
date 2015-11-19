@@ -361,7 +361,7 @@ namespace MWF.Mobile.Core.Services
         {
             get
             {
-                return _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
+                return _repositories.SafetyProfileRepository.GetAllAsync().ContinueWith(x=> x.Result.Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault()).Result;
             }
         }
 
@@ -378,7 +378,7 @@ namespace MWF.Mobile.Core.Services
         private SafetyProfile GetTrailerSafetyProfile(Models.Trailer trailer)
         {
 
-            return (trailer != null) ? _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault() : null;
+            return (trailer != null) ? _repositories.SafetyProfileRepository.GetAllAsync().ContinueWith(x=> x.Result.Where(spv => spv.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault()).Result : null;
 
         }
 
@@ -523,11 +523,11 @@ namespace MWF.Mobile.Core.Services
             _gatewayPollingService.StartPollingTimer();
         }
 
-        private void StartLoginSessionTimer()
+        private async void StartLoginSessionTimer()
         {
             if (_loginSessionTimer == null)
             {
-                var config = _repositories.ConfigRepository.Get();
+                var config = await _repositories.ConfigRepository.GetAsync();
                 var sessionTimeoutInSeconds = config.SessionTimeoutInSeconds;
 
                 if (sessionTimeoutInSeconds > 0)

@@ -44,14 +44,14 @@ namespace MWF.Mobile.Core.ViewModels
             _configRepository = repositories.ConfigRepository;
         }
 
-        public void Init(NavData<MobileData> navData)
+        public async void Init(NavData<MobileData> navData)
         {
             navData.Reinflate();
             this.MessageId = navData.NavGUID;
             _navData = navData;
             _order = navData.OtherData["Order"] as Item;
             _mobileData = navData.Data;
-            _mobileConfig = _configRepository.GetByID(_mobileData.CustomerId);
+            _mobileConfig = await _configRepository.GetByIDAsync(_mobileData.CustomerId);
         }
 
 
@@ -103,9 +103,9 @@ namespace MWF.Mobile.Core.ViewModels
             //_navigationService.MoveToNext(_navData);
         }
 
-        private void GetMobileDataFromRepository(Guid parentID, Guid childID)
+        private async void GetMobileDataFromRepository(Guid parentID, Guid childID)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(parentID);
+            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(parentID);
             _order = _mobileData.Order.Items.First(i => i.ID == childID);
             _navData.OtherData["Order"] = _order;
             _navData.Data = _mobileData;

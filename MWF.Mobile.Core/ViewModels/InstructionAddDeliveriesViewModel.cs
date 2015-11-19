@@ -41,7 +41,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _repositories = repositories;
             _infoService = infoService;
-            _appProfile = _repositories.ApplicationRepository.GetAll().First();
+            _appProfile = _repositories.ApplicationRepository.GetAllAsync().Result.First();
             _navigationService = navigationService;
         }
 
@@ -56,15 +56,16 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        private void GetDeliveryInstructions()
+        private async void GetDeliveryInstructions()
         {
 
             var today = DateTime.Today;
 
+            var data = await _repositories.MobileDataRepository.GetNonCompletedInstructions(_infoService.LoggedInDriver.ID);
             // get all non-complete deliveries (excluding the current one) that conform to the same "barcode scanning on delivery) type as the current one
-            var nonCompletedDeliveries = _repositories.MobileDataRepository.GetNonCompletedInstructions(_infoService.LoggedInDriver.ID).Where(i => i.Order.Type == Enums.InstructionType.Deliver && 
-                                                                                                                                                        i.ID != _navData.Data.ID &&                                                                                                                                              
-                                                                                                                                                        i.Order.Items.First().Additional.BarcodeScanRequiredForDelivery == _navData.Data.Order.Items.First().Additional.BarcodeScanRequiredForDelivery);      
+            var nonCompletedDeliveries = data.Where(i => i.Order.Type == Enums.InstructionType.Deliver && 
+                                                    i.ID != _navData.Data.ID &&                                                                                                                                              
+                                                    i.Order.Items.First().Additional.BarcodeScanRequiredForDelivery == _navData.Data.Order.Items.First().Additional.BarcodeScanRequiredForDelivery);      
             // only get the ones that show up in the same time range as displayed in the manifest screen
             var nonCompletedDeliveriesInRange = nonCompletedDeliveries.Where(i => i.EffectiveDate < today.AddDays(_appProfile.DisplaySpan) && i.EffectiveDate > today.AddDays(-_appProfile.DisplayRetention)).OrderBy(x => x.EffectiveDate);
            
@@ -161,9 +162,9 @@ namespace MWF.Mobile.Core.ViewModels
             return string.Join(" ", this.DeliveryInstructions.Select(i => i.IsSelected.ToString()).ToArray());
         }
 
-        private void RefreshPage()
+        private async Task RefreshPage()
         {
-            _navData.Data = _repositories.MobileDataRepository.GetByID(_navData.Data.ID);
+            _navData.Data = await _repositories.MobileDataRepository.GetByIDAsync(_navData.Data.ID);
             _navData.GetAdditionalInstructions().Clear();
 
             GetDeliveryInstructions();

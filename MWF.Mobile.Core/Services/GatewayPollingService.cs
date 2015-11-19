@@ -101,7 +101,8 @@ namespace MWF.Mobile.Core.Services
 
                 if (!_dataRetention.HasValue || !_dataSpan.HasValue)
                 {
-                    var applicationProfile = _repositories.ApplicationRepository.GetAll().First();
+                    var data = await _repositories.ApplicationRepository.GetAllAsync();
+                    var applicationProfile = data.First();
                     _dataRetention = applicationProfile.DataRetention;
                     _dataSpan = applicationProfile.DataSpan;
                 }
@@ -136,7 +137,7 @@ namespace MWF.Mobile.Core.Services
                                 case SyncState.Add:
 
                                     Mvx.Trace("started adding instruction." + instruction.ID);
-                                    var instructionToAdd = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                                    var instructionToAdd = await _repositories.MobileDataRepository.GetByIDAsync(instruction.ID);
 
                                     if (instructionToAdd == null)
                                     {
@@ -150,7 +151,7 @@ namespace MWF.Mobile.Core.Services
 
                                 case SyncState.Update:
                                     Mvx.Trace("started updating instruction." + instruction.ID);
-                                    var instructionToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                                    var instructionToUpdate = await _repositories.MobileDataRepository.GetByIDAsync(instruction.ID);
 
                                     if (instructionToUpdate != null)
                                     {
@@ -168,7 +169,7 @@ namespace MWF.Mobile.Core.Services
 
                                 case SyncState.Delete:
                                     Mvx.Trace("started deleting instruction." + instruction.ID);
-                                    var oldInstruction = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                                    var oldInstruction = await _repositories.MobileDataRepository.GetByIDAsync(instruction.ID);
 
                                     if (oldInstruction != null)
                                     {

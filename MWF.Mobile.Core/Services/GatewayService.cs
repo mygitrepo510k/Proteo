@@ -181,7 +181,7 @@ namespace MWF.Mobile.Core.Services
             where T: class
         {
             var requestContent = CreateRequestContent(command, parameters);
-            var response = await this.PostAsync<T>(requestContent);
+            var response = await this.PostAsync<T>(await requestContent);
 
             if (!response.Succeeded && response.StatusCode == HttpStatusCode.Forbidden)
             {
@@ -213,9 +213,9 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Create a single-action request's content
         /// </summary>
-        private Models.GatewayServiceRequest.Content CreateRequestContent(string command, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
+        private async Task<Models.GatewayServiceRequest.Content> CreateRequestContent(string command, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
         {
-            return this.CreateRequestContent(new[]
+            return await this.CreateRequestContent(new[]
             {
                 new Core.Models.GatewayServiceRequest.Action
                 {
@@ -228,10 +228,10 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Create the request content, allowing multiple actions per request
         /// </summary>
-        private Models.GatewayServiceRequest.Content CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
+        private async Task<Models.GatewayServiceRequest.Content> CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
         {
 
-            Models.Device device = _deviceRepository.GetAll().FirstOrDefault();
+            Models.Device device = await _deviceRepository.GetAllAsync().ContinueWith(x=> x.Result.FirstOrDefault());
             var deviceIdentifier = device == null ? _deviceInfo.GetDeviceIdentifier() : device.DeviceIdentifier;
 
             return new Core.Models.GatewayServiceRequest.Content

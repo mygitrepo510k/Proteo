@@ -51,13 +51,13 @@ namespace MWF.Mobile.Core.ViewModels
             this.SetInitialViewModel();
         }
 
-        private void SetInitialViewModel()
+        private async void SetInitialViewModel()
         {
             
 
             var customerRepository = _repositories.CustomerRepository;
-
-            if (customerRepository.GetAll().Any())
+            var customerRepositoryData = await customerRepository.GetAllAsync();
+            if (customerRepositoryData.Any())
                 this.InitialViewModel = new PasscodeViewModel(_authenticationService, _infoService, _closeApplication, _repositories, _navigationService, _loggingService, _gatewayQueuedService);
             else
                 this.InitialViewModel = new CustomerCodeViewModel(_gatewayService, _reachableService, _dataService, _repositories, _userInteraction, _navigationService);

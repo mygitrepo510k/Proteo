@@ -34,22 +34,31 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
             _safetyCheckService = safetyCheckService;
 
+           
+        }
+        public async override void Start()
+        {
+            base.Start();
             Models.Vehicle vehicle = null;
             Models.Trailer trailer = null;
 
-            vehicle = _repositories.VehicleRepository.GetByID(_infoService.LoggedInDriver.LastVehicleID);
+            vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID);
             _infoService.CurrentVehicle = vehicle;
 
             if (_infoService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
             {
-                trailer = _repositories.TrailerRepository.GetByID(_infoService.LoggedInDriver.LastSecondaryVehicleID);
+                trailer = await _repositories.TrailerRepository.GetByIDAsync(_infoService.LoggedInDriver.LastSecondaryVehicleID);
                 _infoService.CurrentTrailer = trailer;
             }
 
-            SafetyProfileVehicle = _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink).SingleOrDefault();
+            var safetyProfileVehicleData = await _repositories.SafetyProfileRepository.GetAllAsync();
+            SafetyProfileVehicle = safetyProfileVehicleData.Where(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink).SingleOrDefault();
 
             if (trailer != null)
-                SafetyProfileTrailer = _repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
+            {
+                var safetyProfileTrailerData = await _repositories.SafetyProfileRepository.GetAllAsync();
+                SafetyProfileTrailer = safetyProfileVehicleData.Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
+            }
 
             this.SafetyCheckItemViewModels = new List<SafetyCheckItemViewModel>();
 

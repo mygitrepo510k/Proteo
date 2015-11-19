@@ -101,9 +101,9 @@ namespace MWF.Mobile.Core.ViewModels
             ReturnResult(!_isMessageRead);
         }
 
-        private void GetMobileDataFromRepository(Guid ID)
+        private async void GetMobileDataFromRepository(Guid ID)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
             RaiseAllPropertiesChanged();
         }
 

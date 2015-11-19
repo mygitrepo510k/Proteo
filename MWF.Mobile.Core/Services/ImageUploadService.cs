@@ -57,7 +57,7 @@ namespace MWF.Mobile.Core.Services
             Encoding encoding = Encoding.UTF8;
             int uploadedCount = 0;
 
-            var config = _repositories.ConfigRepository.Get();
+            var config = await _repositories.ConfigRepository.GetAsync();
 
             if (config == null && string.IsNullOrWhiteSpace(config.HEUrl))
             {

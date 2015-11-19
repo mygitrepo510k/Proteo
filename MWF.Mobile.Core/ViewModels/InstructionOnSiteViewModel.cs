@@ -124,7 +124,7 @@ namespace MWF.Mobile.Core.ViewModels
             get
             {
                 return _mobileData.Order.Type == Enums.InstructionType.Deliver 
-                    && _repositories.ConfigRepository.Get().DeliveryAdd;
+                    && _repositories.ConfigRepository.GetAsync().Result.DeliveryAdd;
             }
         }
 

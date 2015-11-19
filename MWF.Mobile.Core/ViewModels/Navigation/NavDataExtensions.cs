@@ -77,9 +77,9 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
 
         }
 
-        public static void ReloadInstruction(this NavData<MobileData> navData, Guid ID, IRepositories repositories)
+        public async static void ReloadInstruction(this NavData<MobileData> navData, Guid ID, IRepositories repositories)
         {
-            var mobileData = repositories.MobileDataRepository.GetByID(ID);
+            var mobileData = await repositories.MobileDataRepository.GetByIDAsync(ID);
 
             if (navData.Data.ID == ID)
             {

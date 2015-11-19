@@ -51,12 +51,17 @@ namespace MWF.Mobile.Core.ViewModels
             _currentDriverRepository = currentDriverRepository;
             _vehicleRepository = vehicleRepository;
             _safetyProfileRepository = safetyProfileRepository;
-            Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
+            
+        }
+
+        public async override void Start()
+        {
+            base.Start();
+            Vehicles = _originalVehicleList = await _vehicleRepository.GetAllAsync();
             _vehicleListCount = FilteredVehicleCount;
 
             LastVehicleSelect();
         }
-
         public string VehicleSelectText
         {
             get { return "Select vehicle - Showing " + FilteredVehicleCount + " of " + VehicleListCount; }
@@ -110,9 +115,9 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService.MoveToNext();
         }
 
-        private void LastVehicleSelect()
+        private async Task LastVehicleSelect()
         {
-            var currentDriver = _currentDriverRepository.GetByID(_infoService.LoggedInDriver.ID);
+            var currentDriver = await _currentDriverRepository.GetByIDAsync(_infoService.LoggedInDriver.ID);
 
             if (currentDriver == null)
                 return;
@@ -122,7 +127,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (lastVehicleID == null)
                 return;
 
-            var vehicle = _vehicleRepository.GetByID(lastVehicleID);
+            var vehicle = await _vehicleRepository.GetByIDAsync(lastVehicleID);
 
             if (vehicle == null)
                 return;
@@ -149,7 +154,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(vehicle.Registration, "Confirm your vehicle", "Confirm"))
             {
-                var newDriver = _currentDriverRepository.GetByID(_infoService.LoggedInDriver.ID);
+                var newDriver = await _currentDriverRepository.GetByIDAsync(_infoService.LoggedInDriver.ID);
 
                 if (newDriver == null)
                     return;
@@ -218,7 +223,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                     await _vehicleRepository.InsertAsync(vehicles);
 
-                    Vehicles = _originalVehicleList = _vehicleRepository.GetAll();
+                    Vehicles = _originalVehicleList = await _vehicleRepository.GetAllAsync();
 
                     //Recalls the filter text if there is text in the search field.
                     if (VehicleSearchText != null)
@@ -257,7 +262,8 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
 
-            if (_safetyProfileRepository.GetAll().ToList().Count == 0)
+            var safetyProfileData = await _safetyProfileRepository.GetAllAsync();
+            if (safetyProfileData.ToList().Count == 0)
                 Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
         }
     }

@@ -30,7 +30,7 @@ namespace MWF.Mobile.Core.ViewModels
 
 
 
-        public void Init(NavData<MobileData> navData)
+        public async void Init(NavData<MobileData> navData)
         {
             _navData = navData;
             _navData.Reinflate();
@@ -38,7 +38,10 @@ namespace MWF.Mobile.Core.ViewModels
             Models.Trailer trailer = _navData.OtherData["UpdatedTrailer"] as Models.Trailer;
 
             if (trailer != null)
-                SafetyProfileTrailer = _repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
+            {
+                var safetyProfileData = await _repositories.SafetyProfileRepository.GetAllAsync();
+                SafetyProfileTrailer = safetyProfileData.Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
+            }
 
             this.SafetyCheckItemViewModels = new List<SafetyCheckItemViewModel>();
             _navData.OtherData["UpdatedTrailerSafetyCheckData"] = null;

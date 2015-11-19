@@ -37,13 +37,13 @@ namespace MWF.Mobile.Core.Services
         public async Task<AuthenticationResult> AuthenticateAsync(string passcode)
         {
 
-            Driver driver = GetMatchingDriver(passcode);
+            Driver driver = await GetMatchingDriver(passcode);
 
             // driver not in local DB, update from BlueSphere (if we can)
             if (driver == null && _reachability.IsConnected())
             {
                 await UpdateDriversAsync();
-                driver = GetMatchingDriver(passcode);
+                driver = await GetMatchingDriver(passcode);
             }
 
             // the passcode doesn't match any driver we know about

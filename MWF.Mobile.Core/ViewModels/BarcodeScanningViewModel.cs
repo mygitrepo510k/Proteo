@@ -222,13 +222,14 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Methods
 
 
-        private void BuildDamageStatuses()
+        private async void BuildDamageStatuses()
         {
             _damageStatuses = new List<DamageStatus>();
 
             _damageStatuses.Add(new DamageStatus() { Text = "Clean", Code = "POD" });
 
-            var palletForceVerbProfile = _repositories.VerbProfileRepository.GetAll().Where(vp => vp.Code == "PFORCE").FirstOrDefault();
+            var data = await _repositories.VerbProfileRepository.GetAllAsync();
+            var palletForceVerbProfile = data.Where(vp => vp.Code == "PFORCE").FirstOrDefault();
 
             if (palletForceVerbProfile != null)
             {

@@ -24,7 +24,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        public void Init(NavData<MobileData> navData)
+        public async void Init(NavData<MobileData> navData)
         {
             _navData = navData;
             _navData.Reinflate();
@@ -40,10 +40,14 @@ namespace MWF.Mobile.Core.ViewModels
             SafetyProfile safetyProfileVehicle = null;
             SafetyProfile safetyProfileTrailer = null;
 
-            safetyProfileVehicle = _repositories.SafetyProfileRepository.GetAll().Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
+            var data = await _repositories.SafetyProfileRepository.GetAllAsync();
+            safetyProfileVehicle = data.Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
 
             if (trailer != null)
-                safetyProfileTrailer = _repositories.SafetyProfileRepository.GetAll().Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
+            {
+                var safetyProfileData = await _repositories.SafetyProfileRepository.GetAllAsync();
+                safetyProfileTrailer = safetyProfileData.Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
+            }
 
             if (!_safetyCheckData.Any())
                 throw new Exception("Invalid application state - signature screen should not be displayed in cases where there are no safety checks.");
@@ -59,7 +63,7 @@ namespace MWF.Mobile.Core.ViewModels
             VehicleRegistration = _infoService.CurrentVehicle.Registration;
             TrailerRef = trailer == null ? "- no trailer -" : trailer.Registration;
 
-            var config = _repositories.ConfigRepository.Get();
+            var config = await _repositories.ConfigRepository.GetAsync();
             if ((safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant)
                || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant))
             {

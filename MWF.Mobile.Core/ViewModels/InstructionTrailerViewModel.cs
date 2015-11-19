@@ -100,9 +100,9 @@ namespace MWF.Mobile.Core.ViewModels
                 try
                 {
                     // we only need to check profiles once a day
-                    
 
-                    var applicationProfile = _applicationProfileRepository.GetAll().First();
+                    var applicationProfileData = await _applicationProfileRepository.GetAllAsync();
+                    var applicationProfile = applicationProfileData.First();
                     if (DateTime.Now.Subtract(applicationProfile.LastVehicleAndDriverSync).TotalHours > 23)
                     {
                         await UpdateVehicleListAsync();
@@ -122,9 +122,9 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private void GetMobileDataFromRepository(Guid ID)
+        private async void GetMobileDataFromRepository(Guid ID)
         {
-            _mobileData = _repositories.MobileDataRepository.GetByID(ID);
+            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
             _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
 

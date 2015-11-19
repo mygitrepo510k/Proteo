@@ -207,13 +207,13 @@ namespace MWF.Mobile.Core.Services
             //Delete the instruction from the repository if its completed else just update it.
             if (deleteMobileData)
             {
-                var oldMobileData = _repositories.MobileDataRepository.GetByID(mobileData.ID);
+                var oldMobileData = await _repositories.MobileDataRepository.GetByIDAsync(mobileData.ID);
                 if (oldMobileData != null)
                    await _repositories.MobileDataRepository.DeleteAsync(oldMobileData);
             }
             else
             {
-                var mobileDataToUpdate = _repositories.MobileDataRepository.GetByID(mobileData.ID);
+                var mobileDataToUpdate = await _repositories.MobileDataRepository.GetByIDAsync(mobileData.ID);
                 if (mobileDataToUpdate != null)
                 {
                     await _repositories.MobileDataRepository.DeleteAsync(mobileDataToUpdate);

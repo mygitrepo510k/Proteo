@@ -74,7 +74,7 @@ namespace MWF.Mobile.Core.ViewModels
         private void ReloadPage()
         {
             //Show messages that are no older than a week
-            Messages = new ObservableCollection<ManifestInstructionViewModel>(_mobileDataRepository.GetAllMessages(_infoService.LoggedInDriver.ID).Where(i => i.EffectiveDate > DateTime.Today.AddDays(-7)).Select(m => new ManifestInstructionViewModel(this, _navigationService, m)).OrderBy(m => m.ProgressState).ThenBy(m => m.ArrivalDate));
+            Messages = new ObservableCollection<ManifestInstructionViewModel>(_mobileDataRepository.GetAllMessages(_infoService.LoggedInDriver.ID).Result.Where(i => i.EffectiveDate > DateTime.Today.AddDays(-7)).Select(m => new ManifestInstructionViewModel(this, _navigationService, m)).OrderBy(m => m.ProgressState).ThenBy(m => m.ArrivalDate));
             RaisePropertyChanged(() => MessagesCount);
             RaisePropertyChanged(() => InboxHeaderText);
         }

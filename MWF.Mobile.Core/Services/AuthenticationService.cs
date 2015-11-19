@@ -65,22 +65,23 @@ namespace MWF.Mobile.Core.Services
 
             {
                  driver.IsLicensed = await _gatewayService.LicenceCheckAsync(driver.ID);
-                 _driverRepository.Update(driver);
+                 await _driverRepository.UpdateAsync(driver);
             }
 
             return driver.IsLicensed;
         }
 
-        private Driver GetMatchingDriver(string passcode)
+        private async Task<Driver> GetMatchingDriver(string passcode)
         {
-            return _driverRepository.GetAll().SingleOrDefault(x => x.Passcode == passcode);
+            var data = await _driverRepository.GetAllAsync();
+            return data.SingleOrDefault(x => x.Passcode == passcode);
         }
 
         private async Task UpdateDriversAsync()
         {
             IEnumerable<Driver> drivers = await _gatewayService.GetDrivers();
-            _driverRepository.DeleteAll();
-            _driverRepository.Insert(drivers);           
+            await _driverRepository.DeleteAllAsync();
+            await _driverRepository.InsertAsync(drivers);           
         }
 
         #endregion

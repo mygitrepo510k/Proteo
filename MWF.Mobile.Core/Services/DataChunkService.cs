@@ -45,7 +45,7 @@ namespace MWF.Mobile.Core.Services
         /// This is in the form of a 'Read' Chunk
         /// </summary>
         /// <param name="instructions">The instruction that have been acknowledged</param>
-        public void SendReadChunk(IEnumerable<MobileData> instructions, Driver currentDriver, Vehicle currentVehicle)
+        public async Task SendReadChunk(IEnumerable<MobileData> instructions, Driver currentDriver, Vehicle currentVehicle)
         {
             //The data chunk to be sent.
             MobileApplicationDataChunkCollection dataChunkCollection = new MobileApplicationDataChunkCollection { MobileApplicationDataChunkCollectionObject = new List<MobileApplicationDataChunk>() };
@@ -87,12 +87,12 @@ namespace MWF.Mobile.Core.Services
                 if (instruction.SyncState != Enums.SyncState.Delete)
                 {
 
-                    var mobileDataToUpdate = _repositories.MobileDataRepository.GetByID(instruction.ID);
+                    var mobileDataToUpdate = await _repositories.MobileDataRepository.GetByIDAsync(instruction.ID);
                     if (mobileDataToUpdate != null)
                     {
-                        _repositories.MobileDataRepository.Delete(mobileDataToUpdate);
+                        await _repositories.MobileDataRepository.DeleteAsync(mobileDataToUpdate);
                     }
-                    _repositories.MobileDataRepository.Insert(instruction);
+                    await _repositories.MobileDataRepository.InsertAsync(instruction);
                 }
 
             }
@@ -106,7 +106,7 @@ namespace MWF.Mobile.Core.Services
         /// this is called for when the instruction goes into Drive, OnSite and is Completed
         /// </summary>
         /// <param name="updateQuantity"></param>
-        public void SendDataChunk(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false, bool updateTrailer = false)
+        public async Task SendDataChunk(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false, bool updateTrailer = false)
         {
             var mobileData = currentMobileData;
             mobileData.LatestDataChunkSequence++;
@@ -209,16 +209,16 @@ namespace MWF.Mobile.Core.Services
             {
                 var oldMobileData = _repositories.MobileDataRepository.GetByID(mobileData.ID);
                 if (oldMobileData != null)
-                    _repositories.MobileDataRepository.Delete(oldMobileData);
+                   await _repositories.MobileDataRepository.DeleteAsync(oldMobileData);
             }
             else
             {
                 var mobileDataToUpdate = _repositories.MobileDataRepository.GetByID(mobileData.ID);
                 if (mobileDataToUpdate != null)
                 {
-                    _repositories.MobileDataRepository.Delete(mobileDataToUpdate);
+                    await _repositories.MobileDataRepository.DeleteAsync(mobileDataToUpdate);
                 }
-                _repositories.MobileDataRepository.Insert(mobileData);
+                await _repositories.MobileDataRepository.InsertAsync(mobileData);
             }
         }
 

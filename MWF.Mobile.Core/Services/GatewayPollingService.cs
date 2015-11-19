@@ -140,7 +140,7 @@ namespace MWF.Mobile.Core.Services
 
                                     if (instructionToAdd == null)
                                     {
-                                        _repositories.MobileDataRepository.Insert(instruction);
+                                        await _repositories.MobileDataRepository.InsertAsync(instruction);
                                         notifyInstruction = true;
                                     }
 
@@ -155,12 +155,12 @@ namespace MWF.Mobile.Core.Services
                                     if (instructionToUpdate != null)
                                     {
                                         var progress = instructionToUpdate.ProgressState;
-                                        _repositories.MobileDataRepository.Delete(instructionToUpdate);
+                                        await _repositories.MobileDataRepository.DeleteAsync(instructionToUpdate);
                                         instruction.ProgressState = progress;
                                         instruction.LatestDataChunkSequence = instructionToUpdate.LatestDataChunkSequence;
                                     }
 
-                                    _repositories.MobileDataRepository.Insert(instruction);
+                                    await _repositories.MobileDataRepository.InsertAsync(instruction);
                                     notifyInstruction = true;
                                     Mvx.Trace("completed updating instruction." + instruction.ID);
                                     PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
@@ -172,7 +172,7 @@ namespace MWF.Mobile.Core.Services
 
                                     if (oldInstruction != null)
                                     {
-                                        _repositories.MobileDataRepository.Delete(oldInstruction);
+                                        await _repositories.MobileDataRepository.DeleteAsync(oldInstruction);
 
                                         if (oldInstruction.ProgressState != InstructionProgress.Complete)
                                             notifyInstruction = true;

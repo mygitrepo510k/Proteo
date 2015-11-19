@@ -11,22 +11,23 @@ namespace MWF.Mobile.Core.Repositories
 
     public interface IRepository<T> where T : IBlueSphereEntity, new()
     {
-        void Delete(T entity, SQLiteConnection connection);
-        void Delete(T entity);
-        void DeleteAll(SQLiteConnection connection);
-        void DeleteAll();
-        Task DeleteAllAsync();
-        IEnumerable<T> GetAll(SQLiteConnection connection);
-        IEnumerable<T> GetAll();
-        T GetByID(Guid ID,SQLiteConnection connection);
-        T GetByID(Guid ID);
-        void Insert(T entity, SQLiteConnection connection);
-        void Insert(T entity);
+        Task DeleteAsync(T entity, SQLiteAsyncConnection connection);
+        Task DeleteAsync(T entity);
+        Task DeleteAllAsync(SQLiteAsyncConnection connection);
 
-        void Insert(IEnumerable<T> entities, SQLiteConnection connection);
-        void Insert(IEnumerable<T> entities);
+        Task DeleteAllAsync();
+        Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllAsync(SQLiteAsyncConnection connection);
+
+        Task<T> GetByIDAsync(Guid ID);
+        Task<T> GetByIDAsync(Guid ID,SQLiteAsyncConnection connection);
+
+        Task InsertAsync(T entity, SQLiteAsyncConnection connection);
+        Task InsertAsync(T entity);
+        Task InsertAsync(IEnumerable<T> entities, SQLiteAsyncConnection connection);
         Task InsertAsync(IEnumerable<T> entities);
-        void Update(T entity, SQLiteConnection connection);
-        void Update(T entity);
+
+        Task UpdateAsync(T entity, SQLiteAsyncConnection connection);
+        Task UpdateAsync(T entity);
     }
 }

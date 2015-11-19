@@ -22,9 +22,9 @@ namespace MWF.Mobile.Core.Repositories
         /// <summary>
         /// Return the single config row
         /// </summary>
-        public MWFMobileConfig Get()
+        public async Task<MWFMobileConfig> Get()
         {
-            return this.GetAll().First();
+            return this.GetAllAsync().Result.First();
         }
 
     }

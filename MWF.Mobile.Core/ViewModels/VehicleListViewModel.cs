@@ -154,9 +154,9 @@ namespace MWF.Mobile.Core.ViewModels
                 if (newDriver == null)
                     return;
 
-                _currentDriverRepository.Delete(newDriver);
+                await _currentDriverRepository.DeleteAsync(newDriver);
                 newDriver.LastVehicleID = vehicle.ID;
-                _currentDriverRepository.Insert(newDriver);
+                await _currentDriverRepository.InsertAsync(newDriver);
 
                 ShowTrailerScreen(vehicle);
             }

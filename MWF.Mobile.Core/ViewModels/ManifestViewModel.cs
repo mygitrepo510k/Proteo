@@ -156,7 +156,7 @@ namespace MWF.Mobile.Core.ViewModels
             var today = DateTime.Today;
 
             // get instruction data models from repository and order them
-            var activeInstructionsDataModels = _mobileDataRepository.GetInProgressInstructions(_infoService.LoggedInDriver.ID);
+            var activeInstructionsDataModels = await _mobileDataRepository.GetInProgressInstructions(_infoService.LoggedInDriver.ID);
             var nonActiveInstructionsDataModels = _mobileDataRepository.GetNotStartedInstructions(_infoService.LoggedInDriver.ID);
 
             if (!_displayRetention.HasValue || !_displaySpan.HasValue)

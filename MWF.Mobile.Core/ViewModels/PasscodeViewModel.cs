@@ -142,7 +142,7 @@ namespace MWF.Mobile.Core.ViewModels
                     {
                         CurrentDriver newDriver = new CurrentDriver();
                         newDriver.ID = _infoService.LoggedInDriver.ID;
-                        _currentDriverRepository.Insert(newDriver);
+                        await _currentDriverRepository.InsertAsync(newDriver);
                     }
 
                     // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis

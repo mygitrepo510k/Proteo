@@ -48,7 +48,7 @@ namespace MWF.Mobile.Core.ViewModels
                     {
                         // we have seen an issue where there was no profile so lets cater for this now.
                         var profile = await _gatewayService.GetApplicationProfile();
-                        _applicationProfileRepository.Insert(profile);
+                        await _applicationProfileRepository.InsertAsync(profile);
 
                     }
                     var applicationProfile = _applicationProfileRepository.GetAll().First();
@@ -62,7 +62,7 @@ namespace MWF.Mobile.Core.ViewModels
                         this.IsBusy = true;
                         applicationProfile = await _gatewayService.GetApplicationProfile();
                         applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
-                        _applicationProfileRepository.Update(applicationProfile);
+                        await _applicationProfileRepository.UpdateAsync(applicationProfile);
                         
                     }
                 }

@@ -220,9 +220,9 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (trailers != null)
             {
-                _repositories.TrailerRepository.DeleteAll();
+                await _repositories.TrailerRepository.DeleteAllAsync();
 
-                _repositories.TrailerRepository.Insert(trailers);
+                await _repositories.TrailerRepository.InsertAsync(trailers);
 
                 GetTrailerModels();
 
@@ -259,8 +259,8 @@ namespace MWF.Mobile.Core.ViewModels
 
                 if (safetyProfiles != null)
                 {
-                    safetyProfileRepository.DeleteAll();
-                    safetyProfileRepository.Insert(safetyProfiles);
+                    await safetyProfileRepository.DeleteAllAsync();
+                    await safetyProfileRepository.InsertAsync(safetyProfiles);
                 }
             }
 
@@ -306,8 +306,8 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (vehicles != null)
             {
-                _repositories.VehicleRepository.DeleteAll();
-                _repositories.VehicleRepository.Insert(vehicles);
+                await _repositories.VehicleRepository.DeleteAllAsync();
+                await _repositories.VehicleRepository.InsertAsync(vehicles);
                 // we need to updat the selected vehicle as the profile could have changed.
                 var currentvehicle = vehicles.First(v => v.ID == _infoService.CurrentVehicle.ID);
                 _infoService.CurrentVehicle = currentvehicle;

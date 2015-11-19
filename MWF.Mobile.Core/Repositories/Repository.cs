@@ -34,39 +34,83 @@ namespace MWF.Mobile.Core.Repositories
         #endregion
 
         #region IRepository<T> Members
-
-        public virtual void Insert(T entity, SQLiteConnection transactionConnection)
+        
+        public async virtual Task DeleteAllAsync(SQLiteAsyncConnection transactionConnection)
         {
-            SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-
-                connection.RunInTransaction(() =>
+            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+                await _dataService.RunInTransactionAsync(async c =>
                 {
-                    InsertRecursive(entity, connection);
+                    await DeleteAllRecursiveAsync(typeof(T), c);
                 });
-
         }
 
-
-
-        public virtual void Insert(T entity)
+        public async virtual Task DeleteAllAsync()
         {
-            Insert(entity, null);
+            var connection = _dataService.GetAsyncDBConnection();
+            await DeleteAllRecursiveAsync(typeof(T), connection);
         }
 
-
-        public virtual void Insert(IEnumerable<T> entities, SQLiteConnection transactionConnection)
+        public async virtual Task DeleteAsync(T entity, SQLiteAsyncConnection transactionConnection)
         {
+            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
 
-            SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-
-                foreach (var entity in entities)
+            
+                await _dataService.RunInTransactionAsync(async c =>
                 {
-                    InsertRecursive(entity, connection);
-                }
+                   await DeleteRecursiveAsync(entity, c);
+                });
+         }
 
-
+        public async virtual Task DeleteAsync(T entity)
+        {
+            await DeleteAsync(entity, null);
         }
 
+
+        public async virtual Task<IEnumerable<T>> GetAllAsync(SQLiteAsyncConnection transactionConnection)
+        {
+
+            List<T> entities = null;
+
+            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+                entities = await connection.Table<T>().ToListAsync();
+                if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entities, connection);
+           
+            return entities;
+        }
+
+        public async virtual Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await GetAllAsync(null);
+        }
+
+
+        public async virtual Task<T> GetByIDAsync(Guid ID, SQLiteAsyncConnection transactionConnection)
+        {
+            T entity = null;
+
+            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+
+                entity = connection.Table<T>().Where(e => e.ID == ID).FirstAsync().Result;
+
+                if (entity != null)
+                    if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entity, connection);
+            
+            return entity;
+        }
+
+
+
+        public async virtual Task<T> GetByIDAsync(Guid ID)
+        {
+            return await GetByIDAsync(ID, null);
+        }
+
+
+
+        #endregion
+
+        #region  IRepository Async Methods
         public async virtual Task InsertAsync(IEnumerable<T> entities, SQLiteAsyncConnection transactionConnection)
         {
 
@@ -79,9 +123,12 @@ namespace MWF.Mobile.Core.Repositories
 
 
         }
-        public virtual void Insert(IEnumerable<T> entities)
+
+        public async virtual Task InsertAsync(T entity, SQLiteAsyncConnection transactionConnection)
         {
-            Insert(entities, null);
+
+            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+            await InsertRecursiveAsync (entity, connection);
         }
 
         public async virtual Task InsertAsync(IEnumerable<T> entities)
@@ -89,136 +136,9 @@ namespace MWF.Mobile.Core.Repositories
             await InsertAsync(entities, null);
         }
 
-
-        public virtual void Update(T entity, SQLiteConnection transactionConnection)
+        public async virtual Task InsertAsync(T entity)
         {
-
-            SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-
-                connection.RunInTransaction(() =>
-                {
-                    var existingEntity = GetByID(entity.ID);
-                    if (existingEntity != null)
-                    {
-                        Delete(existingEntity);
-                    }
-
-                    InsertRecursive(entity, connection);
-                });
-
-        }
-
-        public virtual void Update(T entity)
-        {
-            Update(entity, null);
-        }
-
-
-        public virtual void DeleteAll(SQLiteConnection transactionConnection)
-        {
-            SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-                connection.RunInTransaction(() =>
-                {
-                    DeleteAllRecursive(typeof(T), connection);
-                });
-
-        }
-
-        public async virtual Task DeleteAllAsync()
-        {
-            var connection = _dataService.GetAsyncDBConnection();
-            await DeleteAllRecursiveAsync(typeof(T), connection);
-        }
-
-
-        public virtual void DeleteAll()
-        {
-            DeleteAll(null);
-        }
-
-        public virtual void Delete(T entity, SQLiteConnection transactionConnection)
-        {
-            SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-
-                connection.RunInTransaction(() =>
-                {
-                    DeleteRecursive(entity, connection);
-                });
-        }
-
-        public virtual void Delete(T entity)
-        {
-            Delete(entity, null);
-        }
-
-
-        public virtual IEnumerable<T> GetAll(SQLiteConnection transactionConnection)
-        {
-
-            List<T> entities = null;
-
-            SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-                entities = connection.Table<T>().ToList();
-                if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities, connection);
-
-            return entities;
-        }
-
-        public virtual IEnumerable<T> GetAll()
-        {
-            return GetAll(null);
-        }
-
-
-        public virtual T GetByID(Guid ID, SQLiteConnection transactionConnection)
-        {
-            T entity = null;
-
-            SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-
-                entity = connection.Table<T>().SingleOrDefault(e => e.ID == ID);
-
-                if (entity != null)
-                    if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entity, connection);
-
-            return entity;
-        }
-
-
-
-        public virtual T GetByID(Guid ID)
-        {
-            return GetByID(ID, null);
-        }
-
-
-
-        #endregion
-
-        #region Private Properties
-
-        #endregion
-
-        #region Private Methods
-
-        /// <summary>
-        ///  Inserts a potentially nested object graph into the appropriate tables using the
-        ///  ChildRelationship and ForeignKey attributes to guide the process
-        /// </summary>
-        /// <param name="entity"></param>
-        private void InsertRecursive(IBlueSphereEntity entity, SQLiteConnection connection)
-        {
-
-            connection.Insert(entity);
-
-            foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())
-            {
-                DoRecursiveTreeAction(entity, relationshipProperty, (parent, child) =>
-                {
-                    SetForeignKeyOnChild(parent, child);
-                    InsertRecursive(child, connection);
-                });
-            }
+            await InsertAsync(entity, null);
         }
 
 
@@ -229,13 +149,47 @@ namespace MWF.Mobile.Core.Repositories
 
             foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())
             {
-                DoRecursiveTreeAction(entity, relationshipProperty, (parent, child) =>
+                DoRecursiveTreeAction(entity, relationshipProperty, async (parent, child) =>
                 {
                     SetForeignKeyOnChild(parent, child);
-                    InsertRecursiveAsync(child, connection);
+                   await  InsertRecursiveAsync(child, connection);
                 });
             }
         }
+
+        public async virtual Task UpdateAsync(T entity, SQLiteAsyncConnection transactionConnection)
+        {
+
+            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+            await _dataService.RunInTransactionAsync(async c =>
+            {
+                var existingEntity = await GetByIDAsync(entity.ID);
+                if (existingEntity != null)
+                {
+                    await DeleteAsync(existingEntity);
+                }
+
+                await InsertRecursiveAsync(entity, c);
+            });
+
+
+        }
+
+        public async virtual Task UpdateAsync(T entity)
+        {
+            await UpdateAsync(entity, null);
+        }
+
+        #endregion
+
+        #region Private Properties
+
+        #endregion
+
+        #region Private Methods
+
+
+       
 
 
         /// <summary>
@@ -243,15 +197,15 @@ namespace MWF.Mobile.Core.Repositories
         ///  ChildRelationship and ForeignKey attributes to guide the process
         /// </summary>
         /// <param name="entity"></param>
-        private void DeleteRecursive(IBlueSphereEntity entity, SQLiteConnection connection)
+        private async Task DeleteRecursiveAsync(IBlueSphereEntity entity, SQLiteAsyncConnection connection)
         {
-            connection.Delete(entity);
+            await connection.DeleteAsync(entity);
 
             foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())
             {
-                DoRecursiveTreeAction(entity, relationshipProperty, (parent, child) =>
+                DoRecursiveTreeAction(entity, relationshipProperty, async (parent, child) =>
                 {
-                    DeleteRecursive(child, connection);
+                   await DeleteRecursiveAsync(child, connection);
                 });
 
             }
@@ -293,7 +247,7 @@ namespace MWF.Mobile.Core.Repositories
         /// as labelled with the ChildRelationship. 
         /// </summary>
         /// <param name="parent"></param>
-        protected void PopulateChildrenRecursive(IBlueSphereEntity parent, SQLiteConnection connection)
+        protected async Task PopulateChildrenRecursive(IBlueSphereEntity parent, SQLiteAsyncConnection connection)
         {
 
             foreach (var relationshipProperty in parent.GetType().GetChildRelationProperties())
@@ -301,7 +255,9 @@ namespace MWF.Mobile.Core.Repositories
                 Type childType = relationshipProperty.GetTypeOfChildRelation();
                 string childIdentifyingPropertyName = relationshipProperty.GetIdentifyingPropertyNameOfChildRelation();
                 object childIdentifyingPropertyValue = relationshipProperty.GetIdentifyingPropertyValueOfChildRelation();
-                IList children = GetChildren(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
+
+
+                IList children = await GetChildren(parent, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
 
                 if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
                 {
@@ -321,7 +277,7 @@ namespace MWF.Mobile.Core.Repositories
                     relationshipProperty.SetValue(parent, children);
                 }
 
-                PopulateChildrenRecursive(children, connection);
+                await PopulateChildrenRecursive(children, connection);
 
             }
         }
@@ -333,19 +289,61 @@ namespace MWF.Mobile.Core.Repositories
         /// a collection of parents
         /// </summary>
         /// <param name="parents"></param>
-        protected void PopulateChildrenRecursive(IEnumerable parents, SQLiteConnection connection)
+        protected async Task PopulateChildrenRecursive(IEnumerable parents, SQLiteAsyncConnection connection)
         {
             foreach (var parent in parents)
             {
-                PopulateChildrenRecursive(parent as IBlueSphereEntity, connection);
+                await PopulateChildrenRecursive(parent as IBlueSphereEntity, connection);
             }
         }
 
 
         // Gets the children of the specfied type for specified parent using foreign key mappings
-        private IList GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteConnection connection)
+        //private async Task<IList> GetChildren(IBlueSphereEntity parent, dynamic childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteAsyncConnection connection)
+        //{
+        //   // var t = Activator.CreateInstance<childType>();
+        //    //TableMapping tableMapping =await connection.GetMappingAsync();
+
+        //    string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
+        //                                                                    childType.GetForeignKeyName(parent.GetType()));
+
+        //    if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
+        //    {
+        //        query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
+        //    }
+        //    var listType = typeof(List<>);
+        //    var constructedListType = listType.MakeGenericType(childType);
+        //    var queryResults = Activator.CreateInstance(constructedListType);
+        //    var t = Activator.CreateInstance(childType);
+
+
+        //    if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
+        //    {
+        //        queryResults = await connection.QueryAsync<childType>( query, parent.ID, childIdentifyingPropertyValue);
+        //    }
+        //    else
+        //    {
+        //        queryResults = connection.QueryAsync<childType>(query, parent.ID);
+        //    }
+
+
+        //    // Create a typed generic list we can assign back to parent element
+        //    IList genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
+
+        //    foreach (object item in queryResults)
+        //    {
+        //        genericList.Add(item);
+        //    }
+
+        //    return genericList;
+
+        //}
+
+        private async Task<IList<T>> GetChildren(IBlueSphereEntity parent, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteAsyncConnection connection)
         {
-            TableMapping tableMapping = connection.GetMapping(childType);
+            // var t = Activator.CreateInstance<childType>();
+            //TableMapping tableMapping =await connection.GetMappingAsync();
+            var childType = typeof(T);
 
             string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
                                                                             childType.GetForeignKeyName(parent.GetType()));
@@ -354,31 +352,34 @@ namespace MWF.Mobile.Core.Repositories
             {
                 query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
             }
+            //var listType = typeof(List<>);
+            //var constructedListType = listType.MakeGenericType(childType);
+            //var queryResults = Activator.CreateInstance(constructedListType);
+            //var t = Activator.CreateInstance(childType);
 
-            List<object> queryResults;
+            List<T> queryResults = new List<T>();
 
             if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
             {
-                queryResults = connection.Query(tableMapping, query, parent.ID, childIdentifyingPropertyValue);
+                queryResults = await connection.QueryAsync<T>(query, parent.ID, childIdentifyingPropertyValue);
             }
             else
             {
-                queryResults = connection.Query(tableMapping, query, parent.ID);
+                queryResults = await connection.QueryAsync<T>(query, parent.ID);
             }
 
 
-            // Create a typed generic list we can assign back to parent element
-            IList genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
+            //// Create a typed generic list we can assign back to parent element
+            //IList genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
 
-            foreach (object item in queryResults)
-            {
-                genericList.Add(item);
-            }
+            //foreach (object item in queryResults)
+            //{
+            //    genericList.Add(item);
+            //}
 
-            return genericList;
+            return queryResults;
 
         }
-
 
 
         // Deletes all items from the table associated with the specified type

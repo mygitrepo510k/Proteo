@@ -211,19 +211,19 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private void UpdateProgress()
+        private async Task UpdateProgress()
         {
             if (_mobileData.ProgressState == Enums.InstructionProgress.NotStarted)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.Driving;
-                _dataChunkService.SendDataChunk(_navData.GetDataChunk(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                await _dataChunkService.SendDataChunk(_navData.GetDataChunk(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
             }
             else if (_mobileData.ProgressState == Enums.InstructionProgress.Driving)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.OnSite;
             }
 
-            _repositories.MobileDataRepository.Update(_mobileData);
+            await _repositories.MobileDataRepository.UpdateAsync(_mobileData);
 
             RaisePropertyChanged(() => ProgressButtonText);
         }

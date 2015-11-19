@@ -316,7 +316,7 @@ namespace MWF.Mobile.Core.Services
             await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Your license is no longer valid. Logging out.");
 
             _infoService.LoggedInDriver.IsLicensed = false;
-            _repositories.DriverRepository.Update(_infoService.LoggedInDriver);
+            await _repositories.DriverRepository.UpdateAsync(_infoService.LoggedInDriver);
 
             DoLogout(this.CurrentNavData);
 

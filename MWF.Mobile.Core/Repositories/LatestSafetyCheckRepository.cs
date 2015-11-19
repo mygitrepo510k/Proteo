@@ -22,21 +22,22 @@ namespace MWF.Mobile.Core.Repositories
 
         #endregion
 
-        public LatestSafetyCheck GetForDriver(Guid driverID)
+        public async Task<LatestSafetyCheck> GetForDriver(Guid driverID)
         {
-            return this.GetAll().FirstOrDefault(lsc => lsc.DriverID == driverID);
+            var a = await this.GetAllAsync();
+            return a.FirstOrDefault(lsc => lsc.DriverID == driverID);
         }
 
-        public void SetForDriver(LatestSafetyCheck latestSafetyCheck)
+        public async Task SetForDriver(LatestSafetyCheck latestSafetyCheck)
         {
-            var latestSafetyCheckForDriver = this.GetForDriver(latestSafetyCheck.DriverID);
+            var latestSafetyCheckForDriver = await this.GetForDriver(latestSafetyCheck.DriverID);
 
             // Delete any existing latest safety check for the driver before adding a new one.
             // Currently this deletes both vehicle and trailer safety checks and it is possible that one of these will be null in the latestSafetyCheck object - if this is the case should we actually be retaining the older safety check?
             if (latestSafetyCheckForDriver != null)
-                this.Delete(latestSafetyCheckForDriver);
+                await this.DeleteAsync(latestSafetyCheckForDriver);
 
-            this.Insert(latestSafetyCheck);
+            await this.InsertAsync(latestSafetyCheck);
         }
 
     }

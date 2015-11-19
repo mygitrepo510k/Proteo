@@ -18,25 +18,25 @@ namespace MWF.Mobile.Core.Repositories
 
         #endregion
 
-        public bool InstructionExists(Guid id)
+        public async Task<bool> InstructionExists(Guid id)
         {
-            return (this.GetByID(id) != null);
+            return (await this.GetByIDAsync(id) != null);
 
         }
 
-        public IEnumerable<MobileData> GetNonCompletedInstructions(Guid driverID)
+        public async Task<IEnumerable<MobileData>> GetNonCompletedInstructions(Guid driverID)
         {
 
             List<MobileData> parentItems;
 
-            var connection = _dataService.GetDBConnection();
-                parentItems = connection
-                   .Table<MobileData>()
-                   .Where(m =>
-                          m.DriverId == driverID &&
-                         (m.ProgressState != Enums.InstructionProgress.Complete)).ToList();
+            var connection = _dataService.GetAsyncDBConnection();
+            parentItems = await connection
+               .Table<MobileData>()
+               .Where(m =>
+                      m.DriverId == driverID &&
+                     (m.ProgressState != Enums.InstructionProgress.Complete)).ToListAsync();
 
-                PopulateChildrenRecursive(parentItems, connection);
+                await PopulateChildrenRecursive(parentItems, connection);
 
 
             parentItems = parentItems.Where(pi =>
@@ -45,21 +45,21 @@ namespace MWF.Mobile.Core.Repositories
             return parentItems;
         }
 
-        public IEnumerable<MobileData> GetInProgressInstructions(Guid driverID)
+        public async Task<IEnumerable<MobileData>> GetInProgressInstructions(Guid driverID)
         {
 
             List<MobileData> parentItems;
 
-            var connection = _dataService.GetDBConnection();
+            var connection = _dataService.GetAsyncDBConnection();
             
 
-                parentItems = connection
+                parentItems = await connection
                    .Table<MobileData>()
                    .Where(m =>
                           m.DriverId == driverID &&
-                         (m.ProgressState == Enums.InstructionProgress.Driving || m.ProgressState == Enums.InstructionProgress.OnSite)).ToList();
+                         (m.ProgressState == Enums.InstructionProgress.Driving || m.ProgressState == Enums.InstructionProgress.OnSite)).ToListAsync();
 
-                PopulateChildrenRecursive(parentItems, connection);
+                await PopulateChildrenRecursive(parentItems, connection);
 
             
             parentItems = parentItems.Where(pi =>
@@ -68,18 +68,18 @@ namespace MWF.Mobile.Core.Repositories
             return parentItems;
         }
 
-        public IEnumerable<MobileData> GetNotStartedInstructions(Guid driverID)
+        public async Task<IEnumerable<MobileData>> GetNotStartedInstructions(Guid driverID)
         {
             List<MobileData> parentItems;
 
-            var connection = _dataService.GetDBConnection();
-                parentItems = connection
+            var connection = _dataService.GetAsyncDBConnection();
+                parentItems = await  connection
                     .Table<MobileData>()
                     .Where(m =>
                            m.DriverId == driverID &&
-                           (m.ProgressState == Enums.InstructionProgress.NotStarted)).ToList();
+                           (m.ProgressState == Enums.InstructionProgress.NotStarted)).ToListAsync();
 
-                PopulateChildrenRecursive(parentItems, connection);
+                await PopulateChildrenRecursive(parentItems, connection);
             
             parentItems = parentItems.Where(pi =>
                 pi.Order.Type != Enums.InstructionType.OrderMessage).ToList();
@@ -90,28 +90,28 @@ namespace MWF.Mobile.Core.Repositories
 
 
 
-        public IEnumerable<MobileData> GetNonCompletedMessages(Guid driverID)
+        public async Task<IEnumerable<MobileData>> GetNonCompletedMessages(Guid driverID)
         {
             List<MobileData> parentItems;
 
-            parentItems = this.GetAllMessages(driverID).Where(m => m.ProgressState != Enums.InstructionProgress.Complete).ToList();
+            parentItems =  this.GetAllMessages(driverID).Result.Where(m => m.ProgressState != Enums.InstructionProgress.Complete).ToList();
 
             return parentItems;
         }
 
 
-        public IEnumerable<MobileData> GetAllMessages(Guid driverID)
+        public async Task<IEnumerable<MobileData>> GetAllMessages(Guid driverID)
         {
             List<MobileData> parentItems;
 
-            var connection = _dataService.GetDBConnection();
+            var connection = _dataService.GetAsyncDBConnection();
             
-                parentItems = connection
+                parentItems = await connection
                     .Table<MobileData>()
                     .Where(m =>
-                           m.DriverId == driverID).ToList();
+                           m.DriverId == driverID).ToListAsync();
 
-                PopulateChildrenRecursive(parentItems, connection);
+                await PopulateChildrenRecursive(parentItems, connection);
             
             parentItems = parentItems.Where(pi =>
                 pi.Order.Type == Enums.InstructionType.OrderMessage).ToList();

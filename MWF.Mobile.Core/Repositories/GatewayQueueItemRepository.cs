@@ -22,9 +22,9 @@ namespace MWF.Mobile.Core.Repositories
 
         #endregion
 
-        public IEnumerable<GatewayQueueItem> GetAllInQueueOrder()
+        public async Task<IEnumerable<GatewayQueueItem>> GetAllInQueueOrder()
         {
-            var r = this.GetAll();
+            var r = await this.GetAllAsync();
             IOrderedEnumerable<GatewayQueueItem> retVal = null;
             if (r != null && r.Count() > 0)
             {retVal = r.OrderBy(gqi => gqi.QueuedDateTime); }

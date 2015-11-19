@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using MWF.Mobile.Core.Models;
+using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.Repositories
 {
 
     public interface ILatestSafetyCheckRepository : IRepository<LatestSafetyCheck> 
     {
-        LatestSafetyCheck GetForDriver(Guid driverID);
-        void SetForDriver(LatestSafetyCheck latestSafetyCheck);
+        Task<LatestSafetyCheck> GetForDriver(Guid driverID);
+        Task SetForDriver(LatestSafetyCheck latestSafetyCheck);
     }
 
 }

@@ -45,7 +45,7 @@ namespace MWF.Mobile.Core.Services
                 );
         }
 
-        public void LogEvent(Exception exception)
+        public async void LogEvent(Exception exception)
         {
             var loggedException = new LogMessage
             {
@@ -54,10 +54,10 @@ namespace MWF.Mobile.Core.Services
                 LogType = Enums.LogType.Error
             };
 
-            _loggedRepository.Insert(loggedException);
+            await _loggedRepository.InsertAsync(loggedException);
         }
 
-        public void LogEvent(string eventDescription, Enums.LogType type)
+        public async void LogEvent(string eventDescription, Enums.LogType type)
         {
             var loggedEvent = new LogMessage
             {
@@ -66,10 +66,10 @@ namespace MWF.Mobile.Core.Services
                 LogType = type
             };
 
-            _loggedRepository.Insert(loggedEvent);
+            await _loggedRepository.InsertAsync(loggedEvent);
         }
 
-        public void LogEvent(string eventDescription, Enums.LogType type, params object[] args)
+        public async void LogEvent(string eventDescription, Enums.LogType type, params object[] args)
         {
             var loggedEvent = new LogMessage
             {
@@ -78,7 +78,7 @@ namespace MWF.Mobile.Core.Services
                 LogType = type
             };
 
-            _loggedRepository.Insert(loggedEvent);
+            await _loggedRepository.InsertAsync(loggedEvent);
         }
 
         public async Task UploadLoggedEventsAsync()
@@ -91,7 +91,7 @@ namespace MWF.Mobile.Core.Services
 
             try
             {
-                var events = _loggedRepository.GetAll();
+                var events = await _loggedRepository.GetAllAsync();
 
                 if (events != null && events.Count() > 0)
                     events = events.OrderBy(e => e.LogDateTime);
@@ -132,7 +132,7 @@ namespace MWF.Mobile.Core.Services
                             HandleLoggingFailure(e, events.ToList());
                         }
 
-                        _loggedRepository.Delete(e);
+                        await _loggedRepository.DeleteAsync(e);
                        
                     }
                 }

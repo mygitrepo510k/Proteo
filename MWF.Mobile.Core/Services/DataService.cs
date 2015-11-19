@@ -7,6 +7,8 @@ using System;
 using System.Net;
 using System.Diagnostics;
 using System.IO;
+using SQLite.Net.Platform.Generic;
+using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -46,32 +48,40 @@ namespace MWF.Mobile.Core.Services
             
         }
 
+        public async Task RunInTransactionAsync(Action<SQLiteAsyncConnection> action)
+        {
+            var conn = this.GetAsyncDBConnection();
+            action(conn);
+
+        }
         #endregion
 
         #region Properties
-        private SQLite.Net.Platform.Generic.SQLitePlatformGeneric _platform = null;
+        private SQLiteConnectionPool _connectionPool = null;
         private SQLite.Net.SQLiteConnectionString _connectionString = null;
-        private SQLite.Net.SQLiteConnection _connection = null;
-        private SQLite.Net.SQLiteConnectionPool _connectionPool = null;
         private string _path = "";
-       
+        private SQLitePlatformGeneric _platform = null;
+
         public SQLite.Net.SQLiteConnection GetDBConnection()
         {
-            if (_connection == null)
-            {
-                var platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
-                var g = new SQLite.Net.Platform.Generic.SQLiteApiGeneric();
-                g.Config(SQLite.Net.Interop.ConfigOption.Serialized);
-                _connection = new SQLiteConnection(platform, _path, SQLite.Net.Interop.SQLiteOpenFlags.ReadWrite | SQLite.Net.Interop.SQLiteOpenFlags.Create | SQLite.Net.Interop.SQLiteOpenFlags.FullMutex);
-            }
-            return _connection;
+            var _platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
+            var _conn = new SQLiteConnection(_platform, _path, SQLite.Net.Interop.SQLiteOpenFlags.ReadWrite | SQLite.Net.Interop.SQLiteOpenFlags.Create | SQLite.Net.Interop.SQLiteOpenFlags.FullMutex);
+            return _conn;
            
         }
 
 
+        SQLiteConnectionWithLock _connectionWithLock = null;
+        SQLiteAsyncConnection _connectionAsync;
         public SQLiteAsyncConnection GetAsyncDBConnection()
         {
-            return new SQLiteAsyncConnection(() => _connectionPool.GetConnection(_connectionString));
+            if (_connectionWithLock == null)
+            {
+                SQLiteConnectionString connString = new SQLiteConnectionString(_path, true);
+                _connectionWithLock = new SQLiteConnectionWithLock(_platform, connString);
+                _connectionAsync = new SQLiteAsyncConnection(() => _connectionWithLock);
+            }
+            return _connectionAsync;
         }
         
 

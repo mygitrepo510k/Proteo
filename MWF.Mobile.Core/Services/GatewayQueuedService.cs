@@ -108,16 +108,16 @@ namespace MWF.Mobile.Core.Services
             this.AddToQueue(CreateRequestContent(actions));
         }
 
-        private void AddToQueue(Models.GatewayServiceRequest.Content requestContent)
+        private async Task AddToQueue(Models.GatewayServiceRequest.Content requestContent)
         {
             try
             {
                 var serializedContent = JsonConvert.SerializeObject(requestContent);
                 var queueItem = new Models.GatewayQueueItem { ID = Guid.NewGuid(), JsonSerializedRequestContent = serializedContent, QueuedDateTime = DateTime.Now };
-                _queueItemRepository.Insert(queueItem);
+                await _queueItemRepository.InsertAsync(queueItem);
 
                 // Always attempt to sync with the MWF Mobile Gateway service whenever items are added to the queue (providing the GatewayQueueTimerService has been started)
-                Task.Run(async () => await UploadQueueAsync());
+                await UploadQueueAsync();
             }
             catch (Exception ex)
             {
@@ -125,18 +125,16 @@ namespace MWF.Mobile.Core.Services
             }
 
         }
-        public object queuelock = new object();
+
         public async Task UploadQueueAsync()
         {
-                try
-                {
-                    await SubmitQueueAsync();
-                    await _loggingService.UploadLoggedEventsAsync();
-                }
-                catch (Exception ex)
-                {
-                    _loggingService.LogEvent(ex);
-                }
+            try {
+                await SubmitQueueAsync();
+                await _loggingService.UploadLoggedEventsAsync();
+            }catch(Exception ex)
+            {
+                _loggingService.LogEvent(ex);
+            }
         }
 
         private async Task SubmitQueueAsync()
@@ -164,13 +162,8 @@ namespace MWF.Mobile.Core.Services
                     {
                         var submitted = true;
 
-
-                        if (await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent))
-                            _queueItemRepository.Delete(queuedItem);
-                        else
-                            //TODO: write failure to error log or report in some other way?
-                            submitted = false;
-
+                        await this.ServiceCallAsync(queuedItem.JsonSerializedRequestContent);
+                        await _queueItemRepository.DeleteAsync(queuedItem);
 
                         //TODO: should we attempt remaining items if one fails or bail out at this point?
                         if (!submitted)

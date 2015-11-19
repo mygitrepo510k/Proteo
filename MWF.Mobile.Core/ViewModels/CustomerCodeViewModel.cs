@@ -206,21 +206,21 @@ namespace MWF.Mobile.Core.ViewModels
                 if (verbProfile != null) 
                     verbProfiles.Add(verbProfile);
             }          
-
-            _dataService.RunInTransaction( () =>
+       
+            await _dataService.RunInTransactionAsync( async c => 
             {
-                var connection = _dataService.GetDBConnection();
+
                 //TODO: Store the customer title? Need to get the customer title from somewhere.
-                _customerRepository.Insert(new Customer() { ID = Guid.NewGuid(), CustomerCode = CustomerCode }, connection);
-                _deviceRepository.Insert(device, connection);
-                _verbProfileRepository.Insert(verbProfiles, connection);
-                _applicationProfileRepository.Insert(applicationProfile, connection);
-                _driverRepository.Insert(drivers, connection);
+                await _customerRepository.InsertAsync(new Customer() { ID = Guid.NewGuid(), CustomerCode = CustomerCode }, c);
+                await _deviceRepository.InsertAsync(device, c);
+                await _verbProfileRepository.InsertAsync(verbProfiles, c);
+                await _applicationProfileRepository.InsertAsync(applicationProfile, c);
+                await _driverRepository.InsertAsync(drivers, c);
                 //TODO: relate Vehicles to VehicleViews?  Are VehicleViews actually used for anything within the app?
-                _vehicleRepository.Insert(vehicles, connection);
-                _trailerRepository.Insert(trailers, connection);
-                _safetyProfileRepository.Insert(safetyProfiles, connection);
-                _configRepository.Insert(config, connection);
+                await _vehicleRepository.InsertAsync(vehicles, c);
+                await _trailerRepository.InsertAsync(trailers, c);
+                await _safetyProfileRepository.InsertAsync(safetyProfiles, c);
+                await _configRepository.InsertAsync(config, c);
             });
 
             //TODO: call fwRegisterDevice - what does this actually do?
@@ -228,17 +228,17 @@ namespace MWF.Mobile.Core.ViewModels
             return true;
         }
 
-        private void ClearAllData()
+        private async void ClearAllData()
         {
-            _customerRepository.DeleteAll();
-            _deviceRepository.DeleteAll();
-            _verbProfileRepository.DeleteAll();
-            _applicationProfileRepository.DeleteAll();
-            _driverRepository.DeleteAll();
-            _vehicleRepository.DeleteAll();
-            _trailerRepository.DeleteAll();
-            _safetyProfileRepository.DeleteAll();
-            _configRepository.DeleteAll();
+            await _customerRepository.DeleteAllAsync();
+            await _deviceRepository.DeleteAllAsync();
+            await _verbProfileRepository.DeleteAllAsync();
+            await _applicationProfileRepository.DeleteAllAsync();
+            await _driverRepository.DeleteAllAsync();
+            await _vehicleRepository.DeleteAllAsync();
+            await _trailerRepository.DeleteAllAsync();
+            await _safetyProfileRepository.DeleteAllAsync();
+            await _configRepository.DeleteAllAsync();
         }
 
     }

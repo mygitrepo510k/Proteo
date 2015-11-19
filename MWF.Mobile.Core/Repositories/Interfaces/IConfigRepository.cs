@@ -9,6 +9,6 @@ namespace MWF.Mobile.Core.Repositories
 {
     public interface IConfigRepository : IRepository<MWFMobileConfig>
     {
-        MWFMobileConfig Get();
+        Task<MWFMobileConfig> Get();
     }
 }

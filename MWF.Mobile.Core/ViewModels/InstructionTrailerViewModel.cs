@@ -112,7 +112,7 @@ namespace MWF.Mobile.Core.ViewModels
                         await UpdateSafetyProfilesAsync();
 
                         applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
-                        _applicationProfileRepository.Update(applicationProfile);
+                        await _applicationProfileRepository.UpdateAsync(applicationProfile);
                     }
                 }
                 finally

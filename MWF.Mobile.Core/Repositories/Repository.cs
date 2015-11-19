@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using SQLite.Net.Attributes;
 using MWF.Mobile.Core.Extensions;
-using MWF.Mobile.Core.Helpers;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Attributes;
 using MWF.Mobile.Core.Services;
@@ -34,14 +29,14 @@ namespace MWF.Mobile.Core.Repositories
         #endregion
 
         #region IRepository<T> Members
-        
+
         public async virtual Task DeleteAllAsync(SQLiteAsyncConnection transactionConnection)
         {
             SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
-                await _dataService.RunInTransactionAsync(async c =>
-                {
-                    await DeleteAllRecursiveAsync(typeof(T), c);
-                });
+            await _dataService.RunInTransactionAsync(async c =>
+            {
+                await DeleteAllRecursiveAsync(typeof(T), c);
+            });
         }
 
         public async virtual Task DeleteAllAsync()
@@ -54,12 +49,12 @@ namespace MWF.Mobile.Core.Repositories
         {
             SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
 
-            
-                await _dataService.RunInTransactionAsync(async c =>
-                {
-                   await DeleteRecursiveAsync(entity, c);
-                });
-         }
+
+            await _dataService.RunInTransactionAsync(async c =>
+            {
+                await DeleteRecursiveAsync(entity, c);
+            });
+        }
 
         public async virtual Task DeleteAsync(T entity)
         {
@@ -73,9 +68,9 @@ namespace MWF.Mobile.Core.Repositories
             List<T> entities = null;
 
             SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
-                entities = await connection.Table<T>().ToListAsync();
-                if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entities, connection);
-           
+            entities = await connection.Table<T>().ToListAsync();
+            if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entities, connection);
+
             return entities;
         }
 
@@ -91,11 +86,11 @@ namespace MWF.Mobile.Core.Repositories
 
             SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
 
-                entity = connection.Table<T>().Where(e => e.ID == ID).FirstAsync().Result;
+            entity = connection.Table<T>().Where(e => e.ID == ID).FirstAsync().Result;
 
-                if (entity != null)
-                    if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entity, connection);
-            
+            if (entity != null)
+                if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entity, connection);
+
             return entity;
         }
 
@@ -105,12 +100,6 @@ namespace MWF.Mobile.Core.Repositories
         {
             return await GetByIDAsync(ID, null);
         }
-
-
-
-        #endregion
-
-        #region  IRepository Async Methods
         public async virtual Task InsertAsync(IEnumerable<T> entities, SQLiteAsyncConnection transactionConnection)
         {
 
@@ -128,7 +117,7 @@ namespace MWF.Mobile.Core.Repositories
         {
 
             SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
-            await InsertRecursiveAsync (entity, connection);
+            await InsertRecursiveAsync(entity, connection);
         }
 
         public async virtual Task InsertAsync(IEnumerable<T> entities)
@@ -152,7 +141,7 @@ namespace MWF.Mobile.Core.Repositories
                 DoRecursiveTreeAction(entity, relationshipProperty, async (parent, child) =>
                 {
                     SetForeignKeyOnChild(parent, child);
-                   await  InsertRecursiveAsync(child, connection);
+                    await InsertRecursiveAsync(child, connection);
                 });
             }
         }
@@ -180,16 +169,13 @@ namespace MWF.Mobile.Core.Repositories
             await UpdateAsync(entity, null);
         }
 
-        #endregion
-
-        #region Private Properties
 
         #endregion
 
         #region Private Methods
 
 
-       
+
 
 
         /// <summary>
@@ -205,7 +191,7 @@ namespace MWF.Mobile.Core.Repositories
             {
                 DoRecursiveTreeAction(entity, relationshipProperty, async (parent, child) =>
                 {
-                   await DeleteRecursiveAsync(child, connection);
+                    await DeleteRecursiveAsync(child, connection);
                 });
 
             }

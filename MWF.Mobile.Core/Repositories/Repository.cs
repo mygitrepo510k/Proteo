@@ -8,6 +8,7 @@ using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Attributes;
 using MWF.Mobile.Core.Services;
 using SQLite.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using SQLite.Net.Async;
 
@@ -68,6 +69,7 @@ namespace MWF.Mobile.Core.Repositories
             List<T> entities = null;
 
             SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+
             entities = await connection.Table<T>().ToListAsync();
             if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entities, connection);
 
@@ -243,7 +245,7 @@ namespace MWF.Mobile.Core.Repositories
                 object childIdentifyingPropertyValue = relationshipProperty.GetIdentifyingPropertyValueOfChildRelation();
 
 
-                IList children = await GetChildren(parent, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
+                IList children = await GetChildren(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
 
                 if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
                 {
@@ -325,11 +327,9 @@ namespace MWF.Mobile.Core.Repositories
 
         //}
 
-        private async Task<IList<T>> GetChildren(IBlueSphereEntity parent, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteAsyncConnection connection)
+        private async Task<IList> GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteAsyncConnection connection)
         {
-            // var t = Activator.CreateInstance<childType>();
-            //TableMapping tableMapping =await connection.GetMappingAsync();
-            var childType = typeof(T);
+            TableMapping tableMapping = await connection.GetMappingAsync(childType);
 
             string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
                                                                             childType.GetForeignKeyName(parent.GetType()));
@@ -338,32 +338,29 @@ namespace MWF.Mobile.Core.Repositories
             {
                 query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
             }
-            //var listType = typeof(List<>);
-            //var constructedListType = listType.MakeGenericType(childType);
-            //var queryResults = Activator.CreateInstance(constructedListType);
-            //var t = Activator.CreateInstance(childType);
 
-            List<T> queryResults = new List<T>();
+            List<object> queryResults = null;
+
 
             if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
             {
-                queryResults = await connection.QueryAsync<T>(query, parent.ID, childIdentifyingPropertyValue);
+                queryResults = await connection.QueryAsync(CancellationToken.None, tableMapping, query, parent.ID, childIdentifyingPropertyValue);
             }
             else
             {
-                queryResults = await connection.QueryAsync<T>(query, parent.ID);
+                queryResults = await connection.QueryAsync(CancellationToken.None, tableMapping, query, parent.ID);
             }
 
 
-            //// Create a typed generic list we can assign back to parent element
-            //IList genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
+            // Create a typed generic list we can assign back to parent element
+            IList genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
 
-            //foreach (object item in queryResults)
-            //{
-            //    genericList.Add(item);
-            //}
+            foreach (object item in queryResults)
+            {
+                genericList.Add(item);
+            }
 
-            return queryResults;
+            return genericList;
 
         }
 

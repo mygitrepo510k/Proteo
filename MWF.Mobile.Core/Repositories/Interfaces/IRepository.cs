@@ -14,8 +14,9 @@ namespace MWF.Mobile.Core.Repositories
         Task DeleteAsync(T entity, SQLiteAsyncConnection connection);
         Task DeleteAsync(T entity);
         Task DeleteAllAsync(SQLiteAsyncConnection connection);
-
         Task DeleteAllAsync();
+
+        IEnumerable<T> GetAll();
         Task<IEnumerable<T>> GetAllAsync();
         Task<IEnumerable<T>> GetAllAsync(SQLiteAsyncConnection connection);
 

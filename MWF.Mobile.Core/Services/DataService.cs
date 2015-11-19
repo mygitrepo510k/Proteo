@@ -21,6 +21,9 @@ namespace MWF.Mobile.Core.Services
 
         private const string DBNAME = "db.sql";
         //private bool disposed = false; 
+        private SQLite.Net.SQLiteConnectionString _connectionString = null;
+        private string _path = "";
+        private SQLitePlatformGeneric _platform = null;
 
         #endregion
 
@@ -31,9 +34,8 @@ namespace MWF.Mobile.Core.Services
             _path = Path.Combine(_deviceInfo.DatabasePath, DBNAME);
             _platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
             _connectionString = new SQLiteConnectionString(_path, true);
-            _connectionPool = new SQLiteConnectionPool(_platform);
 
-            
+
             CreateTablesIfRequired();
         }
 
@@ -45,45 +47,33 @@ namespace MWF.Mobile.Core.Services
         {
             var conn = this.GetDBConnection();
             conn.RunInTransaction(action);
-            
+
         }
 
         public async Task RunInTransactionAsync(Action<SQLiteAsyncConnection> action)
         {
             var conn = this.GetAsyncDBConnection();
-            action(conn);
+            await Task.Run(()=>action(conn));
 
         }
         #endregion
 
         #region Properties
-        private SQLiteConnectionPool _connectionPool = null;
-        private SQLite.Net.SQLiteConnectionString _connectionString = null;
-        private string _path = "";
-        private SQLitePlatformGeneric _platform = null;
-
+       
         public SQLite.Net.SQLiteConnection GetDBConnection()
         {
-            var _platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
-            var _conn = new SQLiteConnection(_platform, _path, SQLite.Net.Interop.SQLiteOpenFlags.ReadWrite | SQLite.Net.Interop.SQLiteOpenFlags.Create | SQLite.Net.Interop.SQLiteOpenFlags.FullMutex);
+            var _conn = new SQLiteConnection(_platform, _path, SQLite.Net.Interop.SQLiteOpenFlags.ReadWrite | SQLite.Net.Interop.SQLiteOpenFlags.Create | SQLite.Net.Interop.SQLiteOpenFlags.FullMutex);            
             return _conn;
-           
+
         }
 
 
-        SQLiteConnectionWithLock _connectionWithLock = null;
-        SQLiteAsyncConnection _connectionAsync;
         public SQLiteAsyncConnection GetAsyncDBConnection()
         {
-            if (_connectionWithLock == null)
-            {
-                SQLiteConnectionString connString = new SQLiteConnectionString(_path, true);
-                _connectionWithLock = new SQLiteConnectionWithLock(_platform, connString);
-                _connectionAsync = new SQLiteAsyncConnection(() => _connectionWithLock);
-            }
-            return _connectionAsync;
+            return new SQLiteAsyncConnection(() => new SQLiteConnectionWithLock(_platform, _connectionString));
+            
         }
-        
+
 
         public string DatabasePath
         {
@@ -92,7 +82,7 @@ namespace MWF.Mobile.Core.Services
                 return GetDBConnection().DatabasePath;
             }
         }
-        
+
         #endregion
 
         #region Private Methods

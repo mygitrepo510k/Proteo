@@ -11,6 +11,7 @@ using SQLite.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using SQLite.Net.Async;
+using System.Linq;
 
 namespace MWF.Mobile.Core.Repositories
 {
@@ -76,6 +77,8 @@ namespace MWF.Mobile.Core.Repositories
             return entities;
         }
 
+       
+
         public async virtual Task<IEnumerable<T>> GetAllAsync()
         {
             return await GetAllAsync(null);
@@ -87,8 +90,9 @@ namespace MWF.Mobile.Core.Repositories
             T entity = null;
 
             SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+            var data = await connection.Table<T>().ToListAsync();
 
-            entity = connection.Table<T>().Where(e => e.ID == ID).FirstAsync().Result;
+            entity = data.Where(e => e.ID == ID).FirstOrDefault() ;
 
             if (entity != null)
                 if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entity, connection);
@@ -115,6 +119,87 @@ namespace MWF.Mobile.Core.Repositories
 
         }
 
+        public virtual IEnumerable<T> GetAll(SQLiteConnection transactionConnection)
+        {
+
+            List<T> entities = null;
+
+            SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
+            try
+            {
+                entities = connection.Table<T>().ToList();
+                if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities, connection);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (transactionConnection == null)
+                    connection.Close();
+            }
+
+            return entities;
+        }
+
+        public virtual IEnumerable<T> GetAll()
+        {
+            return GetAll(null);
+        }
+
+        /// <summary>
+        /// For the parent entity pulled from a table, populates any children
+        /// as labelled with the ChildRelationship. 
+        /// </summary>
+        /// <param name="parent"></param>
+        protected void PopulateChildrenRecursive(IBlueSphereEntity parent, SQLiteConnection connection)
+        {
+
+            foreach (var relationshipProperty in parent.GetType().GetChildRelationProperties())
+            {
+                Type childType = relationshipProperty.GetTypeOfChildRelation();
+                string childIdentifyingPropertyName = relationshipProperty.GetIdentifyingPropertyNameOfChildRelation();
+                object childIdentifyingPropertyValue = relationshipProperty.GetIdentifyingPropertyValueOfChildRelation();
+                IList children = GetChildren(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
+
+                if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
+                {
+
+                    Debug.Assert(children.Count == 1);
+                    relationshipProperty.SetValue(parent, children[0]);
+                }
+                else if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToZeroOrOne)
+                {
+                    Debug.Assert(children.Count <= 1);
+
+                    if (children.Count == 1)
+                        relationshipProperty.SetValue(parent, children[0]);
+                }
+                else
+                {
+                    relationshipProperty.SetValue(parent, children);
+                }
+
+                PopulateChildrenRecursive(children, connection);
+
+            }
+        }
+
+
+
+        /// <summary>
+        /// Overload of PopulateChildrenRecursive that deals with
+        /// a collection of parents
+        /// </summary>
+        /// <param name="parents"></param>
+        protected void PopulateChildrenRecursive(IEnumerable parents, SQLiteConnection connection)
+        {
+            foreach (var parent in parents)
+            {
+                PopulateChildrenRecursive(parent as IBlueSphereEntity, connection);
+            }
+        }
         public async virtual Task InsertAsync(T entity, SQLiteAsyncConnection transactionConnection)
         {
 
@@ -364,6 +449,42 @@ namespace MWF.Mobile.Core.Repositories
 
         }
 
+        // Gets the children of the specfied type for specified parent using foreign key mappings
+        private IList GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteConnection connection)
+        {
+            TableMapping tableMapping = connection.GetMapping(childType);
+
+            string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
+                                                                            childType.GetForeignKeyName(parent.GetType()));
+
+            if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
+            {
+                query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
+            }
+
+            List<object> queryResults;
+
+            if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
+            {
+                queryResults = connection.Query(tableMapping, query, parent.ID, childIdentifyingPropertyValue);
+            }
+            else
+            {
+                queryResults = connection.Query(tableMapping, query, parent.ID);
+            }
+
+
+            // Create a typed generic list we can assign back to parent element
+            IList genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
+
+            foreach (object item in queryResults)
+            {
+                genericList.Add(item);
+            }
+
+            return genericList;
+
+        }
 
         // Deletes all items from the table associated with the specified type
         private void DeleteAllFromTable(Type type, SQLiteConnection connection)

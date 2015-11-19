@@ -65,7 +65,12 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _navData.Data.OnSiteDateTime = OnSiteDateTime;
             _navData.Data.CompleteDateTime = CompleteDateTime;
-            
+            var additionalInstructions = _navData.GetAdditionalInstructions();
+            foreach (var instruction in additionalInstructions)
+            {
+                instruction.OnSiteDateTime = OnSiteDateTime;
+                instruction.CompleteDateTime = CompleteDateTime;
+            }
             _navigationService.MoveToNext(_navData);
         }
 

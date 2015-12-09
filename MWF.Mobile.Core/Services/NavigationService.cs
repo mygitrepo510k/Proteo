@@ -29,8 +29,8 @@ namespace MWF.Mobile.Core.Services
 
         #region Private Members
 
-        private Dictionary<Tuple<Type, Type>, Action<NavData>> _forwardNavActionDictionary;
-        private Dictionary<Tuple<Type, Type>, Action<NavData>> _backwardNavActionDictionary;
+        private Dictionary<Tuple<Type, Type>, Func<NavData, Task>> _forwardNavActionDictionary;
+        private Dictionary<Tuple<Type, Type>, Func<NavData, Task>> _backwardNavActionDictionary;
         private Dictionary<Guid, Tuple<Object, Dictionary<string, Object>>> _navDataDictionary;
         private NavData _currentNavData;
 
@@ -66,8 +66,8 @@ namespace MWF.Mobile.Core.Services
             IGatewayQueuedService gatewayQueuedService, 
             IGpsService gpsService)
         {
-            _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<NavData>>();
-            _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Action<NavData>>();
+            _forwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Func<NavData, Task>>();
+            _backwardNavActionDictionary = new Dictionary<Tuple<Type, Type>, Func<NavData, Task>>();
             _navDataDictionary = new Dictionary<Guid, Tuple<object, Dictionary<string, object>>>();
             _presenter = presenter;
 
@@ -105,7 +105,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public void InsertCustomNavAction<T1, T2>(Action<NavData> action)
+        public void InsertCustomNavAction<T1, T2>(Func<NavData, Task> action)
             where T1 : BaseActivityViewModel
             where T2 : BaseFragmentViewModel
         {
@@ -125,7 +125,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public void InsertCustomBackNavAction<T1, T2>(Action<NavData> action)
+        public void InsertCustomBackNavAction<T1, T2>(Func<NavData, Task> action)
             where T1 : BaseActivityViewModel
             where T2 : BaseFragmentViewModel
         {
@@ -161,7 +161,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public Action<NavData> GetNavAction<T1, T2>()
+        public Func<NavData, Task> GetNavAction<T1, T2>()
             where T1 : BaseActivityViewModel
             where T2 : BaseFragmentViewModel
         {
@@ -170,7 +170,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public Action<NavData> GetNavAction(Type activityType, Type fragmentType)
+        public Func<NavData, Task> GetNavAction(Type activityType, Type fragmentType)
         {
             if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityViewModel, BaseFragmentViewModel");
 
@@ -179,7 +179,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public Action<NavData> GetBackNavAction(Type activityType, Type fragmentType)
+        public Func<NavData, Task> GetBackNavAction(Type activityType, Type fragmentType)
         {
             if (!AreSourceTypesValid(activityType, fragmentType)) throw new ArgumentException("View model types must derive from BaseActivityViewModel, BaseFragmentViewModel");
 
@@ -191,18 +191,18 @@ namespace MWF.Mobile.Core.Services
 
         #region INavigationService
 
-        public void MoveToNext()
+        public Task MoveToNext()
         {
 
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action<NavData> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
+            Func<NavData,Task> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownNavigationMappingException(currentActivityType, currentFragmentType);
             _currentNavData = null;
 
-            navAction.Invoke(null);
+            return navAction.Invoke(null);
 
         }
 
@@ -220,65 +220,63 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public void MoveToNext(NavData navData)
+        public Task MoveToNext(NavData navData)
         {
 
             if (navData == null)
             {
-                MoveToNext();
-                return;
+                return MoveToNext();
             }
 
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action<NavData> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
+            Func<NavData, Task> navAction = this.GetNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownNavigationMappingException(currentActivityType, currentFragmentType);
 
             AddNavDataToDictionary(navData);
             _currentNavData = navData;
 
-            navAction.Invoke(navData);
+            return navAction.Invoke(navData);
 
         }
 
 
-        public void GoBack()
+        public Task GoBack()
         {
 
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action<NavData> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
+            Func<NavData, Task> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownBackNavigationMappingException(currentActivityType, currentFragmentType);
             _currentNavData = null;
 
-            navAction.Invoke(null);
+            return navAction.Invoke(null);
 
         }
 
-        public void GoBack(NavData navData)
+        public Task GoBack(NavData navData)
         {
 
             if (navData == null)
             {
-                GoBack();
-                return;
+                return GoBack();
             }
 
             Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
             Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
 
-            Action<NavData> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
+            Func<NavData, Task> navAction = this.GetBackNavAction(currentActivityType, currentFragmentType);
 
             if (navAction == null) throw new UnknownBackNavigationMappingException(currentActivityType, currentFragmentType);
 
             AddNavDataToDictionary(navData);
             _currentNavData = navData;
 
-            navAction.Invoke(navData);
+            return navAction.Invoke(navData);
 
         }
 
@@ -291,23 +289,27 @@ namespace MWF.Mobile.Core.Services
             return BackNavActionExists(currentActivityType, currentFragmentType);
         }
 
-        public void GoToManifest()
+        public Task GoToManifest()
         {
             this.ShowViewModel<ManifestViewModel>();
+            return Task.FromResult(0);
         }
 
-        public void Logout_Action(NavData navData)
+        public Task Logout_Action(NavData navData)
         {
+            var _vehicleSafetyProfile = VehicleSafetyProfile().Result;
+            var _trailerSafetyProfile = TrailerSafetyProfile().Result;
 
-            if ((VehicleSafetyProfile != null && VehicleSafetyProfile.DisplayAtLogoff)
-                || (TrailerSafetyProfile != null && TrailerSafetyProfile.DisplayAtLogoff))
+            if ((_vehicleSafetyProfile!= null && _vehicleSafetyProfile.DisplayAtLogoff)
+                || (_trailerSafetyProfile!= null && _trailerSafetyProfile.DisplayAtLogoff))
             {
                 _inLogoutSafetyCheck = true;
                 this.ShowViewModel<SafetyCheckViewModel>();
+                return Task.FromResult(0);
             }
             else
             {
-                DoLogout(navData);
+                return DoLogout(navData);
             }
         }
 
@@ -318,11 +320,11 @@ namespace MWF.Mobile.Core.Services
             _infoService.LoggedInDriver.IsLicensed = false;
             await _repositories.DriverRepository.UpdateAsync(_infoService.LoggedInDriver);
 
-            DoLogout(this.CurrentNavData);
+            await DoLogout(this.CurrentNavData);
 
         }
 
-        private void DoLogout(NavData navData)
+        private Task DoLogout(NavData navData)
         {
             // Stop the gateway polling service before we "logout" the user.
             _gatewayPollingService.StopPollingTimer();
@@ -332,7 +334,7 @@ namespace MWF.Mobile.Core.Services
             _infoService.CurrentTrailer = null;
             _infoService.LoggedInDriver = null;
 
-            MoveTo(typeof(StartupViewModel), navData);
+            return MoveTo(typeof(StartupViewModel), navData);
         }
 
         public void PopulateNavData(NavData navData)
@@ -357,28 +359,28 @@ namespace MWF.Mobile.Core.Services
         #region Private Properties
 
 
-        private SafetyProfile VehicleSafetyProfile
+        private async Task<SafetyProfile> VehicleSafetyProfile()
         {
-            get
-            {
-                return _repositories.SafetyProfileRepository.GetAllAsync().ContinueWith(x=> x.Result.Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault()).Result;
-            }
+            var data = await _repositories.SafetyProfileRepository.GetAllAsync();
+            var retVal = data.SingleOrDefault(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink);
+            return retVal;
+        
         }
 
-        private SafetyProfile TrailerSafetyProfile
+        private async Task<SafetyProfile> TrailerSafetyProfile()
         {
-
-            get
-            {
-                return GetTrailerSafetyProfile(_infoService.CurrentTrailer);
-            }
-
+            return await GetTrailerSafetyProfile(_infoService.CurrentTrailer);
+         
         }
 
-        private SafetyProfile GetTrailerSafetyProfile(Models.Trailer trailer)
+        private async Task<SafetyProfile> GetTrailerSafetyProfile(Models.Trailer trailer)
         {
+            if (trailer == null)
+                return null;
+            var data = await _repositories.SafetyProfileRepository.GetAllAsync();
+            var retVal = data.SingleOrDefault(spv => spv.IntLink == trailer.SafetyCheckProfileIntLink);
 
-            return (trailer != null) ? _repositories.SafetyProfileRepository.GetAllAsync().ContinueWith(x=> x.Result.Where(spv => spv.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault()).Result : null;
+            return retVal;
 
         }
 
@@ -391,14 +393,16 @@ namespace MWF.Mobile.Core.Services
 
         #region Private Methods
 
-        private void MoveTo(Type type, NavData navData)
+        private Task MoveTo(Type type, NavData navData)
         {
             this.ShowViewModel(type, navData);
+            return Task.FromResult(0);
         }
 
-        private void MoveBackTo(Type type)
+        private Task MoveBackTo(Type type)
         {
             ChangePresentation(new Presentation.CloseUpToViewPresentationHint(type));
+            return Task.FromResult(0);
         }
 
         private Tuple<Type, Type> CreateKey<T1, T2>()
@@ -413,9 +417,9 @@ namespace MWF.Mobile.Core.Services
             return Tuple.Create<Type, Type>(activityType, fragmentType);
         }
 
-        private Action<NavData> GetNavActionWithKey(Dictionary<Tuple<Type, Type>, Action<NavData>> dictionary, Tuple<Type, Type> key)
+        private Func<NavData, Task> GetNavActionWithKey(Dictionary<Tuple<Type, Type>, Func<NavData, Task>> dictionary, Tuple<Type, Type> key)
         {
-            Action<NavData> action = null;
+            Func<NavData, Task> action = null;
             dictionary.TryGetValue(key, out action);
             return action;
         }
@@ -478,7 +482,7 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Once the user confirms the prompt it updates the instruction to complete and then sends off the Complete chunk to Bluesphere.
         /// </summary>
-        private void CompleteInstruction(NavData<MobileData> navData)
+        private Task CompleteInstruction(NavData<MobileData> navData)
         {
             Mvx.Resolve<ICustomUserInteraction>().Confirm("Do you wish to complete?", isConfirmed =>
             {
@@ -488,6 +492,8 @@ namespace MWF.Mobile.Core.Services
                 }
 
             }, "Complete Instruction", "Confirm", "Cancel");
+
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -512,18 +518,18 @@ namespace MWF.Mobile.Core.Services
             this.ShowViewModel<ManifestViewModel>();
         }
 
-        private void DriverLogIn()
+        private async Task DriverLogIn()
         {
             DriverActivity currentDriver = new DriverActivity(_infoService.LoggedInDriver, _infoService.CurrentVehicle, Enums.DriverActivity.LogOn);
             currentDriver.Smp = _gpsService.GetSmpData(Enums.ReportReason.DriverLogOn);
 
             _gatewayQueuedService.AddToQueue("fwSetDriverActivity", currentDriver);
 
-            this.StartLoginSessionTimer();
+            await this.StartLoginSessionTimer();
             _gatewayPollingService.StartPollingTimer();
         }
 
-        private async void StartLoginSessionTimer()
+        private async Task StartLoginSessionTimer()
         {
             if (_loginSessionTimer == null)
             {
@@ -635,20 +641,21 @@ namespace MWF.Mobile.Core.Services
 
         #region Custom Mapping Actions
 
-        private void CloseApplication(Object parameters)
+        private Task CloseApplication(Object parameters)
         {
             _closeApplication.CloseApp();
+            return Task.FromResult(0);
         }
 
-        public void Passcode_CustomAction(NavData navData)
+        public Task Passcode_CustomAction(NavData navData)
         {
             if (navData != null)
             {
-                MoveTo(typeof(DiagnosticsViewModel), navData);
+                return MoveTo(typeof(DiagnosticsViewModel), navData);
             }
             else
             {
-                MoveTo(typeof(VehicleListViewModel), navData);
+                return MoveTo(typeof(VehicleListViewModel), navData);
             }
         }
 
@@ -657,22 +664,25 @@ namespace MWF.Mobile.Core.Services
         /// Safety Check screen goes to main activity (manifest) if there are no profiles
         /// or odometer screen if odometer reading is required, safety check signature screen otherwise
         /// </summary>
-        public void SafetyCheck_CustomAction(NavData navData)
+        public async Task SafetyCheck_CustomAction(NavData navData)
         {
+            var _vehicleSafetyProfile = await VehicleSafetyProfile();
+            var _trailerSafetyProfile = await TrailerSafetyProfile();
 
-            if (VehicleSafetyProfile == null && TrailerSafetyProfile == null)
+            if (_vehicleSafetyProfile == null && _trailerSafetyProfile == null)
             {
                 if (_presenter.CurrentActivityViewModel.GetType().Equals(typeof(ViewModels.StartupViewModel)))
-                    this.DriverLogIn();
+                    await this.DriverLogIn();
 
-                MoveTo(typeof(MainViewModel), navData);
+                await MoveTo(typeof(MainViewModel), navData);
             }
             else
             {
-                if (VehicleSafetyProfile != null && VehicleSafetyProfile.OdometerRequired)
+                if (_vehicleSafetyProfile != null && _vehicleSafetyProfile.OdometerRequired)
                     this.ShowViewModel<OdometerViewModel>();
                 else
                     this.ShowViewModel<SafetyCheckSignatureViewModel>();
+
             }
 
         }
@@ -681,7 +691,7 @@ namespace MWF.Mobile.Core.Services
         /// Signature screen goes back to driver pass code screen if we have any safety check failures
         /// and to main acticity (manifest) otherwise
         /// </summary>
-        public void Signature_CustomAction_Login(NavData navData)
+        public Task Signature_CustomAction_Login(NavData navData)
         {
 
             // commit safety check data to repositories and bluesphere
@@ -689,14 +699,14 @@ namespace MWF.Mobile.Core.Services
 
             if (SafetyCheckStatus == Enums.SafetyCheckStatus.Failed)
             {
-                MoveTo(typeof(StartupViewModel), navData);
+                return MoveTo(typeof(StartupViewModel), navData);
             }
             else
             {
                 if (_presenter.CurrentActivityViewModel.GetType().Equals(typeof(ViewModels.StartupViewModel)))
                     this.DriverLogIn();
 
-                MoveTo(typeof(MainViewModel), navData);
+                return MoveTo(typeof(MainViewModel), navData);
             }
 
         }
@@ -705,7 +715,7 @@ namespace MWF.Mobile.Core.Services
         /// Commits the safety check and does the logout if we were doing a logout sfaety check
         ///  Otherwise this must have have been a safety check from the sidebar so go back to manifestscreen
         /// </summary>
-        public void Signature_CustomAction_Sidebar(NavData navData)
+        public Task Signature_CustomAction_Sidebar(NavData navData)
         {
             // commit safety check data to repositories and bluesphere
             _safetyCheckService.CommitSafetyCheckData();
@@ -719,13 +729,15 @@ namespace MWF.Mobile.Core.Services
             {
                 this.ShowViewModel<ManifestViewModel>();
             }
+
+            return Task.FromResult(0);
         }
 
         /// <summary>
         /// Manifest screen goes back to to instruction screen if we get a mobile data nav item
         /// and to main acticity (manifest) otherwise
         /// </summary>
-        public void Manifest_CustomAction(NavData navData)
+        public Task Manifest_CustomAction(NavData navData)
         {
 
             if (navData is NavData<MobileData>)
@@ -741,6 +753,7 @@ namespace MWF.Mobile.Core.Services
 
 
             }
+            return Task.FromResult(0);
 
         }
 
@@ -750,7 +763,7 @@ namespace MWF.Mobile.Core.Services
         /// If we're getting a mobile data then move on to InstructionOnSiteViewModel
         /// </summary>
         /// <param name="parameters"></param>
-        public void Instruction_CustomAction(NavData navData)
+        public Task Instruction_CustomAction(NavData navData)
         {
 
             if (navData is NavData<Models.Instruction.Trailer>)
@@ -774,6 +787,8 @@ namespace MWF.Mobile.Core.Services
                     ShowViewModel<InstructionOnSiteViewModel>(mobileDataNav);
                 }
             }
+            return Task.FromResult(0);
+
         }
 
         /// <summary>
@@ -782,7 +797,7 @@ namespace MWF.Mobile.Core.Services
         /// else if trailer selection is not enabled and the bypass comment screen is enabled 
         /// and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public async void InstructionOnSite_CustomAction(NavData navData)
+        public async Task InstructionOnSite_CustomAction(NavData navData)
         {
         if (navData is NavData<MobileData>)
             {
@@ -859,6 +874,8 @@ namespace MWF.Mobile.Core.Services
                 //CompleteInstruction(mobileNavData);
 
             }
+
+            
         }
 
 
@@ -866,7 +883,7 @@ namespace MWF.Mobile.Core.Services
         /// Instruction trailer screen, if the bypass comment screen is not then enabled then will it redirect to comment screen.
         /// else if the bypass comment screen is enabled and if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public async void InstructionTrailer_CustomAction(NavData navData)
+        public async Task InstructionTrailer_CustomAction(NavData navData)
         {
 
             var mobileNavData = navData as NavData<MobileData>;
@@ -959,7 +976,7 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public async void TrailerSafetyCheck_CustomAction(NavData navData)
+        public async Task TrailerSafetyCheck_CustomAction(NavData navData)
         {
 
             var mobileNavData = navData as NavData<MobileData>;
@@ -992,7 +1009,7 @@ namespace MWF.Mobile.Core.Services
 
         }
 
-        private async void Barcode_CustomAction(NavData navData)
+        private async Task Barcode_CustomAction(NavData navData)
         {
             var mobileNavData = navData as NavData<MobileData>;
 
@@ -1033,7 +1050,7 @@ namespace MWF.Mobile.Core.Services
         /// the instruction screen or moves then onto the rest of the collection on site flow
         /// 
         /// </summary>
-        public async void InstructionSafetyCheckSignature_CustomAction(NavData navData)
+        public async Task InstructionSafetyCheckSignature_CustomAction(NavData navData)
         {
 
             var mobileNavData = navData as NavData<MobileData>;
@@ -1068,7 +1085,7 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        public async void InstructionClaused_CustomAction(NavData navData)
+        public async Task InstructionClaused_CustomAction(NavData navData)
         {
             var mobileNavData = navData as NavData<MobileData>;
 
@@ -1097,7 +1114,7 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Instruction comment screen, if either either name required or signature required are enabled then redirect to signature screen.
         /// </summary>
-        public void InstructionComment_CustomAction(NavData navData)
+        public Task InstructionComment_CustomAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
@@ -1111,53 +1128,58 @@ namespace MWF.Mobile.Core.Services
                    ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
                 {
                     this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
-                    return;
                 }
 
                 this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
 
 
             }
+
+            return Task.FromResult(0);
         }
         /// <summary>
         /// We always show this screen 
         /// </summary>
         /// <param name="navData"></param>
-        public void ConfirmTimes_CustomAction(NavData navData)
+        public Task ConfirmTimes_CustomAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
                 var mobileNavData = navData as NavData<MobileData>;
-                CompleteInstruction(mobileNavData);
+                return CompleteInstruction(mobileNavData);
             }
+            return Task.FromResult(0);
         }
 
         /// <summary>
         /// Going back from the instruction comment screen we should skip back to instruction on site
         /// so as to avoid going back through the select trailer/safety check workflow (note: collection only)
         /// </summary>
-        public void InstructionComment_CustomBackAction(NavData navData)
+        public Task InstructionComment_CustomBackAction(NavData navData)
         {
            ShowViewModel<InstructionOnSiteViewModel>(navData);
+            return Task.FromResult(0);
         }
 
         /// <summary>
         /// Instruction signature screen, complete instruction and go back to manifest screen
         /// </summary>
-        public void InstructionSignature_CustomAction(NavData navData)
+        public Task InstructionSignature_CustomAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
                 ShowViewModel<ConfirmTimesViewModel>(navData);
                 //CompleteInstruction(mobileNavData);
             }
+
+            return Task.FromResult(0);
         }
 
         /// <summary>
         /// Going back from the instruction signature screen we should skip back to instruction on site 
         /// so as to avoid going back through the select trailer/safety check workflow (note: collection only)
         /// </summary>
-        public void InstructionSignature_CustomBackAction(NavData navData)
+        public Task InstructionSignature_CustomBackAction(NavData navData)
         {
 
             if (navData.OtherData.IsDefined("VisitedCommentScreen"))
@@ -1168,10 +1190,12 @@ namespace MWF.Mobile.Core.Services
             {
                 ShowViewModel<InstructionOnSiteViewModel>(navData);
             }
+
+            return Task.FromResult(0);
           
         }
 
-        public void ConfirmTimes_CustomBackAction(NavData navData)
+        public Task ConfirmTimes_CustomBackAction(NavData navData)
         {
             var mobileNavData = navData as NavData<MobileData>;
             if (mobileNavData.Data.Order.Type == Enums.InstructionType.ProceedFrom || mobileNavData.Data.Order.Type == Enums.InstructionType.TrunkTo)
@@ -1188,11 +1212,12 @@ namespace MWF.Mobile.Core.Services
                 }
             }
 
+            return Task.FromResult(0);
         }
         /// <summary>
         /// Instruction TrunkTo/Proceed screens, completes the instruction and goes back to manifest screen
         /// </summary>
-        public async void InstructionTrunkProceed_CustomAction(NavData navData)
+        public async Task InstructionTrunkProceed_CustomAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
@@ -1225,7 +1250,7 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        private void Inbox_CustomAction(NavData navData)
+        private Task Inbox_CustomAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
@@ -1233,7 +1258,10 @@ namespace MWF.Mobile.Core.Services
 
                 this.ShowViewModel<MessageViewModel>(mobileNavData);
             }
+
+            return Task.FromResult(0);
         }
+
 
 
 
@@ -1242,16 +1270,18 @@ namespace MWF.Mobile.Core.Services
         #region CustomBackActions
 
 
-        public void SafetyCheck_CustomBackAction(NavData navData)
+        public Task SafetyCheck_CustomBackAction(NavData navData)
         {
             _inLogoutSafetyCheck = false;
             this.ShowViewModel<ManifestViewModel>();
+            return Task.FromResult(0);
         }
 
 
-        public void Instruction_CustomBackAction(NavData navData)
+        public Task Instruction_CustomBackAction(NavData navData)
         {
             this.ShowViewModel<ManifestViewModel>();
+            return Task.FromResult(0);
         }
 
 
@@ -1259,7 +1289,7 @@ namespace MWF.Mobile.Core.Services
         /// Order screen depending on the state of the instruction then it will go to the instruction on site screen if its
         /// Progress: Onsite, else it will go to the instruction screen the other times.
         /// </summary>
-        public void Order_CustomBackAction(NavData navData)
+        public Task Order_CustomBackAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
@@ -1278,18 +1308,21 @@ namespace MWF.Mobile.Core.Services
                         break;
                 }
             }
+
+            return Task.FromResult(0);
         }
 
-        public void InstructionOnSite_CustomBackAction(NavData navData)
+        public Task InstructionOnSite_CustomBackAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
                 var navMobileData = navData as NavData<MobileData>;
                 this.ShowViewModel<InstructionViewModel>(navMobileData);
             }
+            return Task.FromResult(0);
         }
 
-        public void SidebarNavigation_CustomAction(NavData navData)
+        public Task SidebarNavigation_CustomAction(NavData navData)
         {
             if (navData is NavData<MobileData>)
             {
@@ -1320,6 +1353,8 @@ namespace MWF.Mobile.Core.Services
             {
                 this.ShowViewModel<ManifestViewModel>();
             }
+
+            return Task.FromResult(0);
         }
 
         #endregion CustomBackActions

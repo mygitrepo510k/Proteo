@@ -94,7 +94,8 @@ namespace MWF.Mobile.Core.Repositories
         {
             List<MobileData> parentItems;
 
-            parentItems =  this.GetAllMessages(driverID).Result.Where(m => m.ProgressState != Enums.InstructionProgress.Complete).ToList();
+            var data = await this.GetAllMessages(driverID);
+            parentItems =  data.Where(m => m.ProgressState != Enums.InstructionProgress.Complete).ToList();
 
             return parentItems;
         }

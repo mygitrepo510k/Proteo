@@ -24,7 +24,7 @@ namespace MWF.Mobile.Core.Services
         private SQLite.Net.SQLiteConnectionString _connectionString = null;
         private string _path = "";
         private SQLitePlatformGeneric _platform = null;
-
+        private SQLiteConnectionPool _connectionPool = null;
         #endregion
 
         #region Construction
@@ -34,7 +34,7 @@ namespace MWF.Mobile.Core.Services
             _path = Path.Combine(_deviceInfo.DatabasePath, DBNAME);
             _platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
             _connectionString = new SQLiteConnectionString(_path, true);
-
+            _connectionPool = new SQLiteConnectionPool(_platform);
 
             CreateTablesIfRequired();
         }
@@ -70,8 +70,9 @@ namespace MWF.Mobile.Core.Services
 
         public SQLiteAsyncConnection GetAsyncDBConnection()
         {
-            return new SQLiteAsyncConnection(() => new SQLiteConnectionWithLock(_platform, _connectionString));
-            
+            //return new SQLiteAsyncConnection(() => new (_platform, _connectionString));
+            return new SQLiteAsyncConnection(() => _connectionPool.GetConnection(_connectionString));
+
         }
 
 

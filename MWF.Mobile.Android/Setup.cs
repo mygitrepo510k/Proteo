@@ -25,6 +25,7 @@ namespace MWF.Mobile.Android
         {
         }
 
+
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             HockeyApp.TraceWriter.WriteTrace(e.ExceptionObject);

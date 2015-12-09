@@ -61,7 +61,7 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion Properties
 
         #region Private Methods
-        private void AdvanceConfirmTimes()
+        private async Task AdvanceConfirmTimes()
         {
             _navData.Data.OnSiteDateTime = OnSiteDateTime;
             _navData.Data.CompleteDateTime = CompleteDateTime;
@@ -72,7 +72,7 @@ namespace MWF.Mobile.Core.ViewModels
                 instruction.CompleteDateTime = CompleteDateTime;
             }
             
-            _navigationService.MoveToNext(_navData);
+            await _navigationService.MoveToNext(_navData);
         }
 
         #endregion
@@ -111,7 +111,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_confirmTimesCommand = _confirmTimesCommand?? new MvxCommand(() => AdvanceConfirmTimes()));
+                return (_confirmTimesCommand = _confirmTimesCommand?? new MvxCommand(async () => await AdvanceConfirmTimes()));
             }
         }
 
@@ -134,7 +134,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                       await  _navigationService.GoToManifest();
                     }
                 }
             }

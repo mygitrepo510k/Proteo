@@ -8,6 +8,12 @@ namespace MWF.Mobile.Core.Models
 {
     public class SafetyCheckFaultType : IBlueSphereEntity
     {
+
+        public SafetyCheckFaultType()
+        {
+         
+        }
+
         [Unique]
         [PrimaryKey]
         [JsonProperty("@id")]

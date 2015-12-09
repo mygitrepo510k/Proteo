@@ -108,5 +108,10 @@ namespace MWF.Mobile.Core.Extensions
 
         }
 
+
+        public static  T CastbyExample<T>(object input)
+        {
+            return (T)input;
+        }
     }
 }

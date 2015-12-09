@@ -58,7 +58,7 @@ namespace MWF.Mobile.Core.Services
             return retVal;
         }
 
-        public void CommitSafetyCheckData(bool trailerOnly = false)
+        public Task CommitSafetyCheckData(bool trailerOnly = false)
         {
             // Add the safety checks to the gateway queue
             var safetyCheckData = this.GetCurrentSafetyCheckData();
@@ -127,7 +127,7 @@ namespace MWF.Mobile.Core.Services
             {
                 _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
             }
-
+            return Task.FromResult(0);
         }
 
         #endregion

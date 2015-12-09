@@ -33,7 +33,7 @@ namespace MWF.Mobile.Android.Views
 
         protected const string _hockeyAppID = "7cf7fc0dba2bf468cec55795c004d77d";
         protected const string _hockeyAppSecret = "e9fd0e20c666a1306f14192046232cd7";
-
+        protected ProteoCrashListener _crashListener = new ProteoCrashListener();
         #endregion
 
         #region Construction
@@ -59,8 +59,11 @@ namespace MWF.Mobile.Android.Views
             transaction.Replace(this.FragmentHostID, fragment);
             transaction.Commit();
 
+
             this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
             HockeyApp.CrashManager.Register(this, _hockeyAppID, new ProteoCrashListener());
+            HockeyApp.TraceWriter.Initialize(_crashListener);
+            HockeyApp.CrashManager.Register(this, _hockeyAppID);
 
         }
 
@@ -225,13 +228,14 @@ namespace MWF.Mobile.Android.Views
 
     }
 
-public class ProteoCrashListener : HockeyApp.CrashManagerListener
-{
+
+    public class ProteoCrashListener : HockeyApp.CrashManagerListener
+    {
         public override String UserID
         {
             get
             {
-                return new DeviceInfo().GetDeviceIdentifier() ;
+                return new DeviceInfo().GetDeviceIdentifier();
             }
         }
 
@@ -251,6 +255,6 @@ public class ProteoCrashListener : HockeyApp.CrashManagerListener
             }
         }
 
-}
+    }
 
 }

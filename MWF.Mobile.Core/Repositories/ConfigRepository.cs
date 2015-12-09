@@ -24,7 +24,8 @@ namespace MWF.Mobile.Core.Repositories
         /// </summary>
         public async Task<MWFMobileConfig> GetAsync()
         {
-            return this.GetAllAsync().Result.First();
+            var data = await this.GetAllAsync();
+            return data.First();
         }
 
     }

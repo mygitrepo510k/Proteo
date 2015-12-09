@@ -170,7 +170,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_progressInstructionCommand = _progressInstructionCommand ?? new MvxCommand(() => ProgressInstruction()));
+                return (_progressInstructionCommand = _progressInstructionCommand ?? new MvxCommand(async () => await ProgressInstruction()));
             }
         }
 
@@ -186,7 +186,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(() => EditTrailer()));
+                return (_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(async () => await EditTrailer()));
             }
         }
 
@@ -194,20 +194,20 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private void EditTrailer()
+        private async Task EditTrailer()
         {
             _navData.OtherData["IsTrailerEditFromInstructionScreen"] = true;
-            _navigationService.MoveToNext(_navData);
+            await _navigationService.MoveToNext(_navData);
         }
 
-        private void ProgressInstruction()
+        private async Task ProgressInstruction()
         {
-            UpdateProgress();
+            await UpdateProgress();
 
             if (_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
             {
                 _navData.OtherData["IsTrailerEditFromInstructionScreen"] = null;
-                _navigationService.MoveToNext(_navData);
+                await _navigationService.MoveToNext(_navData);
             }
         }
 
@@ -287,14 +287,14 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible) 
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
-                    GetMobileDataFromRepository(instructionID);
+                    await GetMobileDataFromRepository(instructionID);
                 }
                 else
                 {
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifest();
                     }
                 }
             }

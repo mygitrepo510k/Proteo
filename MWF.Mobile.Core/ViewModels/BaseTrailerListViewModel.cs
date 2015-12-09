@@ -41,8 +41,14 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
             _gatewayService = gatewayService;
             _repositories = repositories;
-            GetTrailerModels();
+            
             ProgressMessage = "Updating Trailers.";
+        }
+
+        public async override void Start()
+        {
+            base.Start();
+            await GetTrailerModels();
         }
 
         #endregion
@@ -65,11 +71,12 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
 
+        private string _vehicleRegistration = "";
         public String VehicleRegistration
         {
             get
             {
-                return _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID).Result.Registration;
+                return _vehicleRegistration;
             }
         }
 
@@ -173,7 +180,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 _defaultTrailerReg = value;
                 if (_defaultTrailerReg!=null)
-                    GetTrailerModels();
+                     GetTrailerModels();
             }
         }
 
@@ -224,7 +231,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 await _repositories.TrailerRepository.InsertAsync(trailers);
 
-                GetTrailerModels();
+                await GetTrailerModels();
 
                 //Recalls the filter text if there is text in the search field.
                 if (TrailerSearchText != null)
@@ -266,7 +273,9 @@ namespace MWF.Mobile.Core.ViewModels
 
             this.IsBusy = false;
 
-            if (safetyProfileRepository.GetAllAsync().Result.ToList().Count == 0)
+            var profiles = await safetyProfileRepository.GetAllAsync();
+
+            if (profiles.Count() == 0)
                 Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
         }
 
@@ -317,10 +326,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        private void GetTrailerModels()
+        private async Task GetTrailerModels()
         {
 
-            this.Trailers = _originalTrailerList = _repositories.TrailerRepository.GetAllAsync().Result.Select(x => new TrailerItemViewModel() 
+            var _vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID);
+            _vehicleRegistration = _vehicle.Registration;
+
+            var data = await _repositories.TrailerRepository.GetAllAsync();
+            this.Trailers =  _originalTrailerList = data.Select(x => new TrailerItemViewModel() 
                                                                                                         { 
                                                                                                             Trailer = x,
                                                                                                             IsDefault = (string.IsNullOrEmpty(this.DefaultTrailerReg)) ? false : x.Registration == this.DefaultTrailerReg

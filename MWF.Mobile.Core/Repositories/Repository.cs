@@ -371,47 +371,6 @@ namespace MWF.Mobile.Core.Repositories
         }
 
 
-        // Gets the children of the specfied type for specified parent using foreign key mappings
-        //private async Task<IList> GetChildren(IBlueSphereEntity parent, dynamic childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteAsyncConnection connection)
-        //{
-        //   // var t = Activator.CreateInstance<childType>();
-        //    //TableMapping tableMapping =await connection.GetMappingAsync();
-
-        //    string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
-        //                                                                    childType.GetForeignKeyName(parent.GetType()));
-
-        //    if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
-        //    {
-        //        query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
-        //    }
-        //    var listType = typeof(List<>);
-        //    var constructedListType = listType.MakeGenericType(childType);
-        //    var queryResults = Activator.CreateInstance(constructedListType);
-        //    var t = Activator.CreateInstance(childType);
-
-
-        //    if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
-        //    {
-        //        queryResults = await connection.QueryAsync<childType>( query, parent.ID, childIdentifyingPropertyValue);
-        //    }
-        //    else
-        //    {
-        //        queryResults = connection.QueryAsync<childType>(query, parent.ID);
-        //    }
-
-
-        //    // Create a typed generic list we can assign back to parent element
-        //    IList genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
-
-        //    foreach (object item in queryResults)
-        //    {
-        //        genericList.Add(item);
-        //    }
-
-        //    return genericList;
-
-        //}
-
         private async Task<IList> GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteAsyncConnection connection)
         {
             TableMapping tableMapping = await connection.GetMappingAsync(childType);
@@ -424,18 +383,17 @@ namespace MWF.Mobile.Core.Repositories
                 query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
             }
 
-            List<object> queryResults = null;
-
+            //var queryResults = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
+            List<object> queryResults;
 
             if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
             {
-                queryResults = await connection.QueryAsync(CancellationToken.None, tableMapping, query, parent.ID, childIdentifyingPropertyValue);
+                queryResults = await connection.QueryAsync(CancellationToken.None,tableMapping, query, parent.ID, childIdentifyingPropertyValue);
             }
             else
             {
                 queryResults = await connection.QueryAsync(CancellationToken.None, tableMapping, query, parent.ID);
             }
-
 
             // Create a typed generic list we can assign back to parent element
             IList genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
@@ -472,7 +430,6 @@ namespace MWF.Mobile.Core.Repositories
             {
                 queryResults = connection.Query(tableMapping, query, parent.ID);
             }
-
 
             // Create a typed generic list we can assign back to parent element
             IList genericList = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));

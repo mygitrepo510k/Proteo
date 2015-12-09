@@ -51,7 +51,7 @@ namespace MWF.Mobile.Core.ViewModels
                         await _applicationProfileRepository.InsertAsync(profile);
 
                     }
-                    var applicationProfile = profileData.First();
+                    var applicationProfile = profileData.OrderByDescending(x=> x.IntLink).First();
                     if (DateTime.Now.Subtract( applicationProfile.LastVehicleAndDriverSync).TotalHours > 23)
                     {
                         await UpdateVehicleListAsync();
@@ -73,7 +73,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 _infoService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
                 _infoService.CurrentTrailer = trailer;
-                _navigationService.MoveToNext();
+                await _navigationService.MoveToNext();
             }
         }
 

@@ -137,6 +137,8 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
+        object syncLock = new object();
+
         private async Task SubmitQueueAsync()
         {
             Mvx.Trace("Submit Queue");

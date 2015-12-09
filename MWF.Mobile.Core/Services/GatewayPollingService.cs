@@ -49,7 +49,7 @@ namespace MWF.Mobile.Core.Services
             IGatewayQueuedService gatewayQueuedService,
             IInfoService infoService,
             IDataChunkService dataChunkService,
-            ICustomPresenter customPresenter, 
+            ICustomPresenter customPresenter,
             ILoggingService loggingService
             )
         {
@@ -92,36 +92,112 @@ namespace MWF.Mobile.Core.Services
 
         public async Task PollForInstructionsAsync()
         {
-            using (await _lock.LockAsync())
+            try
             {
-                Mvx.Trace("Begin Polling For Instructions");
-
                 if (!_reachability.IsConnected())
                     return;
 
-                if (!_dataRetention.HasValue || !_dataSpan.HasValue)
+                using (await _lock.LockAsync())
                 {
                     var data = await _repositories.ApplicationRepository.GetAllAsync();
                     var applicationProfile = data.First();
                     _dataRetention = applicationProfile.DataRetention;
                     _dataSpan = applicationProfile.DataSpan;
                 }
+                Mvx.Trace("Begin Polling For Instructions");
 
-                // Call to BlueSphere to check for instructions
-                var instructions = await _gatewayService.GetDriverInstructions(
-                    _infoService.CurrentVehicle.Registration,
-                    _infoService.LoggedInDriver.ID,
-                    DateTime.Today.AddDays(-_dataRetention.Value),
-                    DateTime.Today.AddDays(_dataSpan.Value));
+
 
                 Mvx.Trace("Successfully pulled instructions.");
                 try
                 {
+                    if (!_dataRetention.HasValue || !_dataSpan.HasValue)
+                    {
+                        var applicationProfile = _repositories.ApplicationRepository.GetAll().First();
+                        _dataRetention = applicationProfile.DataRetention;
+                        _dataSpan = applicationProfile.DataSpan;
+                    }
+
+                    // Call to BlueSphere to check for instructions
+                    var instructions = await _gatewayService.GetDriverInstructions(
+                        _infoService.CurrentVehicle.Registration,
+                        _infoService.LoggedInDriver.ID,
+                        DateTime.Today.AddDays(-_dataRetention.Value),
+                        DateTime.Today.AddDays(_dataSpan.Value));
+
+                    Mvx.Trace("Successfully pulled instructions.");
+
                     // Check if we have anything in the response
                     if (instructions.Any())
                     {
                         var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
                         var manifestInstructionVMsForNotification = new List<ManifestInstructionViewModel>(instructions.Count());
+
+                        // We have a response so check what we need to do (Save/Update/Delete)
+                        foreach (var instruction in instructions)
+                        {
+                            var notifyInstruction = false;
+
+                            Mvx.Trace("started processing instruction." + instruction.ID);
+
+                            instruction.VehicleId = _infoService.CurrentVehicle.ID;
+
+                            switch (instruction.SyncState)
+                            {
+                                case SyncState.Add:
+
+                                    Mvx.Trace("started adding instruction." + instruction.ID);
+                                    var instructionToAdd = await _repositories.MobileDataRepository.GetByIDAsync(instruction.ID);
+
+                                    if (instructionToAdd == null)
+                                    {
+                                        await _repositories.MobileDataRepository.InsertAsync(instruction);
+                                        notifyInstruction = true;
+                                    }
+
+                                    Mvx.Trace("completed adding instruction." + instruction.ID);
+                                    PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, instruction.ID);
+                                    break;
+
+                                case SyncState.Update:
+                                    Mvx.Trace("started updating instruction." + instruction.ID);
+                                    var instructionToUpdate = await _repositories.MobileDataRepository.GetByIDAsync(instruction.ID);
+
+                                    if (instructionToUpdate != null)
+                                    {
+                                        var progress = instructionToUpdate.ProgressState;
+                                        await _repositories.MobileDataRepository.DeleteAsync(instructionToUpdate);
+                                        instruction.ProgressState = progress;
+                                        instruction.LatestDataChunkSequence = instructionToUpdate.LatestDataChunkSequence;
+                                    }
+
+                                    await _repositories.MobileDataRepository.InsertAsync(instruction);
+                                    notifyInstruction = true;
+                                    Mvx.Trace("completed updating instruction." + instruction.ID);
+                                    PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
+                                    break;
+
+                                case SyncState.Delete:
+                                    Mvx.Trace("started deleting instruction." + instruction.ID);
+                                    var oldInstruction = await _repositories.MobileDataRepository.GetByIDAsync(instruction.ID);
+
+                                    if (oldInstruction != null)
+                                    {
+                                        await _repositories.MobileDataRepository.DeleteAsync(oldInstruction);
+
+                                        if (oldInstruction.ProgressState != InstructionProgress.Complete)
+                                            notifyInstruction = true;
+                                    }
+
+                                    Mvx.Trace("completed deleting instruction." + instruction.ID);
+                                    PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, instruction.ID);
+                                    break;
+                            }
+
+                            if (notifyInstruction)
+                                manifestInstructionVMsForNotification.Add(new ManifestInstructionViewModel(currentViewModel, null, instruction));
+                        }
+
 
                         // We have a response so check what we need to do (Save/Update/Delete)
                         foreach (var instruction in instructions)
@@ -210,6 +286,11 @@ namespace MWF.Mobile.Core.Services
                     // catch and log the error, but this will not acknowledge the message so we can try again
                     _loggingService.LogEvent("Gateway Polling Processing Failed", LogType.Error, ex.Message);
                 }
+            }
+            catch (Exception ex)
+            {
+                // if there is an error here, then just continue as this is probably related to a connection issue
+                Mvx.Trace("failed to poll for instructions", ex);
             }
         }
 

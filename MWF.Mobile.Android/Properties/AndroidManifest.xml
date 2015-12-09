@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="Proteo.Mobile.Android" android:versionName="1.0.13.17" android:installLocation="auto" android:versionCode="48">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="Proteo.Mobile.Android" android:versionName="1.0.14.0" android:installLocation="auto" android:versionCode="50">
 	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="15" />
 	<application android:icon="@drawable/Icon" android:theme="@style/ProteoNoMargins" android:label="Proteo Mobile">
 		<activity android:name="net.hockeyapp.android.UpdateActivity" />
 		<activity android:name="net.hockeyapp.android.FeedbackActivity" />
 		<activity android:name="net.hockeyapp.android.PaintActivity" />
 	</application>
-  <uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

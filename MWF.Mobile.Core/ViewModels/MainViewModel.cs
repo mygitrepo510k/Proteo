@@ -129,7 +129,7 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task DoLogoutCommandAsync()
         {
             if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Are you sure you want to log out?", "Logout", "Logout", "Cancel"))
-                _navigationService.Logout_Action(null);
+              await _navigationService.Logout_Action(null);
         }
 
         private void DoSelectMenuItemCommand(MenuViewModel item)

@@ -26,6 +26,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite.NET", "SQLite.NET", 
 		SQLite.NET\SQLite.Net.Platform.XamarinAndroid.pdb = SQLite.NET\SQLite.Net.Platform.XamarinAndroid.pdb
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLite.Net", "SQLite.NET\SQLite.Net.csproj", "{4971D437-0694-4297-A8CC-146CE08C3BD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLite.Net.Async", "SQLite.Net.Async\SQLite.Net.Async.csproj", "{3AB34E91-8E1A-442F-8E66-2494B371A890}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +57,18 @@ Global
 		{2011A55B-DFDE-4873-8D6B-D61A31176688}.Debug-Firmin|Any CPU.Build.0 = Debug Firmin|Any CPU
 		{2011A55B-DFDE-4873-8D6B-D61A31176688}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2011A55B-DFDE-4873-8D6B-D61A31176688}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4971D437-0694-4297-A8CC-146CE08C3BD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4971D437-0694-4297-A8CC-146CE08C3BD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4971D437-0694-4297-A8CC-146CE08C3BD9}.Debug-Firmin|Any CPU.ActiveCfg = Debug|Any CPU
+		{4971D437-0694-4297-A8CC-146CE08C3BD9}.Debug-Firmin|Any CPU.Build.0 = Debug|Any CPU
+		{4971D437-0694-4297-A8CC-146CE08C3BD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4971D437-0694-4297-A8CC-146CE08C3BD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AB34E91-8E1A-442F-8E66-2494B371A890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AB34E91-8E1A-442F-8E66-2494B371A890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AB34E91-8E1A-442F-8E66-2494B371A890}.Debug-Firmin|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AB34E91-8E1A-442F-8E66-2494B371A890}.Debug-Firmin|Any CPU.Build.0 = Debug|Any CPU
+		{3AB34E91-8E1A-442F-8E66-2494B371A890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AB34E91-8E1A-442F-8E66-2494B371A890}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

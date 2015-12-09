@@ -69,8 +69,14 @@ namespace MWF.Mobile.Core.ViewModels
             Mvx.Resolve<ICheckForSoftwareUpdates>().Check();
 
             CreateSections();
-            RefreshInstructions();
+            
+        }
 
+        public async override void Start()
+        {
+            base.Start();
+
+            await RefreshInstructions();
         }
 
         private void CreateSections()
@@ -126,7 +132,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ICommand RefreshStatusesCommand
         {
-            get { return (_refreshStatusesCommand = _refreshStatusesCommand ?? new MvxCommand(() => RefreshInstructions())); }
+            get { return (_refreshStatusesCommand = _refreshStatusesCommand ?? new MvxCommand(async () => await RefreshInstructions())); }
         }
 
         #endregion
@@ -158,15 +164,16 @@ namespace MWF.Mobile.Core.ViewModels
             // get instruction data models from repository and order them
             var activeInstructionsDataModels = await _mobileDataRepository.GetInProgressInstructions(_infoService.LoggedInDriver.ID);
             var nonActiveInstructionsDataModels = await _mobileDataRepository.GetNotStartedInstructions(_infoService.LoggedInDriver.ID);
-
+            Mvx.Trace("  -- got instrcutions from database");
             if (!_displayRetention.HasValue || !_displaySpan.HasValue)
             {
                 var applicationProfileData = await _applicationProfileRepository.GetAllAsync();
-                var applicationProfile = applicationProfileData.First();
+                var applicationProfile = applicationProfileData.OrderByDescending(x=> x.IntLink).First();
                 _displayRetention = applicationProfile.DisplayRetention;
                 _displaySpan = applicationProfile.DisplaySpan;
             }
 
+            Mvx.Trace("  -- set display spans");
             activeInstructionsDataModels =
                 activeInstructionsDataModels
                 .Where(i => i.EffectiveDate < today.AddDays(_displaySpan.Value) && i.EffectiveDate > today.AddDays(-_displayRetention.Value))
@@ -177,15 +184,17 @@ namespace MWF.Mobile.Core.ViewModels
                 .Where(i => i.EffectiveDate < today.AddDays(_displaySpan.Value) && i.EffectiveDate > today.AddDays(-_displayRetention.Value))
                 .OrderBy(x => x.EffectiveDate);
 
+            Mvx.Trace("  -- getting non complete messages");
             var nonCompletedeMessages = await _mobileDataRepository.GetNonCompletedMessages(_infoService.LoggedInDriver.ID);
             var messageDataModels = nonCompletedeMessages.OrderBy(x => x.EffectiveDate);
-
+            
             if (activeInstructionsDataModels.ToList().Count == 0)
             {
                 List<DummyMobileData> noneShowingList = new List<DummyMobileData>();
                 noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Active Instructions" } });
                 IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
                 activeInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
+                Mvx.Trace("  -- Created dummy active instructions");
             }
 
             if (nonActiveInstructionsDataModels.ToList().Count == 0)
@@ -194,6 +203,7 @@ namespace MWF.Mobile.Core.ViewModels
                 noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Instructions" } });
                 IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
                 nonActiveInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
+                Mvx.Trace("  -- Created dummy non active instructions");
             }
 
             if (messageDataModels.ToList().Count == 0)
@@ -202,21 +212,24 @@ namespace MWF.Mobile.Core.ViewModels
                 noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Messages" } });
                 IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
                 messageDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
+                Mvx.Trace("  -- Created dummy messages ");
             }
 
             // Create the view models
             var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this,_navigationService, md));
             var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this,_navigationService, md));
             var messageViewModels = messageDataModels.Select(md => new ManifestInstructionViewModel(this,_navigationService, md));
+            Mvx.Trace("  -- Created View Models");
 
             // Update the observable collections in each section
             _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels.OrderBy(ivm => ivm.ArrivalDate));
             _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels.OrderBy(ivm => ivm.ArrivalDate));
             _messageSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(messageViewModels.OrderBy(ivm => ivm.ArrivalDate));
-
+            Mvx.Trace("  -- Updated collections");
             // Let the UI know the number of instructions has changed
             RaisePropertyChanged(() => InstructionsCount);
             RaisePropertyChanged(() => Sections);
+            Mvx.Trace("  -- Raised Property Changes.");
 
             Mvx.Trace("finished refreshing manifest screen");
 

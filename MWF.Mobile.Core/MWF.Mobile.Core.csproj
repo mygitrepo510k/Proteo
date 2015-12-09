@@ -365,12 +365,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SQLite.Net">
-      <HintPath>..\SQLite.NET\SQLite.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="SQLite.Net.Async">
-      <HintPath>..\SQLite.NET\SQLite.Net.Async.dll</HintPath>
-    </Reference>
     <Reference Include="SQLite.Net.Platform.Generic">
       <HintPath>..\SQLite.NET\SQLite.Net.Platform.Generic.dll</HintPath>
     </Reference>
@@ -389,6 +383,16 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SQLite.Net.Async\SQLite.Net.Async.csproj">
+      <Project>{3ab34e91-8e1a-442f-8e66-2494b371a890}</Project>
+      <Name>SQLite.Net.Async</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SQLite.NET\SQLite.Net.csproj">
+      <Project>{4971d437-0694-4297-a8cc-146ce08c3bd9}</Project>
+      <Name>SQLite.Net</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

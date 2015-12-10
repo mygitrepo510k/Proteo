@@ -12,8 +12,15 @@ namespace MWF.Mobile.Core.ViewModels
 		: MvxViewModel
     {
 
-        public IMvxViewModel InitialViewModel { get; protected set; }
-        
+        private IMvxViewModel _initialViewModel;
+
+        public IMvxViewModel InitialViewModel
+        {
+            get { return _initialViewModel; }
+            protected set { _initialViewModel = value; RaisePropertyChanged(() => InitialViewModel); }
+        }
+
+
         protected void CloseToInitialView()
         {
             this.ChangePresentation(new Presentation.CloseToInitialViewPresentationHint());

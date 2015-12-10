@@ -5,6 +5,7 @@ using Android.OS;
 using Android.Renderscripts;
 using Android.Widget;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.WeakSubscription;
 using Cirrious.MvvmCross.Droid.FullFragging;
 using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Droid.Views;
@@ -26,7 +27,6 @@ namespace MWF.Mobile.Android.Views
         : MvxActivity, Presenters.IFragmentHost
     {
 
-
         #region Protected/Private Fields
 
         protected IDictionary<Type, Type> _supportedFragmentViewModels;
@@ -34,10 +34,12 @@ namespace MWF.Mobile.Android.Views
         protected const string _hockeyAppID = "7cf7fc0dba2bf468cec55795c004d77d";
         protected const string _hockeyAppSecret = "e9fd0e20c666a1306f14192046232cd7";
         protected ProteoCrashListener _crashListener = new ProteoCrashListener();
-        #endregion
+
+        private bool _frameLayoutPopulated = false;
+
+        #endregion Protected/Private Fields
 
         #region Construction
-
 
         protected BaseActivityViewModel BaseActivityViewModel
         {
@@ -48,23 +50,33 @@ namespace MWF.Mobile.Android.Views
         {
             base.OnCreate(bundle);
 
-            // Populate FrameLayout with initial viewmodel fragment
-            var initialViewModel = this.BaseActivityViewModel.InitialViewModel;
-            var fragmentType = GetFragmentTypeForViewModel(initialViewModel.GetType());
+            this.BaseActivityViewModel.WeakSubscribe(() => this.BaseActivityViewModel.InitialViewModel, (s, e) => this.PopulateFrameLayoutWithInitialViewModelFragment());
 
-            var fragment = (MvxFragment)Activator.CreateInstance(fragmentType);
-            fragment.ViewModel = initialViewModel;
+            this.PopulateFrameLayoutWithInitialViewModelFragment();
 
-            var transaction = FragmentManager.BeginTransaction();
-            transaction.Replace(this.FragmentHostID, fragment);
-            transaction.Commit();
-
-
-            this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
             HockeyApp.CrashManager.Register(this, _hockeyAppID, new ProteoCrashListener());
             HockeyApp.TraceWriter.Initialize(_crashListener);
             HockeyApp.CrashManager.Register(this, _hockeyAppID);
+        }
 
+        private void PopulateFrameLayoutWithInitialViewModelFragment()
+        {
+            var initialViewModel = this.BaseActivityViewModel.InitialViewModel;
+
+            if (initialViewModel != null)
+            {
+                var fragmentType = GetFragmentTypeForViewModel(initialViewModel.GetType());
+
+                var fragment = (MvxFragment)Activator.CreateInstance(fragmentType);
+                fragment.ViewModel = initialViewModel;
+
+                var transaction = FragmentManager.BeginTransaction();
+                transaction.Replace(this.FragmentHostID, fragment);
+                transaction.Commit();
+
+                this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
+                _frameLayoutPopulated = true;
+            }
         }
 
         public override void StartActivity(Intent intent)
@@ -75,7 +87,7 @@ namespace MWF.Mobile.Android.Views
             base.StartActivity(intent);
         }
 
-        #endregion
+        #endregion Construction
 
         #region Public Methods
 
@@ -98,7 +110,7 @@ namespace MWF.Mobile.Android.Views
             }
         }
 
-        #endregion
+        #endregion Public Methods
 
         #region Fragment Host
 
@@ -203,7 +215,7 @@ namespace MWF.Mobile.Android.Views
             get { return FragmentManager.FindFragmentById(this.FragmentHostID) as MvxFragment; }
         }
 
-        #endregion
+        #endregion Fragment Host
 
         #region Private/Protected Methods
 
@@ -223,8 +235,7 @@ namespace MWF.Mobile.Android.Views
             this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
         }
 
-
-        #endregion
+        #endregion Private/Protected Methods
 
     }
 

@@ -47,17 +47,19 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
             _loggingService = loggingService;
             _gatewayQueuedService = gatewayQueuedService;
-
-            SetInitialViewModel();
         }
 
-        
-        private void SetInitialViewModel()
+        public override async void Start()
         {
-            
+            base.Start();
+            await this.SetInitialViewModelAsync();
+        }
 
+        private async Task SetInitialViewModelAsync()
+        {
             var customerRepository = _repositories.CustomerRepository;
-            var customerRepositoryData = customerRepository.GetAll();
+            var customerRepositoryData = await customerRepository.GetAllAsync();
+
             if (customerRepositoryData.Any())
                 this.InitialViewModel = new PasscodeViewModel(_authenticationService, _infoService, _closeApplication, _repositories, _navigationService, _loggingService, _gatewayQueuedService);
             else

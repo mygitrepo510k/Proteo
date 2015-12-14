@@ -67,7 +67,6 @@ namespace MWF.Mobile.Android
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-            
             AndroidEnvironment.UnhandledExceptionRaiser += (sender, args) =>
             {
                 HockeyApp.TraceWriter.WriteTrace(args.Exception);
@@ -78,7 +77,6 @@ namespace MWF.Mobile.Android
             {
                 HockeyApp.TraceWriter.WriteTrace(args.Exception);
             };
-
         }
 
         protected override System.Collections.Generic.List<System.Reflection.Assembly> ValueConverterAssemblies

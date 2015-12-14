@@ -75,7 +75,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public Task<bool> OnBackButtonPressedAsync()
         {
             this.Cancel();
             return Task.FromResult(false);

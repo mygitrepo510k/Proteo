@@ -115,7 +115,7 @@ namespace MWF.Mobile.Core.ViewModels
                 bool success = false;
                 try
                 {
-                    success = await this.UploadDiagnostics();
+                    success = await _diagnosticsService.UploadDiagnosticsAsync(_dataService.DatabasePath);
                 }
                 catch(Exception)
                 {
@@ -126,19 +126,16 @@ namespace MWF.Mobile.Core.ViewModels
 
                 if (success)
                 {
-                    _userInteraction.Alert("Support diagnostic information uploaded successfully.", null, "Upload Complete");
-                    _navigationService.MoveToNext();
+                    await _userInteraction.AlertAsync("Support diagnostic information uploaded successfully.", null, "Upload Complete");
+                    await _navigationService.MoveToNextAsync();
                 }
-                else await _userInteraction.AlertAsync(_unexpectedErrorMessage);
+                else
+                {
+                    await _userInteraction.AlertAsync(_unexpectedErrorMessage);
+                }
             }
         }
      
-
-        private async Task<bool> UploadDiagnostics()
-        {
-            return await _diagnosticsService.UploadDiagnostics(_dataService.DatabasePath);
-        }
-
         #endregion
 
     }

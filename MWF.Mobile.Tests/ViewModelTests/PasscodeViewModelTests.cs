@@ -53,7 +53,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNext());
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync());
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var vm = _fixture.Create<PasscodeViewModel>();
@@ -63,7 +63,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
             // check that the navigation service was called
-            navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);
+            navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
 
         }
 
@@ -76,7 +76,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNext(It.IsAny<NavData>()));
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync(It.IsAny<NavData>()));
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var vm = _fixture.Create<PasscodeViewModel>();
@@ -86,7 +86,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
             // check that the navigation service was called
-            navigationServiceMock.Verify(ns => ns.MoveToNext(It.Is<NavData>(nd=> nd.OtherData["Diagnostics"] != null)), Times.Once);
+            navigationServiceMock.Verify(ns => ns.MoveToNextAsync(It.Is<NavData>(nd=> nd.OtherData["Diagnostics"] != null)), Times.Once);
 
         }
 
@@ -106,8 +106,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             };
 
             var mockDriverRepo = Mock.Of<IDriverRepository>(m =>
-                m.GetByID(testDriver.ID) == testDriver &&
-                m.GetAll() == new[] { testDriver });
+                m.GetByIDAsync(testDriver.ID) == Task.FromResult(testDriver) &&
+                m.GetAllAsync() == Task.FromResult(new[] { testDriver }.AsEnumerable()));
 
             _fixture.Inject(mockDriverRepo);
 

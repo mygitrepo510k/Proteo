@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SQLite.Net.Attributes;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Services;
+using System.Diagnostics;
 
 namespace MWF.Mobile.Core.Repositories
 {
@@ -20,6 +21,12 @@ namespace MWF.Mobile.Core.Repositories
             : base(dataService)
         { }
 
+        public async Task<ApplicationProfile> GetAsync()
+        {
+            var data = await this.GetAllAsync();
+            Debug.Assert(data.Count() == 1, $"Expected one ApplicationProfile record but found {data.Count()}");
+            return data.First();
+        }
 
         #endregion
 

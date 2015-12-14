@@ -183,7 +183,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionTrunkProceedVM.CompleteInstructionCommand.Execute(null);
 
-            _mockNavigationService.Verify(mns => mns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Once);
+            _mockNavigationService.Verify(mns => mns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Once);
         }
 
         [Fact]
@@ -200,7 +200,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockNavigationService.Verify(ns => ns.GoToManifest(), Times.Once);
+            _mockNavigationService.Verify(ns => ns.GoToManifestAsync(), Times.Once);
 
         }
 

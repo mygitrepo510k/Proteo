@@ -41,7 +41,6 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _repositories = repositories;
             _infoService = infoService;
-            _appProfile = _repositories.ApplicationRepository.GetAllAsync().Result.First();
             _navigationService = navigationService;
         }
 
@@ -52,16 +51,20 @@ namespace MWF.Mobile.Core.ViewModels
             this.MessageId = navData.NavGUID;
             _navData = navData;
             _additionalInstructions = _navData.GetAdditionalInstructions();
-            GetDeliveryInstructions();
-
         }
 
-        private async void GetDeliveryInstructions()
+        public override async void Start()
         {
+            base.Start();
+            _appProfile = (await _repositories.ApplicationRepository.GetAllAsync()).First();
+            await this.GetDeliveryInstructionsAsync();
+        }
 
+        private async Task GetDeliveryInstructionsAsync()
+        {
             var today = DateTime.Today;
 
-            var data = await _repositories.MobileDataRepository.GetNonCompletedInstructions(_infoService.LoggedInDriver.ID);
+            var data = await _repositories.MobileDataRepository.GetNonCompletedInstructionsAsync(_infoService.LoggedInDriver.ID);
             // get all non-complete deliveries (excluding the current one) that conform to the same "barcode scanning on delivery) type as the current one
             var nonCompletedDeliveries = data.Where(i => i.Order.Type == Enums.InstructionType.Deliver && 
                                                     i.ID != _navData.Data.ID &&                                                                                                                                              
@@ -75,7 +78,6 @@ namespace MWF.Mobile.Core.ViewModels
             this.DeliveryInstructions = new ObservableCollection<ManifestInstructionViewModel>(viewModels);
 
             _originalSelection = GetSelectionSummary();
-
         }
 
         #endregion
@@ -162,12 +164,12 @@ namespace MWF.Mobile.Core.ViewModels
             return string.Join(" ", this.DeliveryInstructions.Select(i => i.IsSelected.ToString()).ToArray());
         }
 
-        private async Task RefreshPage()
+        private async Task RefreshPageAsync()
         {
             _navData.Data = await _repositories.MobileDataRepository.GetByIDAsync(_navData.Data.ID);
             _navData.GetAdditionalInstructions().Clear();
 
-            GetDeliveryInstructions();
+            await GetDeliveryInstructionsAsync();
 
             RaiseAllPropertiesChanged();
         }
@@ -195,9 +197,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public async Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
-
             bool continueWithBackPress = true;
 
             if (UserChangesDetected)
@@ -226,14 +227,15 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible) 
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "Instructions have been updated");
-                    RefreshPage();
+
+                    await this.RefreshPageAsync();
                 }
                 else
                 {
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "Instructions on this delivery have been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }

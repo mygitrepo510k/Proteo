@@ -50,7 +50,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             appProfile.DisplaySpan = 2;
             appProfiles.Add(appProfile);
 
-            _mockApplicationProfile.Setup(map => map.GetAll()).Returns(appProfiles);
+            _mockApplicationProfile.Setup(map => map.GetAllAsync()).ReturnsAsync(appProfiles);
 
             _mobileDataRepoMock = _fixture.InjectNewMock<IMobileDataRepository>();
 
@@ -78,16 +78,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
-            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
-            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
 
             var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
             Assert.Equal((mobileDataStartedList.Count + mobileDataNotStartedList.Count), viewModel.InstructionsCount);
             
             //check that the logged indriver id was used for the calls to the mobile data repository
-            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructions(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
-            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructions(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
+            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
+            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
 
         }
 
@@ -106,15 +106,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
-            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
-            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
 
             var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
             viewModel.RefreshListCommand.Execute(null);
 
-            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructions(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
-            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructions(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
+            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
+            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
         }
 
         /// <summary>
@@ -132,8 +132,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
-            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
-            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
 
             var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
@@ -155,8 +155,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
-            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
-            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
 
             var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
@@ -177,7 +177,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             appProfile.DisplaySpan = 2;
             appProfiles.Add(appProfile);
 
-            _mockApplicationProfile.Setup(map => map.GetAll()).Returns(appProfiles);
+            _mockApplicationProfile.Setup(map => map.GetAllAsync()).ReturnsAsync(appProfiles);
 
             List<MobileData> mobileDataStartedList = new List<MobileData>();
             var mobileData = _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite });
@@ -186,8 +186,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
-            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
-            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
 
             var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
@@ -209,8 +209,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
-            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
-            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
 
             var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
@@ -231,7 +231,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             appProfile.DisplaySpan = 2;
             appProfiles.Add(appProfile);
 
-            _mockApplicationProfile.Setup(map => map.GetAll()).Returns(appProfiles);
+            _mockApplicationProfile.Setup(map => map.GetAllAsync()).ReturnsAsync(appProfiles);
 
             List<MobileData> mobileDataStartedList = new List<MobileData>();
             var mobileData = _fixture.Create<MobileData>(new MobileData() { ProgressState = Core.Enums.InstructionProgress.OnSite });
@@ -240,8 +240,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
-            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
-            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
 
             var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
@@ -282,8 +282,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             List<MobileData> mobileDataStartedList = new List<MobileData>();
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
-            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
-            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
 
             var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
@@ -301,8 +301,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             List<MobileData> mobileDataStartedList = new List<MobileData>();
             List<MobileData> mobileDataNotStartedList = new List<MobileData>();
 
-            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructions(It.IsAny<Guid>())).Returns(mobileDataStartedList);
-            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructions(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataStartedList);
+            _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).Returns(mobileDataNotStartedList);
 
             var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
@@ -322,8 +322,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             viewModel.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             //It is checked twice because it checks when it creates the view model and when you refresh.
-            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructions(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Exactly(2));
-            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructions(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Exactly(2));
+            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Exactly(2));
+            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Exactly(2));
 
         }
 

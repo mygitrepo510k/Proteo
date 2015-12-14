@@ -45,12 +45,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData.Order.Type = InstructionType.Deliver;
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _verbProfile = _fixture.Create<VerbProfile>();
             List<VerbProfile> verbProfiles = new List<VerbProfile>() { _verbProfile };
             _mockVerbProfileRepo = _fixture.InjectNewMock<IVerbProfileRepository>();
-            _mockVerbProfileRepo.Setup(mvpr => mvpr.GetAll()).Returns(verbProfiles);
+            _mockVerbProfileRepo.Setup(mvpr => mvpr.GetAllAsync()).ReturnsAsync(verbProfiles);
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -220,7 +220,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
             //check that the navigation service was called
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(x => x == navData)));
+            _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(x => x == navData)));
             
 
         }

@@ -36,9 +36,12 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
             _gatewayPollingService = gatewayPollingService;
 
-            RefreshMessages();
         }
 
+        public override async void Start()
+        {
+            await this.RefreshMessagesAsync();
+        }
 
         private ObservableCollection<ManifestInstructionViewModel> _messages;
         public ObservableCollection<ManifestInstructionViewModel> Messages
@@ -61,20 +64,28 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_refreshMessagesCommand = _refreshMessagesCommand ?? new MvxCommand(() => RefreshMessages()));
+                return (_refreshMessagesCommand = _refreshMessagesCommand ?? new MvxCommand(async () => await this.RefreshMessagesAsync()));
             }
         }
 
-        private void RefreshMessages()
+        private async Task RefreshMessagesAsync()
         {
-            _gatewayPollingService.PollForInstructionsAsync();
-            ReloadPage();
+            await _gatewayPollingService.PollForInstructionsAsync();
+            await this.ReloadPageAsync();
         }
 
-        private void ReloadPage()
+        private async Task ReloadPageAsync()
         {
             //Show messages that are no older than a week
-            Messages = new ObservableCollection<ManifestInstructionViewModel>(_mobileDataRepository.GetAllMessages(_infoService.LoggedInDriver.ID).Result.Where(i => i.EffectiveDate > DateTime.Today.AddDays(-7)).Select(m => new ManifestInstructionViewModel(this, _navigationService, m)).OrderBy(m => m.ProgressState).ThenBy(m => m.ArrivalDate));
+            var allMessages = await _mobileDataRepository.GetAllMessagesAsync(_infoService.LoggedInDriver.ID);
+
+            var messages = allMessages
+                .Where(i => i.EffectiveDate > DateTime.Today.AddDays(-7))
+                .Select(m => new ManifestInstructionViewModel(this, _navigationService, m))
+                .OrderBy(m => m.ProgressState)
+                .ThenBy(m => m.ArrivalDate);
+
+            Messages = new ObservableCollection<ManifestInstructionViewModel>(messages);
             RaisePropertyChanged(() => MessagesCount);
             RaisePropertyChanged(() => InboxHeaderText);
         }
@@ -92,8 +103,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
         {
-            ReloadPage();
-            return Task.FromResult(0);
+            return ReloadPageAsync();
         }
 
         #endregion BaseInstructionNotificationViewModel Overrides

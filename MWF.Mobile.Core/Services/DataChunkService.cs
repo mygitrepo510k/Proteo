@@ -45,7 +45,7 @@ namespace MWF.Mobile.Core.Services
         /// This is in the form of a 'Read' Chunk
         /// </summary>
         /// <param name="instructions">The instruction that have been acknowledged</param>
-        public async Task SendReadChunk(IEnumerable<MobileData> instructions, Driver currentDriver, Vehicle currentVehicle)
+        public async Task SendReadChunkAsync(IEnumerable<MobileData> instructions, Driver currentDriver, Vehicle currentVehicle)
         {
             //The data chunk to be sent.
             MobileApplicationDataChunkCollection dataChunkCollection = new MobileApplicationDataChunkCollection { MobileApplicationDataChunkCollectionObject = new List<MobileApplicationDataChunk>() };
@@ -97,8 +97,7 @@ namespace MWF.Mobile.Core.Services
 
             }
 
-            _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
-
+            await _gatewayQueuedService.AddToQueueAsync("fwSyncChunkToServer", dataChunkCollection);
         }
 
         /// <summary>
@@ -106,7 +105,7 @@ namespace MWF.Mobile.Core.Services
         /// this is called for when the instruction goes into Drive, OnSite and is Completed
         /// </summary>
         /// <param name="updateQuantity"></param>
-        public async Task SendDataChunk(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false, bool updateTrailer = false)
+        public async Task SendDataChunkAsync(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false, bool updateTrailer = false)
         {
             var mobileData = currentMobileData;
             mobileData.LatestDataChunkSequence++;
@@ -186,7 +185,7 @@ namespace MWF.Mobile.Core.Services
                         break;
 
                     default:
-                        _loggingService.LogEvent(string.Format("Mobile Application of state {0} attempted an uploaded.", mobileData.ProgressState), Enums.LogType.Warn);
+                        await _loggingService.LogEventAsync(string.Format("Mobile Application of state {0} attempted an uploaded.", mobileData.ProgressState), Enums.LogType.Warn);
                         return;
 
                 }
@@ -202,7 +201,7 @@ namespace MWF.Mobile.Core.Services
 
             dataChunkCollection.MobileApplicationDataChunkCollectionObject.Add(dataChunk);
 
-            _gatewayQueuedService.AddToQueue("fwSyncChunkToServer", dataChunkCollection);
+            await _gatewayQueuedService.AddToQueueAsync("fwSyncChunkToServer", dataChunkCollection);
 
             //Delete the instruction from the repository if its completed else just update it.
             if (deleteMobileData)

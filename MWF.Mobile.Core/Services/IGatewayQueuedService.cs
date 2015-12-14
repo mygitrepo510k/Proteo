@@ -18,9 +18,9 @@ namespace MWF.Mobile.Core.Services
     public interface IGatewayQueuedService
     {
         void StartQueueTimer();
-        void AddToQueue(string command, Models.GatewayServiceRequest.Parameter[] parameters = null);
-        void AddToQueue<TData>(string command, TData data, Models.GatewayServiceRequest.Parameter[] parameters = null) where TData : class;
-        void AddToQueue<TData>(IEnumerable<Models.GatewayServiceRequest.Action<TData>> actions) where TData : class;
+        Task AddToQueueAsync(string command, Models.GatewayServiceRequest.Parameter[] parameters = null);
+        Task AddToQueueAsync<TData>(string command, TData data, Models.GatewayServiceRequest.Parameter[] parameters = null) where TData : class;
+        Task AddToQueueAsync<TData>(IEnumerable<Models.GatewayServiceRequest.Action<TData>> actions) where TData : class;
         Task UploadQueueAsync();
     }
 

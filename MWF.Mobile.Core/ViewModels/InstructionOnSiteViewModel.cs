@@ -52,6 +52,13 @@ namespace MWF.Mobile.Core.ViewModels
             _orderList = new ObservableCollection<Item>(_mobileData.Order.Items);
         }
 
+        public override async void Start()
+        {
+            base.Start();
+            var config = await _repositories.ConfigRepository.GetAsync();
+            this.IsDeliveryAddEnabled = _mobileData.Order.Type == Enums.InstructionType.Deliver && config.DeliveryAdd;
+        }
+
         #endregion
 
         #region Public Properites
@@ -61,7 +68,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_advanceInstructionOnSiteCommand = _advanceInstructionOnSiteCommand ?? new MvxCommand(() => AdvanceInstructionOnSite()));
+                return (_advanceInstructionOnSiteCommand = _advanceInstructionOnSiteCommand ?? new MvxCommand(async () => await this.AdvanceInstructionOnSiteAsync()));
             }
         }
 
@@ -119,23 +126,16 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public bool IsDeliveryAddEnabled
-        {
-            get
-            {
-                return _mobileData.Order.Type == Enums.InstructionType.Deliver 
-                    && _repositories.ConfigRepository.GetAsync().Result.DeliveryAdd;
-            }
-        }
+        public bool IsDeliveryAddEnabled { get; private set; }
 
         #endregion
 
         #region Private Methods
 
-        private void AdvanceInstructionOnSite()
+        private async Task AdvanceInstructionOnSiteAsync()
         {
-            SendAdditionalInstructionOnSiteDataChunks();
-            _navigationService.MoveToNext(_navData);
+            await this.SendAdditionalInstructionOnSiteDataChunksAsync();
+            await _navigationService.MoveToNextAsync(_navData);
         }
 
         private void ShowOrder(Item order)
@@ -169,7 +169,7 @@ namespace MWF.Mobile.Core.ViewModels
         /// <summary>
         /// Ensures that all the additional instructions added send "onSite" data chunks
         /// </summary>
-        private void SendAdditionalInstructionOnSiteDataChunks()
+        private async Task SendAdditionalInstructionOnSiteDataChunksAsync()
         {
             var additionalInstructions = _navData.GetAdditionalInstructions();
 
@@ -179,7 +179,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     additionalInstruction.ProgressState = Enums.InstructionProgress.OnSite;
                     _navData.Data.OnSiteDateTime = DateTime.Now;
-                    _dataChunkService.SendDataChunk(_navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                    await _dataChunkService.SendDataChunkAsync(_navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
                 }
             }
 
@@ -232,10 +232,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
-            _navigationService.GoBack(_navData);
-            return Task.FromResult(false);
+            await _navigationService.GoBackAsync(_navData);
+            return false;
         }
 
         #endregion IBackButtonHandler Implementation
@@ -257,7 +257,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                       await  _navigationService.GoToManifest();
+                       await  _navigationService.GoToManifestAsync();
                     }
                 }
             }

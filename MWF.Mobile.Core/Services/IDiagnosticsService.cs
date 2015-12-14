@@ -10,6 +10,6 @@ namespace MWF.Mobile.Core.Services
 {
     public interface IDiagnosticsService
     {
-        Task<bool> UploadDiagnostics(string databasePath);
+        Task<bool> UploadDiagnosticsAsync(string databasePath);
     }
 }

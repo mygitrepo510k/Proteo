@@ -55,7 +55,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockUpload = _fixture.InjectNewMock<IUpload>();
 
-            _mockUpload.Setup(u => u.UploadFile(It.IsAny<Uri>(),
+            _mockUpload.Setup(u => u.UploadFileAsync(It.IsAny<Uri>(),
                                             It.IsAny<string>(),
                                             It.IsAny<string>(),
                                             It.IsAny<string>())).Returns(Task.FromResult<bool>(true));
@@ -80,7 +80,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var diagnosticsService = _fixture.Create<DiagnosticsService>();
 
-            bool result = await diagnosticsService.UploadDiagnostics("someDbPath");
+            bool result = await diagnosticsService.UploadDiagnosticsAsync("someDbPath");
 
             Assert.False(result);
 
@@ -96,7 +96,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var diagnosticsService = _fixture.Create<DiagnosticsService>();
 
-            bool result = await diagnosticsService.UploadDiagnostics("someDbPath");
+            bool result = await diagnosticsService.UploadDiagnosticsAsync("someDbPath");
 
             Assert.False(result);
 
@@ -114,7 +114,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var diagnosticsService = _fixture.Create<DiagnosticsService>();
 
-            bool result = await diagnosticsService.UploadDiagnostics("someDbPath");
+            bool result = await diagnosticsService.UploadDiagnosticsAsync("someDbPath");
 
             Assert.False(result);
 
@@ -132,7 +132,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var diagnosticsService = _fixture.Create<DiagnosticsService>();
 
-            bool result = await diagnosticsService.UploadDiagnostics("someDbPath");
+            bool result = await diagnosticsService.UploadDiagnosticsAsync("someDbPath");
 
             Assert.False(result);
 
@@ -150,13 +150,13 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var diagnosticsService = _fixture.Create<DiagnosticsService>();
 
-            bool result = await diagnosticsService.UploadDiagnostics("someDbPath");
+            bool result = await diagnosticsService.UploadDiagnosticsAsync("someDbPath");
 
             Assert.True(result);
 
             var ftpUri = string.Format("{0}/{1}/{2}", _config.FtpUrl , "TESTID", "someDbPath");
 
-            _mockUpload.Verify(u => u.UploadFile(It.Is<Uri>(uri => uri.AbsoluteUri == ftpUri),
+            _mockUpload.Verify(u => u.UploadFileAsync(It.Is<Uri>(uri => uri.AbsoluteUri == ftpUri),
                                                  It.Is<string>(s => s == _config.FtpUsername),
                                                  It.Is<string>(s => s == _config.FtpPassword),
                                                  It.Is<string>(s => s == "someDbPath")));
@@ -172,20 +172,20 @@ namespace MWF.Mobile.Tests.ServiceTests
             _config.FtpUrl = "http://sensibleurl.com";
 
 
-            _mockUpload.Setup(u => u.UploadFile(It.IsAny<Uri>(),
+            _mockUpload.Setup(u => u.UploadFileAsync(It.IsAny<Uri>(),
                                          It.IsAny<string>(),
                                          It.IsAny<string>(),
                                          It.IsAny<string>())).Returns(Task.FromResult<bool>(false));
 
             var diagnosticsService = _fixture.Create<DiagnosticsService>();
 
-            bool result = await diagnosticsService.UploadDiagnostics("someDbPath");
+            bool result = await diagnosticsService.UploadDiagnosticsAsync("someDbPath");
 
             Assert.False(result);
 
             var ftpUri = string.Format("{0}/{1}/{2}", _config.FtpUrl, "TESTID", "someDbPath");
 
-            _mockUpload.Verify(u => u.UploadFile(It.Is<Uri>(uri => uri.AbsoluteUri == ftpUri),
+            _mockUpload.Verify(u => u.UploadFileAsync(It.Is<Uri>(uri => uri.AbsoluteUri == ftpUri),
                                                  It.Is<string>(s => s == _config.FtpUsername),
                                                  It.Is<string>(s => s == _config.FtpPassword),
                                                  It.Is<string>(s => s == "someDbPath")));

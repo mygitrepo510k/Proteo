@@ -282,7 +282,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>())).Returns( Task.FromResult<bool>(true));
            
-            await safetyCheckFaultVM.OnBackButtonPressed();
+            await safetyCheckFaultVM.OnBackButtonPressedAsync();
 
             // since user pressed "ok", the back button stack proceeds and (as a modal view model) the view model should have
             // published a "false" result
@@ -307,7 +307,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>())).Returns(Task.FromResult<bool>(false));
 
-            await safetyCheckFaultVM.OnBackButtonPressed();
+            await safetyCheckFaultVM.OnBackButtonPressedAsync();
 
             // since user pressed "ok", the back button stack proceeds and (as a modal view model) the view model should have
             // published a "false" result

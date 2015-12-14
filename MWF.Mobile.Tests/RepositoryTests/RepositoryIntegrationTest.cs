@@ -8,7 +8,6 @@ using Moq;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Models;
 using SQLite.Net.Attributes;
-using Cirrious.MvvmCross.Community.Plugins.Sqlite.Wpf;
 using Xunit;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
@@ -57,7 +56,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
         }
 
         [Fact]
-        public void Repository_Insert_Read()
+        public async Task Repository_Insert_Read()
         {
             base.ClearAll();
 
@@ -73,8 +72,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
             }
 
             //read them all back
-            List<Device> devicesOut = deviceRepository.GetAll().OrderBy(d => d.ID).ToList();
-
+            List<Device> devicesOut = (await deviceRepository.GetAllAsync()).OrderBy(d => d.ID).ToList();
 
             // Check we got the same number of records out that we put in
             Assert.Equal(devicesIn.Count, devicesIn.Count);
@@ -245,7 +243,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
         }
 
         [Fact]
-        public void Repository_NestedChildRelation_InsertMany_GetAll()
+        public async Task Repository_NestedChildRelation_InsertMany_GetAll()
         {
             base.ClearAll();
 
@@ -258,7 +256,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
             repository.Insert(grandParentEntitiesIn);
 
             // Get all the entities out
-            var grandParentEntitiesOut = repository.GetAll().ToList();
+            var grandParentEntitiesOut = (await repository.GetAllAsync()).ToList();
 
             // Check that we got the same number of entities back out
             Assert.Equal(grandParentEntitiesIn.ToList().Count, grandParentEntitiesOut.ToList().Count);

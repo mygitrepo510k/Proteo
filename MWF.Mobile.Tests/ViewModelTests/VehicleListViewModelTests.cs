@@ -66,7 +66,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNext());
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync());
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var vm = _fixture.Create<VehicleListViewModel>();
@@ -74,7 +74,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             vm.ShowVehicleDetailCommand.Execute(_vehicle);
 
             // check that the navigation service was called
-            navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);
+            navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
 
         }
 
@@ -148,7 +148,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vehicleRepositry = new Mock<IVehicleRepository>();
             var vehicles = _fixture.CreateMany<Vehicle>();
-            vehicleRepositry.Setup(vr => vr.GetAll()).Returns(vehicles);
+            vehicleRepositry.Setup(vr => vr.GetAllAsync()).ReturnsAsync(vehicles);
 
             _fixture.Inject<IVehicleRepository>(vehicleRepositry.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -172,7 +172,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vehicleRepositry = new Mock<IVehicleRepository>();
             var vehicles = _fixture.CreateMany<Vehicle>();
-            vehicleRepositry.Setup(vr => vr.GetAll()).Returns( vehicles);
+            vehicleRepositry.Setup(vr => vr.GetAllAsync()).ReturnsAsync(vehicles);
 
             _fixture.Inject<IVehicleRepository>(vehicleRepositry.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -184,7 +184,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal(vehicles, vm.Vehicles);
             //Its get all twice because it calls it once on setup and another on refresh
-            vehicleRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
+            vehicleRepositry.Verify(vr => vr.GetAllAsync(), Times.Exactly(2));
   
         }
         
@@ -200,7 +200,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vehicleRepositry = new Mock<IVehicleRepository>();
             var vehicles = _fixture.CreateMany<Vehicle>(20);
-            vehicleRepositry.Setup(vr => vr.GetAll()).Returns(vehicles);
+            vehicleRepositry.Setup(vr => vr.GetAllAsync()).ReturnsAsync(vehicles);
 
             _fixture.Inject<IVehicleRepository>(vehicleRepositry.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -212,7 +212,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal(vehicles, vm.Vehicles);
             //Its get all twice because it calls it once on setup and another on refresh
-            vehicleRepositry.Verify(vr => vr.GetAll(), Times.Exactly(2));
+            vehicleRepositry.Verify(vr => vr.GetAllAsync(), Times.Exactly(2));
 
         }
          

@@ -5,6 +5,7 @@ namespace MWF.Mobile.Core.ViewModels.Interfaces
     public interface IBackButtonHandler
     {
 
-        Task<bool> OnBackButtonPressed();
+        Task<bool> OnBackButtonPressedAsync();
+
     }
 }

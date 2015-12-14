@@ -35,9 +35,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Constructor
 
-        public MainViewModel(IGatewayQueuedService gatewayQueuedService, IGatewayPollingService gatewayPollingService, IRepositories repositories, INavigationService navigationService, IReachability reachability, IToast toast, IInfoService infoService)
+        public MainViewModel(INavigationService navigationService)
         {
-            this.InitialViewModel = new ManifestViewModel(repositories, navigationService, reachability, toast, gatewayPollingService, gatewayQueuedService, infoService);
+            this.SetInitialViewModel<ManifestViewModel>();
 
             // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
             // Commented out for now so we don't accidentally start submitting debug data to BlueSphere:
@@ -129,7 +129,7 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task DoLogoutCommandAsync()
         {
             if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Are you sure you want to log out?", "Logout", "Logout", "Cancel"))
-              await _navigationService.Logout_Action(null);
+              await _navigationService.Logout_ActionAsync(null);
         }
 
         private void DoSelectMenuItemCommand(MenuViewModel item)

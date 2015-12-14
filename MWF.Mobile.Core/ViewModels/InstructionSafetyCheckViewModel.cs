@@ -13,24 +13,20 @@ namespace MWF.Mobile.Core.ViewModels
     public class InstructionSafetyCheckViewModel : SafetyCheckViewModel
     {
 
-        #region private fields
-
-
-        #endregion
-
         #region Construction
 
-        public InstructionSafetyCheckViewModel(IInfoService infoService, INavigationService navigationService, IRepositories repositories)
+        public InstructionSafetyCheckViewModel(IInfoService infoService, INavigationService navigationService, IRepositories repositories, ISafetyCheckService safetyCheckService)
+            : base(infoService, navigationService, repositories, safetyCheckService)
         {
-            _infoService = infoService;
-            _repositories = repositories;
-            _navigationService = navigationService;
-          
         }
 
+        public override Task Init()
+        {
+            // Don't call down to base Init method: what it does is not relevant for instruction safety checks, there is corresponding code in Init(navData) below.
+            return Task.FromResult(0);
+        }
 
-
-        public async void Init(NavData<MobileData> navData)
+        public async Task Init(NavData<MobileData> navData)
         {
             _navData = navData;
             _navData.Reinflate();
@@ -54,11 +50,14 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_navData.OtherData["UpdatedTrailerSafetyCheckData"] == null)
             {
-                Mvx.Resolve<ICustomUserInteraction>().Alert("A safety check profile for your trailer has not been found - Perform a manual safety check.", () => { _navigationService.MoveToNext(_navData); });
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("A safety check profile for your trailer has not been found - Perform a manual safety check.");
+                await _navigationService.MoveToNextAsync(_navData);
             }
 
         }
+
         #endregion
 
     }
+
 }

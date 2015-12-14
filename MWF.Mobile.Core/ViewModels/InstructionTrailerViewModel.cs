@@ -19,13 +19,11 @@ namespace MWF.Mobile.Core.ViewModels
     public class InstructionTrailerViewModel
         : BaseTrailerListViewModel, IInstructionNotificationViewModel
     {
+
         #region Private Fields
 
-
         private MobileData _mobileData;
-        private IInfoService _infoService;
         private NavData<MobileData> _navData;
-
 
         private MvxSubscriptionToken _notificationToken;
         private IMvxMessenger _messenger;
@@ -41,16 +39,14 @@ namespace MWF.Mobile.Core.ViewModels
                                             IRepositories repositories,
                                             IReachability reachabiity,
                                             IToast toast,
-                                            IInfoService startUpService,
-                                            IInfoService infoService) : base(gatewayService, repositories, reachabiity, toast, startUpService, navigationService )
+                                            IInfoService startUpService)
+            : base(gatewayService, repositories, reachabiity, toast, startUpService, navigationService)
         {
-            _infoService = infoService;
-
             _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(async m => await CheckInstructionNotificationAsync(m.Command, m.InstructionID));
             _applicationProfileRepository = _repositories.ApplicationRepository;
         }
 
-        public void Init(NavData<MobileData> navData)
+        public async Task Init(NavData<MobileData> navData)
         {
             _navData = navData;
             _navData.Reinflate();
@@ -59,7 +55,7 @@ namespace MWF.Mobile.Core.ViewModels
             //set the default trailer to be the one specified on the order
             if (_mobileData.Order.Additional.Trailer != null)
             {
-                this.DefaultTrailerReg = _mobileData.Order.Additional.Trailer.TrailerId;
+                await this.SetDefaultTrailerRegAsync(_mobileData.Order.Additional.Trailer.TrailerId);
             }
         }
 
@@ -83,13 +79,13 @@ namespace MWF.Mobile.Core.ViewModels
         {
             if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, title, "Confirm"))
             {
-                await UpdateReadyForSafetyCheck(trailer);
+                await UpdateReadyForSafetyCheckAsync(trailer);
                 _navData.OtherData["UpdatedTrailer"] = trailer;
-                _navigationService.MoveToNext(_navData);
+                await _navigationService.MoveToNextAsync(_navData);
             }
         }
 
-        private async Task UpdateReadyForSafetyCheck(Models.Trailer trailer)
+        private async Task UpdateReadyForSafetyCheckAsync(Models.Trailer trailer)
         {
             // if a trailer has been selected it differs from the current trailer then we need to update
             // everything requirede to update safety profiles is readiness for the next step
@@ -122,12 +118,11 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private async void GetMobileDataFromRepository(Guid ID)
+        private async Task GetMobileDataFromRepositoryAsync(Guid ID)
         {
             _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
             _navData.Data = _mobileData;
             RaiseAllPropertiesChanged();
-
         }
 
         #endregion
@@ -157,14 +152,14 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
-                    GetMobileDataFromRepository(instructionID);
+                    await this.GetMobileDataFromRepositoryAsync(instructionID);
                 }
                 else
                 {
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }

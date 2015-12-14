@@ -40,12 +40,12 @@ namespace MWF.Mobile.Core.Services
             _reachability = reachability;
             _closeApplication = closeApplication;
 
-            _notificationToken = Mvx.Resolve<IMvxMessenger>().Subscribe<Messages.TopLevelExceptionHandlerMessage>(m =>
-                LogAndClose(m.TopLevelException)
-                );
+            _notificationToken = Mvx.Resolve<IMvxMessenger>().Subscribe<Messages.TopLevelExceptionHandlerMessage>(async m =>
+                await this.LogAndCloseAsync(m.TopLevelException)
+            );
         }
 
-        public async void LogEvent(Exception exception)
+        public Task LogEventAsync(Exception exception)
         {
             var loggedException = new LogMessage
             {
@@ -54,10 +54,10 @@ namespace MWF.Mobile.Core.Services
                 LogType = Enums.LogType.Error
             };
 
-            await _loggedRepository.InsertAsync(loggedException);
+            return _loggedRepository.InsertAsync(loggedException);
         }
 
-        public async void LogEvent(string eventDescription, Enums.LogType type)
+        public Task LogEventAsync(string eventDescription, Enums.LogType type)
         {
             var loggedEvent = new LogMessage
             {
@@ -66,10 +66,10 @@ namespace MWF.Mobile.Core.Services
                 LogType = type
             };
 
-            await _loggedRepository.InsertAsync(loggedEvent);
+            return _loggedRepository.InsertAsync(loggedEvent);
         }
 
-        public async void LogEvent(string eventDescription, Enums.LogType type, params object[] args)
+        public Task LogEventAsync(string eventDescription, Enums.LogType type, params object[] args)
         {
             var loggedEvent = new LogMessage
             {
@@ -78,7 +78,7 @@ namespace MWF.Mobile.Core.Services
                 LogType = type
             };
 
-            await _loggedRepository.InsertAsync(loggedEvent);
+            return _loggedRepository.InsertAsync(loggedEvent);
         }
 
         public async Task UploadLoggedEventsAsync()
@@ -98,13 +98,10 @@ namespace MWF.Mobile.Core.Services
 
                 if (events != null && events.Any())
                 {
-                    
-
                     if (!_reachability.IsConnected())
                         return;
 
                     var deviceIdentifier = _deviceInfo.GetDeviceIdentifier();
-
 
                     foreach (var e in events)
                     {
@@ -118,18 +115,16 @@ namespace MWF.Mobile.Core.Services
 
                         try
                         {
-
-
                             var response = await _gatewayService.PostLogMessageAsync(deviceMessage);
 
                             if (!response.Succeeded)
                             {
-                                HandleLoggingFailure(e, events.ToList());
+                                await this.HandleLoggingFailureAsync(e, events.ToList());
                             }
                         }
                         catch(Exception)
                         {
-                            HandleLoggingFailure(e, events.ToList());
+                            await this.HandleLoggingFailureAsync(e, events.ToList());
                         }
 
                         await _loggedRepository.DeleteAsync(e);
@@ -143,18 +138,18 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        private void HandleLoggingFailure(LogMessage failedLogMessage, List<LogMessage> currentMessages)
+        private async Task HandleLoggingFailureAsync(LogMessage failedLogMessage, List<LogMessage> currentMessages)
         {
             if (!currentMessages.Any(m => m.LogType == Enums.LogType.LogFailure))
             {
-                string logMessage = ("An error occured trying to upload at least one log message. Those log messages has been deleted.");
-                LogEvent(logMessage, Enums.LogType.LogFailure);
+                string logMessage = ("An error occured trying to upload at least one log message. Those log messages have been deleted.");
+                await this.LogEventAsync(logMessage, Enums.LogType.LogFailure);
             }
         }
 
-        private void LogAndClose(Exception ex)
+        private async Task LogAndCloseAsync(Exception ex)
         {
-            LogEvent(ex);
+            await this.LogEventAsync(ex);
             _closeApplication.CloseApp();
         }
     }

@@ -9,12 +9,12 @@ namespace MWF.Mobile.Core.Repositories.Interfaces
 {
     public interface IMobileDataRepository : IRepository<MobileData>
     {
-        Task<bool> InstructionExists(Guid id);
-        Task<IEnumerable<MobileData>> GetNonCompletedInstructions(Guid driverID);
-        Task<IEnumerable<MobileData>> GetInProgressInstructions(Guid driverID);
-        Task<IEnumerable<MobileData>> GetNotStartedInstructions(Guid driverID);
-        Task<IEnumerable<MobileData>> GetNonCompletedMessages(Guid driverID);
-        Task<IEnumerable<MobileData>> GetAllMessages(Guid driverID);
+        Task<bool> InstructionExistsAsync(Guid id);
+        Task<IEnumerable<MobileData>> GetNonCompletedInstructionsAsync(Guid driverID);
+        Task<IEnumerable<MobileData>> GetInProgressInstructionsAsync(Guid driverID);
+        Task<IEnumerable<MobileData>> GetNotStartedInstructionsAsync(Guid driverID);
+        Task<IEnumerable<MobileData>> GetNonCompletedMessagesAsync(Guid driverID);
+        Task<IEnumerable<MobileData>> GetAllMessagesAsync(Guid driverID);
 
     }
 }

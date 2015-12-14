@@ -95,7 +95,7 @@ namespace MWF.Mobile.Android.Views
         {
             if (CurrentFragment.DataContext is IBackButtonHandler)
             {
-                var continueBack = await (CurrentFragment.DataContext as IBackButtonHandler).OnBackButtonPressed();
+                var continueBack = await (CurrentFragment.DataContext as IBackButtonHandler).OnBackButtonPressedAsync();
 
                 if (continueBack)
                 {

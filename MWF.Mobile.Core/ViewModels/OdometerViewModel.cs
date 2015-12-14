@@ -46,27 +46,23 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                _storeCommand = _storeCommand ?? new MvxCommand(DoStoreCommand);
+                _storeCommand = _storeCommand ?? new MvxCommand(async () => await this.DoStoreCommandAsync());
                 return _storeCommand;
             }
         }
-
 
         public string Registration
         {
             get { return _infoService.CurrentVehicle.Registration; }
         }
         
-
-        private void DoStoreCommand()
+        private Task DoStoreCommandAsync()
         {
             int odometerValue = int.Parse(OdometerValue);
             _infoService.Mileage = odometerValue;
 
-            _navigationService.MoveToNext();
+            return _navigationService.MoveToNextAsync();
         }
-
-
 
     }
 }

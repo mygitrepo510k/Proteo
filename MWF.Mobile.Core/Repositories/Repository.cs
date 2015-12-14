@@ -20,7 +20,6 @@ namespace MWF.Mobile.Core.Repositories
 
         protected IDataService _dataService;
 
-
         #region Construction
 
         public Repository(IDataService dataService)
@@ -32,257 +31,146 @@ namespace MWF.Mobile.Core.Repositories
 
         #region IRepository<T> Members
 
-        public async virtual Task DeleteAllAsync(SQLiteAsyncConnection transactionConnection)
-        {
-            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
-            await _dataService.RunInTransactionAsync(async c =>
-            {
-                await DeleteAllRecursiveAsync(typeof(T), c);
-            });
-        }
-
-        public async virtual Task DeleteAllAsync()
+        public virtual Task DeleteAllAsync()
         {
             var connection = _dataService.GetAsyncDBConnection();
-            await DeleteAllRecursiveAsync(typeof(T), connection);
+            return this.DeleteAllRecursiveAsync(typeof(T), connection);
         }
 
-        public async virtual Task DeleteAsync(T entity, SQLiteAsyncConnection transactionConnection)
+        public virtual async Task DeleteAsync(T entity)
         {
-            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+            var connection = _dataService.GetDBConnection();
 
-
-            await _dataService.RunInTransactionAsync(async c =>
+            await _dataService.RunInTransactionAsync(c =>
             {
-                await DeleteRecursiveAsync(entity, c);
+                this.DeleteRecursive(entity, c);
             });
         }
 
-        public async virtual Task DeleteAsync(T entity)
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            await DeleteAsync(entity, null);
-        }
+            var connection = _dataService.GetAsyncDBConnection();
 
+            var entities = await connection.Table<T>().ToListAsync();
 
-        public async virtual Task<IEnumerable<T>> GetAllAsync(SQLiteAsyncConnection transactionConnection)
-        {
-
-            List<T> entities = null;
-
-            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
-
-            entities = await connection.Table<T>().ToListAsync();
-            if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entities, connection);
+            if (typeof(T).HasChildRelationProperties())
+                await this.PopulateChildrenRecursiveAsync(entities, connection);
 
             return entities;
         }
 
-       
-
-        public async virtual Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await GetAllAsync(null);
-        }
-
-
-        public async virtual Task<T> GetByIDAsync(Guid ID, SQLiteAsyncConnection transactionConnection)
+        public virtual async Task<T> GetByIDAsync(Guid ID)
         {
             T entity = null;
 
-            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+            var connection = _dataService.GetAsyncDBConnection();
             var data = await connection.Table<T>().ToListAsync();
 
-            entity = data.Where(e => e.ID == ID).FirstOrDefault() ;
+            entity = data.Where(e => e.ID == ID).FirstOrDefault();
 
-            if (entity != null)
-                if (typeof(T).HasChildRelationProperties()) await PopulateChildrenRecursive(entity, connection);
+            if (entity != null && typeof(T).HasChildRelationProperties())
+                await PopulateChildrenRecursiveAsync(entity, connection);
 
             return entity;
         }
 
-
-
-        public async virtual Task<T> GetByIDAsync(Guid ID)
+        public virtual void Insert(T entity, SQLiteConnection transactionConnection)
         {
-            return await GetByIDAsync(ID, null);
+            var connection = transactionConnection ?? _dataService.GetDBConnection();
+
+            this.InsertRecursive(entity, connection);
         }
-        public async virtual Task InsertAsync(IEnumerable<T> entities, SQLiteAsyncConnection transactionConnection)
-        {
 
-            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
+        public virtual async Task InsertAsync(T entity)
+        {
+            var connection = _dataService.GetDBConnection();
+
+            await _dataService.RunInTransactionAsync(c =>
+            {
+                this.InsertRecursive(entity, c);
+            });
+        }
+
+        public virtual void Insert(IEnumerable<T> entities, SQLiteConnection transactionConnection)
+        {
+            var connection = transactionConnection ?? _dataService.GetDBConnection();
 
             foreach (var entity in entities)
             {
-                await InsertRecursiveAsync(entity, connection);
-            }
-
-
-        }
-
-        public virtual IEnumerable<T> GetAll(SQLiteConnection transactionConnection)
-        {
-
-            List<T> entities = null;
-
-            SQLiteConnection connection = transactionConnection ?? _dataService.GetDBConnection();
-            try
-            {
-                entities = connection.Table<T>().ToList();
-                if (typeof(T).HasChildRelationProperties()) PopulateChildrenRecursive(entities, connection);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                if (transactionConnection == null)
-                    connection.Close();
-            }
-
-            return entities;
-        }
-
-        public virtual IEnumerable<T> GetAll()
-        {
-            return GetAll(null);
-        }
-
-        /// <summary>
-        /// For the parent entity pulled from a table, populates any children
-        /// as labelled with the ChildRelationship. 
-        /// </summary>
-        /// <param name="parent"></param>
-        protected void PopulateChildrenRecursive(IBlueSphereEntity parent, SQLiteConnection connection)
-        {
-
-            foreach (var relationshipProperty in parent.GetType().GetChildRelationProperties())
-            {
-                Type childType = relationshipProperty.GetTypeOfChildRelation();
-                string childIdentifyingPropertyName = relationshipProperty.GetIdentifyingPropertyNameOfChildRelation();
-                object childIdentifyingPropertyValue = relationshipProperty.GetIdentifyingPropertyValueOfChildRelation();
-                IList children = GetChildren(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
-
-                if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
-                {
-
-                    Debug.Assert(children.Count == 1);
-                    relationshipProperty.SetValue(parent, children[0]);
-                }
-                else if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToZeroOrOne)
-                {
-                    Debug.Assert(children.Count <= 1);
-
-                    if (children.Count == 1)
-                        relationshipProperty.SetValue(parent, children[0]);
-                }
-                else
-                {
-                    relationshipProperty.SetValue(parent, children);
-                }
-
-                PopulateChildrenRecursive(children, connection);
-
+                this.InsertRecursive(entity, connection);
             }
         }
 
-
-
-        /// <summary>
-        /// Overload of PopulateChildrenRecursive that deals with
-        /// a collection of parents
-        /// </summary>
-        /// <param name="parents"></param>
-        protected void PopulateChildrenRecursive(IEnumerable parents, SQLiteConnection connection)
+        public virtual async Task InsertAsync(IEnumerable<T> entities)
         {
-            foreach (var parent in parents)
+            var connection = _dataService.GetDBConnection();
+
+            await _dataService.RunInTransactionAsync(c =>
             {
-                PopulateChildrenRecursive(parent as IBlueSphereEntity, connection);
-            }
-        }
-        public async virtual Task InsertAsync(T entity, SQLiteAsyncConnection transactionConnection)
-        {
-
-            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
-            await InsertRecursiveAsync(entity, connection);
+                this.Insert(entities, c);
+            });
         }
 
-        public async virtual Task InsertAsync(IEnumerable<T> entities)
+        private void InsertRecursive(IBlueSphereEntity entity, SQLiteConnection connection)
         {
-            await InsertAsync(entities, null);
-        }
+            connection.Insert(entity);
 
-        public async virtual Task InsertAsync(T entity)
-        {
-            await InsertAsync(entity, null);
-        }
+            var relationshipProperties = entity.GetType().GetChildRelationProperties();
 
-
-        private async Task InsertRecursiveAsync(IBlueSphereEntity entity, SQLiteAsyncConnection connection)
-        {
-
-            await connection.InsertAsync(entity);
-
-            foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())
+            foreach (var relationshipProperty in relationshipProperties)
             {
-                DoRecursiveTreeAction(entity, relationshipProperty, async (parent, child) =>
+                this.DoRecursiveTreeAction(entity, relationshipProperty, (parent, child) =>
                 {
                     SetForeignKeyOnChild(parent, child);
-                    await InsertRecursiveAsync(child, connection);
+                    this.InsertRecursive(child, connection);
                 });
             }
         }
 
-        public async virtual Task UpdateAsync(T entity, SQLiteAsyncConnection transactionConnection)
+        public virtual async Task UpdateAsync(T entity)
         {
+            var connection = _dataService.GetDBConnection();
 
-            SQLiteAsyncConnection connection = transactionConnection ?? _dataService.GetAsyncDBConnection();
-            await _dataService.RunInTransactionAsync(async c =>
+            await _dataService.RunInTransactionAsync(c =>
             {
-                var existingEntity = await GetByIDAsync(entity.ID);
+                var data = c.Table<T>().ToList();
+
+                var existingEntity = data.Where(e => e.ID == entity.ID).FirstOrDefault();
+
                 if (existingEntity != null)
                 {
-                    await DeleteAsync(existingEntity);
+                    if (typeof(T).HasChildRelationProperties())
+                        this.PopulateChildrenRecursive(existingEntity, c);
+
+                    this.DeleteRecursive(existingEntity, c);
                 }
 
-                await InsertRecursiveAsync(entity, c);
+                this.InsertRecursive(entity, c);
             });
-
-
         }
-
-        public async virtual Task UpdateAsync(T entity)
-        {
-            await UpdateAsync(entity, null);
-        }
-
 
         #endregion
 
         #region Private Methods
-
-
-
-
 
         /// <summary>
         ///  Deletes a potentially nested object graph from the appropriate tables using the
         ///  ChildRelationship and ForeignKey attributes to guide the process
         /// </summary>
         /// <param name="entity"></param>
-        private async Task DeleteRecursiveAsync(IBlueSphereEntity entity, SQLiteAsyncConnection connection)
+        private void DeleteRecursive(IBlueSphereEntity entity, SQLiteConnection connection)
         {
-            await connection.DeleteAsync(entity);
+            connection.Delete(entity);
 
-            foreach (var relationshipProperty in entity.GetType().GetChildRelationProperties())
+            var relationshipProperties = entity.GetType().GetChildRelationProperties();
+
+            foreach (var relationshipProperty in relationshipProperties)
             {
-                DoRecursiveTreeAction(entity, relationshipProperty, async (parent, child) =>
+                this.DoRecursiveTreeAction(entity, relationshipProperty, (parent, child) =>
                 {
-                    await DeleteRecursiveAsync(child, connection);
+                    this.DeleteRecursive(child, connection);
                 });
-
             }
-
         }
 
         /// <summary>
@@ -292,13 +180,13 @@ namespace MWF.Mobile.Core.Repositories
         /// <param name="type"></param>
         private void DeleteAllRecursive(Type type, SQLiteConnection connection)
         {
-            DeleteAllFromTable(type, connection);
+            this.DeleteAllFromTable(type, connection);
 
-            foreach (var childType in type.GetChildRelationTypes())
+            var childTypes = type.GetChildRelationTypes();
+
+            foreach (var childType in childTypes)
             {
-
-                DeleteAllRecursive(childType, connection);
-
+                this.DeleteAllRecursive(childType, connection);
             }
         }
 
@@ -306,41 +194,39 @@ namespace MWF.Mobile.Core.Repositories
         {
             await DeleteAllFromTableAsync(type, connection);
 
-            foreach (var childType in type.GetChildRelationTypes())
+            var childTypes = type.GetChildRelationTypes();
+
+            foreach (var childType in childTypes)
             {
-
-                await DeleteAllRecursiveAsync(childType, connection);
-
+                await this.DeleteAllRecursiveAsync(childType, connection);
             }
         }
-
 
         /// <summary>
         /// For the parent entity pulled from a table, populates any children
         /// as labelled with the ChildRelationship. 
         /// </summary>
         /// <param name="parent"></param>
-        protected async Task PopulateChildrenRecursive(IBlueSphereEntity parent, SQLiteAsyncConnection connection)
+        protected async Task PopulateChildrenRecursiveAsync(IBlueSphereEntity parent, SQLiteAsyncConnection connection)
         {
+            var relationshipProperties = parent.GetType().GetChildRelationProperties();
 
-            foreach (var relationshipProperty in parent.GetType().GetChildRelationProperties())
+            foreach (var relationshipProperty in relationshipProperties)
             {
                 Type childType = relationshipProperty.GetTypeOfChildRelation();
                 string childIdentifyingPropertyName = relationshipProperty.GetIdentifyingPropertyNameOfChildRelation();
                 object childIdentifyingPropertyValue = relationshipProperty.GetIdentifyingPropertyValueOfChildRelation();
 
-
-                IList children = await GetChildren(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
+                IList children = await this.GetChildrenAsync(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
 
                 if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
                 {
-
-                    Debug.Assert(children.Count == 1);
+                    Debug.Assert(children.Count == 1, $"Expected one child of type {childType.Name} for parent {parent.GetType().Name} '{parent.ID}' but found {children.Count}");
                     relationshipProperty.SetValue(parent, children[0]);
                 }
                 else if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToZeroOrOne)
                 {
-                    Debug.Assert(children.Count <= 1);
+                    Debug.Assert(children.Count <= 1, $"Expected zero or one child of type {childType.Name} for parent {parent.GetType().Name} '{parent.ID}' but found {children.Count}");
 
                     if (children.Count == 1)
                         relationshipProperty.SetValue(parent, children[0]);
@@ -350,28 +236,66 @@ namespace MWF.Mobile.Core.Repositories
                     relationshipProperty.SetValue(parent, children);
                 }
 
-                await PopulateChildrenRecursive(children, connection);
-
+                foreach (var child in children)
+                {
+                    await this.PopulateChildrenRecursiveAsync(child as IBlueSphereEntity, connection);
+                }
             }
         }
 
+        /// <summary>
+        /// Private non-async version of PopulateChildrenRecursiveAsync for use within a transaction
+        /// </summary>
+        private void PopulateChildrenRecursive(IBlueSphereEntity parent, SQLiteConnection connection)
+        {
+            var relationshipProperties = parent.GetType().GetChildRelationProperties();
 
+            foreach (var relationshipProperty in relationshipProperties)
+            {
+                Type childType = relationshipProperty.GetTypeOfChildRelation();
+                string childIdentifyingPropertyName = relationshipProperty.GetIdentifyingPropertyNameOfChildRelation();
+                object childIdentifyingPropertyValue = relationshipProperty.GetIdentifyingPropertyValueOfChildRelation();
+
+                IList children = this.GetChildren(parent, childType, childIdentifyingPropertyName, childIdentifyingPropertyValue, connection);
+
+                if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
+                {
+                    Debug.Assert(children.Count == 1, $"Expected one child of type {childType.Name} for parent {parent.GetType().Name} '{parent.ID}' but found {children.Count}");
+                    relationshipProperty.SetValue(parent, children[0]);
+                }
+                else if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToZeroOrOne)
+                {
+                    Debug.Assert(children.Count <= 1, $"Expected zero or one child of type {childType.Name} for parent {parent.GetType().Name} '{parent.ID}' but found {children.Count}");
+
+                    if (children.Count == 1)
+                        relationshipProperty.SetValue(parent, children[0]);
+                }
+                else
+                {
+                    relationshipProperty.SetValue(parent, children);
+                }
+
+                foreach (var child in children)
+                {
+                    this.PopulateChildrenRecursive(child as IBlueSphereEntity, connection);
+                }
+            }
+        }
 
         /// <summary>
         /// Overload of PopulateChildrenRecursive that deals with
         /// a collection of parents
         /// </summary>
         /// <param name="parents"></param>
-        protected async Task PopulateChildrenRecursive(IEnumerable parents, SQLiteAsyncConnection connection)
+        protected async Task PopulateChildrenRecursiveAsync(IEnumerable parents, SQLiteAsyncConnection connection)
         {
             foreach (var parent in parents)
             {
-                await PopulateChildrenRecursive(parent as IBlueSphereEntity, connection);
+                await this.PopulateChildrenRecursiveAsync(parent as IBlueSphereEntity, connection);
             }
         }
 
-
-        private async Task<IList> GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteAsyncConnection connection)
+        private async Task<IList> GetChildrenAsync(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteAsyncConnection connection)
         {
             TableMapping tableMapping = await connection.GetMappingAsync(childType);
 
@@ -383,12 +307,11 @@ namespace MWF.Mobile.Core.Repositories
                 query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
             }
 
-            //var queryResults = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(childType));
             List<object> queryResults;
 
             if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
             {
-                queryResults = await connection.QueryAsync(CancellationToken.None,tableMapping, query, parent.ID, childIdentifyingPropertyValue);
+                queryResults = await connection.QueryAsync(CancellationToken.None, tableMapping, query, parent.ID, childIdentifyingPropertyValue);
             }
             else
             {
@@ -404,10 +327,8 @@ namespace MWF.Mobile.Core.Repositories
             }
 
             return genericList;
-
         }
 
-        // Gets the children of the specfied type for specified parent using foreign key mappings
         private IList GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteConnection connection)
         {
             TableMapping tableMapping = connection.GetMapping(childType);
@@ -440,7 +361,6 @@ namespace MWF.Mobile.Core.Repositories
             }
 
             return genericList;
-
         }
 
         // Deletes all items from the table associated with the specified type
@@ -455,9 +375,6 @@ namespace MWF.Mobile.Core.Repositories
             string command = string.Format("delete from {0}", type.GetTableName());
             await connection.ExecuteAsync(command);
         }
-
-
-
 
         // Ensures the property on the child labelled with the foreign key attribute lines up with
         // the id of the parent

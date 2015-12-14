@@ -55,8 +55,6 @@ namespace MWF.Mobile.Android.Views
 
             HockeyApp.LoginManager.Register(this, _hockeyAppID, _hockeyAppSecret, HockeyApp.LoginManager.LoginModeValidate, this.Class);
             CheckForUpdates();
-            
-
         }
 
         protected override void OnPause()

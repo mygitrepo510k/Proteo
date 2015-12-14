@@ -61,7 +61,7 @@ namespace MWF.Mobile.Core.Services
 
             if (config == null && string.IsNullOrWhiteSpace(config.HEUrl))
             {
-                Mvx.Resolve<ICustomUserInteraction>().Alert("Your HE Url has not been setup, you cannot upload images unless it has been setup.");
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Your HE Url has not been setup, you cannot upload images unless it has been setup.");
                 return;
             }
 
@@ -120,11 +120,11 @@ namespace MWF.Mobile.Core.Services
 
                     if (response.StatusCode == HttpStatusCode.OK)
                     {
-                        _loggingService.LogEvent("Image sent successfully.", Enums.LogType.Info);
+                        await _loggingService.LogEventAsync("Image sent successfully.", Enums.LogType.Info);
                         uploadedCount++;
                     }
                     else
-                        _loggingService.LogEvent(string.Format("Image failed to send, Status Code: {0}.", response.StatusCode), Enums.LogType.Error);
+                        await _loggingService.LogEventAsync(string.Format("Image failed to send, Status Code: {0}.", response.StatusCode), Enums.LogType.Error);
                 }
             }
 

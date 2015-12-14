@@ -37,7 +37,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             //mock the gateway service
             _gatewayServiceMock = new Mock<IGatewayService>();
-            _gatewayServiceMock.Setup(gs => gs.GetDrivers()).Returns(Task.FromResult<IEnumerable<Driver>>(new List<Driver>()));
+            _gatewayServiceMock.Setup(gs => gs.GetDriversAsync()).Returns(Task.FromResult<IEnumerable<Driver>>(new List<Driver>()));
             _fixture.Inject<IGatewayService>(_gatewayServiceMock.Object);
 
         }
@@ -64,7 +64,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             // mock driver repository. Returns driversFromDB first time when asked, and driversFromBluesphere subsequently
             Mock<IDriverRepository> driverRepositoryMock = new Mock<IDriverRepository>();
-            driverRepositoryMock.Setup(dr => dr.GetAll()).ReturnsInOrder(GetDrivers(driversFromDB), GetDrivers(driversFromBluesphere));
+            driverRepositoryMock.Setup(dr => dr.GetAllAsync()).ReturnsInOrder(GetDrivers(driversFromDB), GetDrivers(driversFromBluesphere));
             _fixture.Inject<IDriverRepository>(driverRepositoryMock.Object);
 
             // set up the gaeway service license check
@@ -83,7 +83,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //verify that if bluesphere should have been connected to, it has done so
             if (shouldUpdateFromBluesphere)
             {
-                _gatewayServiceMock.Verify(gs => gs.GetDrivers(), Times.Once);
+                _gatewayServiceMock.Verify(gs => gs.GetDriversAsync(), Times.Once);
                 //driver repostory should have been updated to as part of bluesphere refresh
                 driverRepositoryMock.Verify(dr => dr.DeleteAll(), Times.Once);
                 driverRepositoryMock.Verify(dr => dr.Insert(It.IsAny<IEnumerable<Driver>>()), Times.Once);

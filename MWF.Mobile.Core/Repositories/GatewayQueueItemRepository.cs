@@ -22,7 +22,7 @@ namespace MWF.Mobile.Core.Repositories
 
         #endregion
 
-        public async Task<IEnumerable<GatewayQueueItem>> GetAllInQueueOrder()
+        public async Task<IEnumerable<GatewayQueueItem>> GetAllInQueueOrderAsync()
         {
             var r = await this.GetAllAsync();
             IOrderedEnumerable<GatewayQueueItem> retVal = null;

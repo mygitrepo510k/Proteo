@@ -87,14 +87,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
                     validMessageCount++;
             }
 
-            _mobileDataRepoMock.Setup(ms => ms.GetAllMessages(It.Is<Guid>(i => i == _driver.ID))).Returns(messages);
+            _mobileDataRepoMock.Setup(ms => ms.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID))).Returns(messages);
 
             var inboxVM = _fixture.Create<InboxViewModel>();
 
             inboxVM.RefreshMessagesCommand.Execute(null);
 
             //Its twice because when the viewmodel is created then it calls refreshMessages()
-            _mobileDataRepoMock.Verify(md => md.GetAllMessages(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));
+            _mobileDataRepoMock.Verify(md => md.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));
             _mockGatewayPollingService.Verify(gp => gp.PollForInstructionsAsync(), Times.Exactly(2));
 
             Assert.Equal(validMessageCount, inboxVM.MessagesCount);
@@ -113,7 +113,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             inboxVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, new Guid());
 
             //Its twice because when the viewmodel is created then it calls refreshMessages()
-            _mobileDataRepoMock.Verify(md => md.GetAllMessages(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));
+            _mobileDataRepoMock.Verify(md => md.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));
 
             //Should only pull from the database because new instructions would of just been inserted
             //Gets called once when the inbox is created.

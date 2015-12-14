@@ -200,9 +200,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public async Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
-
             bool continueWithBackPress = true;
 
             if (UserChangesDetected)

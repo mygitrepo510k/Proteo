@@ -45,7 +45,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockInfoService.Setup(m => m.LoggedInDriver).Returns(_fixture.Create<Driver>());
 
             _mockLatestSafetyCheckRepository = _fixture.InjectNewMock<ILatestSafetyCheckRepository>();
-            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriver(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
+            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -80,7 +80,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             _latestSafetyCheck.VehicleSafetyCheck = null;
-            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriver(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
+            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
 
@@ -103,7 +103,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             _latestSafetyCheck.TrailerSafetyCheck = null;
-            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriver(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
+            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
 
@@ -126,7 +126,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             _latestSafetyCheck.VehicleSafetyCheck = null;
-            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriver(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
+            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
 
@@ -149,7 +149,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             _latestSafetyCheck.TrailerSafetyCheck = null;
-            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriver(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
+            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
 
@@ -226,13 +226,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _latestSafetyCheck.VehicleSafetyCheck = null;
             _latestSafetyCheck.TrailerSafetyCheck = null;
-            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriver(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
+            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).Returns(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
 
             _mockUserInteraction.Verify(mui => mui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(ni => ni == null)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(ni => ni == null)), Times.Once);
         }
 
         [Fact]
@@ -249,7 +249,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockNavigationService.Verify(ns => ns.GoToManifest(), Times.Once);
+            _mockNavigationService.Verify(ns => ns.GoToManifestAsync(), Times.Once);
 
         }
 

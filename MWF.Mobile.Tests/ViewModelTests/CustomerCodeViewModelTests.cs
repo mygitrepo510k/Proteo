@@ -66,8 +66,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             // Get device returns null (i.e. customer code is invalid)
-            _fixture.Register<IGatewayService>(() => Mock.Of<IGatewayService>(gs => gs.GetDevice(It.IsAny<string>()) == Task.FromResult<Device>((Device) null) &&
-                                                                                    gs.CreateDevice() == Task.FromResult<bool>(true)));
+            _fixture.Register<IGatewayService>(() => Mock.Of<IGatewayService>(gs => gs.GetDeviceAsync(It.IsAny<string>()) == Task.FromResult<Device>((Device) null) &&
+                                                                                    gs.CreateDeviceAsync() == Task.FromResult<bool>(true)));
 
             var ccvm = _fixture.Create<CustomerCodeViewModel>();
 
@@ -87,8 +87,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             // Get device throws an exception
             var gatewayService = new Mock<IGatewayService>();
-            gatewayService.Setup(gs => gs.CreateDevice()).Returns(Task.FromResult<bool>(true));
-            gatewayService.Setup(gs => gs.GetDevice(It.IsAny<string>())).Callback(() => { throw new Exception(); });
+            gatewayService.Setup(gs => gs.CreateDeviceAsync()).Returns(Task.FromResult<bool>(true));
+            gatewayService.Setup(gs => gs.GetDeviceAsync(It.IsAny<string>())).Callback(() => { throw new Exception(); });
             _fixture.Register<IGatewayService>(() => gatewayService.Object);
 
             var ccvm = _fixture.Create<CustomerCodeViewModel>();
@@ -113,8 +113,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
             var gateWayService = Mock.Of<IGatewayService>(gs =>
-                                                             gs.GetDevice("123") == Task.FromResult<Device>(dev) &&
-                                                             gs.CreateDevice() == Task.FromResult<bool>(true));
+                                                             gs.GetDeviceAsync("123") == Task.FromResult<Device>(dev) &&
+                                                             gs.CreateDeviceAsync() == Task.FromResult<bool>(true));
 
             _fixture.Register<IGatewayService>(() => gateWayService);
 
@@ -123,7 +123,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNext());
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync());
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var ccvm = _fixture.Create<CustomerCodeViewModel>();
@@ -137,7 +137,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             customerRepository.Verify(cr => cr.Insert(It.IsAny<Customer>(), It.IsAny<ISQLiteConnection>()), Times.Once);
 
             // check that the navigation service was called
-            navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);
+            navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
 
 
         }

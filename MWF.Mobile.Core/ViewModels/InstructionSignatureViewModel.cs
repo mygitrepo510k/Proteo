@@ -111,7 +111,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_instructionDoneCommand = _instructionDoneCommand ?? new MvxCommand(() => InstructionDone()));
+                return (_instructionDoneCommand = _instructionDoneCommand ?? new MvxCommand(async () => await this.InstructionDoneAsync()));
             }
         }
 
@@ -119,16 +119,15 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private void InstructionDone()
+        private async Task InstructionDoneAsync()
         {
-
             var deliveryOptions = _navData.GetWorseCaseDeliveryOptions();
 
             if (((_mobileData.Order.Type == Enums.InstructionType.Collect && _mobileData.Order.Additional.CustomerSignatureRequiredForCollection)
                     || (_mobileData.Order.Type == Enums.InstructionType.Deliver && deliveryOptions.CustomerSignatureRequiredForDelivery))
                     && string.IsNullOrWhiteSpace(CustomerSignatureEncodedImage))
             {
-                _userInteraction.Alert("Signature is required");
+                await _userInteraction.AlertAsync("Signature is required");
                 return;
             }
 
@@ -136,10 +135,9 @@ namespace MWF.Mobile.Core.ViewModels
                     || (_mobileData.Order.Type == Enums.InstructionType.Deliver && deliveryOptions.CustomerNameRequiredForDelivery))
                     && string.IsNullOrWhiteSpace(CustomerName))
             {
-                _userInteraction.Alert("The signers name is required");
+                await _userInteraction.AlertAsync("The signers name is required");
                 return;
             }
-
 
             var dataChunks = _navData.GetAllDataChunks();
             foreach (var dataChunk in dataChunks)
@@ -153,8 +151,7 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
 
-            _navigationService.MoveToNext(_navData);
-
+            await _navigationService.MoveToNextAsync(_navData);
         }
 
         private void RefreshPage(Guid ID)
@@ -191,7 +188,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }
@@ -201,19 +198,19 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
             //TODO: navigation service logic has leaked here. Need to navigation 
             if (_mobileData.Order.Type == Enums.InstructionType.Deliver)
             {
                 // Delivery, or was previouslyon comments screen,  continue back using normal backstack mechanism
-                return Task.FromResult(true);
+                return true;
             }
             else
             {
-                // Cellection, use custom back mapping action to skip the select trailer workflow
-                _navigationService.GoBack(_navData);
-                return Task.FromResult(false);
+                // Collection, use custom back mapping action to skip the select trailer workflow
+                await _navigationService.GoBackAsync(_navData);
+                return false;
             }
         }
 

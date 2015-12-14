@@ -34,14 +34,14 @@ namespace MWF.Mobile.Core.ViewModels
             base.Start();
             SafetyCheckFaultItemViewModels = new List<DisplaySafetyCheckFaultItemViewModel>();
 
-            _latestSafetyCheckData = await _repositories.LatestSafetyCheckRepository.GetForDriver(_infoService.LoggedInDriver.ID);
+            _latestSafetyCheckData = await _repositories.LatestSafetyCheckRepository.GetForDriverAsync(_infoService.LoggedInDriver.ID);
 
             //If there is no safety check data to view, then sends them back to where they came.
             if (_latestSafetyCheckData.VehicleSafetyCheck == null && _latestSafetyCheckData.TrailerSafetyCheck == null)
             {
-
-                Mvx.Resolve<ICustomUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been completed - Refer to your manual safety check.",
-                    () => { _navigationService.MoveToNext(_navigationService.CurrentNavData); });
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("A safety check profile for your vehicle and/or trailer has not been completed - Refer to your manual safety check.");
+                await _navigationService.MoveToNextAsync(_navigationService.CurrentNavData);
+                return;
             }
 
             if (_latestSafetyCheckData.VehicleSafetyCheck != null)
@@ -178,7 +178,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }
@@ -197,10 +197,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
-            _navigationService.GoBack(_navigationService.CurrentNavData);
-            return Task.FromResult(false);
+            await _navigationService.GoBackAsync(_navigationService.CurrentNavData);
+            return false;
         }
 
         #endregion IBackButtonHandler Implementation

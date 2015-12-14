@@ -86,7 +86,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_reviseQuantityCommand = _reviseQuantityCommand ?? new MvxCommand(() => ReviseQuantity()));
+                return (_reviseQuantityCommand = _reviseQuantityCommand ?? new MvxCommand(async () => await this.ReviseQuantityAsync()));
             }
         }
 
@@ -94,12 +94,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private void ReviseQuantity()
+        private async Task ReviseQuantityAsync()
         {
-
             foreach (var order in _mobileData.Order.Items)
             {
-                if(order.ID == _order.ID)
+                if (order.ID == _order.ID)
                 {
                     order.Quantity = OrderQuantity;
                     order.Additional.ConfirmQuantity.Value = OrderQuantity;
@@ -107,13 +106,12 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
             //This value gets updated in HE.
-            _dataChunkService.SendDataChunk(_dataChunk, _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle, updateQuantity: true);
+            await _dataChunkService.SendDataChunkAsync(_dataChunk, _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle, updateQuantity: true);
 
             this.ReturnResult(true);
-
         }
 
-        private async void GetMobileDataFromRepository(Guid parentID, Guid childID)
+        private async Task GetMobileDataFromRepositoryAsync(Guid parentID, Guid childID)
         {
             _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(parentID);
             _order = _mobileData.Order.Items.First(i => i.ID == childID);
@@ -127,14 +125,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public Task<bool> OnBackButtonPressedAsync()
         {
-            var task = new Task<bool>(() => false);
-
             this.Cancel();
-
-            return task;
-
+            return Task.FromResult(false);
         }
 
         #endregion IBackButtonHandler Implementation
@@ -177,14 +171,15 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible) 
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
-                    GetMobileDataFromRepository(instructionID, _order.ID);
+
+                    await this.GetMobileDataFromRepositoryAsync(instructionID, _order.ID);
                 }
                 else
                 {
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }

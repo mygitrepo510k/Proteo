@@ -223,7 +223,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.True(_mobileData.ProgressState == Core.Enums.InstructionProgress.OnSite);
 
             // Should have told navigation service to move on
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(ni => ni.Data == _mobileData)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(ni => ni.Data == _mobileData)), Times.Once);
 
         }
 
@@ -291,7 +291,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockNavigationService.Verify(ns => ns.GoToManifest(), Times.Once);
+            _mockNavigationService.Verify(ns => ns.GoToManifestAsync(), Times.Once);
 
         }
 

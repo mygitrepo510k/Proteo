@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace MWF.Mobile.Core.Repositories
 {
@@ -25,6 +26,7 @@ namespace MWF.Mobile.Core.Repositories
         public async Task<MWFMobileConfig> GetAsync()
         {
             var data = await this.GetAllAsync();
+            Debug.Assert(data.Count() == 1, $"Expected one MWFMobileConfig record but found {data.Count()}");
             return data.First();
         }
 

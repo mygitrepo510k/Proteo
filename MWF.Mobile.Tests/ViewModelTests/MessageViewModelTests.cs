@@ -48,7 +48,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
 
             _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
-            _mockDataChunkService.Setup(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)));
+            _mockDataChunkService.Setup(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)));
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -116,7 +116,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             MessageVM.ReadMessageCommand.Execute(null);
 
-            _mockDataChunkService.Verify(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Once);
+            _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Once);
         }
 
         [Fact]
@@ -134,7 +134,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             MessageVM.ReadMessageCommand.Execute(null);
 
-            _mockDataChunkService.Verify(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Never);
+            _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Never);
 
         }
 
@@ -151,7 +151,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             MessageVM.ReadMessageCommand.Execute(null);
 
-            _mockDataChunkService.Verify(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Once);
+            _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Once);
         }
 
         [Fact]
@@ -167,7 +167,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             MessageVM.ReadMessageCommand.Execute(null);
 
-            _mockDataChunkService.Verify(dc => dc.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Never);
+            _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Never);
 
         }
 

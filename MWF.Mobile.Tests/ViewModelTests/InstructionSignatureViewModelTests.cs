@@ -58,7 +58,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
 
-            _mockDataChunkService.Setup(m => m.SendDataChunk(It.IsAny<MobileApplicationDataChunkContentActivity>(),  It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(),false, false));
+            _mockDataChunkService.Setup(m => m.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(),  It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(),false, false));
 
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
@@ -90,7 +90,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny <NavData<MobileData>>()), Times.Once);
+            _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny <NavData<MobileData>>()), Times.Once);
 
             Assert.Same(instructionSignatureVM.CustomerSignatureEncodedImage, dataChunk.Signature.EncodedImage);
             Assert.Same(instructionSignatureVM.CustomerName, dataChunk.Signature.Title);
@@ -113,7 +113,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Never);
+            _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
@@ -132,7 +132,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Never);
+            _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
@@ -151,7 +151,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Never);
+            _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
@@ -170,7 +170,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.InstructionDoneCommand.Execute(null);
 
-            _navigationService.Verify(ns => ns.MoveToNext(It.IsAny<NavData<MobileData>>()), Times.Never);
+            _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
@@ -324,7 +324,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _navigationService.Verify(ns => ns.GoToManifest(), Times.Once);
+            _navigationService.Verify(ns => ns.GoToManifestAsync(), Times.Once);
 
         }
 

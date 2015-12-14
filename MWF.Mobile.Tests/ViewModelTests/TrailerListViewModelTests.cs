@@ -70,7 +70,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNext());
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync());
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your trailer");
@@ -80,7 +80,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             vm.TrailerSelectCommand.Execute(_trailerItemViewModel);
 
             // check that the navigation service was called
-            navigationServiceMock.Verify(ns => ns.MoveToNext(), Times.Once);
+            navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
 
         }
 
@@ -154,7 +154,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Trailer>();
-            trailerRepository.Setup(vr => vr.GetAll()).Returns(trailers);
+            trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
             _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -180,7 +180,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Trailer>();
-            trailerRepository.Setup(vr => vr.GetAll()).Returns(trailers);
+            trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
             _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -194,7 +194,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal(trailers, trailerModels);
             //Its get all twice because it calls it once on setup and another on refresh
-            trailerRepository.Verify(vr => vr.GetAll(), Times.Exactly(2));
+            trailerRepository.Verify(vr => vr.GetAllAsync(), Times.Exactly(2));
 
         }
 
@@ -210,7 +210,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Trailer>(20);
-            trailerRepository.Setup(vr => vr.GetAll()).Returns(trailers);
+            trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
             _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -224,7 +224,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal(trailers, trailerModels);
             //Its get all twice because it calls it once on setup and another on refresh
-            trailerRepository.Verify(vr => vr.GetAll(), Times.Exactly(2));
+            trailerRepository.Verify(vr => vr.GetAllAsync(), Times.Exactly(2));
 
         }
     }

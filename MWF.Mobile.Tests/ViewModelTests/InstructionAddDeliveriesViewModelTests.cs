@@ -47,7 +47,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _applicationProfile.DisplayRetention = 3;
 
             _applicationProfileRepoMock = _fixture.InjectNewMock<IApplicationProfileRepository>();
-            _applicationProfileRepoMock.Setup(aprm => aprm.GetAll()).Returns(new List<ApplicationProfile>() { _applicationProfile });
+            _applicationProfileRepoMock.Setup(aprm => aprm.GetAllAsync()).ReturnsAsync(new List<ApplicationProfile>() { _applicationProfile });
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
 
@@ -91,7 +91,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<Order>(md => md.With(x => x.Type, Core.Enums.InstructionType.Collect));
 
             var nonCompletedCollectionInstructions = _fixture.CreateMany<MobileData>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructions(It.IsAny<Guid>())).Returns(nonCompletedCollectionInstructions);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructionsAsync(It.IsAny<Guid>())).Returns(nonCompletedCollectionInstructions);
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedCollectionInstructions.First() };
@@ -110,7 +110,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<ItemAdditional>(md => md.With(x => x.BarcodeScanRequiredForDelivery, true));
 
             var nonCompletedDeliveryInstructions = _fixture.CreateMany<MobileData>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructions(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructionsAsync(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
@@ -138,7 +138,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<ItemAdditional>(md => md.With(x => x.BarcodeScanRequiredForDelivery, true));
 
             var nonCompletedDeliveryInstructions = _fixture.CreateMany<MobileData>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructions(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructionsAsync(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
@@ -164,7 +164,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<ItemAdditional>(md => md.With(x => x.BarcodeScanRequiredForDelivery, true));
 
             var nonCompletedDeliveryInstructions = _fixture.CreateMany<MobileData>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructions(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructionsAsync(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
@@ -190,7 +190,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<ItemAdditional>(md => md.With(x => x.BarcodeScanRequiredForDelivery, true));
 
             var nonCompletedDeliveryInstructions = _fixture.CreateMany<MobileData>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructions(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructionsAsync(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
@@ -222,7 +222,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<ItemAdditional>(md => md.With(x => x.BarcodeScanRequiredForDelivery, true));
 
             var nonCompletedDeliveryInstructions = _fixture.CreateMany<MobileData>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructions(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetNonCompletedInstructionsAsync(It.IsAny<Guid>())).Returns(nonCompletedDeliveryInstructions);
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };

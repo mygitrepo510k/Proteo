@@ -161,7 +161,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _navigationService.Verify(ns => ns.GoToManifest(), Times.Once);
+            _navigationService.Verify(ns => ns.GoToManifestAsync(), Times.Once);
 
         }
 

@@ -46,7 +46,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _infoService.LoggedInDriver.ID = new Guid("7B5657F7-A0C3-4CAF-AA5F-D76FE942074B");
             
             List<Device> devices = new List<Device>() { new Device() { DeviceIdentifier = "021PROTEO0000001" } };
-            IDeviceRepository repo = Mock.Of<IDeviceRepository>(dr => dr.GetAll() == devices);
+            IDeviceRepository repo = Mock.Of<IDeviceRepository>(dr => dr.GetAllAsync() == Task.FromResult(devices));
             IRepositories repos = Mock.Of<IRepositories>(r => r.DeviceRepository == repo &&
                                                               r.GatewayQueueItemRepository == _mockQueueItemRepository.Object);
             _fixture.Register<IRepositories>(() => repos);
@@ -66,7 +66,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
             var service = _fixture.Create<Core.Services.GatewayService>();
-            var device = await service.GetDevice(_mwfCustomerID);
+            var device = await service.GetDeviceAsync(_mwfCustomerID);
 
             Assert.Equal(device.ID, new Guid("32de3ed3-ce3b-4a53-876d-442c351df668"));
         }
@@ -81,7 +81,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
             var service = _fixture.Create<Core.Services.GatewayService>();
-            var verbProfile = await service.GetVerbProfile("Palletforce");
+            var verbProfile = await service.GetVerbProfileAsync("Palletforce");
 
             Assert.Equal(verbProfile.ID, new Guid("d7af04cd-1857-42f1-a8c1-d019bd1d6223"));
             Assert.Equal(verbProfile.Children.Count(), 2);
@@ -98,7 +98,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
             var service = _fixture.Create<Core.Services.GatewayService>();
-            var safetyProfiles = await service.GetSafetyProfiles();
+            var safetyProfiles = await service.GetSafetyProfilesAsync();
 
             Assert.NotEqual(safetyProfiles.Count(), 0);
         }
@@ -137,7 +137,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<Core.Services.IHttpService>(mockHttpService.Object);
 
             var service = _fixture.Create<Core.Services.GatewayService>();
-            var drivers = await service.GetDrivers();
+            var drivers = await service.GetDriversAsync();
 
             Assert.Equal(drivers.Count(), 1);
             Assert.Equal(drivers.First().ID, testDriverID);
@@ -160,7 +160,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             Guid driverId = Guid.Parse("ABE51028-5AB2-4753-8E34-67F5C86F9E77");
             _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
             var service = _fixture.Create<Core.Services.GatewayService>();
-            var driverInstructions = await service.GetDriverInstructions("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);
+            var driverInstructions = await service.GetDriverInstructionsAsync("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);
 
             Assert.Equal(2, driverInstructions.Count());
             Assert.Equal(driverId, driverInstructions.First().DriverId);
@@ -212,7 +212,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _infoService.LoggedInDriver.ID = driverId;
             _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
             var service = _fixture.Create<Core.Services.GatewayService>();
-            var driverInstructions = await service.GetDriverInstructions("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);
+            var driverInstructions = await service.GetDriverInstructionsAsync("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);
 
             _messengerMock.Verify(mm => mm.Publish(It.IsAny<InvalidLicenseNotificationMessage>()));
 

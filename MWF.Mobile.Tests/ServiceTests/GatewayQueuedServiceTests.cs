@@ -30,7 +30,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             _queueItems = new List<Core.Models.GatewayQueueItem>();
             _mockQueueItemRepository = new Mock<Core.Repositories.IGatewayQueueItemRepository>();
-            _mockQueueItemRepository.Setup(m => m.GetAllInQueueOrder()).Returns(() => _queueItems);
+            _mockQueueItemRepository.Setup(m => m.GetAllInQueueOrderAsync()).Returns(() => _queueItems);
             _mockQueueItemRepository.Setup(m => m.Insert(It.IsAny<Core.Models.GatewayQueueItem>())).Callback<Core.Models.GatewayQueueItem>(gqi => _queueItems.Add(gqi));
             _mockQueueItemRepository.Setup(m => m.Delete(It.IsAny<Core.Models.GatewayQueueItem>())).Callback<Core.Models.GatewayQueueItem>(gqi => _queueItems.Remove(gqi));
            
@@ -38,7 +38,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
             
-            IDeviceRepository repo = Mock.Of<IDeviceRepository>(dr => dr.GetAll() == _fixture.CreateMany<Device>());
+            IDeviceRepository repo = Mock.Of<IDeviceRepository>(dr => dr.GetAllAsync() == Task.FromResult(_fixture.CreateMany<Device>()));
             IRepositories repos = Mock.Of<IRepositories>(r => r.DeviceRepository == repo &&
                                                               r.GatewayQueueItemRepository == _mockQueueItemRepository.Object);
             _fixture.Register<IRepositories>(() => repos);
@@ -78,7 +78,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service =_fixture.Create<Core.Services.GatewayQueuedService>();
             service.StartQueueTimer();
 
-            service.AddToQueue("test");
+            await service.AddToQueueAsync("test");
             
             // Allow the timer to process the queue
             await Task.Delay(100);
@@ -96,7 +96,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service =_fixture.Create<Core.Services.GatewayQueuedService>();
             service.StartQueueTimer();
 
-            service.AddToQueue("test");
+            await service.AddToQueueAsync("test");
 
             // Allow the timer to process the queue
             await Task.Delay(100);

@@ -8,6 +8,6 @@ namespace MWF.Mobile.Core.Portable
 {
     public interface IUpload
     {
-        Task<bool> UploadFile(System.Uri address, string username, string password, string path);
+        Task<bool> UploadFileAsync(System.Uri address, string username, string password, string path);
     }
 }

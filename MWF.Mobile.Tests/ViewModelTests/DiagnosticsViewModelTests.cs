@@ -45,7 +45,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockDiagnosticsService = _fixture.InjectNewMock<IDiagnosticsService>();
 
-            _mockDiagnosticsService.Setup(ds => ds.UploadDiagnostics(It.IsAny<string>())).Returns(Task.FromResult<bool>(true));
+            _mockDiagnosticsService.Setup(ds => ds.UploadDiagnosticsAsync(It.IsAny<string>())).Returns(Task.FromResult<bool>(true));
 
 
             _mockDataService = _fixture.InjectNewMock<IDataService>();
@@ -96,7 +96,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             dvm.SendDiagnosticsCommand.Execute(null);
 
-            _mockDiagnosticsService.Verify(ds => ds.UploadDiagnostics(It.Is<string>(s => s == _dbPath )));
+            _mockDiagnosticsService.Verify(ds => ds.UploadDiagnosticsAsync(It.Is<string>(s => s == _dbPath )));
 
             _mockUserInteraction.Verify(ui => ui.Alert(It.Is<string>(s => s.StartsWith("Support diagnostic information uploaded successfully")), It.IsAny<System.Action>(), It.IsAny<string>(), It.IsAny<string>()));
 
@@ -108,13 +108,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockDiagnosticsService.Setup(ds => ds.UploadDiagnostics(It.IsAny<string>())).Returns(Task.FromResult<bool>(false));
+            _mockDiagnosticsService.Setup(ds => ds.UploadDiagnosticsAsync(It.IsAny<string>())).Returns(Task.FromResult<bool>(false));
 
             var dvm = _fixture.Create<DiagnosticsViewModel>();
 
             dvm.SendDiagnosticsCommand.Execute(null);
 
-            _mockDiagnosticsService.Verify(ds => ds.UploadDiagnostics(It.Is<string>(s => s == _dbPath)));
+            _mockDiagnosticsService.Verify(ds => ds.UploadDiagnosticsAsync(It.Is<string>(s => s == _dbPath)));
 
             _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s.StartsWith("Unfortunately, there was an error uploading diagnostic data")), It.IsAny<string>(), It.IsAny<string>()));
 

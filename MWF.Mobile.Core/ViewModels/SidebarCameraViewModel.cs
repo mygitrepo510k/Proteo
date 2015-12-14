@@ -36,8 +36,7 @@ namespace MWF.Mobile.Core.ViewModels
                 images.Add(viewModel.Image);
             }
 
-            _navigationService.MoveToNext(_navigationService.CurrentNavData);
-
+            await _navigationService.MoveToNextAsync(_navigationService.CurrentNavData);
 
             IEnumerable<MobileData> mobileDatas = null;
             if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData is NavData<MobileData>)
@@ -50,10 +49,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
-            _navigationService.GoBack(_navigationService.CurrentNavData);
-            return Task.FromResult(false);
+            await _navigationService.GoBackAsync(_navigationService.CurrentNavData);
+            return false;
         }
 
         #endregion IBackButtonHandler Implementation

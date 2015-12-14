@@ -58,7 +58,7 @@ namespace MWF.Mobile.Core.Services
             return retVal;
         }
 
-        public Task CommitSafetyCheckData(bool trailerOnly = false)
+        public async Task CommitSafetyCheckDataAsync(bool trailerOnly = false)
         {
             // Add the safety checks to the gateway queue
             var safetyCheckData = this.GetCurrentSafetyCheckData();
@@ -94,7 +94,7 @@ namespace MWF.Mobile.Core.Services
                     latestSafetyCheck.TrailerSafetyCheck.EffectiveDate = effectiveDateTime;
                 }
 
-                _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
+                await _repositories.LatestSafetyCheckRepository.SetForDriverAsync(latestSafetyCheck);
 
                 // Submit the safety check data to BlueSphere
                 var safetyCheckDataToSubmit = new List<SafetyCheckData>(safetyCheckData.Count());
@@ -120,14 +120,13 @@ namespace MWF.Mobile.Core.Services
                 if (safetyCheckDataToSubmit.Any())
                 {
                     var actions = safetyCheckDataToSubmit.Select(scd => new Models.GatewayServiceRequest.Action<Models.SafetyCheckData> { Command = "fwSetSafetyCheckData", Data = scd });
-                    _gatewayQueuedService.AddToQueue(actions);
+                    await _gatewayQueuedService.AddToQueueAsync(actions);
                 }
             }
             else
             {
-                _repositories.LatestSafetyCheckRepository.SetForDriver(latestSafetyCheck);
+                await _repositories.LatestSafetyCheckRepository.SetForDriverAsync(latestSafetyCheck);
             }
-            return Task.FromResult(0);
         }
 
         #endregion

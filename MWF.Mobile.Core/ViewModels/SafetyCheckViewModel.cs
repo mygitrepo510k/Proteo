@@ -15,6 +15,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class SafetyCheckViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
+
         #region private/protected members
 
         protected IInfoService _infoService;
@@ -33,12 +34,10 @@ namespace MWF.Mobile.Core.ViewModels
             _repositories = repositories;
             _navigationService = navigationService;
             _safetyCheckService = safetyCheckService;
-
-           
         }
-        public async override void Start()
+
+        public virtual async Task Init()
         {
-            base.Start();
             Models.Vehicle vehicle = null;
             Models.Trailer trailer = null;
 
@@ -79,12 +78,10 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_safetyCheckService.CurrentTrailerSafetyCheckData == null && _safetyCheckService.CurrentVehicleSafetyCheckData == null)
             {
-                Mvx.Resolve<ICustomUserInteraction>().Alert("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.", async () => { await _navigationService.MoveToNext(); await _safetyCheckService.CommitSafetyCheckData(); });
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.");
+                await _navigationService.MoveToNextAsync();
+                await _safetyCheckService.CommitSafetyCheckDataAsync();
             }
-        }
-
-        public SafetyCheckViewModel()
-        {
         }
 
         protected SafetyCheckData GenerateSafetyCheckData(SafetyProfile safetyProfile, Driver driver, BaseVehicle vehicle, bool isTrailer)
@@ -163,7 +160,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(DoChecksDoneCommand);
+                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(async () => await _navigationService.MoveToNextAsync(_navData));
                 return _checksDoneCommand;
             }
         }
@@ -203,19 +200,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private void DoChecksDoneCommand()
-        {
-            _navigationService.MoveToNext(_navData);
-        }
-
         public override string FragmentTitle
         {
             get { return "Safety checklist"; }
         }
 
-
-
-        public async Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
             bool continueWithBackPress = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("All information you have entered will be lost, do you wish to continue?", "Abandon safety check!", "Continue");
 
@@ -223,8 +213,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (_navigationService.IsBackActionDefined())
                 {
-
-                    _navigationService.GoBack();
+                    await _navigationService.GoBackAsync();
                     return false;
                 }
 

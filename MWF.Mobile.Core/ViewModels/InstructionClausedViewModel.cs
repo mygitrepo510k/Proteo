@@ -95,7 +95,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_advanceInstructionCommand = _advanceInstructionCommand ?? new MvxCommand(() => AdvanceInstruction()));
+                return (_advanceInstructionCommand = _advanceInstructionCommand ?? new MvxCommand(async () => await this.AdvanceInstructionAsync()));
             }
         }
 
@@ -103,7 +103,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private void AdvanceInstruction()
+        private Task AdvanceInstructionAsync()
         {
             var dataChunks = _navData.GetAllDataChunks();
             foreach (var datachunk in dataChunks)
@@ -111,7 +111,7 @@ namespace MWF.Mobile.Core.ViewModels
                 datachunk.IsClaused = true;
             }
 
-            _navigationService.MoveToNext(_navData);
+            return _navigationService.MoveToNextAsync(_navData);
         }
 
         private void LaunchPhoneApp()
@@ -152,7 +152,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }
@@ -171,10 +171,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
-            _navigationService.GoBack(_navData);
-            return Task.FromResult(false);
+            await _navigationService.GoBackAsync(_navData);
+            return false;
         }
 
         #endregion IBackButtonHandler Implementation

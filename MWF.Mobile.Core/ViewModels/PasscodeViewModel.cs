@@ -87,13 +87,13 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _loginCommand;
         public System.Windows.Input.ICommand LoginCommand
         {
-            get { return (_loginCommand = _loginCommand ?? new MvxCommand(async () => await LoginAsync())); }
+            get { return (_loginCommand = _loginCommand ?? new MvxCommand(async () => await this.LoginAsync())); }
         }
 
         private MvxCommand _sendDiagnosticsCommand;
         public System.Windows.Input.ICommand SendDiagnosticsCommand
         {
-            get { return (_sendDiagnosticsCommand = _sendDiagnosticsCommand ?? new MvxCommand(() => SendDiagnostics()));}
+            get { return (_sendDiagnosticsCommand = _sendDiagnosticsCommand ?? new MvxCommand(async () => await this.SendDiagnosticsAsync()));}
         }
         public override string FragmentTitle
         {
@@ -104,26 +104,23 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-
-        private async Task LoginAsync()
+        private Task LoginAsync()
         {
             if (string.IsNullOrWhiteSpace(this.Passcode))
             {
                 //TODO: probably should additionally implement presentation layer required field validation so we don't even get this far.
-                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("To login, submit a passcode");
-                return;
+                return Mvx.Resolve<ICustomUserInteraction>().AlertAsync("To login, submit a passcode");
             }
 
-            await AuthenticateAsync();
+            return this.AuthenticateAsync();
         }
 
-        private void SendDiagnostics()
+        private Task SendDiagnosticsAsync()
         {
             NavData<object> navData = new NavData<object>();
             navData.OtherData["Diagnostics"] = true;         
-            _navigationService.MoveToNext(navData);
+            return _navigationService.MoveToNextAsync(navData);
         }
-
 
         private async Task AuthenticateAsync()
         {
@@ -148,12 +145,12 @@ namespace MWF.Mobile.Core.ViewModels
                     // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis
                     _gatewayQueuedService.StartQueueTimer();
                     
-                    _navigationService.MoveToNext();
+                    await _navigationService.MoveToNextAsync();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _loggingService.LogEvent(ex);
+                await _loggingService.LogEventAsync(ex);
                 result = new AuthenticationResult() { AuthenticationFailedMessage = "Unable to check your passcode.", Success = false };
             }
             finally
@@ -164,14 +161,15 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             // Let the user know
-            if (!result.Success) await Mvx.Resolve<ICustomUserInteraction>().AlertAsync(result.AuthenticationFailedMessage);
+            if (!result.Success)
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync(result.AuthenticationFailedMessage);
         }
 
         #endregion
 
         #region IBackButtonHandler Implementation
 
-        public async Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
             var closeApp = true;
 

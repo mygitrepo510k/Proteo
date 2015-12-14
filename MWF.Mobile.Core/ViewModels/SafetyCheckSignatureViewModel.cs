@@ -152,7 +152,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _doneCommand;
         public System.Windows.Input.ICommand DoneCommand
         {
-            get { return (_doneCommand = _doneCommand ?? new MvxCommand(() => Done())); }
+            get { return (_doneCommand = _doneCommand ?? new MvxCommand(async () => await this.DoneAsync())); }
         }
 
         public override string FragmentTitle
@@ -162,11 +162,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion properties
 
-        private void Done()
+        private async Task DoneAsync()
         {
             if (string.IsNullOrWhiteSpace(SignatureEncodedImage))
             {
-                _userInteraction.Alert("A signature is required to complete a safety check");
+                await _userInteraction.AlertAsync("A signature is required to complete a safety check");
                 return;
             }
 
@@ -177,9 +177,8 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
 
-            _navigationService.MoveToNext(_navData);
+            await _navigationService.MoveToNextAsync(_navData);
         }
-
 
     }
 

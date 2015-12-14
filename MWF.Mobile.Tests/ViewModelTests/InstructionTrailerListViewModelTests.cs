@@ -77,7 +77,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Core.Models.Trailer>();
-            trailerRepository.Setup(vr => vr.GetAll()).Returns(trailers);
+            trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
             _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -110,7 +110,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Core.Models.Trailer>();
-            trailerRepository.Setup(vr => vr.GetAll()).Returns(trailers);
+            trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
             _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -133,7 +133,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             //Should have set the updated trailer on the nav data
             Assert.Equal(navData.OtherData["UpdatedTrailer"], trailerItem.Trailer);
 
-            _navigationServiceMock.Verify( ns => ns.MoveToNext(It.Is<NavData<MobileData>>(nd => nd == navData)));
+            _navigationServiceMock.Verify( ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(nd => nd == navData)));
 
 
         }
@@ -156,7 +156,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _navigationServiceMock.Verify(ns => ns.GoToManifest(), Times.Once);
+            _navigationServiceMock.Verify(ns => ns.GoToManifestAsync(), Times.Once);
 
         }
 

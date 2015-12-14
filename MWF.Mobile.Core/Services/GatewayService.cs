@@ -55,7 +55,7 @@ namespace MWF.Mobile.Core.Services
 
         #region Public Methods
 
-        public async Task<Models.ApplicationProfile> GetApplicationProfile()
+        public async Task<Models.ApplicationProfile> GetApplicationProfileAsync()
         {
             //TODO: work out what BlueSphere's doing here with the MobileApplicationProfileIntLink parameter
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "MobileApplicationProfileIntLink", Value = "0" }, };
@@ -63,7 +63,7 @@ namespace MWF.Mobile.Core.Services
             return data.Result;
         }
 
-        public async Task<Models.MWFMobileConfig> GetConfig()
+        public async Task<Models.MWFMobileConfig> GetConfigAsync()
         {
             var deviceInfo = new DeviceInfo()
             {
@@ -79,7 +79,7 @@ namespace MWF.Mobile.Core.Services
             return response.Content;
         }
 
-        public async Task<bool> CreateDevice()
+        public async Task<bool> CreateDeviceAsync()
         {
             var deviceInfo = new DeviceInfo
             {
@@ -98,46 +98,46 @@ namespace MWF.Mobile.Core.Services
         }
 
 
-        public async Task<Models.Device> GetDevice(string customerID)
+        public async Task<Models.Device> GetDeviceAsync(string customerID)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "CustomerID", Value = customerID } };
             var data = await ServiceCallAsync<Core.Models.Device>("fwGetDevice", parameters);
             return data.Result;
         }
 
-        public async Task<IEnumerable<Models.Driver>> GetDrivers()
+        public async Task<IEnumerable<Models.Driver>> GetDriversAsync()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.Drivers>("fwGetDrivers");
             return data.Result == null ? Enumerable.Empty<Models.Driver>() : data.Result.List;
         }
 
-        public async Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfiles()
+        public async Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfilesAsync()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.SafetyProfiles>("fwGetSafetyProfiles");
             return data.Result == null ? Enumerable.Empty<Models.SafetyProfile>() : data.Result.List;
         }
 
-        public async Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle)
+        public async Task<IEnumerable<Models.Vehicle>> GetVehiclesAsync(string vehicleViewTitle)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle} };
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles", parameters);
             return data.Result == null ? Enumerable.Empty<Models.Vehicle>() : data.Result.List;
         }
 
-        public async Task<IEnumerable<Models.VehicleView>> GetVehicleViews()
+        public async Task<IEnumerable<Models.VehicleView>> GetVehicleViewsAsync()
         {
             var data = await ServiceCallAsync<Models.GatewayServiceResponse.VehicleViews>("fwGetVehicleViews");
             return data.Result == null ? Enumerable.Empty<Models.VehicleView>() : data.Result.List;
         }
 
-        public async Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle)
+        public async Task<Models.VerbProfile> GetVerbProfileAsync(string verbProfileTitle)
         {
             var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VerbProfileTitle", Value = verbProfileTitle } };
             var data = await ServiceCallAsync<Core.Models.VerbProfile>("fwGetVerbProfile", parameters);
             return data.Result;
         }
 
-        public async Task<IEnumerable<Models.Instruction.MobileData>> GetDriverInstructions(string vehicleRegistration, 
+        public async Task<IEnumerable<Models.Instruction.MobileData>> GetDriverInstructionsAsync(string vehicleRegistration, 
                                                                                  Guid driverTitle,
                                                                                  DateTime startDate,
                                                                                  DateTime endDate)
@@ -180,8 +180,8 @@ namespace MWF.Mobile.Core.Services
         private async Task<ServiceCallResult<T>> ServiceCallAsync<T>(string command, Parameter[] parameters = null)
             where T: class
         {
-            var requestContent = CreateRequestContent(command, parameters);
-            var response = await this.PostAsync<T>(await requestContent);
+            var requestContent = await CreateRequestContentAsync(command, parameters);
+            var response = await this.PostAsync<T>(requestContent);
 
             if (!response.Succeeded && response.StatusCode == HttpStatusCode.Forbidden)
             {
@@ -213,9 +213,9 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Create a single-action request's content
         /// </summary>
-        private async Task<Models.GatewayServiceRequest.Content> CreateRequestContent(string command, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
+        private Task<Models.GatewayServiceRequest.Content> CreateRequestContentAsync(string command, IEnumerable<Models.GatewayServiceRequest.Parameter> parameters = null)
         {
-            return await this.CreateRequestContent(new[]
+            return this.CreateRequestContentAsync(new[]
             {
                 new Core.Models.GatewayServiceRequest.Action
                 {
@@ -228,9 +228,8 @@ namespace MWF.Mobile.Core.Services
         /// <summary>
         /// Create the request content, allowing multiple actions per request
         /// </summary>
-        private async Task<Models.GatewayServiceRequest.Content> CreateRequestContent(Models.GatewayServiceRequest.Action[] actions)
+        private async Task<Models.GatewayServiceRequest.Content> CreateRequestContentAsync(Models.GatewayServiceRequest.Action[] actions)
         {
-
             Models.Device device = await _deviceRepository.GetAllAsync().ContinueWith(x=> x.Result.FirstOrDefault());
             var deviceIdentifier = device == null ? _deviceInfo.GetDeviceIdentifier() : device.DeviceIdentifier;
 

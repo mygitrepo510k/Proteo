@@ -9,7 +9,7 @@ namespace MWF.Mobile.Core.Repositories
     public interface IGatewayQueueItemRepository : IRepository<GatewayQueueItem> 
     {
 
-        Task<IEnumerable<GatewayQueueItem>> GetAllInQueueOrder();
+        Task<IEnumerable<GatewayQueueItem>> GetAllInQueueOrderAsync();
     }
 
 }

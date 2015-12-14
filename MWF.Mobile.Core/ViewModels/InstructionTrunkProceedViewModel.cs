@@ -68,7 +68,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_completeInstructionCommand = _completeInstructionCommand ?? new MvxCommand(() => CompleteInstruction()));
+                return (_completeInstructionCommand = _completeInstructionCommand ?? new MvxCommand(async () => await this.CompleteInstructionAsync()));
             }
         }
 
@@ -76,12 +76,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private void CompleteInstruction()
+        private Task CompleteInstructionAsync()
         {
-            _navigationService.MoveToNext(_navData);
+            return _navigationService.MoveToNextAsync(_navData);
         }
 
-        private async void RefreshPage(Guid ID)
+        private async Task RefreshPageAsync(Guid ID)
         {
             _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
             _navData.Data = _mobileData;
@@ -100,14 +100,15 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible) 
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
-                    RefreshPage(instructionID);
+
+                    await this.RefreshPageAsync(instructionID);
                 }
                 else
                 {
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }

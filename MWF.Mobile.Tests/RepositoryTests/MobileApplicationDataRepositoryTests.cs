@@ -13,6 +13,7 @@ using MWF.Mobile.Core.Repositories.Interfaces;
 using System.Collections.Generic;
 using System.Collections;
 using MWF.Mobile.Tests.Helpers;
+using System.Threading.Tasks;
 
 namespace MWF.Mobile.Tests.RepositoryTests
 {
@@ -34,7 +35,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
         }
 
         [Fact]
-        public void Repository_Returns_Inprogress_Instructions()
+        public async Task Repository_Returns_Inprogress_Instructions()
         {
             base.ClearAll();
 
@@ -49,7 +50,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
 
             var mdr = _fixture.Create<MobileDataRepository>();
 
-            var inProgressInstructions = mdr.GetInProgressInstructions(Guid.NewGuid()).ToList();
+            var inProgressInstructions = (await mdr.GetInProgressInstructionsAsync(Guid.NewGuid())).ToList();
 
             foreach (var instruction in inProgressInstructions)
             {
@@ -58,7 +59,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
         }
 
         [Fact]
-        public void Repository_Returns_NotStarted_Instructions()
+        public async Task Repository_Returns_NotStarted_Instructions()
         {
             base.ClearAll();
 
@@ -73,7 +74,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
 
             var mdr = _fixture.Create<MobileDataRepository>();
 
-            var notStartedInstructions = mdr.GetNotStartedInstructions(Guid.NewGuid()).ToList();
+            var notStartedInstructions = (await mdr.GetNotStartedInstructionsAsync(Guid.NewGuid())).ToList();
 
             foreach (var instruction in notStartedInstructions)
             {

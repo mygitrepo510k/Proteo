@@ -21,7 +21,7 @@ namespace MWF.Mobile.Android.Portable
 {
     public class Upload : IUpload
     {
-        public async Task<bool> UploadFile(System.Uri address,string username, string password, string path)
+        public async Task<bool> UploadFileAsync(System.Uri address,string username, string password, string path)
         {
             string dirPath = GetParentUriString(address);
 
@@ -32,9 +32,9 @@ namespace MWF.Mobile.Android.Portable
             try
             {
                 // If ftp directory for device doesn't exist then create it
-                if (! (await FtpDirectoryExists(dirPath, credentials)))
+                if (!(await FtpDirectoryExistsAsync(dirPath, credentials)))
                 {
-                    bool createdDirOK = await CreateFtpDir(dirPath, credentials);
+                    bool createdDirOK = await CreateFtpDirAsync(dirPath, credentials);
                     if (!createdDirOK)
                     {
                         return false;
@@ -73,7 +73,7 @@ namespace MWF.Mobile.Android.Portable
         /// <param name="path"></param>
         /// <param name="credentials"></param>
         /// <returns></returns>
-        private async Task<bool> FtpDirectoryExists(string path, NetworkCredential credentials)
+        private async Task<bool> FtpDirectoryExistsAsync(string path, NetworkCredential credentials)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace MWF.Mobile.Android.Portable
         /// <param name="path"></param>
         /// <param name="credentials"></param>
         /// <returns></returns>
-        private async Task<bool> CreateFtpDir(string path, NetworkCredential credentials)
+        private async Task<bool> CreateFtpDirAsync(string path, NetworkCredential credentials)
         {
                 WebRequest ftpReq = WebRequest.Create(path) as FtpWebRequest;
                 ftpReq.Method = WebRequestMethods.Ftp.MakeDirectory;

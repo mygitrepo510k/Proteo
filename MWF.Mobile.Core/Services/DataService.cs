@@ -17,17 +17,18 @@ namespace MWF.Mobile.Core.Services
     {
 
         #region Private Members
-        private readonly IDeviceInfo _deviceInfo = null;
 
+        private readonly IDeviceInfo _deviceInfo = null;
         private const string DBNAME = "db.sql";
-        //private bool disposed = false; 
         private SQLite.Net.SQLiteConnectionString _connectionString = null;
         private string _path = "";
         private SQLitePlatformGeneric _platform = null;
         private SQLiteConnectionPool _connectionPool = null;
+
         #endregion
 
         #region Construction
+
         public DataService(IDeviceInfo deviceInfo)
         {
             _deviceInfo = deviceInfo;
@@ -43,38 +44,26 @@ namespace MWF.Mobile.Core.Services
 
         #region Public Methods
 
-        public void RunInTransaction(Action action)
-        {
-            var conn = this.GetDBConnection();
-            conn.RunInTransaction(action);
-
-        }
-
-        public async Task RunInTransactionAsync(Action<SQLiteAsyncConnection> action)
+        public async Task RunInTransactionAsync(Action<SQLiteConnection> action)
         {
             var conn = this.GetAsyncDBConnection();
-            await Task.Run(()=>action(conn));
-
+            await conn.RunInTransactionAsync(action);
         }
+
         #endregion
 
         #region Properties
-       
+
         public SQLite.Net.SQLiteConnection GetDBConnection()
         {
             var _conn = new SQLiteConnection(_platform, _path, SQLite.Net.Interop.SQLiteOpenFlags.ReadWrite | SQLite.Net.Interop.SQLiteOpenFlags.Create | SQLite.Net.Interop.SQLiteOpenFlags.FullMutex);            
             return _conn;
-
         }
-
 
         public SQLiteAsyncConnection GetAsyncDBConnection()
         {
-            //return new SQLiteAsyncConnection(() => new (_platform, _connectionString));
             return new SQLiteAsyncConnection(() => _connectionPool.GetConnection(_connectionString));
-
         }
-
 
         public string DatabasePath
         {

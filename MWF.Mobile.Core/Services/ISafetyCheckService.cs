@@ -7,7 +7,7 @@ namespace MWF.Mobile.Core.Services
 {
     public interface ISafetyCheckService
     {
-        Task CommitSafetyCheckData(bool trailerOnly = false);
+        Task CommitSafetyCheckDataAsync(bool trailerOnly = false);
         SafetyCheckData CurrentTrailerSafetyCheckData { get; set; }
         SafetyCheckData CurrentVehicleSafetyCheckData { get; set; }
         IEnumerable<MWF.Mobile.Core.Models.SafetyCheckData> GetCurrentSafetyCheckData();

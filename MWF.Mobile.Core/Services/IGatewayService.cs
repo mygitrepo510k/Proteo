@@ -10,19 +10,19 @@ namespace MWF.Mobile.Core.Services
 
     public interface IGatewayService
     {
-        Task<Models.ApplicationProfile> GetApplicationProfile();
-        Task<Models.Device> GetDevice(string customerID);
-        Task<IEnumerable<Models.Driver>> GetDrivers();
-        Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfiles();
-        Task<IEnumerable<Models.Vehicle>> GetVehicles(string vehicleViewTitle);
-        Task<IEnumerable<Models.VehicleView>> GetVehicleViews();
-        Task<Models.VerbProfile> GetVerbProfile(string verbProfileTitle);
-        Task<IEnumerable<Models.Instruction.MobileData>> GetDriverInstructions(string vehicleRegistration,
+        Task<Models.ApplicationProfile> GetApplicationProfileAsync();
+        Task<Models.Device> GetDeviceAsync(string customerID);
+        Task<IEnumerable<Models.Driver>> GetDriversAsync();
+        Task<IEnumerable<Models.SafetyProfile>> GetSafetyProfilesAsync();
+        Task<IEnumerable<Models.Vehicle>> GetVehiclesAsync(string vehicleViewTitle);
+        Task<IEnumerable<Models.VehicleView>> GetVehicleViewsAsync();
+        Task<Models.VerbProfile> GetVerbProfileAsync(string verbProfileTitle);
+        Task<IEnumerable<Models.Instruction.MobileData>> GetDriverInstructionsAsync(string vehicleRegistration,
                                                                                Guid driverTitle, 
                                                                                DateTime startDate,
                                                                                DateTime endDate);
-        Task<Models.MWFMobileConfig> GetConfig();
-        Task<bool> CreateDevice();
+        Task<Models.MWFMobileConfig> GetConfigAsync();
+        Task<bool> CreateDeviceAsync();
         Task<HttpResult> PostLogMessageAsync(DeviceLogMessage log);
         Task<bool> LicenceCheckAsync(Guid driverID);
     }

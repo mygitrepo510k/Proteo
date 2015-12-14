@@ -61,18 +61,19 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion Properties
 
         #region Private Methods
-        private async Task AdvanceConfirmTimes()
+        private async Task AdvanceConfirmTimesAsync()
         {
             _navData.Data.OnSiteDateTime = OnSiteDateTime;
             _navData.Data.CompleteDateTime = CompleteDateTime;
             var additionalInstructions = _navData.GetAdditionalInstructions();
+
             foreach(var instruction in additionalInstructions)
             {
                 instruction.OnSiteDateTime = OnSiteDateTime;
                 instruction.CompleteDateTime = CompleteDateTime;
             }
             
-            await _navigationService.MoveToNext(_navData);
+            await _navigationService.MoveToNextAsync(_navData);
         }
 
         #endregion
@@ -111,7 +112,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_confirmTimesCommand = _confirmTimesCommand?? new MvxCommand(async () => await AdvanceConfirmTimes()));
+                return (_confirmTimesCommand = _confirmTimesCommand?? new MvxCommand(async () => await AdvanceConfirmTimesAsync()));
             }
         }
 
@@ -134,7 +135,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                       await  _navigationService.GoToManifest();
+                       await  _navigationService.GoToManifestAsync();
                     }
                 }
             }
@@ -144,19 +145,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
             if (_mobileData.Order.Type == Enums.InstructionType.Deliver)
             {
                 // Delivery, continue back using normal backstack mechanism
-                return Task.FromResult(true);
+                return true;
             }
             else
             {
-                    // Cellection, use custom back mapping action to skip the select trailer workflow
-                    _navigationService.GoBack(_navData);
-                    return Task.FromResult(false);
-               
+                // Collection, use custom back mapping action to skip the select trailer workflow
+                await _navigationService.GoBackAsync(_navData);
+                return false;
             }
         }
 

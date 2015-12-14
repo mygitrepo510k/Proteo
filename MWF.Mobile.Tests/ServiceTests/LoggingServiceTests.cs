@@ -66,7 +66,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var loggingService = _fixture.Create<LoggingService>();
 
-            loggingService.LogEvent("Test Log", Core.Enums.LogType.Info);
+            loggingService.LogEventAsync("Test Log", Core.Enums.LogType.Info);
 
             _mockLogMessageRepo.Verify(mlm => mlm.Insert(It.Is<LogMessage>(lm => lm.LogType == Core.Enums.LogType.Info)), Times.Once);
         }
@@ -78,7 +78,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var loggingService = _fixture.Create<LoggingService>();
 
-            loggingService.LogEvent(new Exception("Test Exception"));
+            loggingService.LogEventAsync(new Exception("Test Exception"));
 
             _mockLogMessageRepo.Verify(mlm => mlm.Insert(It.Is<LogMessage>(lm => lm.LogType == Core.Enums.LogType.Error)), Times.Once);
         }
@@ -88,7 +88,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            _mockLogMessageRepo.Setup(mlm => mlm.GetAll()).Returns(_fixture.CreateMany<LogMessage>());
+            _mockLogMessageRepo.Setup(mlm => mlm.GetAllAsync()).ReturnsAsync(_fixture.CreateMany<LogMessage>());
 
             HttpResult result = new HttpResult();
             result.StatusCode = System.Net.HttpStatusCode.OK;
@@ -108,7 +108,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            _mockLogMessageRepo.Setup(mlm => mlm.GetAll()).Returns(_fixture.CreateMany<LogMessage>());
+            _mockLogMessageRepo.Setup(mlm => mlm.GetAllAsync()).ReturnsAsync(_fixture.CreateMany<LogMessage>());
 
             HttpResult result = new HttpResult();
 

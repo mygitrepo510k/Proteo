@@ -68,17 +68,18 @@ namespace MWF.Mobile.Core.Services
             _loggingService = loggingService;
         }
 
-        private void TimerCallback(object state)
-        {
-            Task.Run(async () => await PollForInstructionsAsync());
-
-            _timer.Reset();
-        }
-
         public void StartPollingTimer()
         {
             if (_timer == null)
-                _timer = new Timer(TimerCallback, null, 60000);
+            {
+                _timer = new Timer(async state =>
+                {
+                    await this.PollForInstructionsAsync();
+                    _timer.Reset();
+                },
+                null,
+                60000);
+            }
         }
 
         public void StopPollingTimer()
@@ -104,32 +105,32 @@ namespace MWF.Mobile.Core.Services
                     _dataRetention = applicationProfile.DataRetention;
                     _dataSpan = applicationProfile.DataSpan;
                 }
+
                 Mvx.Trace("Begin Polling For Instructions");
 
-
-
-                Mvx.Trace("Successfully pulled instructions.");
                 try
                 {
                     if (!_dataRetention.HasValue || !_dataSpan.HasValue)
                     {
-                        var applicationProfile = _repositories.ApplicationRepository.GetAll().First();
+                        var applicationProfile = await _repositories.ApplicationRepository.GetAsync();
                         _dataRetention = applicationProfile.DataRetention;
                         _dataSpan = applicationProfile.DataSpan;
                     }
 
                     // Call to BlueSphere to check for instructions
-                    var instructions = await _gatewayService.GetDriverInstructions(
+                    var instructions = await _gatewayService.GetDriverInstructionsAsync(
                         _infoService.CurrentVehicle.Registration,
                         _infoService.LoggedInDriver.ID,
                         DateTime.Today.AddDays(-_dataRetention.Value),
                         DateTime.Today.AddDays(_dataSpan.Value));
 
-                    Mvx.Trace("Successfully pulled instructions.");
-
                     // Check if we have anything in the response
-                    if (instructions.Any())
+                    if (!instructions.Any())
+                        Mvx.Trace("No instructions were available.");
+                    else
                     {
+                        Mvx.Trace($"Successfully pulled {instructions.Count()} instructions.");
+
                         var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
                         var manifestInstructionVMsForNotification = new List<ManifestInstructionViewModel>(instructions.Count());
 
@@ -267,7 +268,7 @@ namespace MWF.Mobile.Core.Services
                         Mvx.Trace("Successfully inserted instructions into Repository.");
 
                         //Acknowledge that they are on the Device (Not however acknowledged by the driver)
-                        AcknowledgeInstructions(instructions);
+                        await AcknowledgeInstructionsAsync(instructions);
 
                         Mvx.Trace("Successfully sent device acknowledgement.");
 
@@ -275,7 +276,7 @@ namespace MWF.Mobile.Core.Services
                         {
                             Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotification(
                                 manifestInstructionVMsForNotification,
-                                done: notifiedInstructionVMs => _dataChunkService.SendReadChunk(notifiedInstructionVMs.Select(i => i.MobileData), _infoService.LoggedInDriver, _infoService.CurrentVehicle),
+                                done: async notifiedInstructionVMs => await this.SendReadChunksAsync(notifiedInstructionVMs),
                                 title: "Manifest Update",
                                 okButton: "Acknowledge");
                         }
@@ -284,7 +285,7 @@ namespace MWF.Mobile.Core.Services
                 catch (Exception ex)
                 {
                     // catch and log the error, but this will not acknowledge the message so we can try again
-                    _loggingService.LogEvent("Gateway Polling Processing Failed", LogType.Error, ex.Message);
+                    await _loggingService.LogEventAsync("Gateway Polling Processing Failed", LogType.Error, ex.Message);
                 }
             }
             catch (Exception ex)
@@ -294,7 +295,13 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
-        private void AcknowledgeInstructions(IEnumerable<MobileData> instructions)
+        private Task SendReadChunksAsync(IEnumerable<ManifestInstructionViewModel> manifestInstructionViewModels)
+        {
+            var instructions = manifestInstructionViewModels.Select(i => i.MobileData).ToList();
+            return _dataChunkService.SendReadChunkAsync(instructions, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+        }
+
+        private Task AcknowledgeInstructionsAsync(IEnumerable<MobileData> instructions)
         {
             //Sends acknowledgement to bluesphere that the device has received the new instructions
             var syncAckActions = instructions.Select(i => new Models.GatewayServiceRequest.Action<Models.SyncAck>
@@ -307,7 +314,7 @@ namespace MWF.Mobile.Core.Services
                     }
             });
 
-            _gatewayQueuedService.AddToQueue(syncAckActions);
+            return _gatewayQueuedService.AddToQueueAsync(syncAckActions);
         }
 
         private void PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand command, Guid instructionID)

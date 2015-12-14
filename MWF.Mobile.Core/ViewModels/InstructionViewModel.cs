@@ -55,10 +55,7 @@ namespace MWF.Mobile.Core.ViewModels
             navData.Reinflate();
             _navData = navData;
             _mobileData = _navData.Data;
-
         }
-
-
 
         #endregion Construction
 
@@ -70,7 +67,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string DepartDateTime { get { return _mobileData.Order.Depart.ToStringIgnoreDefaultDate(); } }
 
-        public string Address { get { return _mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode; } }
+        public string Address
+        {
+            get
+            {
+                var address = _mobileData.Order.Addresses.FirstOrDefault();
+                return address == null ? null : (address.Lines.Replace("|", "\n") + "\n" + address.Postcode);
+            }
+        }
 
         public string Notes
         {
@@ -170,7 +174,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_progressInstructionCommand = _progressInstructionCommand ?? new MvxCommand(async () => await ProgressInstruction()));
+                return (_progressInstructionCommand = _progressInstructionCommand ?? new MvxCommand(async () => await ProgressInstructionAsync()));
             }
         }
 
@@ -186,7 +190,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(async () => await EditTrailer()));
+                return (_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(async () => await EditTrailerAsync()));
             }
         }
 
@@ -194,29 +198,29 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private async Task EditTrailer()
+        private Task EditTrailerAsync()
         {
             _navData.OtherData["IsTrailerEditFromInstructionScreen"] = true;
-            await _navigationService.MoveToNext(_navData);
+            return _navigationService.MoveToNextAsync(_navData);
         }
 
-        private async Task ProgressInstruction()
+        private async Task ProgressInstructionAsync()
         {
-            await UpdateProgress();
+            await UpdateProgressAsync();
 
             if (_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
             {
                 _navData.OtherData["IsTrailerEditFromInstructionScreen"] = null;
-                await _navigationService.MoveToNext(_navData);
+                await _navigationService.MoveToNextAsync(_navData);
             }
         }
 
-        private async Task UpdateProgress()
+        private async Task UpdateProgressAsync()
         {
             if (_mobileData.ProgressState == Enums.InstructionProgress.NotStarted)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.Driving;
-                await _dataChunkService.SendDataChunk(_navData.GetDataChunk(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                await _dataChunkService.SendDataChunkAsync(_navData.GetDataChunk(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
             }
             else if (_mobileData.ProgressState == Enums.InstructionProgress.Driving)
             {
@@ -249,7 +253,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        private async Task GetMobileDataFromRepository(Guid ID)
+        private async Task GetMobileDataFromRepositoryAsync(Guid ID)
         {
             _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
             _navData.Data = _mobileData;
@@ -269,10 +273,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public async Task<bool> OnBackButtonPressedAsync()
         {
-            _navigationService.GoBack();
-            return Task.FromResult(false);
+            await _navigationService.GoBackAsync();
+            return false;
         }
 
         #endregion IBackButtonHandler Implementation
@@ -287,14 +291,14 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible) 
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
-                    await GetMobileDataFromRepository(instructionID);
+                    await GetMobileDataFromRepositoryAsync(instructionID);
                 }
                 else
                 {
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        await _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }

@@ -47,7 +47,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (profileData.Count() == 0)
                     {
                         // we have seen an issue where there was no profile so lets cater for this now.
-                        var profile = await _gatewayService.GetApplicationProfile();
+                        var profile = await _gatewayService.GetApplicationProfileAsync();
                         await _applicationProfileRepository.InsertAsync(profile);
 
                     }
@@ -60,7 +60,7 @@ namespace MWF.Mobile.Core.ViewModels
                         await UpdateSafetyProfilesAsync();
                         ProgressMessage = "Updating Application Profile.";
                         this.IsBusy = true;
-                        applicationProfile = await _gatewayService.GetApplicationProfile();
+                        applicationProfile = await _gatewayService.GetApplicationProfileAsync();
                         applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
                         await _applicationProfileRepository.UpdateAsync(applicationProfile);
                         
@@ -73,7 +73,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 _infoService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
                 _infoService.CurrentTrailer = trailer;
-                await _navigationService.MoveToNext();
+                await _navigationService.MoveToNextAsync();
             }
         }
 

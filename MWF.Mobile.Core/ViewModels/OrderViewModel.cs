@@ -44,7 +44,7 @@ namespace MWF.Mobile.Core.ViewModels
             _configRepository = repositories.ConfigRepository;
         }
 
-        public async void Init(NavData<MobileData> navData)
+        public async Task Init(NavData<MobileData> navData)
         {
             navData.Reinflate();
             this.MessageId = navData.NavGUID;
@@ -103,7 +103,7 @@ namespace MWF.Mobile.Core.ViewModels
             //_navigationService.MoveToNext(_navData);
         }
 
-        private async void GetMobileDataFromRepository(Guid parentID, Guid childID)
+        private async Task GetMobileDataFromRepositoryAsync(Guid parentID, Guid childID)
         {
             _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(parentID);
             _order = _mobileData.Order.Items.First(i => i.ID == childID);
@@ -124,15 +124,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public Task<bool> OnBackButtonPressedAsync()
         {
-
-            var task = new Task<bool>(() => false);
-
             this.Cancel();
-
-            return task;
-
+            return Task.FromResult(false);
         }
 
         #endregion IBackButtonHandler Implementation
@@ -164,15 +159,17 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
                 {
-                    if (this.IsVisible) await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
-                    GetMobileDataFromRepository(instructionID, _order.ID);
+                    if (this.IsVisible)
+                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
+
+                    await GetMobileDataFromRepositoryAsync(instructionID, _order.ID);
                 }
                 else
                 {
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }

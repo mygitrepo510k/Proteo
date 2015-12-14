@@ -42,11 +42,13 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _navigationService = navigationService;
             _repositories = repositories;
-
-            BuildDamageStatuses();
-
         }
 
+        public override async void Start()
+        {
+            base.Start();
+            await this.BuildDamageStatusesAsync();
+        }
 
         public void Init(NavData<MobileData> navData)
         {
@@ -140,10 +142,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _completeScanningCommand;
         public ICommand CompleteScanningCommand
         {
-            get
-            {
-                return (_completeScanningCommand = _completeScanningCommand ?? new MvxCommand(() => CompleteScanning()));
-            }
+            get { return (_completeScanningCommand = _completeScanningCommand ?? new MvxCommand(async () => await this.CompleteScanningAsync())); }
         }
 
         public string InstructionsText
@@ -222,7 +221,7 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Methods
 
 
-        private async void BuildDamageStatuses()
+        private async Task BuildDamageStatusesAsync()
         {
             _damageStatuses = new List<DamageStatus>();
 
@@ -272,7 +271,7 @@ namespace MWF.Mobile.Core.ViewModels
             RequestBarcodeFocus();
         }
 
-        private void CompleteScanning()
+        private Task CompleteScanningAsync()
         {
             // Update datachunk for this order
             var newScannedDelivery = GetScannedDelivery(_mobileData.ID);
@@ -285,9 +284,8 @@ namespace MWF.Mobile.Core.ViewModels
                 _navData.GetAdditionalDataChunk(additionalInstruction).ScannedDelivery = newScannedDelivery;
             }
 
-            _navigationService.MoveToNext(_navData);
+            return _navigationService.MoveToNextAsync(_navData);
         }
-
 
         private ScannedDelivery GetScannedDelivery(Guid Id)
         {
@@ -350,7 +348,7 @@ namespace MWF.Mobile.Core.ViewModels
                     if (this.IsVisible)
                     {
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        _navigationService.GoToManifest();
+                        await _navigationService.GoToManifestAsync();
                     }
                 }
             }
@@ -369,7 +367,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public Task<bool> OnBackButtonPressedAsync()
         {
             return Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("The changes you have made will be lost, do you wish to continue?", "Changes will be lost!", "Continue");
         }

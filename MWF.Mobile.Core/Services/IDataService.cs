@@ -8,8 +8,7 @@ namespace MWF.Mobile.Core.Services
     {
         SQLiteConnection GetDBConnection();
         SQLite.Net.Async.SQLiteAsyncConnection GetAsyncDBConnection();
-        void RunInTransaction(Action action);
-        Task RunInTransactionAsync(Action<SQLite.Net.Async.SQLiteAsyncConnection> action);
+        Task RunInTransactionAsync(Action<SQLite.Net.SQLiteConnection> action);
         string DatabasePath { get; }
     }
 }

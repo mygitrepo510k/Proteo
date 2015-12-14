@@ -22,6 +22,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Members
 
+        private MessageModalNavItem _navData;
+
         private MobileData _mobileData;
 
         private IRepositories _repositories;
@@ -50,8 +52,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void Init(MessageModalNavItem navData)
         {
-            GetMobileDataFromRepository(navData.MobileDataID);
-            _isMessageRead = navData.IsRead;
+            _navData = navData;
+        }
+
+        public override async void Start()
+        {
+            base.Start();
+            await this.GetMobileDataFromRepositoryAsync(_navData.MobileDataID);
+            _isMessageRead = _navData.IsRead;
         }
 
         #endregion Construction
@@ -82,7 +90,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (_readMessageCommand = _readMessageCommand ?? new MvxCommand(() => ReadMessage()));
+                return (_readMessageCommand = _readMessageCommand ?? new MvxCommand(async () => await this.ReadMessageAsync()));
             }
         }
 
@@ -90,18 +98,19 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private void ReadMessage()
+        private async Task ReadMessageAsync()
         {
             if (!_isMessageRead)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.Complete;
 
-                _dataChunkService.SendDataChunk(new MobileApplicationDataChunkContentActivity(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                await _dataChunkService.SendDataChunkAsync(new MobileApplicationDataChunkContentActivity(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
             }
+
             ReturnResult(!_isMessageRead);
         }
 
-        private async void GetMobileDataFromRepository(Guid ID)
+        private async Task GetMobileDataFromRepositoryAsync(Guid ID)
         {
             _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
             RaiseAllPropertiesChanged();
@@ -117,7 +126,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region IBackButtonHandler Implementation
 
-        public Task<bool> OnBackButtonPressed()
+        public Task<bool> OnBackButtonPressedAsync()
         {
             ReturnResult(false);
             return Task.FromResult(false);

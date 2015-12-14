@@ -48,7 +48,7 @@ namespace MWF.Mobile.Core.ViewModels
         public async override void Start()
         {
             base.Start();
-            await GetTrailerModels();
+            await GetTrailerModelsAsync();
         }
 
         #endregion
@@ -169,24 +169,19 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private string _defaultTrailerReg;
-        public string DefaultTrailerReg
-        {
-            get
-            {
-                return _defaultTrailerReg;
-            }
-            set
-            {
-                _defaultTrailerReg = value;
-                if (_defaultTrailerReg!=null)
-                     GetTrailerModels();
-            }
-        }
+        public string DefaultTrailerReg { get; private set; }
 
         #endregion
 
         #region Protected/Private Methods
+
+        protected async Task SetDefaultTrailerRegAsync(string defaultTrailerReg)
+        {
+            this.DefaultTrailerReg = defaultTrailerReg;
+
+            if (defaultTrailerReg != null)
+                await this.GetTrailerModelsAsync();
+        }
 
         protected abstract Task ConfirmTrailerAsync(Trailer trailer, string title, string message);
 
@@ -205,13 +200,13 @@ namespace MWF.Mobile.Core.ViewModels
 
             try
             {
-                var vehicleViews = await _gatewayService.GetVehicleViews();
+                var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
 
                 vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
 
                 foreach (var vehicleView in vehicleViews)
                 {
-                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
                 }
             }
             catch (TaskCanceledException)
@@ -231,7 +226,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 await _repositories.TrailerRepository.InsertAsync(trailers);
 
-                await GetTrailerModels();
+                await GetTrailerModelsAsync();
 
                 //Recalls the filter text if there is text in the search field.
                 if (TrailerSearchText != null)
@@ -256,7 +251,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 try
                 {
-                    safetyProfiles = await _gatewayService.GetSafetyProfiles();
+                    safetyProfiles = await _gatewayService.GetSafetyProfilesAsync();
                 }
                 catch (TaskCanceledException)
                 {
@@ -276,7 +271,7 @@ namespace MWF.Mobile.Core.ViewModels
             var profiles = await safetyProfileRepository.GetAllAsync();
 
             if (profiles.Count() == 0)
-                Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("No Profiles Found.");
         }
 
         protected async Task UpdateVehicleListAsync()
@@ -293,13 +288,13 @@ namespace MWF.Mobile.Core.ViewModels
 
             try
             {
-                var vehicleViews = await _gatewayService.GetVehicleViews();
+                var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
 
                 vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
 
                 foreach (var vehicleView in vehicleViews)
                 {
-                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
                 }
             }
             catch (TaskCanceledException)
@@ -321,23 +316,21 @@ namespace MWF.Mobile.Core.ViewModels
                 var currentvehicle = vehicles.First(v => v.ID == _infoService.CurrentVehicle.ID);
                 _infoService.CurrentVehicle = currentvehicle;
             }
-            this.IsBusy = false;
-           
 
+            this.IsBusy = false;
         }
 
-        private async Task GetTrailerModels()
+        private async Task GetTrailerModelsAsync()
         {
-
             var _vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID);
             _vehicleRegistration = _vehicle.Registration;
 
             var data = await _repositories.TrailerRepository.GetAllAsync();
             this.Trailers =  _originalTrailerList = data.Select(x => new TrailerItemViewModel() 
-                                                                                                        { 
-                                                                                                            Trailer = x,
-                                                                                                            IsDefault = (string.IsNullOrEmpty(this.DefaultTrailerReg)) ? false : x.Registration == this.DefaultTrailerReg
-                                                                                                        });
+            { 
+                Trailer = x,
+                IsDefault = (string.IsNullOrEmpty(this.DefaultTrailerReg)) ? false : x.Registration == this.DefaultTrailerReg
+            });
         }
 
         #endregion

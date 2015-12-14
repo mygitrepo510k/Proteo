@@ -99,7 +99,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockSafetyProfileRepository.Setup(spr => spr.GetAll()).Returns(_safetyProfiles);
+            _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(_safetyProfiles);
 
             var vm = _fixture.Create<InstructionSafetyCheckViewModel>();
 
@@ -128,7 +128,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockSafetyProfileRepository.Setup(spr => spr.GetAll()).Returns(new List<SafetyProfile>());
+            _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(new List<SafetyProfile>());
 
             _mockUserInteraction
                 .Setup(cui => cui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
@@ -145,7 +145,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             //should have shown the custom user interaction and moved to the the next view model
             _mockUserInteraction.Verify(cui => cui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(x => x == _navData)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(x => x == _navData)), Times.Once);
         }
 
     }

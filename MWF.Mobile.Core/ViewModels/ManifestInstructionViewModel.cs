@@ -42,7 +42,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string PointDescripion
         {
-            get { return (InstructionType == Enums.InstructionType.OrderMessage) ? _mobileData.MessageText : _mobileData.Order.Description; }
+            get { return (InstructionType == Enums.InstructionType.OrderMessage) ? _mobileData.MessageText : $"({_mobileData.Order.Addresses.Count}) {_mobileData.Order.Description}"; }
         }
 
         public DateTime ArrivalDate
@@ -87,7 +87,7 @@ namespace MWF.Mobile.Core.ViewModels
                 else if (InstructionType == Enums.InstructionType.OrderMessage)
                     return (_selectInstructionCommand = _selectInstructionCommand ?? new MvxCommand(OpenMessageModal));
 
-                return (_selectInstructionCommand = _selectInstructionCommand ?? new MvxCommand(SelectInstruction));
+                return (_selectInstructionCommand = _selectInstructionCommand ?? new MvxCommand(async () => await this.SelectInstructionAsync()));
             }
         }
 
@@ -100,10 +100,10 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private void SelectInstruction()
+        private Task SelectInstructionAsync()
         {
             var navItem = new NavData<MobileData>() { Data = _mobileData };
-            _navigationService.MoveToNext(navItem);
+            return _navigationService.MoveToNextAsync(navItem);
         }
 
         private void ToggleIsSelectedInstruction()

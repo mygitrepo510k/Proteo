@@ -57,8 +57,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Register<IRepositories>(() => repos);
 
             _mockGatewayQueuedService = new Mock<IGatewayQueuedService>();
-            _mockGatewayQueuedService.Setup(mgqs => mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null)).Callback<string, MobileApplicationDataChunkCollection, Parameter[]>((s, m, p) => { _mobileDataChunkCollection = m; });
-            _mockGatewayQueuedService.Setup(mgqs => mgqs.AddToQueue("fwSyncPhotos", It.IsAny<UploadCameraImageObject>(), null)).Callback<string, UploadCameraImageObject, Parameter[]>((s, uo, p) => { _uploadImageObject = uo; });
+            _mockGatewayQueuedService.Setup(mgqs => mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null)).Callback<string, MobileApplicationDataChunkCollection, Parameter[]>((s, m, p) => { _mobileDataChunkCollection = m; });
+            _mockGatewayQueuedService.Setup(mgqs => mgqs.AddToQueueAsync("fwSyncPhotos", It.IsAny<UploadCameraImageObject>(), null)).Callback<string, UploadCameraImageObject, Parameter[]>((s, uo, p) => { _uploadImageObject = uo; });
 
             _fixture.Inject<IGatewayQueuedService>(_mockGatewayQueuedService.Object);
 
@@ -74,7 +74,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a drive chunk
         /// </summary>
         [Fact]
-         public void InfoService_SendDriveChunk()
+        public async Task InfoService_SendDriveChunk()
         {
             base.ClearAll();
 
@@ -87,10 +87,10 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var dataChunkService = _fixture.Create<DataChunkService>();
 
-            dataChunkService.SendDataChunk(new MobileApplicationDataChunkContentActivity(), mobileData, driver, vehicle, false);     
+            await dataChunkService.SendDataChunkAsync(new MobileApplicationDataChunkContentActivity(), mobileData, driver, vehicle, false);     
 
             _mockGatewayQueuedService.Verify(mgqs =>
-                mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
+                mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
 
 
             MobileApplicationDataChunk mobileDataChunk = _mobileDataChunkCollection.MobileApplicationDataChunkCollectionObject.FirstOrDefault();
@@ -106,7 +106,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a on site chunk
         /// </summary>
         [Fact]
-        public void InfoService_SendOnSiteChunk()
+        public async Task InfoService_SendOnSiteChunk()
         {
             base.ClearAll();
 
@@ -120,11 +120,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             var dataChunkService = _fixture.Create<DataChunkService>();
             var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
-            dataChunkService.SendDataChunk(dataChunk, mobileData, driver, vehicle, false);
+            await dataChunkService.SendDataChunkAsync(dataChunk, mobileData, driver, vehicle, false);
 
             _mockGatewayQueuedService.Verify(mgqs =>
-                mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
-
+                mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
 
             MobileApplicationDataChunk mobileDataChunk = _mobileDataChunkCollection.MobileApplicationDataChunkCollectionObject.FirstOrDefault();
             var dataChunkActivities = mobileDataChunk.Data.MobileApplicationDataChunkContentOrderActivities.FirstOrDefault().MobileApplicationDataChunkContentActivitiesObject.FirstOrDefault();
@@ -139,7 +138,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a complete chunk
         /// </summary>
         [Fact]
-        public void InfoService_SendCompleteChunk()
+        public async Task InfoService_SendCompleteChunk()
         {
             base.ClearAll();
 
@@ -153,11 +152,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             var dataChunkService = _fixture.Create<DataChunkService>();
             var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
-            dataChunkService.SendDataChunk(dataChunk, mobileData, driver, vehicle, false);
+            await dataChunkService.SendDataChunkAsync(dataChunk, mobileData, driver, vehicle, false);
 
             _mockGatewayQueuedService.Verify(mgqs =>
-                mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
-
+                mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
 
             MobileApplicationDataChunk mobileDataChunk = _mobileDataChunkCollection.MobileApplicationDataChunkCollectionObject.FirstOrDefault();
             var dataChunkActivities = mobileDataChunk.Data.MobileApplicationDataChunkContentOrderActivities.FirstOrDefault().MobileApplicationDataChunkContentActivitiesObject.FirstOrDefault();
@@ -172,7 +170,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         /// This test is to verify that the right content is added to the gatewayqueuedservice for a Read chunk
         /// </summary>
         [Fact]
-        public void InfoService_SendReadChunk()
+        public async Task InfoService_SendReadChunk()
         {
             base.ClearAll();
 
@@ -186,11 +184,10 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var instructions = _fixture.CreateMany<MobileData>();
 
-            dataChunkService.SendReadChunk(instructions, driver, vehicle);
+            await dataChunkService.SendReadChunkAsync(instructions, driver, vehicle);
 
             _mockGatewayQueuedService.Verify(mgqs =>
-                mgqs.AddToQueue("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
-
+                mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
 
             MobileApplicationDataChunk mobileDataChunk = _mobileDataChunkCollection.MobileApplicationDataChunkCollectionObject.FirstOrDefault();
             var dataChunkActivities = mobileDataChunk.Data.MobileApplicationDataChunkContentOrderActivities.FirstOrDefault().MobileApplicationDataChunkContentActivitiesObject.FirstOrDefault();

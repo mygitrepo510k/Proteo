@@ -87,7 +87,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
         }
 
         [Fact]
-        public void Repository_GetAll()
+        public async Task Repository_GetAll()
         {
 
             base.ClearAll();
@@ -98,7 +98,7 @@ namespace MWF.Mobile.Tests.RepositoryTests
             var deviceRepository = _fixture.Create<DeviceRepository>();
             var device = _fixture.Create<Device>();
 
-            IEnumerable<Device> devicesOut = deviceRepository.GetAll();
+            IEnumerable<Device> devicesOut = await deviceRepository.GetAllAsync();
 
             // SQL connection should have been hit with a pull from the table
             _connectionMock.Verify(c => c.Table<Device>(), Times.Once);

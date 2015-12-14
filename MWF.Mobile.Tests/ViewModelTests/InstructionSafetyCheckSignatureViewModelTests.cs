@@ -116,7 +116,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockSafetyProfileRepository.Setup(spr => spr.GetAll()).Returns(_safetyProfiles);
+            _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(_safetyProfiles);
 
             var vm = _fixture.Create<InstructionSafetyCheckSignatureViewModel>();
 
@@ -129,7 +129,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.Equal(vm.SignatureEncodedImage, _trailerSafetyCheckData.Signature.EncodedImage);
 
             //check the next view model was navigated to
-            _mockNavigationService.Verify(ns => ns.MoveToNext(It.Is<NavData<MobileData>>(x => x == _navData)), Times.Once);
+            _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(x => x == _navData)), Times.Once);
 
         }
 

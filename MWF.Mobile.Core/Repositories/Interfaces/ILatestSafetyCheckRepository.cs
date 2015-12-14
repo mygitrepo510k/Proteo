@@ -8,8 +8,8 @@ namespace MWF.Mobile.Core.Repositories
 
     public interface ILatestSafetyCheckRepository : IRepository<LatestSafetyCheck> 
     {
-        Task<LatestSafetyCheck> GetForDriver(Guid driverID);
-        Task SetForDriver(LatestSafetyCheck latestSafetyCheck);
+        Task<LatestSafetyCheck> GetForDriverAsync(Guid driverID);
+        Task SetForDriverAsync(LatestSafetyCheck latestSafetyCheck);
     }
 
 }

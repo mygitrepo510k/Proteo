@@ -41,7 +41,7 @@ namespace MWF.Mobile.Core.Services
         /// This method uploads the databse to the FTP server under the Android Device ID
         /// </summary>
         /// <param name="databasePath">The locations of the mySql Database</param>
-        public async Task<bool> UploadDiagnostics(string databasePath)
+        public async Task<bool> UploadDiagnosticsAsync(string databasePath)
         {
 
             if (!_reachability.IsConnected())
@@ -54,7 +54,7 @@ namespace MWF.Mobile.Core.Services
                 string.IsNullOrWhiteSpace(config.FtpUsername) ||
                 string.IsNullOrWhiteSpace(config.FtpPassword))
             {
-                Mvx.Resolve<ICustomUserInteraction>().Alert("Your FTP credentials have not been set up, you cannot upload support data until they have been set up.");
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Your FTP credentials have not been set up, you cannot upload support data until they have been set up.");
                 return false;
             }
 
@@ -64,11 +64,11 @@ namespace MWF.Mobile.Core.Services
             {
                 var uriString = string.Format("{0}/{1}/{2}",config.FtpUrl ,_deviceInfo.AndroidId, Path.GetFileName(databasePath));
                 var uri = new Uri(uriString);
-                success = await _upload.UploadFile(uri ,config.FtpUsername, config.FtpPassword, databasePath);
+                success = await _upload.UploadFileAsync(uri ,config.FtpUsername, config.FtpPassword, databasePath);
             }
             catch(Exception ex)
             {
-                _loggingService.LogEvent(ex);
+                await _loggingService.LogEventAsync(ex);
             }
 
             return success;

@@ -49,9 +49,18 @@ namespace MWF.Mobile.Core.ViewModels
             _vehicleRepository = repositories.VehicleRepository;
             _verbProfileRepository = repositories.VerbProfileRepository;
             _configRepository = repositories.ConfigRepository;
+        }
 
+        public void Init()
+        {
+
+        }
+
+        public override async void Start()
+        {
+            base.Start();
 #if DEBUG
-            this.ClearAllData();
+            await this.ClearAllDataAsync();
 
             //Firmin
             //_userInteraction.Confirm("DEBUGGING: use the Firmin customer code?", (bool ok) => { if (ok) this.CustomerCode = "A2A67DE7-DC95-49D9-BF53-34829CF865C9"; });
@@ -142,10 +151,11 @@ namespace MWF.Mobile.Core.ViewModels
 
                 try
                 {
-                    success = await this.SetupDevice();
+                    success = await this.SetupDeviceAsync();
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Mvx.Trace(ex.Message);
                     //TODO: save to unhandled exceptions log
                     success = false;
                     _errorMessage = _unexpectedErrorMessage;
@@ -153,42 +163,41 @@ namespace MWF.Mobile.Core.ViewModels
 
                 this.IsBusy = false;
 
-                if (success) _navigationService.MoveToNext();
-                else await _userInteraction.AlertAsync(_errorMessage);
-
+                if (success)
+                    await _navigationService.MoveToNextAsync();
+                else
+                    await _userInteraction.AlertAsync(_errorMessage);
             }
         }
 
 
         // returns false if the customer code is not known
         // throws exceptions if the web services or db inserts fail
-        private async Task<bool> SetupDevice()
+        private async Task<bool> SetupDeviceAsync()
         {
-
-            if (!await _gatewayService.CreateDevice())
+            if (!await _gatewayService.CreateDeviceAsync())
             {
                 _errorMessage = _unexpectedErrorMessage;
                 return false;
             }
-                
 
-            var device = await _gatewayService.GetDevice(CustomerCode);
+            var device = await _gatewayService.GetDeviceAsync(CustomerCode);
             if (device == null)
             {
                 _errorMessage = "The customer passcode you submitted doesn't exist, check the passcode and try again.";
                 return false;
             }
-            var config = await _gatewayService.GetConfig();
-            var applicationProfile = await _gatewayService.GetApplicationProfile();
-            var drivers = await _gatewayService.GetDrivers();
-            var vehicleViews = await _gatewayService.GetVehicleViews();
-            var safetyProfiles = await _gatewayService.GetSafetyProfiles();
+            var config = await _gatewayService.GetConfigAsync();
+            var applicationProfile = await _gatewayService.GetApplicationProfileAsync();
+            var drivers = await _gatewayService.GetDriversAsync();
+            var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
+            var safetyProfiles = await _gatewayService.GetSafetyProfilesAsync();
 
             var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
 
             foreach (var vehicleView in vehicleViews)
             {
-                vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+                vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
             }
 
             var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
@@ -202,25 +211,24 @@ namespace MWF.Mobile.Core.ViewModels
             
             foreach (var verbProfileTitle in verbProfileTitles)
             {
-                var verbProfile = await _gatewayService.GetVerbProfile(verbProfileTitle);
+                var verbProfile = await _gatewayService.GetVerbProfileAsync(verbProfileTitle);
                 if (verbProfile != null) 
                     verbProfiles.Add(verbProfile);
-            }          
-       
-            await _dataService.RunInTransactionAsync( async c => 
-            {
+            }
 
+            await _dataService.RunInTransactionAsync(c => 
+            {
                 //TODO: Store the customer title? Need to get the customer title from somewhere.
-                await _customerRepository.InsertAsync(new Customer() { ID = Guid.NewGuid(), CustomerCode = CustomerCode }, c);
-                await _deviceRepository.InsertAsync(device, c);
-                await _verbProfileRepository.InsertAsync(verbProfiles, c);
-                await _applicationProfileRepository.InsertAsync(applicationProfile, c);
-                await _driverRepository.InsertAsync(drivers, c);
+                _customerRepository.Insert(new Customer() { ID = Guid.NewGuid(), CustomerCode = CustomerCode }, c);
+                _deviceRepository.Insert(device, c);
+                _verbProfileRepository.Insert(verbProfiles, c);
+                _applicationProfileRepository.Insert(applicationProfile, c);
+                _driverRepository.Insert(drivers, c);
                 //TODO: relate Vehicles to VehicleViews?  Are VehicleViews actually used for anything within the app?
-                await _vehicleRepository.InsertAsync(vehicles, c);
-                await _trailerRepository.InsertAsync(trailers, c);
-                await _safetyProfileRepository.InsertAsync(safetyProfiles, c);
-                await _configRepository.InsertAsync(config, c);
+                _vehicleRepository.Insert(vehicles, c);
+                _trailerRepository.Insert(trailers, c);
+                _safetyProfileRepository.Insert(safetyProfiles, c);
+                _configRepository.Insert(config, c);
             });
 
             //TODO: call fwRegisterDevice - what does this actually do?
@@ -228,7 +236,7 @@ namespace MWF.Mobile.Core.ViewModels
             return true;
         }
 
-        private async void ClearAllData()
+        private async Task ClearAllDataAsync()
         {
             await _customerRepository.DeleteAllAsync();
             await _deviceRepository.DeleteAllAsync();

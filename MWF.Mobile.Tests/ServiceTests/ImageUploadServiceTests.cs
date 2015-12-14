@@ -97,7 +97,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGpsService.Verify(mgs => mgs.GetLatitude(), Times.Exactly(3));
 
             //This only gets logged when it has been successfully uploaded
-            _mockLoggingService.Verify(mls => mls.LogEvent(It.IsAny<string>(), It.Is<MWF.Mobile.Core.Enums.LogType>(i => i == Core.Enums.LogType.Info)), Times.Exactly(3));
+            _mockLoggingService.Verify(mls => mls.LogEventAsync(It.IsAny<string>(), It.Is<MWF.Mobile.Core.Enums.LogType>(i => i == Core.Enums.LogType.Info)), Times.Exactly(3));
 
             _mockToast.Verify(mt => mt.Show(It.IsAny<string>()), Times.Exactly(2));
         }
@@ -127,7 +127,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGpsService.Verify(mgs => mgs.GetLatitude(), Times.Exactly(3));
 
             //This only gets logged when it has been successfully uploaded
-            _mockLoggingService.Verify(mls => mls.LogEvent(It.IsAny<string>(), It.Is<MWF.Mobile.Core.Enums.LogType>(i => i == Core.Enums.LogType.Info)), Times.Exactly(3));
+            _mockLoggingService.Verify(mls => mls.LogEventAsync(It.IsAny<string>(), It.Is<MWF.Mobile.Core.Enums.LogType>(i => i == Core.Enums.LogType.Info)), Times.Exactly(3));
 
             _mockToast.Verify(mt => mt.Show(It.IsAny<string>()), Times.Exactly(2));
 

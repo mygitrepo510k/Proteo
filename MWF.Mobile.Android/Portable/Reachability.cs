@@ -21,7 +21,7 @@ namespace MWF.Mobile.Android.Portable
 
         private ConnectivityManager _connectivityManager;
 
-        protected ConnectivityManager ConnectivtyManager
+        protected ConnectivityManager ConnectivityManager
         {
             get
             {
@@ -32,7 +32,7 @@ namespace MWF.Mobile.Android.Portable
 
         public bool IsConnected()
         {
-            var activeConnection = ConnectivtyManager.ActiveNetworkInfo;
+            var activeConnection = this.ConnectivityManager.ActiveNetworkInfo;
             return ((activeConnection != null) && activeConnection.IsConnected);
         }
     }

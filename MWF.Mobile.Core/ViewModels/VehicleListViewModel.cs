@@ -60,7 +60,7 @@ namespace MWF.Mobile.Core.ViewModels
             Vehicles = _originalVehicleList = await _vehicleRepository.GetAllAsync();
             _vehicleListCount = FilteredVehicleCount;
 
-            LastVehicleSelect();
+            await this.LastVehicleSelectAsync();
         }
         public string VehicleSelectText
         {
@@ -108,14 +108,14 @@ namespace MWF.Mobile.Core.ViewModels
             set { _vehicles = value; RaisePropertyChanged(() => Vehicles); }
         }
 
-        public void ShowTrailerScreen(Vehicle vehicle)
+        public Task ShowTrailerScreenAsync(Vehicle vehicle)
         {
             _infoService.LoggedInDriver.LastVehicleID = vehicle.ID;
             _infoService.CurrentVehicle = vehicle;
-            _navigationService.MoveToNext();
+            return _navigationService.MoveToNextAsync();
         }
 
-        private async Task LastVehicleSelect()
+        private async Task LastVehicleSelectAsync()
         {
             var currentDriver = await _currentDriverRepository.GetByIDAsync(_infoService.LoggedInDriver.ID);
 
@@ -132,13 +132,8 @@ namespace MWF.Mobile.Core.ViewModels
             if (vehicle == null)
                 return;
 
-            Mvx.Resolve<ICustomUserInteraction>().Confirm((vehicle.Registration), isConfirmed =>
-            {
-                if (isConfirmed)
-                {
-                    ShowTrailerScreen(vehicle);
-                }
-            }, "Last Used Vehicle", "Confirm");
+            if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(vehicle.Registration, "Last Used Vehicle", "Confirm"))
+                await this.ShowTrailerScreenAsync(vehicle);
         }
 
         private MvxCommand<Vehicle> _showVehicleDetailCommand;
@@ -163,7 +158,7 @@ namespace MWF.Mobile.Core.ViewModels
                 newDriver.LastVehicleID = vehicle.ID;
                 await _currentDriverRepository.InsertAsync(newDriver);
 
-                ShowTrailerScreen(vehicle);
+                await this.ShowTrailerScreenAsync(vehicle);
             }
         }
 
@@ -205,13 +200,13 @@ namespace MWF.Mobile.Core.ViewModels
             }
             else
             {
-                var vehicleViews = await _gatewayService.GetVehicleViews();
+                var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
 
                 var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
 
                 foreach (var vehicleView in vehicleViews)
                 {
-                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehicles(vehicleView.Title));
+                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
                 }
 
                 var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
@@ -247,7 +242,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 try
                 {
-                    safetyProfiles = await _gatewayService.GetSafetyProfiles();
+                    safetyProfiles = await _gatewayService.GetSafetyProfilesAsync();
                 }
                 catch (TaskCanceledException)
                 {
@@ -264,7 +259,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             var safetyProfileData = await _safetyProfileRepository.GetAllAsync();
             if (safetyProfileData.ToList().Count == 0)
-                Mvx.Resolve<ICustomUserInteraction>().Alert("No Profiles Found.");
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("No Profiles Found.");
         }
     }
 

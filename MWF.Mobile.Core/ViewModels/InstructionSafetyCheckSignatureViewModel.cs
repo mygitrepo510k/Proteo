@@ -24,7 +24,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        public async void Init(NavData<MobileData> navData)
+        public async Task Init(NavData<MobileData> navData)
         {
             _navData = navData;
             _navData.Reinflate();

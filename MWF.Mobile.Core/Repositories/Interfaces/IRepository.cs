@@ -18,9 +18,9 @@ namespace MWF.Mobile.Core.Repositories
 
         Task<T> GetByIDAsync(Guid ID);
 
-        void Insert(T entity, SQLiteConnection connection);
+        void Insert(T entity, Database.IConnection connection);
         Task InsertAsync(T entity);
-        void Insert(IEnumerable<T> entities, SQLiteConnection connection);
+        void Insert(IEnumerable<T> entities, Database.IConnection connection);
         Task InsertAsync(IEnumerable<T> entities);
 
         Task UpdateAsync(T entity);

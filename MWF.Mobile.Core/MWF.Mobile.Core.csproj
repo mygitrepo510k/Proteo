@@ -115,6 +115,11 @@
     <Compile Include="Converters\BarcodeDeliveredConverter.cs" />
     <Compile Include="Converters\SingleObjectToListConverter.cs" />
     <Compile Include="Converters\StringHasLengthConverter.cs" />
+    <Compile Include="Database\AsyncTableQuery.cs" />
+    <Compile Include="Database\Connection.cs" />
+    <Compile Include="Database\IAsyncConnection.cs" />
+    <Compile Include="Database\IConnection.cs" />
+    <Compile Include="Database\IAsyncTableQuery.cs" />
     <Compile Include="Enums\ScanState.cs" />
     <Compile Include="Enums\DriverActivity.cs" />
     <Compile Include="Enums\InstructionProgress.cs" />
@@ -275,6 +280,7 @@
     <Compile Include="Services\IInfoService.cs" />
     <Compile Include="Services\InfoService.cs" />
     <Compile Include="Services\SafetyCheckService.cs" />
+    <Compile Include="Database\AsyncConnection.cs" />
     <Compile Include="Utilities\AsyncLock.cs" />
     <Compile Include="Utilities\Timer.cs" />
     <Compile Include="ViewModels\BarcodeItemViewModel.cs" />

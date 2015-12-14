@@ -87,7 +87,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
                     validMessageCount++;
             }
 
-            _mobileDataRepoMock.Setup(ms => ms.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID))).Returns(messages);
+            _mobileDataRepoMock.Setup(ms => ms.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID))).ReturnsAsync(messages);
 
             var inboxVM = _fixture.Create<InboxViewModel>();
 

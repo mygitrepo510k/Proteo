@@ -169,7 +169,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
 
             var mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == mobileData.ID))).Returns(mobileData);
+            mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == mobileData.ID))).ReturnsAsync(mobileData);
             var repositories = _fixture.Create<Repositories>();
             _fixture.Inject<IRepositories>(repositories);
 
@@ -179,13 +179,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var vm = _fixture.Create<InstructionTrailerViewModel>();
             vm.IsVisible = true;
 
-            vm.Init(new NavData<MobileData>() { Data = mobileData });
+            await vm.Init(new NavData<MobileData>() { Data = mobileData });
 
             await vm.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == mobileData.ID.ToString())), Times.Exactly(1));
+            mockMobileDataRepo.Verify(mdr => mdr.GetByIDAsync(It.Is<Guid>(gui => gui.ToString() == mobileData.ID.ToString())), Times.Exactly(1));
 
         }
 

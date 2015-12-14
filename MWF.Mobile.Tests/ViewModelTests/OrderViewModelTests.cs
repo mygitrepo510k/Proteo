@@ -43,7 +43,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData = _fixture.Create<MobileData>();
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _mockConfigRepo = _fixture.InjectNewMock<IConfigRepository>();
 
@@ -184,7 +184,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var config = _fixture.Create<MWFMobileConfig>();
             config.QuantityIsEditable = true;
 
-            _mockConfigRepo.Setup(mcr => mcr.GetByID(It.IsAny<Guid>())).Returns(config);
+            _mockConfigRepo.Setup(mcr => mcr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(config);
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
             var navData = new NavData<MobileData>() { Data = _mobileData };
@@ -205,7 +205,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var config = _fixture.Create<MWFMobileConfig>();
             config.QuantityIsEditable = false;
 
-            _mockConfigRepo.Setup(mcr => mcr.GetByID(It.IsAny<Guid>())).Returns(config);
+            _mockConfigRepo.Setup(mcr => mcr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(config);
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
             var navData = new NavData<MobileData>() { Data = _mobileData };
@@ -218,7 +218,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void OrderVM_Delivery_QuantityNotEditable()
+        public async Task OrderVM_Delivery_QuantityNotEditable()
         {
             base.ClearAll();
 
@@ -226,13 +226,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var config = _fixture.Create<MWFMobileConfig>();
 
-            _mockConfigRepo.Setup(mcr => mcr.GetByID(It.IsAny<Guid>())).Returns(config);
+            _mockConfigRepo.Setup(mcr => mcr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(config);
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Deliver;
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(false, orderVM.ChangeOrderQuantity);
         }
@@ -259,7 +259,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void OrderVM_CheckInstructionNotification_Update_Confirm()
+        public async Task OrderVM_CheckInstructionNotification_Update_Confirm()
         {
             base.ClearAll();
 
@@ -269,16 +269,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
-            orderVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await orderVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
-
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByIDAsync(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
         }
-
 
         #endregion Tests
     }

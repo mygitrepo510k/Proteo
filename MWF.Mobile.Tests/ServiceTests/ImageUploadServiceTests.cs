@@ -49,7 +49,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGpsService.Setup(mgs => mgs.GetLongitude()).Returns(2);
 
             _mockConfigRepo = _fixture.InjectNewMock<IConfigRepository>();
-            _mockConfigRepo.Setup(mcr => mcr.Get()).Returns(_mockMobileConfig);
+            _mockConfigRepo.Setup(mcr => mcr.GetAsync()).ReturnsAsync(_mockMobileConfig);
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -91,7 +91,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
 
-            _mockConfigRepo.Verify(mcr => mcr.Get(), Times.Once);
+            _mockConfigRepo.Verify(mcr => mcr.GetAsync(), Times.Once);
 
             _mockGpsService.Verify(mgs => mgs.GetLongitude(), Times.Exactly(3));
             _mockGpsService.Verify(mgs => mgs.GetLatitude(), Times.Exactly(3));
@@ -121,7 +121,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
 
-            _mockConfigRepo.Verify(mcr => mcr.Get(), Times.Once);
+            _mockConfigRepo.Verify(mcr => mcr.GetAsync(), Times.Once);
 
             _mockGpsService.Verify(mgs => mgs.GetLongitude(), Times.Exactly(3));
             _mockGpsService.Verify(mgs => mgs.GetLatitude(), Times.Exactly(3));
@@ -160,7 +160,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
 
-            _mockConfigRepo.Verify(mcr => mcr.Get(), Times.Once);
+            _mockConfigRepo.Verify(mcr => mcr.GetAsync(), Times.Once);
 
             _mockGpsService.Verify(mgs => mgs.GetLongitude(), Times.Exactly(3));
             _mockGpsService.Verify(mgs => mgs.GetLatitude(), Times.Exactly(3));

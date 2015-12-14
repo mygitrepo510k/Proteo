@@ -60,27 +60,27 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
         [Fact]
-        public void LoggingService_LogInfoEvent()
+        public async Task LoggingService_LogInfoEvent()
         {
             base.ClearAll();
 
             var loggingService = _fixture.Create<LoggingService>();
 
-            loggingService.LogEventAsync("Test Log", Core.Enums.LogType.Info);
+            await loggingService.LogEventAsync("Test Log", Core.Enums.LogType.Info);
 
-            _mockLogMessageRepo.Verify(mlm => mlm.Insert(It.Is<LogMessage>(lm => lm.LogType == Core.Enums.LogType.Info)), Times.Once);
+            _mockLogMessageRepo.Verify(mlm => mlm.InsertAsync(It.Is<LogMessage>(lm => lm.LogType == Core.Enums.LogType.Info)), Times.Once);
         }
 
         [Fact]
-        public void LoggingService_LogExceptions()
+        public async Task LoggingService_LogExceptions()
         {
             base.ClearAll();
 
             var loggingService = _fixture.Create<LoggingService>();
 
-            loggingService.LogEventAsync(new Exception("Test Exception"));
+            await loggingService.LogEventAsync(new Exception("Test Exception"));
 
-            _mockLogMessageRepo.Verify(mlm => mlm.Insert(It.Is<LogMessage>(lm => lm.LogType == Core.Enums.LogType.Error)), Times.Once);
+            _mockLogMessageRepo.Verify(mlm => mlm.InsertAsync(It.Is<LogMessage>(lm => lm.LogType == Core.Enums.LogType.Error)), Times.Once);
         }
 
         [Fact]
@@ -99,7 +99,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             await loggingService.UploadLoggedEventsAsync();
 
-            _mockLogMessageRepo.Verify(mlm => mlm.Delete(It.IsAny<LogMessage>()), Times.Exactly(3));
+            _mockLogMessageRepo.Verify(mlm => mlm.DeleteAsync(It.IsAny<LogMessage>()), Times.Exactly(3));
 
         }
 

@@ -141,7 +141,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.LoginCommand.Execute(null);
 
-            currentDriverRepository.Verify(cdr => cdr.Insert(It.Is<CurrentDriver>( cd => cd.ID == _driver.ID )), Times.Once);
+            currentDriverRepository.Verify(cdr => cdr.InsertAsync(It.Is<CurrentDriver>( cd => cd.ID == _driver.ID )), Times.Once);
 
         }
 

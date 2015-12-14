@@ -42,8 +42,6 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         }
 
-
-
         [Theory]
         [InlineData("matching", false, true, "matching", true, true, true, true)]               // Passcode exists in local database (shouldn't connect to Bluesphere) driver is licensed
         [InlineData("matching", false, true, "matching", false, true, true, false)]             // Passcode exists in local database (shouldn't connect to Bluesphere) driver is not licensed
@@ -64,7 +62,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             // mock driver repository. Returns driversFromDB first time when asked, and driversFromBluesphere subsequently
             Mock<IDriverRepository> driverRepositoryMock = new Mock<IDriverRepository>();
-            driverRepositoryMock.Setup(dr => dr.GetAllAsync()).ReturnsInOrder(GetDrivers(driversFromDB), GetDrivers(driversFromBluesphere));
+            driverRepositoryMock.Setup(dr => dr.GetAllAsync()).ReturnsInOrder(Task.FromResult(GetDrivers(driversFromDB)), Task.FromResult(GetDrivers(driversFromBluesphere)));
             _fixture.Inject<IDriverRepository>(driverRepositoryMock.Object);
 
             // set up the gaeway service license check
@@ -85,15 +83,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             {
                 _gatewayServiceMock.Verify(gs => gs.GetDriversAsync(), Times.Once);
                 //driver repostory should have been updated to as part of bluesphere refresh
-                driverRepositoryMock.Verify(dr => dr.DeleteAll(), Times.Once);
-                driverRepositoryMock.Verify(dr => dr.Insert(It.IsAny<IEnumerable<Driver>>()), Times.Once);
+                driverRepositoryMock.Verify(dr => dr.DeleteAllAsync(), Times.Once);
+                driverRepositoryMock.Verify(dr => dr.InsertAsync(It.IsAny<IEnumerable<Driver>>()), Times.Once);
             }
 
-            if(shouldUpdateRepository)
+            if (shouldUpdateRepository)
             {
-                driverRepositoryMock.Verify(drm => drm.Update(It.Is<Driver>(d => d == _matchingPasscodes.First())));
+                driverRepositoryMock.Verify(drm => drm.UpdateAsync(It.Is<Driver>(d => d == _matchingPasscodes.First())));
             }
-
         }
 
 

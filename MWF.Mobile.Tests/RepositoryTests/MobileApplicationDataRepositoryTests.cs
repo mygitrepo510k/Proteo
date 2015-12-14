@@ -14,23 +14,28 @@ using System.Collections.Generic;
 using System.Collections;
 using MWF.Mobile.Tests.Helpers;
 using System.Threading.Tasks;
+using System.Threading;
+using SQLite.Net.Async;
 
 namespace MWF.Mobile.Tests.RepositoryTests
 {
     public class MobileApplicationDataRepositoryTests
         : MvxIoCSupportingTest
     {
-        private Mock<ISQLiteConnection> _connectionMock;
+        private Mock<Core.Database.IAsyncConnection> _asyncConnectionMock;
+        private Mock<Core.Database.IConnection> _connectionMock;
         private IFixture _fixture;
 
         protected override void AdditionalSetup()
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-            _connectionMock = new Mock<ISQLiteConnection>();
-            _connectionMock.Setup(c => c.RunInTransaction(It.IsAny<Action>())).Callback((Action a) => a.Invoke());
+            _asyncConnectionMock = new Mock<Core.Database.IAsyncConnection>();
+            _connectionMock = new Mock<Core.Database.IConnection>();
+            _asyncConnectionMock.Setup(c => c.RunInTransactionAsync(It.IsAny<Action<Core.Database.IConnection>>(), It.IsAny<CancellationToken>()))
+                .Callback((Action<Core.Database.IConnection> a, CancellationToken ct) => a.Invoke(_connectionMock.Object));
 
-            var dataServiceMock = Mock.Of<IDataService>(ds => ds.GetDBConnection() == _connectionMock.Object);
+            var dataServiceMock = Mock.Of<IDataService>(ds => ds.GetAsyncDBConnection() == _asyncConnectionMock.Object);
             _fixture.Register<IDataService>(() => dataServiceMock);
         }
 
@@ -43,10 +48,9 @@ namespace MWF.Mobile.Tests.RepositoryTests
             mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.OnSite });
             mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.NotStarted });
 
-            MockITableQuery<MobileData> mockTableQuery = new MockITableQuery<MobileData>();
-            mockTableQuery.Items = mobileDataList;
+            var mockTableQuery = new MockAsyncTableQuery<MobileData>(mobileDataList);
 
-            _connectionMock.Setup(c => c.Table<MobileData>()).Returns(mockTableQuery);
+            _asyncConnectionMock.Setup(c => c.Table<MobileData>()).Returns(mockTableQuery);
 
             var mdr = _fixture.Create<MobileDataRepository>();
 
@@ -67,10 +71,9 @@ namespace MWF.Mobile.Tests.RepositoryTests
             mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.OnSite });
             mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.NotStarted });
 
-            MockITableQuery<MobileData> mockTableQuery = new MockITableQuery<MobileData>();
-            mockTableQuery.Items = mobileDataList;
+            var mockTableQuery = new MockAsyncTableQuery<MobileData>(mobileDataList);
 
-            _connectionMock.Setup(c => c.Table<MobileData>()).Returns(mockTableQuery);
+            _asyncConnectionMock.Setup(c => c.Table<MobileData>()).Returns(mockTableQuery);
 
             var mdr = _fixture.Create<MobileDataRepository>();
 

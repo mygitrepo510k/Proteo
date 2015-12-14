@@ -41,7 +41,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData.GroupTitle = "Run1010";
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -181,7 +181,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByIDAsync(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
 
         }
 

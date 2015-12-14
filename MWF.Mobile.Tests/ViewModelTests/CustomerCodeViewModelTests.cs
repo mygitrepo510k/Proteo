@@ -38,8 +38,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Register<ICustomUserInteraction>(() => _mockUserInteraction.Object);
 
             _dataService = new Mock<IDataService>();
-            var connection = _fixture.Create<ISQLiteConnection>();
-            _dataService.Setup(ds => ds.RunInTransaction(It.IsAny<Action<ISQLiteConnection>>())).Callback<Action<ISQLiteConnection>>(a => a.Invoke(connection));
+            var asyncConnection = _fixture.Create<Core.Database.IAsyncConnection>();
+            var connectionMock = new Mock<Core.Database.IConnection>();
+            _dataService.Setup(c => c.RunInTransactionAsync(It.IsAny<Action<Core.Database.IConnection>>())).Callback((Action<Core.Database.IConnection> a) => a.Invoke(connectionMock.Object));
             _fixture.Register<IDataService>(() => _dataService.Object);
         }
 
@@ -134,7 +135,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             ccvm.EnterCodeCommand.Execute(null);
 
             //check that the customer repository was written to
-            customerRepository.Verify(cr => cr.Insert(It.IsAny<Customer>(), It.IsAny<ISQLiteConnection>()), Times.Once);
+            customerRepository.Verify(cr => cr.Insert(It.IsAny<Customer>(), It.IsAny<Core.Database.IConnection>()), Times.Once);
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);

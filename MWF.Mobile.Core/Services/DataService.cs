@@ -44,7 +44,7 @@ namespace MWF.Mobile.Core.Services
 
         #region Public Methods
 
-        public async Task RunInTransactionAsync(Action<SQLiteConnection> action)
+        public async Task RunInTransactionAsync(Action<Database.IConnection> action)
         {
             var conn = this.GetAsyncDBConnection();
             await conn.RunInTransactionAsync(action);
@@ -54,29 +54,25 @@ namespace MWF.Mobile.Core.Services
 
         #region Properties
 
-        public SQLite.Net.SQLiteConnection GetDBConnection()
+        public Database.IConnection GetDBConnection()
         {
-            var _conn = new SQLiteConnection(_platform, _path, SQLite.Net.Interop.SQLiteOpenFlags.ReadWrite | SQLite.Net.Interop.SQLiteOpenFlags.Create | SQLite.Net.Interop.SQLiteOpenFlags.FullMutex);            
+            var _conn = new Database.Connection(_platform, _path, SQLite.Net.Interop.SQLiteOpenFlags.ReadWrite | SQLite.Net.Interop.SQLiteOpenFlags.Create | SQLite.Net.Interop.SQLiteOpenFlags.FullMutex);            
             return _conn;
         }
 
-        public SQLiteAsyncConnection GetAsyncDBConnection()
+        public Database.IAsyncConnection GetAsyncDBConnection()
         {
-            return new SQLiteAsyncConnection(() => _connectionPool.GetConnection(_connectionString));
+            return new Database.AsyncConnection(() => _connectionPool.GetConnection(_connectionString));
         }
 
         public string DatabasePath
         {
-            get
-            {
-                return GetDBConnection().DatabasePath;
-            }
+            get { return GetDBConnection().DatabasePath; }
         }
 
         #endregion
 
         #region Private Methods
-
 
         /// <summary>
         /// Creates all the tables required for local storage.

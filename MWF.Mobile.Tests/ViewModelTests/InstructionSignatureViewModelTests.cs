@@ -47,7 +47,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData = _fixture.Create<MobileData>();
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
             _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Complete Instruction");
@@ -330,7 +330,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void InstructionSignatureVM_CheckInstructionNotification_Update_Confirm()
+        public async Task InstructionSignatureVM_CheckInstructionNotification_Update_Confirm()
         {
             base.ClearAll();
 
@@ -338,11 +338,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionSignatureVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await instructionSignatureVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
-            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByIDAsync(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
 
         }
 

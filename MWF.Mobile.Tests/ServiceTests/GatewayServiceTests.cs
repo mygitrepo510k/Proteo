@@ -45,7 +45,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //(relies on driver TEST TEST (on Proteo test site) not being marked as revoked)
             _infoService.LoggedInDriver.ID = new Guid("7B5657F7-A0C3-4CAF-AA5F-D76FE942074B");
             
-            List<Device> devices = new List<Device>() { new Device() { DeviceIdentifier = "021PROTEO0000001" } };
+            IEnumerable<Device> devices = new List<Device>() { new Device() { DeviceIdentifier = "021PROTEO0000001" } };
             IDeviceRepository repo = Mock.Of<IDeviceRepository>(dr => dr.GetAllAsync() == Task.FromResult(devices));
             IRepositories repos = Mock.Of<IRepositories>(r => r.DeviceRepository == repo &&
                                                               r.GatewayQueueItemRepository == _mockQueueItemRepository.Object);

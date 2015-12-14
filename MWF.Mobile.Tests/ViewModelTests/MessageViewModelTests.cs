@@ -45,7 +45,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData.Order.Type = InstructionType.OrderMessage;
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
             _mockDataChunkService.Setup(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)));

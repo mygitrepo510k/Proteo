@@ -65,7 +65,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _navData.OtherData["UpdatedTrailer"] = _trailer;
 
             var mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+            mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
 
             _mockSafetyProfileRepository = _fixture.InjectNewMock<ISafetyProfileRepository>();

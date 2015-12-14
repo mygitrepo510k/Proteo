@@ -40,7 +40,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData = _fixture.Create<MobileData>();
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 

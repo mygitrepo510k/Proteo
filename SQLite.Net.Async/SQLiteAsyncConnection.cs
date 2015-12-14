@@ -609,51 +609,15 @@ namespace SQLite.Net.Async
         }
 
         [PublicAPI]
-        public Task<TableMapping> GetMappingAsync<T> ()
+        public Task<TableMapping> GetMappingAsync<T>()
         {
-            return Task.Factory.StartNew (() => {
-                SQLiteConnectionWithLock conn = GetConnection ();
-                using (conn.Lock ()) {
-                    return conn.GetMapping (typeof(T));
-                }
-            }, CancellationToken.None, _taskCreationOptions, _taskScheduler ?? TaskScheduler.Default);
-        }
-
-        [PublicAPI]
-        public Task<List<object>> QueryAsync(CancellationToken cancellationToken, TableMapping map, [NotNull] string sql, params object[] args)
-        {
-            if (sql == null)
-            {
-                throw new ArgumentNullException("sql");
-            }
-            if (args == null)
-            {
-                throw new ArgumentNullException("args");
-            }
-            return Task.Factory.StartNew(() =>
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var conn = GetConnection();
-                using (conn.Lock())
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    return conn.Query(map, sql, args);
-                }
-            }, cancellationToken, _taskCreationOptions, _taskScheduler ?? TaskScheduler.Default);
-        }
-
-        [PublicAPI]
-        public Task<TableMapping> GetMappingAsync(Type type)
-        {
-            return Task.Factory.StartNew(() =>
-            {
+            return Task.Factory.StartNew(() => {
                 SQLiteConnectionWithLock conn = GetConnection();
                 using (conn.Lock())
                 {
-                    return conn.GetMapping(type);
+                    return conn.GetMapping(typeof(T));
                 }
             }, CancellationToken.None, _taskCreationOptions, _taskScheduler ?? TaskScheduler.Default);
         }
-
     }
 }

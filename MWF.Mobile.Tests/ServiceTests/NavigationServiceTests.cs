@@ -71,7 +71,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockApplicationProfile.Setup(map => map.GetAllAsync()).ReturnsAsync(_fixture.CreateMany<ApplicationProfile>());
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(i => i == _mobileData.ID))).Returns(_mobileData);
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _mockSafetyProfileRepository = _fixture.InjectNewMock<ISafetyProfileRepository>();
 
@@ -126,11 +126,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             NavData<Driver> navData = new NavData<Driver> { Data = driver }; 
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertCustomNavAction<ActivityViewModel, FragmentViewModel1>( (a) =>  myObj = a);
+            service.InsertCustomNavAction<ActivityViewModel, FragmentViewModel1>((a) => { myObj = a; return Task.FromResult(0); });
 
             Assert.True(service.NavActionExists<ActivityViewModel, FragmentViewModel1>());
 
-            Action<NavData> navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
+            var navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
 
             navAction.Invoke(navData);
 
@@ -165,11 +165,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             NavData<Driver> navData = new NavData<Driver> { Data = driver }; 
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertCustomBackNavAction<ActivityViewModel, FragmentViewModel1>((a) => myObj = a);
+            service.InsertCustomBackNavAction<ActivityViewModel, FragmentViewModel1>((a) => { myObj = a; return Task.FromResult(0); });
 
             Assert.True(service.BackNavActionExists<ActivityViewModel, FragmentViewModel1>());
 
-            Action<NavData> navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
+            var navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
 
             navAction.Invoke(navData);
 
@@ -198,7 +198,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
             service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
 
-            Action<NavData> navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
+            var navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
 
             Assert.NotNull(navAction);
 
@@ -222,7 +222,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Specify that from StartUp/APsscode view model we should navigate to FragmentViewModel1
             service.InsertBackNavAction<ActivityViewModel, FragmentViewModel2>(typeof(FragmentViewModel1));
 
-            Action<NavData> navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel2));
+            var navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel2));
 
             Assert.NotNull(navAction);
 
@@ -247,7 +247,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
             service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
 
-            Action<NavData> navAction = service.GetNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
+            var navAction = service.GetNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
 
             Assert.NotNull(navAction);
 
@@ -283,7 +283,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            Action<NavData> navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
+            var navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
 
             Assert.Null(navAction);
 
@@ -355,13 +355,10 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             Assert.Equal(driver, navData.Data);
             Assert.Equal(vehicle, navData.OtherData["vehicle"]);
-
-
-
         }
 
         [Fact]
-        public void NavigationService_MoveToNext_UnknownMapping()
+        public async Task NavigationService_MoveToNext_UnknownMapping()
         {
             base.ClearAll();
 
@@ -374,9 +371,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Don't specify any mappings
 
             // Attempt to move to the next view model
-            Assert.Throws<UnknownNavigationMappingException>(() => service.MoveToNextAsync());
-
-
+            await Assert.ThrowsAsync<UnknownNavigationMappingException>(service.MoveToNextAsync);
         }
 
         [Fact]
@@ -406,7 +401,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_GoBack_UnknownMapping()
+        public async Task NavigationService_GoBack_UnknownMapping()
         {
             base.ClearAll();
 
@@ -419,9 +414,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Don't specify any mappings
 
             // Attempt to go back
-            Assert.Throws<UnknownBackNavigationMappingException>(() => service.GoBackAsync());
-
-
+            await Assert.ThrowsAsync<UnknownBackNavigationMappingException>(service.GoBackAsync);
         }
 
         #endregion
@@ -767,7 +760,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mobileData.Order.Type = InstructionType.Collect;
 
-            var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
+            _fixture.Inject(manifestViewModel);
 
             // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => 
@@ -2422,7 +2416,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             var mobileDataRepositoryMock = _fixture.InjectNewMock<IMobileDataRepository>();
-            mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns((MobileData)null);
+            mobileDataRepositoryMock.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(null);
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 

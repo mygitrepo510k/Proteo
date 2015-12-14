@@ -28,7 +28,6 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         private IFixture _fixture;
         private Mock<IConfigRepository> _mockConfigRepo;
-        private Mock<IDeviceInfo>_mockDeviceInfo;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private bool _isConnected = true;
         private MWFMobileConfig _config;
@@ -49,7 +48,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _config = _fixture.Create<MWFMobileConfig>();
             _mockConfigRepo = new Mock<IConfigRepository>();
-            _mockConfigRepo.Setup(cr => cr.Get()).Returns(_config);
+            _mockConfigRepo.Setup(cr => cr.GetAsync()).ReturnsAsync(_config);
             _fixture.Inject<IConfigRepository>(_mockConfigRepo.Object);
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -100,7 +99,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             Assert.False(result);
 
-            _mockUserInteraction.Verify(ui => ui.Alert(It.Is<string>(s => s.StartsWith("Your FTP credentials have not been set up")), It.IsAny<System.Action>(), It.IsAny<string>(), It.IsAny<string>()));
+            _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s.StartsWith("Your FTP credentials have not been set up")), It.IsAny<string>(), It.IsAny<string>()));
 
         }
 
@@ -118,7 +117,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             Assert.False(result);
 
-            _mockUserInteraction.Verify(ui => ui.Alert(It.Is<string>(s => s.StartsWith("Your FTP credentials have not been set up")), It.IsAny<System.Action>(), It.IsAny<string>(), It.IsAny<string>()));
+            _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s.StartsWith("Your FTP credentials have not been set up")), It.IsAny<string>(), It.IsAny<string>()));
 
         }
 
@@ -136,7 +135,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             Assert.False(result);
 
-            _mockUserInteraction.Verify(ui => ui.Alert(It.Is<string>(s => s.StartsWith("Your FTP credentials have not been set up")), It.IsAny<System.Action>(), It.IsAny<string>(), It.IsAny<string>()));
+            _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s.StartsWith("Your FTP credentials have not been set up")), It.IsAny<string>(), It.IsAny<string>()));
 
         }
 

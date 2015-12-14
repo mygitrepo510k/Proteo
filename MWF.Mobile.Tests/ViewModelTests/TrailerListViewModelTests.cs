@@ -52,7 +52,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IInfoService>(_infoService);
 
             _currentDriverRepository = new Mock<ICurrentDriverRepository>();
-            _currentDriverRepository.Setup(cdr => cdr.GetByID(It.IsAny<Guid>())).Returns(new CurrentDriver());
+            _currentDriverRepository.Setup(cdr => cdr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(new CurrentDriver());
             _fixture.Inject<ICurrentDriverRepository>(_currentDriverRepository.Object);
 
             var mockAuthenticationService = new Mock<IAuthenticationService>();

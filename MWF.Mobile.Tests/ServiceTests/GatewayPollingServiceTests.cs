@@ -88,7 +88,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             await Task.Delay(2000);
 
             // Check that we insert the instruction
-            _mockMobileDataRepo.Verify(mdr => mdr.Insert(It.Is<MobileData>(md => md.ID == id)), Times.Once);
+            _mockMobileDataRepo.Verify(mdr => mdr.InsertAsync(It.Is<MobileData>(md => md.ID == id)), Times.Once);
         }
 
         [Fact]
@@ -112,9 +112,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
             var service = _fixture.Create<GatewayPollingService>();
 
-
-
-
             service.StartPollingTimer();
             await service.PollForInstructionsAsync();
 
@@ -124,8 +121,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the start and end date of driver instructions requested from gateway service matches up with the the span 
             //specified int he application profile
             Assert.Equal(_applicationProfile.DataSpan, (endDate - startDate).Days);
-
-
         }
 
         [Fact]
@@ -146,11 +141,11 @@ namespace MWF.Mobile.Tests.ServiceTests
             await Task.Delay(100);
 
             // Check we look for the instruction
-            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(g => g.ToString() == id.ToString())), Times.Once);
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByIDAsync(It.Is<Guid>(g => g.ToString() == id.ToString())), Times.Once);
             // Check we delete the old instruction
-            _mockMobileDataRepo.Verify(mdr => mdr.Delete(It.Is<MobileData>(md => md.ID == id)), Times.Once);
+            _mockMobileDataRepo.Verify(mdr => mdr.DeleteAsync(It.Is<MobileData>(md => md.ID == id)), Times.Once);
             // Check that we insert the new instruction
-            _mockMobileDataRepo.Verify(mdr => mdr.Insert(It.Is<MobileData>(md => md.ID == id)), Times.Once);
+            _mockMobileDataRepo.Verify(mdr => mdr.InsertAsync(It.Is<MobileData>(md => md.ID == id)), Times.Once);
             // Check that it publishes the updated instruction to the current view model
             _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => id.ToString() == inm.InstructionID.ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update)), Times.Once);
         }
@@ -173,9 +168,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             await Task.Delay(100);
 
             // Check we look for the instruction
-            _mockMobileDataRepo.Verify(mdr => mdr.GetByID(It.Is<Guid>(g => g.ToString() == id.ToString())), Times.Once);
+            _mockMobileDataRepo.Verify(mdr => mdr.GetByIDAsync(It.Is<Guid>(g => g.ToString() == id.ToString())), Times.Once);
             // Check we delete the instruction
-            _mockMobileDataRepo.Verify(mdr => mdr.Delete(It.Is<MobileData>(md => md.ID == id)), Times.Once);
+            _mockMobileDataRepo.Verify(mdr => mdr.DeleteAsync(It.Is<MobileData>(md => md.ID == id)), Times.Once);
             // Check that it publishes the deleted instruction to the current view model
             _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => id.ToString() == inm.InstructionID.ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete)), Times.Once);
 
@@ -194,8 +189,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             List<MobileData> insertList = new List<MobileData>();
 
-            _mockMobileDataRepo.Setup(mdr => mdr.Insert(It.IsAny<MobileData>()))
-                               .Callback<MobileData>((md) => { insertList.Add(md); });
+            _mockMobileDataRepo.Setup(mdr => mdr.InsertAsync(It.IsAny<MobileData>()))
+                               .Callback<MobileData>(md => { insertList.Add(md); });
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -231,14 +226,17 @@ namespace MWF.Mobile.Tests.ServiceTests
             List<MobileData> deleteList = new List<MobileData>();
             List<MobileData> insertList = new List<MobileData>();
 
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.IsAny<Guid>()))
-                               .Callback<Guid>((md) => { getList.Add(md); });
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>()))
+                               .Callback<Guid>((md) => { getList.Add(md); })
+                               .ReturnsAsync(new MobileData());
 
-            _mockMobileDataRepo.Setup(mdr => mdr.Delete(It.IsAny<MobileData>()))
-                               .Callback<MobileData>((md) => { deleteList.Add(md); });
+            _mockMobileDataRepo.Setup(mdr => mdr.DeleteAsync(It.IsAny<MobileData>()))
+                               .Callback<MobileData>((md) => { deleteList.Add(md); })
+                               .Returns(Task.FromResult(0));
 
-            _mockMobileDataRepo.Setup(mdr => mdr.Insert(It.IsAny<MobileData>()))
-                               .Callback<MobileData>((md) => { insertList.Add(md); });
+            _mockMobileDataRepo.Setup(mdr => mdr.InsertAsync(It.IsAny<MobileData>()))
+                               .Callback<MobileData>((md) => { insertList.Add(md); })
+                               .Returns(Task.FromResult(0));
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -281,7 +279,6 @@ namespace MWF.Mobile.Tests.ServiceTests
                 _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => inm.InstructionID.ToString() == ids[publishCounter].ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update)), Times.Exactly(3));
                 publishCounter++;
             }
-
         }
 
         [Fact]
@@ -298,11 +295,13 @@ namespace MWF.Mobile.Tests.ServiceTests
             List<Guid> getList = new List<Guid>();
             List<MobileData> deleteList = new List<MobileData>();
 
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.IsAny<Guid>()))
-                               .Callback<Guid>((md) => { getList.Add(md); });
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>()))
+                               .Callback<Guid>((md) => { getList.Add(md); })
+                               .ReturnsAsync(new MobileData());
 
-            _mockMobileDataRepo.Setup(mdr => mdr.Delete(It.IsAny<MobileData>()))
-                               .Callback<MobileData>((md) => { deleteList.Add(md); });
+            _mockMobileDataRepo.Setup(mdr => mdr.DeleteAsync(It.IsAny<MobileData>()))
+                               .Callback<MobileData>((md) => { deleteList.Add(md); })
+                               .Returns(Task.FromResult(0));
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -405,12 +404,13 @@ namespace MWF.Mobile.Tests.ServiceTests
             List<Guid> getList = new List<Guid>();
             List<MobileData> deleteList = new List<MobileData>();
 
-            _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.IsAny<Guid>()))
-                               .Returns(new MobileData { SyncState = SyncState.Delete })
+            _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>()))
+                               .ReturnsAsync(new MobileData { SyncState = SyncState.Delete })
                                .Callback<Guid>((md) => { getList.Add(md); });
 
-            _mockMobileDataRepo.Setup(mdr => mdr.Delete(It.IsAny<MobileData>()))
-                               .Callback<MobileData>((md) => { deleteList.Add(md); });
+            _mockMobileDataRepo.Setup(mdr => mdr.DeleteAsync(It.IsAny<MobileData>()))
+                               .Callback<MobileData>((md) => { deleteList.Add(md); })
+                               .Returns(Task.FromResult(0));
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -441,7 +441,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             if (syncState == SyncState.Update || syncState == SyncState.Delete)
             {
-                _mockMobileDataRepo.Setup(mdr => mdr.GetByID(It.Is<Guid>(g => g == id))).Returns(mobileData);
+                _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(g => g == id))).ReturnsAsync(mobileData);
             }
 
             IEnumerable<MobileData> mobileDatas = new List<MobileData>

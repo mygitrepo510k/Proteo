@@ -7,10 +7,8 @@ using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Attributes;
 using MWF.Mobile.Core.Services;
-using SQLite.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using SQLite.Net.Async;
 using System.Linq;
 
 namespace MWF.Mobile.Core.Repositories
@@ -39,8 +37,6 @@ namespace MWF.Mobile.Core.Repositories
 
         public virtual async Task DeleteAsync(T entity)
         {
-            var connection = _dataService.GetDBConnection();
-
             await _dataService.RunInTransactionAsync(c =>
             {
                 this.DeleteRecursive(entity, c);
@@ -74,7 +70,7 @@ namespace MWF.Mobile.Core.Repositories
             return entity;
         }
 
-        public virtual void Insert(T entity, SQLiteConnection transactionConnection)
+        public virtual void Insert(T entity, Database.IConnection transactionConnection)
         {
             var connection = transactionConnection ?? _dataService.GetDBConnection();
 
@@ -83,15 +79,13 @@ namespace MWF.Mobile.Core.Repositories
 
         public virtual async Task InsertAsync(T entity)
         {
-            var connection = _dataService.GetDBConnection();
-
             await _dataService.RunInTransactionAsync(c =>
             {
                 this.InsertRecursive(entity, c);
             });
         }
 
-        public virtual void Insert(IEnumerable<T> entities, SQLiteConnection transactionConnection)
+        public virtual void Insert(IEnumerable<T> entities, Database.IConnection transactionConnection)
         {
             var connection = transactionConnection ?? _dataService.GetDBConnection();
 
@@ -103,15 +97,13 @@ namespace MWF.Mobile.Core.Repositories
 
         public virtual async Task InsertAsync(IEnumerable<T> entities)
         {
-            var connection = _dataService.GetDBConnection();
-
             await _dataService.RunInTransactionAsync(c =>
             {
                 this.Insert(entities, c);
             });
         }
 
-        private void InsertRecursive(IBlueSphereEntity entity, SQLiteConnection connection)
+        private void InsertRecursive(IBlueSphereEntity entity, Database.IConnection connection)
         {
             connection.Insert(entity);
 
@@ -129,8 +121,6 @@ namespace MWF.Mobile.Core.Repositories
 
         public virtual async Task UpdateAsync(T entity)
         {
-            var connection = _dataService.GetDBConnection();
-
             await _dataService.RunInTransactionAsync(c =>
             {
                 var data = c.Table<T>().ToList();
@@ -158,7 +148,7 @@ namespace MWF.Mobile.Core.Repositories
         ///  ChildRelationship and ForeignKey attributes to guide the process
         /// </summary>
         /// <param name="entity"></param>
-        private void DeleteRecursive(IBlueSphereEntity entity, SQLiteConnection connection)
+        private void DeleteRecursive(IBlueSphereEntity entity, Database.IConnection connection)
         {
             connection.Delete(entity);
 
@@ -178,7 +168,7 @@ namespace MWF.Mobile.Core.Repositories
         /// plus any child types as specified by the ChildRelationship attribute
         /// </summary>
         /// <param name="type"></param>
-        private void DeleteAllRecursive(Type type, SQLiteConnection connection)
+        private void DeleteAllRecursive(Type type, Database.IConnection connection)
         {
             this.DeleteAllFromTable(type, connection);
 
@@ -190,7 +180,7 @@ namespace MWF.Mobile.Core.Repositories
             }
         }
 
-        private async Task DeleteAllRecursiveAsync(Type type, SQLiteAsyncConnection connection)
+        private async Task DeleteAllRecursiveAsync(Type type, Database.IAsyncConnection connection)
         {
             await DeleteAllFromTableAsync(type, connection);
 
@@ -207,7 +197,7 @@ namespace MWF.Mobile.Core.Repositories
         /// as labelled with the ChildRelationship. 
         /// </summary>
         /// <param name="parent"></param>
-        protected async Task PopulateChildrenRecursiveAsync(IBlueSphereEntity parent, SQLiteAsyncConnection connection)
+        protected async Task PopulateChildrenRecursiveAsync(IBlueSphereEntity parent, Database.IAsyncConnection connection)
         {
             var relationshipProperties = parent.GetType().GetChildRelationProperties();
 
@@ -246,7 +236,7 @@ namespace MWF.Mobile.Core.Repositories
         /// <summary>
         /// Private non-async version of PopulateChildrenRecursiveAsync for use within a transaction
         /// </summary>
-        private void PopulateChildrenRecursive(IBlueSphereEntity parent, SQLiteConnection connection)
+        private void PopulateChildrenRecursive(IBlueSphereEntity parent, Database.IConnection connection)
         {
             var relationshipProperties = parent.GetType().GetChildRelationProperties();
 
@@ -287,7 +277,7 @@ namespace MWF.Mobile.Core.Repositories
         /// a collection of parents
         /// </summary>
         /// <param name="parents"></param>
-        protected async Task PopulateChildrenRecursiveAsync(IEnumerable parents, SQLiteAsyncConnection connection)
+        protected async Task PopulateChildrenRecursiveAsync(IEnumerable parents, Database.IAsyncConnection connection)
         {
             foreach (var parent in parents)
             {
@@ -295,9 +285,9 @@ namespace MWF.Mobile.Core.Repositories
             }
         }
 
-        private async Task<IList> GetChildrenAsync(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteAsyncConnection connection)
+        private async Task<IList> GetChildrenAsync(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, Database.IAsyncConnection connection)
         {
-            TableMapping tableMapping = await connection.GetMappingAsync(childType);
+            var tableMapping = await connection.GetMappingAsync(childType);
 
             string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
                                                                             childType.GetForeignKeyName(parent.GetType()));
@@ -307,7 +297,7 @@ namespace MWF.Mobile.Core.Repositories
                 query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
             }
 
-            List<object> queryResults;
+            IList<object> queryResults;
 
             if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
             {
@@ -329,9 +319,9 @@ namespace MWF.Mobile.Core.Repositories
             return genericList;
         }
 
-        private IList GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, SQLiteConnection connection)
+        private IList GetChildren(IBlueSphereEntity parent, Type childType, string childIdentifyingPropertyName, object childIdentifyingPropertyValue, Database.IConnection connection)
         {
-            TableMapping tableMapping = connection.GetMapping(childType);
+            var tableMapping = connection.GetMapping(childType);
 
             string query = string.Format("select * from {0} where {1} = ?", childType.GetTableName(),
                                                                             childType.GetForeignKeyName(parent.GetType()));
@@ -341,7 +331,7 @@ namespace MWF.Mobile.Core.Repositories
                 query = query + string.Format(" AND {0} = ?", childIdentifyingPropertyName);
             }
 
-            List<object> queryResults;
+            IList<object> queryResults;
 
             if (!string.IsNullOrEmpty(childIdentifyingPropertyName))
             {
@@ -364,13 +354,13 @@ namespace MWF.Mobile.Core.Repositories
         }
 
         // Deletes all items from the table associated with the specified type
-        private void DeleteAllFromTable(Type type, SQLiteConnection connection)
+        private void DeleteAllFromTable(Type type, Database.IConnection connection)
         {
             string command = string.Format("delete from {0}", type.GetTableName());
-            connection.CreateCommand(command).ExecuteNonQuery();
+            connection.Execute(command);
         }
 
-        private async Task DeleteAllFromTableAsync(Type type, SQLiteAsyncConnection connection)
+        private async Task DeleteAllFromTableAsync(Type type, Database.IAsyncConnection connection)
         {
             string command = string.Format("delete from {0}", type.GetTableName());
             await connection.ExecuteAsync(command);

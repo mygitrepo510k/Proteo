@@ -1,14 +1,13 @@
 ﻿using System;
-using SQLite.Net;
 using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.Services
 {
     public interface IDataService
     {
-        SQLiteConnection GetDBConnection();
-        SQLite.Net.Async.SQLiteAsyncConnection GetAsyncDBConnection();
-        Task RunInTransactionAsync(Action<SQLite.Net.SQLiteConnection> action);
+        Database.IConnection GetDBConnection();
+        Database.IAsyncConnection GetAsyncDBConnection();
+        Task RunInTransactionAsync(Action<Database.IConnection> action);
         string DatabasePath { get; }
     }
 }

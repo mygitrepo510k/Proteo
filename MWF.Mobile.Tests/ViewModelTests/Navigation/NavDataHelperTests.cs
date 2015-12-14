@@ -242,7 +242,7 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
             navData.OtherData["AdditionalInstructions"] = additionalInstructions;
 
             var reloadedMobileData = _fixture.Create<MobileData>();
-            _mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns( reloadedMobileData);
+            _mobileDataRepositoryMock.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync( reloadedMobileData);
 
             navData.ReloadInstruction(navData.Data.ID, _repositories);
 
@@ -260,7 +260,7 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
             navData.OtherData["AdditionalInstructions"] = additionalInstructions;
 
             var reloadedMobileData = _fixture.Create<MobileData>();
-            _mobileDataRepositoryMock.Setup(mdr => mdr.GetByID(It.IsAny<Guid>())).Returns(reloadedMobileData);
+            _mobileDataRepositoryMock.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(reloadedMobileData);
 
             var originalInstruction = additionalInstructions[0];
 

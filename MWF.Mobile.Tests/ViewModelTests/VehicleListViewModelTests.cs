@@ -50,7 +50,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IInfoService>(_infoService);
 
             _currentDriverRepository = new Mock<ICurrentDriverRepository>();
-            _currentDriverRepository.Setup(cdr => cdr.GetByID(It.IsAny<Guid>())).Returns(new CurrentDriver());
+            _currentDriverRepository.Setup(cdr => cdr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(new CurrentDriver());
             _fixture.Inject<ICurrentDriverRepository>(_currentDriverRepository.Object);
 
         }
@@ -111,7 +111,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.ShowVehicleDetailCommand.Execute(_vehicle);
 
-            _currentDriverRepository.Verify(cdr => cdr.Insert(It.Is<CurrentDriver>(cd => cd.ID == _driver.LastVehicleID)), Times.Once);   
+            _currentDriverRepository.Verify(cdr => cdr.InsertAsync(It.Is<CurrentDriver>(cd => cd.ID == _driver.LastVehicleID)), Times.Once);   
         }
 
         /// <summary>

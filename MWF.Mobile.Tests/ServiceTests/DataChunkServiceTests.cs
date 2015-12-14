@@ -30,10 +30,8 @@ namespace MWF.Mobile.Tests.ServiceTests
              
         private MobileApplicationDataChunkCollection _mobileDataChunkCollection;
         private UploadCameraImageObject _uploadImageObject;
-        
 
         #endregion Private Members
-
 
         #region Setup
 
@@ -43,9 +41,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _fixture.OmitProperty("EffectiveDateString");
 
-            IDriverRepository driverRepo = Mock.Of<IDriverRepository>(dr => dr.GetByID(It.IsAny<Guid>()) == _fixture.Create<Driver>());
-            IVehicleRepository vehicleRepo = Mock.Of<IVehicleRepository>(vr => vr.GetByID(It.IsAny<Guid>()) == _fixture.Create<Vehicle>());
-            IMobileDataRepository mobileDataRepo = Mock.Of<IMobileDataRepository>(mdr => mdr.GetByID(It.IsAny<Guid>()) == _fixture.Create<MobileData>());
+            IDriverRepository driverRepo = Mock.Of<IDriverRepository>(dr => dr.GetByIDAsync(It.IsAny<Guid>()) == Task.FromResult(_fixture.Create<Driver>()));
+            IVehicleRepository vehicleRepo = Mock.Of<IVehicleRepository>(vr => vr.GetByIDAsync(It.IsAny<Guid>()) == Task.FromResult(_fixture.Create<Vehicle>()));
+            IMobileDataRepository mobileDataRepo = Mock.Of<IMobileDataRepository>(mdr => mdr.GetByIDAsync(It.IsAny<Guid>()) == Task.FromResult(_fixture.Create<MobileData>()));
 
             var mockGpsService = _fixture.InjectNewMock<IGpsService>();
             mockGpsService.Setup(mgps => mgps.GetSmpData(MWF.Mobile.Core.Enums.ReportReason.Begin)).Returns("SMP-BEGIN");
@@ -57,8 +55,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Register<IRepositories>(() => repos);
 
             _mockGatewayQueuedService = new Mock<IGatewayQueuedService>();
-            _mockGatewayQueuedService.Setup(mgqs => mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null)).Callback<string, MobileApplicationDataChunkCollection, Parameter[]>((s, m, p) => { _mobileDataChunkCollection = m; });
-            _mockGatewayQueuedService.Setup(mgqs => mgqs.AddToQueueAsync("fwSyncPhotos", It.IsAny<UploadCameraImageObject>(), null)).Callback<string, UploadCameraImageObject, Parameter[]>((s, uo, p) => { _uploadImageObject = uo; });
+
+            _mockGatewayQueuedService.Setup(mgqs => mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null))
+                .Callback<string, MobileApplicationDataChunkCollection, Parameter[]>((s, m, p) => { _mobileDataChunkCollection = m; })
+                .Returns(Task.FromResult(0));
+
+            _mockGatewayQueuedService.Setup(mgqs => mgqs.AddToQueueAsync("fwSyncPhotos", It.IsAny<UploadCameraImageObject>(), null))
+                .Callback<string, UploadCameraImageObject, Parameter[]>((s, uo, p) => { _uploadImageObject = uo; })
+                .Returns(Task.FromResult(0));
 
             _fixture.Inject<IGatewayQueuedService>(_mockGatewayQueuedService.Object);
 
@@ -92,14 +96,12 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
 
-
             MobileApplicationDataChunk mobileDataChunk = _mobileDataChunkCollection.MobileApplicationDataChunkCollectionObject.FirstOrDefault();
             var dataChunkActivities = mobileDataChunk.Data.MobileApplicationDataChunkContentOrderActivities.FirstOrDefault().MobileApplicationDataChunkContentActivitiesObject.FirstOrDefault();
 
             Assert.Equal("DRIVE", mobileDataChunk.Title);
             Assert.Equal("DRIVE", dataChunkActivities.Title);
             Assert.Equal("SMP-DRIVE", dataChunkActivities.Smp);
-
         }
 
         /// <summary>
@@ -163,7 +165,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal("COMPLETE", mobileDataChunk.Title);
             Assert.Equal("COMPLETE", dataChunkActivities.Title);
             Assert.Equal("SMP-COMPLETE", dataChunkActivities.Smp);
-
         }
 
         /// <summary>

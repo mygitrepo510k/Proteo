@@ -42,7 +42,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string PointDescripion
         {
-            get { return (InstructionType == Enums.InstructionType.OrderMessage) ? _mobileData.MessageText : $"({_mobileData.Order.Addresses.Count}) {_mobileData.Order.Description}"; }
+			get { return (InstructionType == Enums.InstructionType.OrderMessage) ? _mobileData.MessageText : _mobileData.Order.Description; }
         }
 
         public DateTime ArrivalDate

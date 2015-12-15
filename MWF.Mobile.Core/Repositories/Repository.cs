@@ -211,12 +211,12 @@ namespace MWF.Mobile.Core.Repositories
 
                 if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
                 {
-                    Debug.Assert(children.Count == 1, $"Expected one child of type {childType.Name} for parent {parent.GetType().Name} '{parent.ID}' but found {children.Count}");
+					Debug.Assert(children.Count == 1, string.Format("Expected one child of type {0} for parent {1} '{2}' but found {3}", childType.Name, parent.GetType().Name, parent.ID, children.Count));
                     relationshipProperty.SetValue(parent, children[0]);
                 }
                 else if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToZeroOrOne)
                 {
-                    Debug.Assert(children.Count <= 1, $"Expected zero or one child of type {childType.Name} for parent {parent.GetType().Name} '{parent.ID}' but found {children.Count}");
+					Debug.Assert(children.Count <= 1, string.Format("Expected zero or one child of type {0} for parent {1} '{2}' but found {3}", childType.Name, parent.GetType().Name, parent.ID, children.Count));
 
                     if (children.Count == 1)
                         relationshipProperty.SetValue(parent, children[0]);
@@ -250,12 +250,12 @@ namespace MWF.Mobile.Core.Repositories
 
                 if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToOne)
                 {
-                    Debug.Assert(children.Count == 1, $"Expected one child of type {childType.Name} for parent {parent.GetType().Name} '{parent.ID}' but found {children.Count}");
+					Debug.Assert(children.Count == 1, string.Format("Expected one child of type {0} for parent {1} '{2}' but found {3}", childType.Name, parent.GetType().Name, parent.ID, children.Count));
                     relationshipProperty.SetValue(parent, children[0]);
                 }
                 else if (relationshipProperty.GetCardinalityOfChildRelation() == RelationshipCardinality.OneToZeroOrOne)
                 {
-                    Debug.Assert(children.Count <= 1, $"Expected zero or one child of type {childType.Name} for parent {parent.GetType().Name} '{parent.ID}' but found {children.Count}");
+					Debug.Assert(children.Count <= 1, string.Format("Expected zero or one child of type {0} for parent {1} '{2}' but found {3}", childType.Name, parent.GetType().Name, parent.ID, children.Count));
 
                     if (children.Count == 1)
                         relationshipProperty.SetValue(parent, children[0]);

@@ -117,7 +117,7 @@ namespace MWF.Mobile.Core.ViewModels
                     this.Trailers = _originalTrailerList.Where(t => t.Trailer.Registration != null && t.Trailer.Registration.ToUpper().Contains(TrailerSearchText.ToUpper()));
                 }
 
-                this.TrailerSelectText = $"Select trailer for {this.VehicleRegistration} - Showing {Trailers.ToList().Count} of {_originalTrailerList.ToList().Count}";
+				this.TrailerSelectText = string.Format("Select trailer for {0} - Showing {1} of {2}", this.VehicleRegistration, Trailers.ToList().Count, _originalTrailerList.ToList().Count);
             }
         }
 

@@ -24,7 +24,7 @@ namespace MWF.Mobile.Core.Repositories
         public async Task<ApplicationProfile> GetAsync()
         {
             var data = await this.GetAllAsync();
-            Debug.Assert(data.Count() == 1, $"Expected one ApplicationProfile record but found {data.Count()}");
+			Debug.Assert(data.Count() == 1, string.Format("Expected one ApplicationProfile record but found {0}", data.Count()));
             return data.First();
         }
 

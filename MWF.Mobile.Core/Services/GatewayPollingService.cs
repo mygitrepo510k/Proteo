@@ -129,7 +129,7 @@ namespace MWF.Mobile.Core.Services
                         Mvx.Trace("No instructions were available.");
                     else
                     {
-                        Mvx.Trace($"Successfully pulled {instructions.Count()} instructions.");
+						Mvx.Trace(string.Format("Successfully pulled {0} instructions.", instructions.Count()));
 
                         var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
                         var manifestInstructionVMsForNotification = new List<ManifestInstructionViewModel>(instructions.Count());

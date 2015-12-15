@@ -93,7 +93,7 @@ namespace MWF.Mobile.Core.Services
 
         public async Task PollForInstructionsAsync()
         {
-            try
+			try
             {
                 if (!_reachability.IsConnected())
                     return;
@@ -107,6 +107,7 @@ namespace MWF.Mobile.Core.Services
                 }
 
                 Mvx.Trace("Begin Polling For Instructions");
+				string exceptionMsg = null;
 
                 try
                 {
@@ -219,9 +220,12 @@ namespace MWF.Mobile.Core.Services
                 catch (Exception ex)
                 {
                     // catch and log the error, but this will not acknowledge the message so we can try again
-                    await _loggingService.LogEventAsync("Gateway Polling Processing Failed", LogType.Error, ex.Message);
+					exceptionMsg = ex.Message;
                 }
-            }
+
+				if (exceptionMsg != null)
+					await _loggingService.LogEventAsync("Gateway Polling Processing Failed", LogType.Error, exceptionMsg);
+			}
             catch (Exception ex)
             {
                 // if there is an error here, then just continue as this is probably related to a connection issue

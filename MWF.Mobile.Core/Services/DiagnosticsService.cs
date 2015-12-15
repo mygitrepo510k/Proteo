@@ -59,6 +59,7 @@ namespace MWF.Mobile.Core.Services
             }
 
             bool success = false;
+			LogMessage exceptionMsg = null;
 
             try
             {
@@ -66,10 +67,13 @@ namespace MWF.Mobile.Core.Services
                 var uri = new Uri(uriString);
                 success = await _upload.UploadFileAsync(uri ,config.FtpUsername, config.FtpPassword, databasePath);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                await _loggingService.LogEventAsync(ex);
+				exceptionMsg = _loggingService.GetExceptionLogMessage(ex);
             }
+
+			if (exceptionMsg != null)
+				await _loggingService.LogEventAsync(exceptionMsg);
 
             return success;
            

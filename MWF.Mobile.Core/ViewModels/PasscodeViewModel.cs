@@ -126,6 +126,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             IsBusy = true;
             AuthenticationResult result;
+			LogMessage exceptionMsg = null;
 
             try
             {
@@ -150,7 +151,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
             catch (Exception ex)
             {
-                await _loggingService.LogEventAsync(ex);
+				exceptionMsg = _loggingService.GetExceptionLogMessage(ex);
                 result = new AuthenticationResult() { AuthenticationFailedMessage = "Unable to check your passcode.", Success = false };
             }
             finally
@@ -160,7 +161,10 @@ namespace MWF.Mobile.Core.ViewModels
                 IsBusy = false;
             }
 
-            // Let the user know
+			if (exceptionMsg != null)
+				await _loggingService.LogEventAsync(exceptionMsg);
+
+			// Let the user know
             if (!result.Success)
                 await Mvx.Resolve<ICustomUserInteraction>().AlertAsync(result.AuthenticationFailedMessage);
         }

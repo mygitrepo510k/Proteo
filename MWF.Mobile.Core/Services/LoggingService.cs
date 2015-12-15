@@ -45,17 +45,26 @@ namespace MWF.Mobile.Core.Services
             );
         }
 
+		public LogMessage GetExceptionLogMessage(Exception exception)
+		{
+			return new LogMessage
+			{
+				LogDateTime = DateTime.Now.ToLocalTime(),
+				Message = string.Format("{0} - {1}: {2}", Enums.LogType.Error.ToString(), exception.Message, exception.StackTrace),
+				LogType = Enums.LogType.Error
+			};
+		}
+
         public Task LogEventAsync(Exception exception)
         {
-            var loggedException = new LogMessage
-            {
-                LogDateTime = DateTime.Now.ToLocalTime(),
-                Message = string.Format("{0} - {1}: {2}", Enums.LogType.Error.ToString(), exception.Message,exception.StackTrace),
-                LogType = Enums.LogType.Error
-            };
-
+			var loggedException = this.GetExceptionLogMessage(exception);
             return _loggedRepository.InsertAsync(loggedException);
         }
+
+		public Task LogEventAsync(Models.LogMessage exceptionLogMessage)
+		{
+			return _loggedRepository.InsertAsync(exceptionLogMessage);
+		}
 
         public Task LogEventAsync(string eventDescription, Enums.LogType type)
         {
@@ -113,7 +122,9 @@ namespace MWF.Mobile.Core.Services
                             DeviceIdentifier = deviceIdentifier
                         };
 
-                        try
+						var isException = false;
+
+						try
                         {
                             var response = await _gatewayService.PostLogMessageAsync(deviceMessage);
 
@@ -122,10 +133,13 @@ namespace MWF.Mobile.Core.Services
                                 await this.HandleLoggingFailureAsync(e, events.ToList());
                             }
                         }
-                        catch(Exception)
+                        catch
                         {
-                            await this.HandleLoggingFailureAsync(e, events.ToList());
+							isException = true;
                         }
+
+						if (isException)
+							await this.HandleLoggingFailureAsync(e, events.ToList());
 
                         await _loggedRepository.DeleteAsync(e);
                        

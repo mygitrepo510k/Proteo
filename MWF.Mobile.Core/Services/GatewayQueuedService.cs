@@ -107,7 +107,9 @@ namespace MWF.Mobile.Core.Services
 
         private async Task AddToQueueAsync(Models.GatewayServiceRequest.Content requestContent)
         {
-            try
+			Models.LogMessage exceptionMsg = null;
+
+			try
             {
                 var serializedContent = JsonConvert.SerializeObject(requestContent);
                 var queueItem = new Models.GatewayQueueItem { ID = Guid.NewGuid(), JsonSerializedRequestContent = serializedContent, QueuedDateTime = DateTime.Now };
@@ -118,21 +120,28 @@ namespace MWF.Mobile.Core.Services
             }
             catch (Exception ex)
             {
-                await _loggingService.LogEventAsync(ex);
+				exceptionMsg = _loggingService.GetExceptionLogMessage(ex);
             }
 
+			if (exceptionMsg != null)
+				await _loggingService.LogEventAsync(exceptionMsg);
         }
 
         public async Task UploadQueueAsync()
         {
+			Models.LogMessage exceptionMsg = null;
+
             try {
                 await SubmitQueueAsync();
                 await _loggingService.UploadLoggedEventsAsync();
             }
             catch (Exception ex)
             {
-                await _loggingService.LogEventAsync(ex);
+				exceptionMsg = _loggingService.GetExceptionLogMessage(ex);
             }
+
+			if (exceptionMsg != null)
+				await _loggingService.LogEventAsync(exceptionMsg);
         }
 
         object syncLock = new object();
@@ -148,6 +157,7 @@ namespace MWF.Mobile.Core.Services
             }
 
             _isSubmitting = true;
+			Models.LogMessage exceptionMsg = null;
 
             try
             {
@@ -173,13 +183,16 @@ namespace MWF.Mobile.Core.Services
             }
             catch (Exception ex)
             {
-                await _loggingService.LogEventAsync(ex);
+				exceptionMsg = _loggingService.GetExceptionLogMessage(ex);
             }
             finally
             {
                 _isSubmitting = false;
                 _timer.Reset();
             }
+
+			if (exceptionMsg != null)
+				await _loggingService.LogEventAsync(exceptionMsg);
 
             if (_submitAgainOnCompletion)
             {

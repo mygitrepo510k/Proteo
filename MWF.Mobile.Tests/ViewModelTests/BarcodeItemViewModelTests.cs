@@ -56,7 +56,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _barcodeScanningViewModel = _fixture.Create<TestBarcodeScanningModelVM>();
             _barcodeScanningViewModel.MarkAsProcessedBarcodeItem = null;
             _barcodeScanningViewModel.MarkAsProcessedWasScanned = null;
-            _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
 
              _damageStatuses = _fixture.CreateMany<DamageStatus>().ToList();
             _damageStatuses[0].Code = "POD";
@@ -78,7 +77,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             // check the damage statuses have been set correctly
             Assert.Equal(_damageStatuses, barcodeItemVM.DamageStatuses);
             Assert.Equal(_damageStatuses[0], barcodeItemVM.DamageStatus);
-
         }
 
         [Theory]
@@ -157,9 +155,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         [Fact]
         // Tests that when a processed barcode item is selected it shows the barcode status modal
-        public void BarcodeItemVM_Select_MultiSelect_Processed()
+        public async Task BarcodeItemVM_Select_MultiSelect_Processed()
         {
             base.ClearAll();
+
+            await _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
 
             var barcodeItemVM = new BarcodeItemViewModel(_mockNavigationService.Object, _damageStatuses, _barcodeScanningViewModel);
 
@@ -182,9 +182,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         [Fact]
         // Tests that when an unprocessed barcode item is selected it shows the confirm dialog then calls "MarkAsProcessed" on the parent barcode scanning view model
-        public void BarcodeItemVM_Select_Unprocessed()
+        public async Task BarcodeItemVM_Select_Unprocessed()
         {
             base.ClearAll();
+
+            await _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
 
             var barcodeItemVM = new BarcodeItemViewModel(_mockNavigationService.Object, _damageStatuses, _barcodeScanningViewModel);
 
@@ -196,9 +198,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.False(_barcodeScanningViewModel.MarkAsProcessedWasScanned);
 
         }
-
-
-
 
         #endregion Test
 

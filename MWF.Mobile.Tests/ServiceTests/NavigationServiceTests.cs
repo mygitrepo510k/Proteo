@@ -42,8 +42,6 @@ namespace MWF.Mobile.Tests.ServiceTests
         private Mock<IDataChunkService> _mockDataChunkService;
         private Mock<ISafetyProfileRepository> _mockSafetyProfileRepository;
 
-           
-
         protected override void AdditionalSetup()
         {
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
@@ -65,7 +63,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             Ioc.RegisterSingleton<IMvxMessenger>(_mockMessenger.Object);
 
             _mobileData = _fixture.Create<MobileData>();
-
 
             _mockApplicationProfile = _fixture.InjectNewMock<IApplicationProfileRepository>();
             _mockApplicationProfile.Setup(map => map.GetAllAsync()).ReturnsAsync(_fixture.CreateMany<ApplicationProfile>());

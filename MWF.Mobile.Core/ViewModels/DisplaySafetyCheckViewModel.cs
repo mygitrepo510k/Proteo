@@ -30,10 +30,16 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Construction
 
+        public DisplaySafetyCheckViewModel(IInfoService infoService, INavigationService navigationService, Repositories.IRepositories repositories)
+        {
+            _infoService = infoService;
+            _navigationService = navigationService;
+            _repositories = repositories;
+        }
+
         public async Task Init()
         {
             base.Start();
-            SafetyCheckFaultItemViewModels = new List<DisplaySafetyCheckFaultItemViewModel>();
 
             _latestSafetyCheckData = await _repositories.LatestSafetyCheckRepository.GetForDriverAsync(_infoService.LoggedInDriver.ID);
 
@@ -50,13 +56,6 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_latestSafetyCheckData.TrailerSafetyCheck != null)
                 GenerateSafetyCheckFaultItems(_latestSafetyCheckData.TrailerSafetyCheck.Faults, true);
-        }
-        public DisplaySafetyCheckViewModel(IInfoService infoService, INavigationService navigationService, Repositories.IRepositories repositories)
-        {
-            _infoService = infoService;
-            _navigationService = navigationService;
-            _repositories = repositories;
-            
         }
 
         #endregion Construction
@@ -108,7 +107,7 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _infoService.LoggedInDriver.DisplayName; }
         }
 
-        private List<DisplaySafetyCheckFaultItemViewModel> _safetyCheckFaultItemViewModels;
+        private List<DisplaySafetyCheckFaultItemViewModel> _safetyCheckFaultItemViewModels = new List<DisplaySafetyCheckFaultItemViewModel>();
         public List<DisplaySafetyCheckFaultItemViewModel> SafetyCheckFaultItemViewModels
         {
             get { return _safetyCheckFaultItemViewModels; }
@@ -118,10 +117,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand<DisplaySafetyCheckFaultItemViewModel> _showSafetyCheckFaultCommand;
         public ICommand ShowSafetyCheckFaultCommand
         {
-            get
-            {
-                return (_showSafetyCheckFaultCommand = _showSafetyCheckFaultCommand ?? new MvxCommand<DisplaySafetyCheckFaultItemViewModel>((f) => SafetyCheckFaultDetail(f)));
-            }
+            get { return (_showSafetyCheckFaultCommand = _showSafetyCheckFaultCommand ?? new MvxCommand<DisplaySafetyCheckFaultItemViewModel>((f) => SafetyCheckFaultDetail(f))); }
         }
 
         #endregion Public Properties
@@ -144,6 +140,8 @@ namespace MWF.Mobile.Core.ViewModels
                 FaultStatus = GetFaultStatusKey(scf.Status),
                 FaultType = (isTrailer ? "TRL" : "VEH"),
             }));
+
+            RaisePropertyChanged(() => SafetyCheckFaultItemViewModels);
         }
 
         private string GetFaultStatusKey(Enums.SafetyCheckStatus status)

@@ -44,13 +44,7 @@ namespace MWF.Mobile.Core.ViewModels
             _repositories = repositories;
         }
 
-        public override async void Start()
-        {
-            base.Start();
-            await this.BuildDamageStatusesAsync();
-        }
-
-        public void Init(NavData<MobileData> navData)
+        public async Task Init(NavData<MobileData> navData)
         {
             navData.Reinflate();
             _navData = navData;
@@ -58,6 +52,8 @@ namespace MWF.Mobile.Core.ViewModels
             _additionalInstructions = navData.GetAdditionalInstructions();
 
             CreateSections();
+
+            await this.BuildDamageStatusesAsync();
         }
 
         private void CreateSections()

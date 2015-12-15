@@ -75,13 +75,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Test
 
         [Fact]
-        public void BarcodeScanningVM_FragmentTitle()
+        public async Task BarcodeScanningVM_FragmentTitle()
         {
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Deliver Scan", barcodeScanningVM.FragmentTitle);
 
@@ -89,13 +89,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         [Fact]
         // Checks that when the view model is initialised the sections are correctly constructed
-        public void BarcodeScanningVM_Init_Sections()
+        public async Task BarcodeScanningVM_Init_Sections()
         {
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             // Check the section headers are corrrect
             Assert.Equal("To Do", barcodeScanningVM.BarcodeSections[0].SectionHeader);
@@ -128,13 +128,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             // no barcodes should be selected
             Assert.Equal(0, barcodeScanningVM.SelectedBarcodes.Count());
 
-
         }
-
 
         [Fact]
         // Checks that when the view model is initialised the damage statuses are correctly constructed
-        public void BarcodeScanningVM_Init_DamageStatuses()
+        public async Task BarcodeScanningVM_Init_DamageStatuses()
         {
             base.ClearAll();
 
@@ -142,7 +140,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             var barcodeItemViewModel = barcodeScanningVM.BarcodeSections[0].Barcodes[0];
 
@@ -161,10 +159,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-
-
         [Fact]
-        public void BarcodeScanningVM_CanBeCompleted()
+        public async Task BarcodeScanningVM_CanBeCompleted()
         {
             base.ClearAll();
 
@@ -173,7 +169,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             // CanBeCompleted should be false to start with
             Assert.False(barcodeScanningVM.CanScanningBeCompleted);
@@ -187,9 +183,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-
         [Fact]
-        public void BarcodeScanningVM_CompleteScanning()
+        public async Task BarcodeScanningVM_CompleteScanning()
         {
             base.ClearAll();
 
@@ -198,7 +193,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
             var navData = new NavData<MobileData>() { Data = _mobileData };
-            barcodeScanningVM.Init(navData);
+            await barcodeScanningVM.Init(navData);
 
             // Mark the only view model as processed
             var barcodeItemViewModel = barcodeScanningVM.BarcodeSections[0].Barcodes[0];
@@ -221,20 +216,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             //check that the navigation service was called
             _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(x => x == navData)));
-            
 
         }
 
-
         [Fact]
         //Checks that the viewmodel can process changes to the barcode input property (i.e. when a barcode is scanned)
-        public void BarcodeScanningVM_BarcodeInput()
+        public async Task BarcodeScanningVM_BarcodeInput()
         {
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             // set the barcode input to be the same as the input barcode of the first view model
             var barcodeToInput = barcodeScanningVM.BarcodeSections[0].Barcodes[0];
@@ -254,13 +247,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         [Fact]
         //Checks that the viewmodel can process invalid changes to the barcode input property (i.e. when an unknown barcode is scanned)
-        public void BarcodeScanningVM_BarcodeInput_InvalidCode()
+        public async Task BarcodeScanningVM_BarcodeInput_InvalidCode()
         {
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             // set the barcode input to be a nonsense code
             barcodeScanningVM.BarcodeInput = "nonsense1010110";
@@ -275,13 +268,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         [Fact]
         //Checks that the viewmodel deals with case when the barcode input is modified to indicate a barcode that has already been scanned
-        public void BarcodeScanningVM_BarcodeInput_AlreadyScanned()
+        public async Task BarcodeScanningVM_BarcodeInput_AlreadyScanned()
         {
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             // set the barcode input to be the same as the input barcode of the first view model
             var barcodeToInput = barcodeScanningVM.BarcodeSections[0].Barcodes[0];
@@ -301,13 +294,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         [Fact]
         //Checks that the viewmodel can process manaual changes to the barcode input property (i.e. when a barcode is scanned)
-        public void BarcodeScanningVM_MarkAsProcessed()
+        public async Task BarcodeScanningVM_MarkAsProcessed()
         {
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Mark Barcode as Manually Processed?");
 
@@ -329,13 +322,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void BarcodeScanningVM_SelectedBarcodes()
+        public async Task BarcodeScanningVM_SelectedBarcodes()
         {
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             // shouldn't have any selected barcodes to start with
             Assert.Equal(0, barcodeScanningVM.SelectedBarcodes.Count());

@@ -33,6 +33,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private NavData<MobileData> _navData;
         private Core.Models.Trailer _trailer;
         private Mock<ISafetyProfileRepository> _mockSafetyProfileRepository;
+        private Mock<IConfigRepository> _mockConfigRepository;
         private Mock<INavigationService> _mockNavigationService;
         private Core.Models.Driver _driver;
         IEnumerable<SafetyProfile> _safetyProfiles;
@@ -80,6 +81,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _mockSafetyProfileRepository = _fixture.InjectNewMock<ISafetyProfileRepository>();
+            _mockConfigRepository = _fixture.InjectNewMock<IConfigRepository>();
 
             var repositories = _fixture.Create<Repositories>();
             _fixture.Inject<IRepositories>(repositories);
@@ -110,15 +112,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         // Checks that after initialization and selecting "done" the safety check is signed with the signature and the navigation service is called
         [Fact]
-        public void InstructionSafetyCheckSignatureVM_InitandDone()
+        public async Task InstructionSafetyCheckSignatureVM_InitandDone()
         {
             base.ClearAll();
 
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(_safetyProfiles);
+            _mockConfigRepository.Setup(cr => cr.GetAsync()).ReturnsAsync(Mock.Of<Core.Models.MWFMobileConfig>());
 
             var vm = _fixture.Create<InstructionSafetyCheckSignatureViewModel>();
 
-            vm.Init(_navData);
+            await vm.Init(_navData);
 
             vm.DoneCommand.Execute(null);
 

@@ -29,7 +29,8 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion Private Members
 
         #region Construction
-        public async override void Start()
+
+        public async Task Init()
         {
             base.Start();
             SafetyCheckFaultItemViewModels = new List<DisplaySafetyCheckFaultItemViewModel>();

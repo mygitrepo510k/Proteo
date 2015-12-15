@@ -95,7 +95,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         // Checks that after initialization the view model displays the safety checks for the trailer being checked
         [Fact]
-        public void InstructionSafetyCheckVM_Init()
+        public async Task InstructionSafetyCheckVM_Init()
         {
             base.ClearAll();
 
@@ -103,13 +103,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<InstructionSafetyCheckViewModel>();
 
-            vm.Init(_navData);
+            await vm.Init(_navData);
 
             // check that we got the right safety profile for the trailer
             Assert.Equal(vm.SafetyProfileTrailer, _safetyProfile);
-           
-
-          
 
             // check that we have the right number of items being displayed in the checklist
             Assert.Equal(vm.SafetyCheckItemViewModels.Count, _safetyProfile.Children.ToList().Count);
@@ -124,26 +121,26 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void InstructionSafetyCheckVM_Init_NoSafetyProfile()
+        public async Task InstructionSafetyCheckVM_Init_NoSafetyProfile()
         {
             base.ClearAll();
 
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(new List<SafetyProfile>());
 
             _mockUserInteraction
-                .Setup(cui => cui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+                .Setup(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(0));
 
             var vm = _fixture.Create<InstructionSafetyCheckViewModel>();
 
-            vm.Init(_navData);
+            await vm.Init(_navData);
 
             // no safety profile required for the trailer
             Assert.Null(vm.SafetyProfileTrailer);
             Assert.False(_navData.OtherData.IsDefined("UpdatedTrailerSafetyCheckData"));
 
             //should have shown the custom user interaction and moved to the the next view model
-            _mockUserInteraction.Verify(cui => cui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(x => x == _navData)), Times.Once);
         }

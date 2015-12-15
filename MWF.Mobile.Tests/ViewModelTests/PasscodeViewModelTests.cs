@@ -76,14 +76,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNextAsync(It.IsAny<NavData>()));
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync(It.IsAny<NavData>())).Returns(Task.FromResult(0));
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var vm = _fixture.Create<PasscodeViewModel>();
 
-
             vm.SendDiagnosticsCommand.Execute(null);
-
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(It.Is<NavData>(nd=> nd.OtherData["Diagnostics"] != null)), Times.Once);

@@ -68,7 +68,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Tests
 
         [Fact]
-        public void OrderVM_OrderID()
+        public async Task OrderVM_OrderID()
         {
             base.ClearAll();
 
@@ -76,14 +76,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().ItemIdFormatted, orderVM.OrderID);
 
         }
 
         [Fact]
-        public void OrderVM_Title()
+        public async Task OrderVM_Title()
         {
             base.ClearAll();
 
@@ -91,28 +91,28 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().Title, orderVM.OrderLoadNo);
 
         }
 
         [Fact]
-        public void OrderVM_DeliveryOrderNumber()
+        public async Task OrderVM_DeliveryOrderNumber()
         {
             base.ClearAll();
             var orderVM = _fixture.Create<OrderViewModel>();
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().DeliveryOrderNumber, orderVM.OrderDeliveryNo);
 
         }
 
         [Fact]
-        public void OrderVM_Quantity()
+        public async Task OrderVM_Quantity()
         {
             base.ClearAll();
 
@@ -120,14 +120,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().Quantity, orderVM.OrderQuantity);
 
         }
 
         [Fact]
-        public void OrderVM_Weight()
+        public async Task OrderVM_Weight()
         {
             base.ClearAll();
 
@@ -136,14 +136,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().Weight, orderVM.OrderWeight);
 
         }
 
         [Fact]
-        public void OrderVM_BusinessType()
+        public async Task OrderVM_BusinessType()
         {
             base.ClearAll();
 
@@ -152,14 +152,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().BusinessType, orderVM.OrderBusinessType);
 
         }
 
         [Fact]
-        public void OrderVM_GoodsType()
+        public async Task OrderVM_GoodsType()
         {
             base.ClearAll();
 
@@ -168,14 +168,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().GoodsType, orderVM.OrderGoodsType);
 
         }
 
         [Fact]
-        public void OrderVM_Collection_QuantityEditable()
+        public async Task OrderVM_Collection_QuantityEditable()
         {
             base.ClearAll();
 
@@ -190,13 +190,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(true, orderVM.ChangeOrderQuantity);
         }
 
         [Fact]
-        public void OrderVM_Collection_QuantityNotEditable()
+        public async Task OrderVM_Collection_QuantityNotEditable()
         {
             base.ClearAll();
 
@@ -211,7 +211,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
+            await orderVM.Init(navData);
 
             Assert.Equal(false, orderVM.ChangeOrderQuantity);
         }
@@ -238,7 +238,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void OrderVM_CheckInstructionNotification_Delete()
+        public async Task OrderVM_CheckInstructionNotification_Delete()
         {
             base.ClearAll();
 
@@ -248,8 +248,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
 
-            orderVM.Init(navData);
-            orderVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            await orderVM.Init(navData);
+            await orderVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 

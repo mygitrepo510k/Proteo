@@ -311,7 +311,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionSignatureVM_CheckInstructionNotification_Delete()
+        public async Task InstructionSignatureVM_CheckInstructionNotification_Delete()
         {
 
             base.ClearAll();
@@ -320,7 +320,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionSignatureVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            await instructionSignatureVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 

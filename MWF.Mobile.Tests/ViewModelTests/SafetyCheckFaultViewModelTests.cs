@@ -268,9 +268,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         // Checks that when the back button is pressed a dialog is shown, and if the users oks it then the view model fires a result message
         // back to the messenger service
         [Fact]
-        public async void SafetyCheckFaultVM_BackButton_OK()
+        public async Task SafetyCheckFaultVM_BackButton_OK()
         {
-
             base.ClearAll();
 
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
@@ -293,9 +292,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         // Checks that when the back button is pressed a dialog is shown, and if the users cancels it then view model doesn't fire a result message
         // back to the messenger service
         [Fact]
-        public async void SafetyCheckFaultVM_BackButton_Cancel()
+        public async Task SafetyCheckFaultVM_BackButton_Cancel()
         {
-
             base.ClearAll();
 
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();

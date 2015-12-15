@@ -71,7 +71,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests the view model can be initialized correctly
         /// </summary>
         [Fact]
-        public void InstructionTrailerListVM_Initialization()
+        public async Task InstructionTrailerListVM_Initialization()
         {
             base.ClearAll();
 
@@ -89,7 +89,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             //set the trailer in the current order to have the same registration as first trailer
             mobileData.Order.Additional.Trailer.TrailerId = trailers.First().Registration;
 
-            vm.Init(navData);
+            await vm.Init(navData);
 
             Assert.Equal(vm.DefaultTrailerReg, mobileData.Order.Additional.Trailer.TrailerId);
 
@@ -104,7 +104,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// and the next view model is navigated to
         /// </summary>
         [Fact]
-        public void InstructionTrailerListVM_TrailerSelection()
+        public async Task InstructionTrailerListVM_TrailerSelection()
         {
             base.ClearAll();
 
@@ -120,7 +120,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             var navData = new NavData<MobileData>() { Data = mobileData };
 
-            vm.Init(navData);
+            await vm.Init(navData);
 
             var trailerItem = vm.Trailers.First();
 
@@ -150,7 +150,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var vm = _fixture.Create<InstructionTrailerViewModel>();
             vm.IsVisible = true;
 
-            vm.Init(new NavData<MobileData>() { Data = mobileData });
+            await vm.Init(new NavData<MobileData>() { Data = mobileData });
 
             await vm.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, mobileData.ID);
 

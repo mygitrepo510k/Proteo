@@ -114,7 +114,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_InsertCustomNavAction()
+        public async Task NavigationService_InsertCustomNavAction()
         {
             base.ClearAll();
 
@@ -132,7 +132,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
 
-            navAction.Invoke(navData);
+            await navAction.Invoke(navData);
 
             Assert.Equal(navData, myObj);
 
@@ -153,7 +153,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_InsertCustomBackNavAction()
+        public async Task NavigationService_InsertCustomBackNavAction()
         {
             base.ClearAll();
 
@@ -171,7 +171,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
 
-            navAction.Invoke(navData);
+            await navAction.Invoke(navData);
 
             Assert.Equal(navData, myObj);         
 
@@ -189,7 +189,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_GetNavAction()
+        public async Task NavigationService_GetNavAction()
         {
             base.ClearAll();
 
@@ -203,7 +203,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.NotNull(navAction);
 
             // run the nav action
-            navAction.Invoke(null);
+            await navAction.Invoke(null);
 
             //Check that the passcode view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -213,7 +213,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_GetBackNavAction()
+        public async Task NavigationService_GetBackNavAction()
         {
             base.ClearAll();
 
@@ -227,7 +227,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.NotNull(navAction);
 
             // run the nav action
-            navAction.Invoke(null);
+            await navAction.Invoke(null);
 
             //Check that the customer view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Hints.Count);
@@ -238,7 +238,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
         [Fact]
-        public void NavigationService_GetNavAction_DynamicOverload()
+        public async Task NavigationService_GetNavAction_DynamicOverload()
         {
             base.ClearAll();
 
@@ -252,7 +252,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.NotNull(navAction);
 
             // run the nav action
-            navAction.Invoke(null);
+            await navAction.Invoke(null);
 
             //Check that the passcode view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -290,7 +290,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_MoveToNext()
+        public async Task NavigationService_MoveToNext()
         {
             base.ClearAll();
 
@@ -304,7 +304,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the passcode view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -314,7 +314,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_MoveToNext_WithNavData()
+        public async Task NavigationService_MoveToNext_WithNavData()
         {
             base.ClearAll();
 
@@ -334,7 +334,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             NavData<Driver> navData = new NavData<Driver> { Data = driver };
             navData.OtherData["vehicle"] = vehicle;
 
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the startup the instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -375,7 +375,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_GoBack()
+        public async Task NavigationService_GoBack()
         {
             base.ClearAll();
             var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => 
@@ -391,7 +391,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Move to the next view model
             Assert.True(service.IsBackActionDefined());
 
-            service.GoBackAsync();
+            await service.GoBackAsync();
 
             //Check that the customer view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Hints.Count);
@@ -423,7 +423,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
         [Fact]
-        public void NavigationService_Mappings_CustomerCode()
+        public async Task NavigationService_Mappings_CustomerCode()
         {
             base.ClearAll();
 
@@ -436,7 +436,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the passcode view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -446,7 +446,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Passcode()
+        public async Task NavigationService_Mappings_Passcode()
         {
             base.ClearAll();
 
@@ -460,7 +460,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the safetycheck view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -470,7 +470,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_PasscodeToDiagnostics()
+        public async Task NavigationService_Mappings_PasscodeToDiagnostics()
         {
             base.ClearAll();
 
@@ -486,7 +486,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Move to the next view model
             NavData<object> navData = new NavData<object>();
             navData.OtherData["Diagnostics"] = true;
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the diagnostics view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -496,7 +496,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_DiagnosticsToPasscode()
+        public async Task NavigationService_Mappings_DiagnosticsToPasscode()
         {
             base.ClearAll();
 
@@ -510,7 +510,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the passcode view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -521,7 +521,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
         [Fact]
-        public void NavigationService_Mappings_VehicleList()
+        public async Task NavigationService_Mappings_VehicleList()
         {
             base.ClearAll();
 
@@ -534,7 +534,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -544,7 +544,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_TrailerList()
+        public async Task NavigationService_Mappings_TrailerList()
         {
             base.ClearAll();
 
@@ -557,7 +557,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the safetycheck view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -567,7 +567,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_SafetyCheck_OdometerRequired()
+        public async Task NavigationService_Mappings_SafetyCheck_OdometerRequired()
         {
             base.ClearAll();
 
@@ -585,7 +585,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the odometer view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -595,7 +595,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_SafetyCheck_OdometerNotRequired()
+        public async Task NavigationService_Mappings_SafetyCheck_OdometerNotRequired()
         {
             base.ClearAll();
 
@@ -613,7 +613,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the signature screen view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -623,7 +623,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_SafetyCheck_NoProfiles()
+        public async Task NavigationService_Mappings_SafetyCheck_NoProfiles()
         {
             base.ClearAll();
 
@@ -642,7 +642,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the main activity view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -652,7 +652,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Odometer()
+        public async Task NavigationService_Mappings_Odometer()
         {
             base.ClearAll();
 
@@ -665,7 +665,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -675,7 +675,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Signature_NoFaults()
+        public async Task NavigationService_Mappings_Signature_NoFaults()
         {
             base.ClearAll();
 
@@ -693,7 +693,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the main activity view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -703,7 +703,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Signature_Faults()
+        public async Task NavigationService_Mappings_Signature_Faults()
         {
             base.ClearAll();
 
@@ -721,7 +721,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the main activity view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -731,7 +731,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_BackMappings_Passcode()
+        public async Task NavigationService_BackMappings_Passcode()
         {
             base.ClearAll();
 
@@ -747,14 +747,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.GoBackAsync();
+            await service.GoBackAsync();
 
             //Check that the application was closed
             closeApplicationMock.Verify(ca => ca.CloseApp(), Times.Once);
         }
 
         [Fact]
-        public void NavigationService_BackMappings_Manifest()
+        public async Task NavigationService_BackMappings_Manifest()
         {
             base.ClearAll();
 
@@ -773,7 +773,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Go back
-            service.GoBackAsync();
+            await service.GoBackAsync();
 
             //Check that the startup activity view model was navigated to (passcode
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -784,7 +784,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
         [Fact]
-        public void NavigationService_Mappings_Manifest_Instructions()
+        public async Task NavigationService_Mappings_Manifest_Instructions()
         {
             base.ClearAll();
 
@@ -803,7 +803,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             //Create a nav item for a mobile data model
             NavData<MobileData> navData = new NavData<MobileData> { Data = _mobileData };
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the startup the instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -819,7 +819,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_Trailer()
+        public async Task NavigationService_Mappings_Instructions_Collection_Trailer()
         {
             base.ClearAll();
 
@@ -836,7 +836,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             navItem.OtherData["IsTrailerEditFromInstructionScreen"] = true;
 
             // Move to the next view model
-            service.MoveToNextAsync(navItem);
+            await service.MoveToNextAsync(navItem);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -845,7 +845,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_InstructionOnSite()
+        public async Task NavigationService_Mappings_Instructions_InstructionOnSite()
         {
             base.ClearAll();
 
@@ -861,7 +861,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navItemMock = Mock.Of<NavData<MobileData>>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navItemMock);
+            await service.MoveToNextAsync(navItemMock);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -872,7 +872,7 @@ namespace MWF.Mobile.Tests.ServiceTests
  
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToCommentScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToCommentScreen()
         {
             base.ClearAll();
 
@@ -892,10 +892,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
             mobileData.Order.Additional.Trailer.TrailerId = trailer.Registration;
 
-            var service = _fixture.Create<NavigationService>();       
+            var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -904,7 +904,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToCommentScreen_SkipClausedScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToCommentScreen_SkipClausedScreen()
         {
             base.ClearAll();
 
@@ -927,7 +927,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -936,7 +936,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToSignatureScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToSignatureScreen()
         {
             base.ClearAll();
 
@@ -959,7 +959,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -968,7 +968,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToComplete()
+        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToComplete()
         {
             base.ClearAll();
 
@@ -991,7 +991,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1005,7 +1005,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests the case when a user changes trailer via the "change trailer" button on the instruction screen and the trailer they select is the same
         // as the current trailer. Since no safety check logic is required they should be deposited directly back to the instruction screen,
         [Fact]
-        public void NavigationService_Mappings_Instructions_ChangeTrailer_TrailerToInstruction()
+        public async Task NavigationService_Mappings_Instructions_ChangeTrailer_TrailerToInstruction()
         {
             base.ClearAll();
 
@@ -1035,7 +1035,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1048,7 +1048,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Since no safety check logic is required they should be deposited directly back to the instruction screen.
         // Addiotnally, the order should have been updated and the revised trailer data chunk fired
         [Fact]
-        public void NavigationService_Mappings_Instructions_ChangeTrailer_TrailerToInstruction_UpdateTrailerOnOrder()
+        public async Task NavigationService_Mappings_Instructions_ChangeTrailer_TrailerToInstruction_UpdateTrailerOnOrder()
         {
             base.ClearAll();
 
@@ -1077,7 +1077,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1095,7 +1095,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests the case when a user changes trailer via the "change trailer" button on the instruction screen and the trailer they select is the different
         // to the current trailer. Since a new trailer has been selected they should be direted to the safety check screen
         [Fact]
-        public void NavigationService_Mappings_Instructions_ChangeTrailer_TrailerToSafetyCheck()
+        public async Task NavigationService_Mappings_Instructions_ChangeTrailer_TrailerToSafetyCheck()
         {
             base.ClearAll();
 
@@ -1119,7 +1119,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1132,7 +1132,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // user can be directed back to the instruction screen
         // Since the selected trailer differs from the one on the order then the order is updated and the revised trailer chunk set
         [Fact]
-        public void NavigationService_Mappings_Instructions_ChangeTrailer_SafetyCheck_ToInstruction_UpdateOrder()
+        public async Task NavigationService_Mappings_Instructions_ChangeTrailer_SafetyCheck_ToInstruction_UpdateOrder()
         {
             base.ClearAll();
 
@@ -1160,7 +1160,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(new List<SafetyProfile>());
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that, since no signature is required, the instruction screen is navigated back to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1178,7 +1178,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests that that when the instruction safety check signature screen is completed the user is directed back to the instruction screen
         // and the sfaety check data is comitted
         [Fact]
-        public void NavigationService_Mappings_Instructions_ChangeTrailer_SafetyCheckSignature_ToInstruction()
+        public async Task NavigationService_Mappings_Instructions_ChangeTrailer_SafetyCheckSignature_ToInstruction()
         {
             base.ClearAll();
 
@@ -1216,7 +1216,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(new List<SafetyProfile>());
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the instruction screen is navigated back to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1247,7 +1247,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests the case when the trailer confirmation setting is enabled and the user elects to select trailer
         // Should send the user to the trailer select screen
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToTrailerScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToTrailerScreen()
         {
             base.ClearAll();
 
@@ -1268,7 +1268,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1279,7 +1279,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests the case when the trailer confirmation setting is enabled and the user elects to use the current trailer
         // Should send the user to the trailer select screen
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSite_UseCurrentTrailer()
+        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSite_UseCurrentTrailer()
         {
             base.ClearAll();
 
@@ -1308,7 +1308,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             // User elected to use the current trailer, so skip to the instruction signature
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1327,7 +1327,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests the case when the trailer confirmation setting is disabled (but the order and current trailer differ) and the user elects to select trailer
         // Should send the user to the trailer select screen
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSite_TrailerPromptDisabled_ToTrailerScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSite_TrailerPromptDisabled_ToTrailerScreen()
         {
             base.ClearAll();
 
@@ -1353,7 +1353,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1364,7 +1364,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests the case when the trailer confirmation setting is disabled (but the order and current trailer differ) and the user elects to use the current trailer
         // Should send the user to the trailer select screen
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_InstructionOnSite_TrailerPromptDisabled_UseCurrentTrailer()
+        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSite_TrailerPromptDisabled_UseCurrentTrailer()
         {
             base.ClearAll();
 
@@ -1390,7 +1390,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             // User elected to use the current trailer, so skip to the instruction signature
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1408,7 +1408,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         //Tests the case where a trailer was selected but it was the same as the current trailer
         //Since no safety check logic is required the user is moved directly onto the comment screen
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_TrailerToCommentScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_TrailerToCommentScreen()
         {
             base.ClearAll();
 
@@ -1429,9 +1429,9 @@ namespace MWF.Mobile.Tests.ServiceTests
             mobileData.Order.Additional.Trailer.TrailerId = startUpService.CurrentTrailer.Registration;
 
             var service = _fixture.Create<NavigationService>();
-           
+
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that, since no safety check logic was required, the comment view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1442,7 +1442,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         //Tests the case where a trailer was selected but it was the same as the current trailer
         //Since no safety check logic is required the user is moved directly onto the comment screen
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_TrailerToClausedScreen_SkipClauseScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_TrailerToClausedScreen_SkipClauseScreen()
         {
             base.ClearAll();
 
@@ -1465,7 +1465,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that, since no safety check logic was required, the comment view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1476,7 +1476,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         //Tests the case where a trailer was selected and since it differs from the current trailer
         //the user is directed to the safety check screen 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_TrailerToSafetyCheckScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_TrailerToSafetyCheckScreen()
         {
             base.ClearAll();
 
@@ -1498,7 +1498,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             // Should go to safety check screen
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1510,7 +1510,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests the case where a trailer was selected that is the same as the current railer but differs from the one currently on the order
         // Since no safety check is required the user is directed to the comments scren but the order is updated and the revised trailer data chunk sent 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_Trailer_ToCommentScreen_UpdateOrder()
+        public async Task NavigationService_Mappings_Instructions_Collection_Trailer_ToCommentScreen_UpdateOrder()
         {
             base.ClearAll();
 
@@ -1531,7 +1531,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that, since no safety check logic was required, the comment view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1549,7 +1549,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         //Tests the case where a trailer was selected but it was the same as the current trailer, comment bypass is enabled and
         //a signature is required
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_TrailerToSignatureScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_TrailerToSignatureScreen()
         {
             base.ClearAll();
 
@@ -1577,7 +1577,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1588,7 +1588,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         [Fact]
         //Tests the case where a trailer was selected but it was the same as the current trailer (i.e no safety check logic)
         //and the bypass comment option is enabled
-        public void NavigationService_Mappings_Instructions_Collection_TrailerToComplete()
+        public async Task NavigationService_Mappings_Instructions_Collection_TrailerToComplete()
         {
             base.ClearAll();
 
@@ -1616,7 +1616,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1628,7 +1628,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests the case on the safety check screen where no safety check profile was detected for the updated trailer, so no signature is required so the comment screen can be navigated to
         // Since the selected trailer differs from the one on the order then the order is updated and the revised trailer chunk set
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_SafetyCheck_ToCommentScreen_UpdateOrder()
+        public async Task NavigationService_Mappings_Instructions_Collection_SafetyCheck_ToCommentScreen_UpdateOrder()
         {
             base.ClearAll();
 
@@ -1655,7 +1655,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(new List<SafetyProfile>());
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that, since no safety check logic was required, the comment view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1673,7 +1673,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests the case on the safety check screen where a safety check has been completed so the user should be directed to the
         // safety check signature screen
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_SafetyCheck_ToSafetyCheckSignatureScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_SafetyCheck_ToSafetyCheckSignatureScreen()
         {
             base.ClearAll();
 
@@ -1702,7 +1702,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(new List<SafetyProfile>() { safetyCheckProfile});
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that, since no safety check logic was required, the comment view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1714,7 +1714,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         // Tests that that when the instruction safety check signature screen is completed the user is directed onto the comments scrteen
         [Fact]
-        public void NavigationService_Mappings_Instructions_ChangeTrailer_SafetyCheckSignature_ToCommentScreen()
+        public async Task NavigationService_Mappings_Instructions_ChangeTrailer_SafetyCheckSignature_ToCommentScreen()
         {
             base.ClearAll();
 
@@ -1751,7 +1751,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(new List<SafetyProfile>());
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the comment screen is navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1778,7 +1778,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         // Tests that that when the instruction safety check signature screen is completed and there are faults the user is directed 
         // back to the instruction screen
         [Fact]
-        public void NavigationService_Mappings_Instructions_ChangeTrailer_SafetyCheckSignature_FailedChecks_ToInstructionScreen()
+        public async Task NavigationService_Mappings_Instructions_ChangeTrailer_SafetyCheckSignature_FailedChecks_ToInstructionScreen()
         {
             base.ClearAll();
 
@@ -1820,7 +1820,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(new List<SafetyProfile>());
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the instruction screen is navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1847,7 +1847,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         #endregion
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_CommentToSignatureScreen()
+        public async Task NavigationService_Mappings_Instructions_Collection_CommentToSignatureScreen()
         {
             base.ClearAll();
 
@@ -1864,7 +1864,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1873,7 +1873,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Collection_CommentToComplete()
+        public async Task NavigationService_Mappings_Instructions_Collection_CommentToComplete()
         {
             base.ClearAll();
 
@@ -1890,7 +1890,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1899,7 +1899,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteSkipTrailerScreen()
+        public async Task NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteSkipTrailerScreen()
         {
             base.ClearAll();
 
@@ -1916,7 +1916,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1925,7 +1925,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToInstructionClaused()
+        public async Task NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToInstructionClaused()
         {
             base.ClearAll();
 
@@ -1942,7 +1942,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1951,7 +1951,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToCommentScreen()
+        public async Task NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToCommentScreen()
         {
             base.ClearAll();
 
@@ -1968,7 +1968,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -1977,7 +1977,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToSignatureScreen()
+        public async Task NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToSignatureScreen()
         {
             base.ClearAll();
 
@@ -1994,7 +1994,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2003,7 +2003,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToComplete()
+        public async Task NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToComplete()
         {
             base.ClearAll();
 
@@ -2020,7 +2020,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2029,7 +2029,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_ClausedToComment()
+        public async Task NavigationService_Mappings_Instructions_Delivery_ClausedToComment()
         {
             base.ClearAll();
 
@@ -2046,7 +2046,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2055,7 +2055,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_ClausedToSignature()
+        public async Task NavigationService_Mappings_Instructions_Delivery_ClausedToSignature()
         {
             base.ClearAll();
 
@@ -2072,7 +2072,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2081,7 +2081,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_ClausedToComplete()
+        public async Task NavigationService_Mappings_Instructions_Delivery_ClausedToComplete()
         {
             base.ClearAll();
 
@@ -2098,7 +2098,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2107,7 +2107,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
         
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_CommentToSignatureScreen()
+        public async Task NavigationService_Mappings_Instructions_Delivery_CommentToSignatureScreen()
         {
             base.ClearAll();
 
@@ -2124,7 +2124,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2133,7 +2133,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_Delivery_CommentToComplete()
+        public async Task NavigationService_Mappings_Instructions_Delivery_CommentToComplete()
         {
             base.ClearAll();
 
@@ -2150,7 +2150,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2159,7 +2159,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_OrderToReviseQuantity()
+        public async Task NavigationService_Mappings_OrderToReviseQuantity()
         {
             base.ClearAll();
 
@@ -2177,7 +2177,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the Revise Quantity screen was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2186,7 +2186,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_OrderToInstruction()
+        public async Task NavigationService_Mappings_BackAction_OrderToInstruction()
         {
             base.ClearAll();
 
@@ -2203,7 +2203,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the Instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2212,7 +2212,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_OrderToInstructionOnSite()
+        public async Task NavigationService_Mappings_BackAction_OrderToInstructionOnSite()
         {
             base.ClearAll();
 
@@ -2229,7 +2229,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2238,7 +2238,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_InstructionOnSiteToInstruction()
+        public async Task NavigationService_Mappings_BackAction_InstructionOnSiteToInstruction()
         {
             base.ClearAll();
 
@@ -2254,7 +2254,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2263,7 +2263,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_InstructionToManifest()
+        public async Task NavigationService_Mappings_BackAction_InstructionToManifest()
         {
             base.ClearAll();
 
@@ -2278,7 +2278,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             // Move to the next view model
-            service.GoBackAsync();
+            await service.GoBackAsync();
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2287,7 +2287,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Instructions_SkipCommentToSignatureScreen()
+        public async Task NavigationService_Mappings_Instructions_SkipCommentToSignatureScreen()
         {
             base.ClearAll();
 
@@ -2316,7 +2316,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2325,7 +2325,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Camera_NoInstruction()
+        public async Task NavigationService_Mappings_Camera_NoInstruction()
         {
             base.ClearAll();
 
@@ -2341,7 +2341,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2350,7 +2350,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Camera_Instruction()
+        public async Task NavigationService_Mappings_Camera_Instruction()
         {
             base.ClearAll();
 
@@ -2368,7 +2368,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2377,7 +2377,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Camera_InstructionOnSite()
+        public async Task NavigationService_Mappings_Camera_InstructionOnSite()
         {
             base.ClearAll();
 
@@ -2395,7 +2395,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2404,7 +2404,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_Camera_NoInstruction()
+        public async Task NavigationService_Mappings_BackAction_Camera_NoInstruction()
         {
             base.ClearAll();
 
@@ -2425,7 +2425,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2434,7 +2434,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_Camera_Instruction()
+        public async Task NavigationService_Mappings_BackAction_Camera_Instruction()
         {
             base.ClearAll();
 
@@ -2452,7 +2452,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2461,7 +2461,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_Camera_InstructionOnSite()
+        public async Task NavigationService_Mappings_BackAction_Camera_InstructionOnSite()
         {
             base.ClearAll();
 
@@ -2479,7 +2479,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
@@ -2487,7 +2487,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_DisplaySafetyCheck_NoInstruction()
+        public async Task NavigationService_Mappings_DisplaySafetyCheck_NoInstruction()
         {
             base.ClearAll();
 
@@ -2504,7 +2504,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2513,7 +2513,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_DisplaySafetyCheck_Instruction()
+        public async Task NavigationService_Mappings_DisplaySafetyCheck_Instruction()
         {
             base.ClearAll();
 
@@ -2531,7 +2531,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = _mobileData };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2540,7 +2540,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_DisplaySafetyCheck_InstructionOnSite()
+        public async Task NavigationService_Mappings_DisplaySafetyCheck_InstructionOnSite()
         {
             base.ClearAll();
 
@@ -2558,7 +2558,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2567,7 +2567,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_DisplaySafetyCheck_NoInstruction()
+        public async Task NavigationService_Mappings_BackAction_DisplaySafetyCheck_NoInstruction()
         {
             base.ClearAll();
 
@@ -2585,7 +2585,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = null };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2594,7 +2594,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_DisplaySafetyCheck_Instruction()
+        public async Task NavigationService_Mappings_BackAction_DisplaySafetyCheck_Instruction()
         {
             base.ClearAll();
 
@@ -2612,7 +2612,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.GoBackAsync(navData);
+            await service.GoBackAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2621,7 +2621,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_BackAction_DisplaySafetyCheck_InstructionOnSite()
+        public async Task NavigationService_Mappings_BackAction_DisplaySafetyCheck_InstructionOnSite()
         {
             base.ClearAll();
 
@@ -2639,7 +2639,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2648,7 +2648,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Manifest_TrunkTo()
+        public async Task NavigationService_Mappings_Manifest_TrunkTo()
         {
             base.ClearAll();
 
@@ -2667,7 +2667,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             //Create a nav item for a mobile data model
             NavData<MobileData> parametersObjectIn = new NavData<MobileData> { Data = _mobileData };
-            service.MoveToNextAsync(parametersObjectIn);
+            await service.MoveToNextAsync(parametersObjectIn);
 
             //Check that the startup the instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2678,7 +2678,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_Manifest_ProceedFrom()
+        public async Task NavigationService_Mappings_Manifest_ProceedFrom()
         {
             base.ClearAll();
 
@@ -2697,7 +2697,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             //Create a nav item for a mobile data model
             NavData<MobileData> parametersObjectIn = new NavData<MobileData> { Data = _mobileData };
-            service.MoveToNextAsync(parametersObjectIn);
+            await service.MoveToNextAsync(parametersObjectIn);
 
             //Check that the startup the instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2708,7 +2708,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_TrunkTo_TrailerSelect()
+        public async Task NavigationService_Mappings_TrunkTo_TrailerSelect()
         {
             base.ClearAll();
 
@@ -2730,7 +2730,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             NavData<MobileData> navData = new NavData<MobileData> { Data = _mobileData };
             _mobileData.Order.Additional.IsTrailerConfirmationEnabled = true;
 
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer select screen was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2740,7 +2740,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_TrunkTo_Manifest()
+        public async Task NavigationService_Mappings_TrunkTo_Manifest()
         {
             base.ClearAll();
 
@@ -2760,7 +2760,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             NavData<MobileData> navData = new NavData<MobileData> { Data = _mobileData };
             _mobileData.Order.Additional.IsTrailerConfirmationEnabled = false;
 
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the startup the manifest view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2770,7 +2770,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_OnSite_BarcodeScreen()
+        public async Task NavigationService_Mappings_OnSite_BarcodeScreen()
         {
             base.ClearAll();
 
@@ -2790,7 +2790,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var navData = new NavData<MobileData>() { Data = mobileData };
 
             // Move to the next view model
-            service.MoveToNextAsync(navData);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2799,7 +2799,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_LogoutSafetyCheck()
+        public async Task NavigationService_Mappings_LogoutSafetyCheck()
         {
             base.ClearAll();
 
@@ -2814,19 +2814,17 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             // Move to the next view model
-            service.Logout_ActionAsync(null);
+            await service.Logout_ActionAsync(null);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(SafetyCheckViewModel), request.ViewModelType);
 
-
-
         }
 
         [Fact]
-        public void NavigationService_Mappings_NoLogoutSafetyCheck()
+        public async Task NavigationService_Mappings_NoLogoutSafetyCheck()
         {
             base.ClearAll();
 
@@ -2842,7 +2840,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             // Move to the next view model
-            service.Logout_ActionAsync(null);
+            await service.Logout_ActionAsync(null);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2851,7 +2849,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public void NavigationService_Mappings_DiagnosticsToManifest()
+        public async Task NavigationService_Mappings_DiagnosticsToManifest()
         {
             base.ClearAll();
 
@@ -2865,7 +2863,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            service.MoveToNextAsync();
+            await service.MoveToNextAsync();
 
             //Check that the manifest view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);

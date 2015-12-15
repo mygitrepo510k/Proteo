@@ -45,10 +45,16 @@ namespace MWF.Mobile.Core.ViewModels
             ProgressMessage = "Updating Trailers.";
         }
 
-        public async override void Start()
+        public async Task Init()
         {
             base.Start();
-            await GetTrailerModelsAsync();
+
+            var _vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID);
+
+            if (_vehicle != null)
+                this.VehicleRegistration = _vehicle.Registration;
+
+            await this.GetTrailerModelsAsync();
         }
 
         #endregion
@@ -65,19 +71,18 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "No trailer"; }
         }
 
+        private string _trailerSelectText = "";
         public string TrailerSelectText
         {
-            get { return "Select trailer for " + VehicleRegistration + " - Showing " + Trailers.ToList().Count + " of " + _originalTrailerList.ToList().Count; }
+            get { return _trailerSelectText; }
+            set { _trailerSelectText = value; RaisePropertyChanged(() => TrailerSelectText); }
         }
 
-
         private string _vehicleRegistration = "";
-        public String VehicleRegistration
+        public string VehicleRegistration
         {
-            get
-            {
-                return _vehicleRegistration;
-            }
+            get { return _vehicleRegistration; }
+            set { _vehicleRegistration = value; RaisePropertyChanged(() => VehicleRegistration); }
         }
 
         private IEnumerable<TrailerItemViewModel> _trailers;
@@ -96,19 +101,23 @@ namespace MWF.Mobile.Core.ViewModels
         public string TrailerSearchText
         {
             get { return _trailerSearchText; }
-            set { _trailerSearchText = value; FilterList(); RaisePropertyChanged(() => TrailerSelectText); }
+            set { _trailerSearchText = value; this.FilterList(); RaisePropertyChanged(() => TrailerSearchText); }
         }
-
 
         private void FilterList()
         {
-            if (string.IsNullOrEmpty(TrailerSearchText))
+            if (_originalTrailerList != null)
             {
-                Trailers = _originalTrailerList;
-            }
-            else
-            {
-                Trailers = _originalTrailerList.Where(t => t.Trailer.Registration != null && t.Trailer.Registration.ToUpper().Contains(TrailerSearchText.ToUpper()));
+                if (string.IsNullOrEmpty(TrailerSearchText))
+                {
+                    this.Trailers = _originalTrailerList;
+                }
+                else
+                {
+                    this.Trailers = _originalTrailerList.Where(t => t.Trailer.Registration != null && t.Trailer.Registration.ToUpper().Contains(TrailerSearchText.ToUpper()));
+                }
+
+                this.TrailerSelectText = $"Select trailer for {this.VehicleRegistration} - Showing {Trailers.ToList().Count} of {_originalTrailerList.ToList().Count}";
             }
         }
 
@@ -308,7 +317,7 @@ namespace MWF.Mobile.Core.ViewModels
             var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
             var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
 
-            if (vehicles != null)
+            if (vehicles != null && vehicles.Any())
             {
                 await _repositories.VehicleRepository.DeleteAllAsync();
                 await _repositories.VehicleRepository.InsertAsync(vehicles);
@@ -322,15 +331,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task GetTrailerModelsAsync()
         {
-            var _vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID);
-            _vehicleRegistration = _vehicle.Registration;
-
             var data = await _repositories.TrailerRepository.GetAllAsync();
-            this.Trailers =  _originalTrailerList = data.Select(x => new TrailerItemViewModel() 
+            _originalTrailerList = data.Select(x => new TrailerItemViewModel() 
             { 
                 Trailer = x,
                 IsDefault = (string.IsNullOrEmpty(this.DefaultTrailerReg)) ? false : x.Registration == this.DefaultTrailerReg
             });
+
+            this.FilterList();
         }
 
         #endregion

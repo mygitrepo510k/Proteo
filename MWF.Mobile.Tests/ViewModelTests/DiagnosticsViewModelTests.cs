@@ -98,7 +98,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockDiagnosticsService.Verify(ds => ds.UploadDiagnosticsAsync(It.Is<string>(s => s == _dbPath )));
 
-            _mockUserInteraction.Verify(ui => ui.Alert(It.Is<string>(s => s.StartsWith("Support diagnostic information uploaded successfully")), It.IsAny<System.Action>(), It.IsAny<string>(), It.IsAny<string>()));
+            _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s.StartsWith("Support diagnostic information uploaded successfully")), It.IsAny<string>(), It.IsAny<string>()));
 
         }
 

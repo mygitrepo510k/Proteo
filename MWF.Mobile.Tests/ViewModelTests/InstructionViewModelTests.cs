@@ -278,7 +278,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionVM_CheckInstructionNotification_Delete()
+        public async Task InstructionVM_CheckInstructionNotification_Delete()
         {
             base.ClearAll();
 
@@ -287,7 +287,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            await instructionVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
@@ -297,7 +297,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void InstructionVM_CheckInstructionNotification_Update_Confirm()
+        public async Task InstructionVM_CheckInstructionNotification_Update_Confirm()
         {
             base.ClearAll();
 
@@ -308,7 +308,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.GroupTitle = "UpdateTitle";
 
-            instructionVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await instructionVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 

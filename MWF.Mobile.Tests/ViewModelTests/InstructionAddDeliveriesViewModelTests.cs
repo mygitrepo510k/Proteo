@@ -84,7 +84,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         [Fact]
         // should be no instructions
-        public void InstructionAddDeliveriesVM_BuildDeliveriesList_CollectionsOnly()
+        public async Task InstructionAddDeliveriesVM_BuildDeliveriesList_CollectionsOnly()
         {
             base.ClearAll();
             
@@ -96,13 +96,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedCollectionInstructions.First() };
             addDeliveriesVM.Init(navData);
+            addDeliveriesVM.Start();
+            await Task.Delay(50); // allow async void Start() to complete
 
             Assert.Equal(0, addDeliveriesVM.DeliveryInstructions.Count);
            
         }
 
         [Fact]
-        public void InstructionAddDeliveriesVM_BuildDeliveriesList_Deliveries()
+        public async Task InstructionAddDeliveriesVM_BuildDeliveriesList_Deliveries()
         {
             base.ClearAll();
 
@@ -115,6 +117,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
             addDeliveriesVM.Init(navData);
+            addDeliveriesVM.Start();
+            await Task.Delay(50); // allow async void Start() to complete
 
             // should be one less than the total delivery instructions (the vm's own mobile data should not be counted)
             // i.e. you can't a delivery to itself
@@ -130,7 +134,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionAddDeliveriesVM_BuildDeliveriesList_Deliveries_DifferentBarcodeScanningOptions()
+        public async Task InstructionAddDeliveriesVM_BuildDeliveriesList_Deliveries_DifferentBarcodeScanningOptions()
         {
             base.ClearAll();
 
@@ -147,16 +151,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
             navData.Data.Order.Items.FirstOrDefault().Additional.BarcodeScanRequiredForDelivery = false;
 
             addDeliveriesVM.Init(navData);
+            addDeliveriesVM.Start();
+            await Task.Delay(50); // allow async void Start() to complete
 
             // should see no matching delivery instructions
             Assert.Equal(0, addDeliveriesVM.DeliveryInstructions.Count);
-
-
         }
 
 
         [Fact]
-        public void InstructionAddDeliveriesVM_BuildDeliveriesList_IsSelectedPopulated()
+        public async Task InstructionAddDeliveriesVM_BuildDeliveriesList_IsSelectedPopulated()
         {
             base.ClearAll();
 
@@ -173,8 +177,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var additionalInstruction = nonCompletedDeliveryInstructions.Last();
             navData.GetAdditionalInstructions().Add(additionalInstruction);
 
-
             addDeliveriesVM.Init(navData);
+            addDeliveriesVM.Start();
+            await Task.Delay(50); // allow async void Start() to complete
 
             // the delivery that lives is already added as an additional delivery should be selected
             Assert.True(addDeliveriesVM.DeliveryInstructions.Single(x => x.MobileData == additionalInstruction).IsSelected);
@@ -182,7 +187,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionAddDeliveriesVM_BuildDeliveriesList_Done_AddDelivery()
+        public async Task InstructionAddDeliveriesVM_BuildDeliveriesList_Done_AddDelivery()
         {
             base.ClearAll();
 
@@ -195,6 +200,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
             addDeliveriesVM.Init(navData);
+            addDeliveriesVM.Start();
+            await Task.Delay(50); // allow async void Start() to complete
 
             // select one of the deliveries
             var selectedDelivery = addDeliveriesVM.DeliveryInstructions.Last();

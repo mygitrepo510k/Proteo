@@ -193,7 +193,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void CameraVM_CheckInstructionNotification_Delete()
+        public async Task CameraVM_CheckInstructionNotification_Delete()
         {
 
             base.ClearAll();
@@ -207,7 +207,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             cameraVM.IsVisible = true;
 
-            cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            await cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
@@ -217,7 +217,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
         [Fact]
-        public void CameraVM_CheckInstructionNotification_Update_Confirm()
+        public async Task CameraVM_CheckInstructionNotification_Update_Confirm()
         {
 
             base.ClearAll();
@@ -228,7 +228,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
-            cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 

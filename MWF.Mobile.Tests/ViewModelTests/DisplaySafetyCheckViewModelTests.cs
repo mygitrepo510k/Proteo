@@ -65,17 +65,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Tests
 
         [Fact]
-        public void DisplaySafetyCheckVM_VehicleRegistration_NotNull()
+        public async Task DisplaySafetyCheckVM_VehicleRegistration_NotNull()
         {
             base.ClearAll();
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            await displaySafetyCheckVM.Init();
 
             Assert.Equal("Vehicle: " + _latestSafetyCheck.VehicleSafetyCheck.VehicleRegistration, displaySafetyCheckVM.VehicleRegistration);
         }
 
         [Fact]
-        public void DisplaySafetyCheckVM_VehicleRegistration_Null()
+        public async Task DisplaySafetyCheckVM_VehicleRegistration_Null()
         {
             base.ClearAll();
 
@@ -83,22 +84,24 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).ReturnsAsync(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            await displaySafetyCheckVM.Init();
 
             Assert.Equal("Vehicle: " , displaySafetyCheckVM.VehicleRegistration);
         }
 
         [Fact]
-        public void DisplaySafetyCheckVM_TrailerRegistration_NotNull()
+        public async Task DisplaySafetyCheckVM_TrailerRegistration_NotNull()
         {
             base.ClearAll();
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            await displaySafetyCheckVM.Init();
 
             Assert.Equal("Trailer: " + _latestSafetyCheck.TrailerSafetyCheck.VehicleRegistration, displaySafetyCheckVM.TrailerRegistration);
         }
 
         [Fact]
-        public void DisplaySafetyCheckVM_TrailerRegistration_Null()
+        public async Task DisplaySafetyCheckVM_TrailerRegistration_Null()
         {
             base.ClearAll();
 
@@ -106,22 +109,24 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).ReturnsAsync(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            await displaySafetyCheckVM.Init();
 
             Assert.Equal("Trailer: ", displaySafetyCheckVM.TrailerRegistration);
         }
 
         [Fact]
-        public void DisplaySafetyCheckVM_VehicleSafetyCheckStatus_NotNull()
+        public async Task DisplaySafetyCheckVM_VehicleSafetyCheckStatus_NotNull()
         {
             base.ClearAll();
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            await displaySafetyCheckVM.Init();
 
             Assert.Equal("Checked: " + _latestSafetyCheck.VehicleSafetyCheck.EffectiveDate.ToString("g"), displaySafetyCheckVM.VehicleSafetyCheckStatus);
         }
 
         [Fact]
-        public void DisplaySafetyCheckVM_VehicleSafetyCheckStatus_Null()
+        public async Task DisplaySafetyCheckVM_VehicleSafetyCheckStatus_Null()
         {
             base.ClearAll();
 
@@ -129,22 +134,24 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).ReturnsAsync(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            await displaySafetyCheckVM.Init();
 
             Assert.Equal("Checked: ", displaySafetyCheckVM.VehicleSafetyCheckStatus);
         }
 
         [Fact]
-        public void DisplaySafetyCheckVM_TrailerSafetyCheckStatus_NotNull()
+        public async Task DisplaySafetyCheckVM_TrailerSafetyCheckStatus_NotNull()
         {
             base.ClearAll();
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            await displaySafetyCheckVM.Init();
 
             Assert.Equal("Checked: " + _latestSafetyCheck.TrailerSafetyCheck.EffectiveDate.ToString("g"), displaySafetyCheckVM.TrailerSafetyCheckStatus);
         }
 
         [Fact]
-        public void DisplaySafetyCheckVM_TrailerSafetyCheckStatus_Null()
+        public async Task DisplaySafetyCheckVM_TrailerSafetyCheckStatus_Null()
         {
             base.ClearAll();
 
@@ -152,19 +159,21 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).ReturnsAsync(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            await displaySafetyCheckVM.Init();
 
             Assert.Equal("Checked: ", displaySafetyCheckVM.TrailerSafetyCheckStatus);
         }
 
 
         [Fact]
-        public void DisplaySafetyCheckVM_CreationOfSafetyCheckFaultItemViewModels()
+        public async Task DisplaySafetyCheckVM_CreationOfSafetyCheckFaultItemViewModels()
         {
             base.ClearAll();
 
-            var displaySafetyCheckVM = _fixture.Build<DisplaySafetyCheckViewModel>().Without(dscvm => dscvm.SafetyCheckFaultItemViewModels).Create<DisplaySafetyCheckViewModel>();
+            var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
 
             int faultsCount = _latestSafetyCheck.TrailerSafetyCheck.Faults.Count() + _latestSafetyCheck.VehicleSafetyCheck.Faults.Count();
+            await displaySafetyCheckVM.Init();
 
             Assert.Equal(faultsCount, displaySafetyCheckVM.SafetyCheckFaultItemViewModels.Count());
 
@@ -220,7 +229,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void DisplaySafetyCheckVM_NullSafetyChecks()
+        public async Task DisplaySafetyCheckVM_NullSafetyChecks()
         {
             base.ClearAll();
 
@@ -229,14 +238,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).ReturnsAsync(_latestSafetyCheck);
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            await displaySafetyCheckVM.Init();
 
-            _mockUserInteraction.Verify(mui => mui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(mui => mui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(ni => ni == null)), Times.Once);
         }
 
         [Fact]
-        public void DisplaySafetyCheckVM_CheckInstructionNotification_Delete()
+        public async Task DisplaySafetyCheckVM_CheckInstructionNotification_Delete()
         {
             base.ClearAll();
 
@@ -245,34 +255,27 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockNavigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
-            displaySafetyCheckVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            await displaySafetyCheckVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockNavigationService.Verify(ns => ns.GoToManifestAsync(), Times.Once);
-
         }
 
-
         [Fact]
-        public void DisplaySafetyCheckVM_CheckInstructionNotification_Update_Confirm()
+        public async Task DisplaySafetyCheckVM_CheckInstructionNotification_Update_Confirm()
         {
-
             base.ClearAll();
-
 
             var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
             displaySafetyCheckVM.IsVisible = true;
 
             _mockNavigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
-            displaySafetyCheckVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await displaySafetyCheckVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-
-
         }
-
 
         #endregion Tests
     }

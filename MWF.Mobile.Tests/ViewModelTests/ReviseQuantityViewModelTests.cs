@@ -110,7 +110,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void ReviseQuantityVM_CheckInstructionNotification_Update_Confirm()
+        public async Task ReviseQuantityVM_CheckInstructionNotification_Update_Confirm()
         {
             base.ClearAll();
 
@@ -123,7 +123,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             reviseQuantityVM.Init(navData);
 
-            reviseQuantityVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await reviseQuantityVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 

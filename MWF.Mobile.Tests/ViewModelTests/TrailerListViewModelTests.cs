@@ -27,7 +27,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private TrailerItemViewModel _trailerItemViewModel;
         private IInfoService _infoService;
         private Mock<ICurrentDriverRepository> _currentDriverRepository;
+        private Mock<IApplicationProfileRepository> _applicationRepository;
+        private Mock<ITrailerRepository> _trailerRepository;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
+        private ApplicationProfile _applicationProfile;
 
         protected override void AdditionalSetup()
         {
@@ -38,7 +41,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
-            _fixture.Customize<TrailerListViewModel>(tlvm => tlvm.Without(x => x.DefaultTrailerReg));
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
@@ -55,17 +57,26 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _currentDriverRepository.Setup(cdr => cdr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(new CurrentDriver());
             _fixture.Inject<ICurrentDriverRepository>(_currentDriverRepository.Object);
 
+            _applicationProfile = new ApplicationProfile { LastVehicleAndDriverSync = DateTime.Now };
+            _applicationRepository = _fixture.InjectNewMock<IApplicationProfileRepository>();
+            _applicationRepository.Setup(ar => ar.GetAllAsync()).ReturnsAsync(new List<ApplicationProfile>() { _applicationProfile });
+
+            _trailerRepository = new Mock<ITrailerRepository>();
+            _fixture.Inject<ITrailerRepository>(_trailerRepository.Object);
+
             var mockAuthenticationService = new Mock<IAuthenticationService>();
             mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.IsAny<string>())).ReturnsAsync(new AuthenticationResult { Success = false });
             mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.Is<string>(s => s == "9999"))).ReturnsAsync(new AuthenticationResult { Success = true, Driver = _driver });
             _fixture.Inject<IAuthenticationService>(mockAuthenticationService.Object);
+
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
         }
 
         /// <summary>
         /// Tests that on successful authentication the SafetyCheckViewModel is navigated to
         /// </summary>
         [Fact]
-        public void TrailerListVM_SuccessfulAuthenticationRedirectsToSafetyCheckListView()
+        public async Task TrailerListVM_SuccessfulAuthenticationRedirectsToSafetyCheckListView()
         {
             base.ClearAll();
 
@@ -76,12 +87,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your trailer");
 
             var vm = _fixture.Create<TrailerListViewModel>();
+            await vm.Init();
 
             vm.TrailerSelectCommand.Execute(_trailerItemViewModel);
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
-
         }
 
         /// <summary>
@@ -146,20 +157,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the list is filtered correctly when you search for a trailer.
         /// </summary>
         [Fact]
-        public void TrailerListVM_SuccessfulTrailerListFilter()
+        public async Task TrailerListVM_SuccessfulTrailerListFilter()
         {
             base.ClearAll();
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Trailer>();
-            trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
-
-            _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            _trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
             var vm = _fixture.Create<TrailerListViewModel>();
+            await vm.Init();
+
             vm.TrailerSearchText = trailers.First().Registration;
 
             Assert.Equal(1, vm.Trailers.ToList().Count);
@@ -172,20 +181,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the refresh function on the trailer list works.
         /// </summary>
         [Fact]
-        public void TrailerListVM_SuccessfulTrailerListRefreshNoFilter()
+        public async Task TrailerListVM_SuccessfulTrailerListRefreshNoFilter()
         {
             base.ClearAll();
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Trailer>();
-            trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
-
-            _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            _trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
             var vm = _fixture.Create<TrailerListViewModel>();
+            await vm.Init();
+
             vm.TrailerSearchText = "";
 
             vm.RefreshListCommand.Execute(null);
@@ -194,7 +201,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal(trailers, trailerModels);
             //Its get all twice because it calls it once on setup and another on refresh
-            trailerRepository.Verify(vr => vr.GetAllAsync(), Times.Exactly(2));
+            _trailerRepository.Verify(vr => vr.GetAllAsync(), Times.Exactly(2));
 
         }
 
@@ -202,20 +209,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the refresh function on the trailer list works but refilters the list.
         /// </summary>
         [Fact]
-        public void TrailerListVM_SuccessfulTrailerListRefreshFilter()
+        public async Task TrailerListVM_SuccessfulTrailerListRefreshFilter()
         {
             base.ClearAll();
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            var trailerRepository = new Mock<ITrailerRepository>();
             var trailers = _fixture.CreateMany<Trailer>(20);
-            trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
-
-            _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            _trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
             var vm = _fixture.Create<TrailerListViewModel>();
+            await vm.Init();
+
             vm.TrailerSearchText = "Registration";
 
             vm.RefreshListCommand.Execute(null);
@@ -224,7 +229,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal(trailers, trailerModels);
             //Its get all twice because it calls it once on setup and another on refresh
-            trailerRepository.Verify(vr => vr.GetAllAsync(), Times.Exactly(2));
+            _trailerRepository.Verify(vr => vr.GetAllAsync(), Times.Exactly(2));
 
         }
     }

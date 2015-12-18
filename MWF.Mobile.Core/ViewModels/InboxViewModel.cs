@@ -24,7 +24,6 @@ namespace MWF.Mobile.Core.ViewModels
         private IGatewayPollingService _gatewayPollingService;
         private MvxCommand _refreshMessagesCommand;
 
-
         public InboxViewModel(
             IRepositories repositories, 
             IInfoService infoService, 
@@ -42,11 +41,10 @@ namespace MWF.Mobile.Core.ViewModels
             await this.RefreshMessagesAsync();
         }
 
-        private ObservableCollection<ManifestInstructionViewModel> _messages;
+        private ObservableCollection<ManifestInstructionViewModel> _messages = new ObservableCollection<ManifestInstructionViewModel>();
         public ObservableCollection<ManifestInstructionViewModel> Messages
         {
             get { return _messages; }
-            set { _messages = value; RaisePropertyChanged(() => Messages); }
         }
 
         public string InboxHeaderText
@@ -61,10 +59,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ICommand RefreshMessagesCommand
         {
-            get
-            {
-                return (_refreshMessagesCommand = _refreshMessagesCommand ?? new MvxCommand(async () => await this.RefreshMessagesAsync()));
-            }
+            get { return (_refreshMessagesCommand = _refreshMessagesCommand ?? new MvxCommand(async () => await this.RefreshMessagesAsync())); }
         }
 
         public async Task RefreshMessagesAsync()
@@ -84,7 +79,14 @@ namespace MWF.Mobile.Core.ViewModels
                 .OrderBy(m => m.ProgressState)
                 .ThenBy(m => m.ArrivalDate);
 
-            Messages = new ObservableCollection<ManifestInstructionViewModel>(messages);
+            _messages.Clear();
+
+            foreach (var message in messages)
+            {
+                _messages.Add(message);
+            }
+
+            RaisePropertyChanged(() => Messages);
             RaisePropertyChanged(() => MessagesCount);
             RaisePropertyChanged(() => InboxHeaderText);
         }

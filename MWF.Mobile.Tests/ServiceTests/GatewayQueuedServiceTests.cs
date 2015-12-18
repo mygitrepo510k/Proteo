@@ -31,8 +31,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             _queueItems = new List<Core.Models.GatewayQueueItem>();
             _mockQueueItemRepository = new Mock<Core.Repositories.IGatewayQueueItemRepository>();
             _mockQueueItemRepository.Setup(m => m.GetAllInQueueOrderAsync()).ReturnsAsync(_queueItems);
-            _mockQueueItemRepository.Setup(m => m.InsertAsync(It.IsAny<Core.Models.GatewayQueueItem>())).Callback<Core.Models.GatewayQueueItem>(gqi => _queueItems.Add(gqi));
-            _mockQueueItemRepository.Setup(m => m.DeleteAsync(It.IsAny<Core.Models.GatewayQueueItem>())).Callback<Core.Models.GatewayQueueItem>(gqi => _queueItems.Remove(gqi));
+
+            _mockQueueItemRepository.Setup(m => m.InsertAsync(It.IsAny<Core.Models.GatewayQueueItem>()))
+                .Callback<Core.Models.GatewayQueueItem>(gqi => _queueItems.Add(gqi))
+                .Returns(Task.FromResult(0));
+
+            _mockQueueItemRepository.Setup(m => m.DeleteAsync(It.IsAny<Core.Models.GatewayQueueItem>()))
+                .Callback<Core.Models.GatewayQueueItem>(gqi => _queueItems.Remove(gqi))
+                .Returns(Task.FromResult(0));
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
 

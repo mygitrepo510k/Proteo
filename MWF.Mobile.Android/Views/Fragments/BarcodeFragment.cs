@@ -31,7 +31,6 @@ namespace MWF.Mobile.Android.Views.Fragments
             return this.BindingInflate(Resource.Layout.Fragment_Barcode, null);
         }
 
-
         public override void OnResume()
         {
             base.OnResume();

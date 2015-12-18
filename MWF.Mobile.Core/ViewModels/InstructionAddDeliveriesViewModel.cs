@@ -44,18 +44,12 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
         }
 
-        public void Init(NavData<MobileData> navData)
+        public async Task Init(NavData<MobileData> navData)
         {
-
             navData.Reinflate();
             this.MessageId = navData.NavGUID;
             _navData = navData;
             _additionalInstructions = _navData.GetAdditionalInstructions();
-        }
-
-        public override async void Start()
-        {
-            base.Start();
             _appProfile = (await _repositories.ApplicationRepository.GetAllAsync()).First();
             await this.GetDeliveryInstructionsAsync();
         }
@@ -100,18 +94,14 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Done"; }
         }
 
-
         public System.Windows.Input.ICommand DoneCommand
         {
-            get { return (_doneCommand = _doneCommand ?? new MvxCommand( () => DoDoneCommand())); }
+            get { return (_doneCommand = _doneCommand ?? new MvxCommand(() => DoDoneCommand())); }
         }
 
         public bool UserChangesDetected
         {
-            get
-            {
-                return _originalSelection != GetSelectionSummary();
-            }
+            get { return _originalSelection != GetSelectionSummary(); }
         }
 
         private ObservableCollection<ManifestInstructionViewModel> _deliveryInstructions;
@@ -134,7 +124,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void DoDoneCommand()
         {
-
             var selectedInstructionIDs = this.DeliveryInstructions.Where(di => di.IsSelected).Select(di => di.InstructionID).ToList();
             var additionalInstructions = _navData.GetAdditionalInstructions();
 
@@ -143,7 +132,6 @@ namespace MWF.Mobile.Core.ViewModels
 
             // work out which newly selected instructions need to be added         
             var instructionsToAdd = this.DeliveryInstructions.Where(di => di.IsSelected && !additionalInstructions.Any(ai => ai.ID == di.InstructionID)).ToList();
-
 
             foreach (var item in instructionsToRemove)
             {
@@ -157,7 +145,6 @@ namespace MWF.Mobile.Core.ViewModels
 
             ReturnResult(true);
         }
-
 
         private string GetSelectionSummary()
         {

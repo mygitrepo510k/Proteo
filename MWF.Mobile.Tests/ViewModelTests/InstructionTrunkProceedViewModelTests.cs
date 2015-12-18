@@ -173,7 +173,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionTrunkProceedVM_CompleteButton()
+        public async Task InstructionTrunkProceedVM_CompleteButton()
         {
             base.ClearAll();
 
@@ -181,7 +181,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionTrunkProceedVM.CompleteInstructionCommand.Execute(null);
+            await instructionTrunkProceedVM.CompleteInstructionAsync();
 
             _mockNavigationService.Verify(mns => mns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Once);
         }

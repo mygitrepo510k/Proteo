@@ -12,301 +12,296 @@ using Xunit;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Tests.Helpers;
 using MWF.Mobile.Tests.RepositoryTests.TestModels;
 
 namespace MWF.Mobile.Tests.RepositoryTests
 {
     // Tests a full write and read to a sqlite database via the repository and dataservice layers
-    // Note this uses a concrete ConnectionFactory targeting x86 windows
-    //public class RepositoryIntegrationTest
-    //    : MvxIoCSupportingTest
-    //{
+    public class RepositoryIntegrationTest
+        : MvxIoCSupportingTest
+    {
 
-    //    private IDataService _dataService;
+        private IDataService _dataService;
+        private IFixture _fixture;
 
-    //    protected override void AdditionalSetup()
-    //    {
-    //        if (File.Exists("db.sql"))
-    //        {
-    //            _dataService = new DataService(connectionFactory);
-    //            _dataService.GetDBConnection().DeleteAll<Device>();
-    //            _dataService.GetDBConnection().DeleteAll<GrandParentEntity>();
-    //            _dataService.GetDBConnection().DeleteAll<ParentEntity>();
-    //            _dataService.GetDBConnection().DeleteAll<ChildEntity>();
-    //            _dataService.GetDBConnection().DeleteAll<ChildEntity2>();
-    //            _dataService.GetDBConnection().DeleteAll<SingleChildEntity>();
-    //            _dataService.GetDBConnection().CreateTable<MultiChildEntity>();
-    //        }
-    //        else
-    //        {
-    //            _dataService = new DataService(connectionFactory);
-    //            _dataService.GetDBConnection().CreateTable<Device>();
-    //            _dataService.GetDBConnection().CreateTable<GrandParentEntity>();
-    //            _dataService.GetDBConnection().CreateTable<ParentEntity>();
-    //            _dataService.GetDBConnection().CreateTable<ChildEntity>();
-    //            _dataService.GetDBConnection().CreateTable<ChildEntity2>();
-    //            _dataService.GetDBConnection().CreateTable<SingleChildEntity>();
-    //            _dataService.GetDBConnection().CreateTable<MultiChildEntity>();
-    //        }
-    //    }
+        protected override void AdditionalSetup()
+        {
+            _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-    //    [Fact]
-    //    public async Task Repository_Insert_Read()
-    //    {
-    //        base.ClearAll();
+            var mockDeviceInfo = _fixture.InjectNewMock<IDeviceInfo>();
+            mockDeviceInfo.Setup(di => di.DatabasePath).Returns(string.Empty);
 
-    //        var fixture = new Fixture().Customize(new AutoMoqCustomization());
-    //        List<Device> devicesIn = fixture.CreateMany<Device>().OrderBy(d => d.ID).ToList();
+            var platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
+            _dataService = new DataService(mockDeviceInfo.Object, platform);
+            var connection = _dataService.GetDBConnection();
 
-    //        DeviceRepository deviceRepository = new DeviceRepository(_dataService);
+            this.CreateEmptyTable<Device>(connection);
+            this.CreateEmptyTable<GrandParentEntity>(connection);
+            this.CreateEmptyTable<ParentEntity>(connection);
+            this.CreateEmptyTable<ChildEntity>(connection);
+            this.CreateEmptyTable<ChildEntity2>(connection);
+            this.CreateEmptyTable<SingleChildEntity>(connection);
+            this.CreateEmptyTable<MultiChildEntity>(connection);
+        }
 
-    //        // Insert records
-    //        foreach (var device in devicesIn)
-    //        {
-    //            await deviceRepository.InsertAsync(device);
-    //        }
+        private void CreateEmptyTable<T>(Core.Database.IConnection connection)
+        {
+            connection.CreateTable<T>();
+            connection.DeleteAll<T>();
+        }
 
-    //        //read them all back
-    //        List<Device> devicesOut = (await deviceRepository.GetAllAsync()).OrderBy(d => d.ID).ToList();
+        [Fact]
+        public async Task Repository_Insert_Read()
+        {
+            base.ClearAll();
 
-    //        // Check we got the same number of records out that we put in
-    //        Assert.Equal(devicesIn.Count, devicesIn.Count);
+            List<Device> devicesIn = _fixture.CreateMany<Device>().OrderBy(d => d.ID).ToList();
 
-    //        //Check that all items/properties have the same values
-    //        for (int i = 0; i < devicesIn.Count; i++)
-    //        {
-    //            Assert.Equal(devicesIn[i].ID, devicesOut[i].ID);
-    //            Assert.Equal(devicesIn[i].Title, devicesOut[i].Title);
-    //            Assert.Equal(devicesIn[i].Type, devicesOut[i].Type);
-    //            Assert.Equal(devicesIn[i].CustomerID, devicesOut[i].CustomerID);
-    //            Assert.Equal(devicesIn[i].CustomerTitle, devicesOut[i].CustomerTitle);
-    //            Assert.Equal(devicesIn[i].DeviceIdentifier, devicesOut[i].DeviceIdentifier);
-    //        }
-    //    }
+            var deviceRepository = new DeviceRepository(_dataService);
 
-    //    [Fact]
-    //    public async Task Repository_Insert_GetByID()
-    //    {
-    //        base.ClearAll();
+            // Insert records
+            foreach (var device in devicesIn)
+            {
+                await deviceRepository.InsertAsync(device);
+            }
 
-    //        var fixture = new Fixture().Customize(new AutoMoqCustomization());
-    //        var deviceIn = fixture.Create<Device>();
-    //        Guid ID = deviceIn.ID;
+            // Read them all back
+            List<Device> devicesOut = (await deviceRepository.GetAllAsync()).OrderBy(d => d.ID).ToList();
 
-    //        DeviceRepository deviceRepository = new DeviceRepository(_dataService);
+            // Check we got the same number of records out that we put in
+            Assert.Equal(devicesIn.Count, devicesOut.Count);
 
-    //        // Insert record
-    //        await deviceRepository.InsertAsync(deviceIn);
+            // Check that all items/properties have the same values
+            for (int i = 0; i < devicesIn.Count; i++)
+            {
+                Assert.Equal(devicesIn[i].ID, devicesOut[i].ID);
+                Assert.Equal(devicesIn[i].Title, devicesOut[i].Title);
+                Assert.Equal(devicesIn[i].Type, devicesOut[i].Type);
+                Assert.Equal(devicesIn[i].CustomerID, devicesOut[i].CustomerID);
+                Assert.Equal(devicesIn[i].CustomerTitle, devicesOut[i].CustomerTitle);
+                Assert.Equal(devicesIn[i].DeviceIdentifier, devicesOut[i].DeviceIdentifier);
+            }
+        }
 
-    //        // Get the device back by id
-    //        var deviceOut = await deviceRepository.GetByIDAsync(ID);
+        [Fact]
+        public async Task Repository_Insert_GetByID()
+        {
+            base.ClearAll();
 
-    //        //Check that all items/properties have the same values
-    //        Assert.Equal(deviceIn.Title, deviceOut.Title);
-    //        Assert.Equal(deviceIn.Type, deviceOut.Type);
-    //        Assert.Equal(deviceIn.CustomerID, deviceOut.CustomerID);
-    //        Assert.Equal(deviceIn.CustomerTitle, deviceOut.CustomerTitle);
-    //        Assert.Equal(deviceIn.DeviceIdentifier, deviceOut.DeviceIdentifier);
-    //    }
+            var deviceIn = _fixture.Create<Device>();
+            Guid ID = deviceIn.ID;
 
-    //    [Fact]
-    //    // Tests a repository can deal with an entity type which has a child relationship
-    //    // with an other entity type
-    //    public async Task Repository_SingleChildRelation_Insert_GetByID()
-    //    {
-    //        base.ClearAll();
+            var deviceRepository = new DeviceRepository(_dataService);
 
-    //        var fixture = new Fixture().Customize(new AutoMoqCustomization());
-    //        var verbProfile1In = fixture.Create<VerbProfile>();
-    //        var verbProfile2In = fixture.Create<VerbProfile>();
+            // Insert record
+            await deviceRepository.InsertAsync(deviceIn);
 
-    //        VerbProfileRepository verbProfileRepository = new VerbProfileRepository(_dataService);
+            // Get the device back by id
+            var deviceOut = await deviceRepository.GetByIDAsync(ID);
 
-    //        // Insert records
-    //        await verbProfileRepository.InsertAsync(verbProfile1In);
-    //        await verbProfileRepository.InsertAsync(verbProfile2In);
+            //Check that all items/properties have the same values
+            Assert.Equal(deviceIn.Title, deviceOut.Title);
+            Assert.Equal(deviceIn.Type, deviceOut.Type);
+            Assert.Equal(deviceIn.CustomerID, deviceOut.CustomerID);
+            Assert.Equal(deviceIn.CustomerTitle, deviceOut.CustomerTitle);
+            Assert.Equal(deviceIn.DeviceIdentifier, deviceOut.DeviceIdentifier);
+        }
 
-    //        // Get the first profile back by id
-    //        var verbProfile1Out = await verbProfileRepository.GetByIDAsync(verbProfile1In.ID);
+        [Fact]
+        // Tests a repository can deal with an entity type which has a child relationship
+        // with an other entity type
+        public async Task Repository_SingleChildRelation_Insert_GetByID()
+        {
+            base.ClearAll();
 
-    //        // Check that verb profile we retreived has correct number of children
-    //        Assert.Equal(verbProfile1In.Children.Count, verbProfile1Out.Children.Count);
+            var verbProfile1In = _fixture.Create<VerbProfile>();
+            var verbProfile2In = _fixture.Create<VerbProfile>();
 
-    //        //Check that all the children we have retreived have the correct property values
-    //        for (int i = 0; i < verbProfile1In.Children.Count; i++)
-    //        {
-    //            Assert.Equal(verbProfile1In.Children[i].ID, verbProfile1Out.Children[i].ID);
-    //            Assert.Equal(verbProfile1In.Children[i].Title, verbProfile1Out.Children[i].Title);
-    //            Assert.Equal(verbProfile1In.Children[i].Category, verbProfile1Out.Children[i].Category);
-    //            Assert.Equal(verbProfile1In.Children[i].Code, verbProfile1Out.Children[i].Code);
-    //            Assert.Equal(verbProfile1In.Children[i].IsHighlighted, verbProfile1Out.Children[i].IsHighlighted);
-    //            Assert.Equal(verbProfile1In.Children[i].Order, verbProfile1Out.Children[i].Order);
-    //            Assert.Equal(verbProfile1In.Children[i].ShowComment, verbProfile1Out.Children[i].ShowComment);
-    //            Assert.Equal(verbProfile1In.Children[i].ShowImage, verbProfile1Out.Children[i].ShowImage);
-    //            Assert.Equal(verbProfile1In.Children[i].ShowSignature, verbProfile1Out.Children[i].ShowSignature);
-    //        }
-    //    }
+            var verbProfileRepository = new VerbProfileRepository(_dataService);
 
-    //    [Fact]
-    //    // Tests a repository can deal with an entity type which has a child relationships
-    //    // with more than one entity type
-    //    public async Task Repository_MultipleChildRelation_Insert_GetByID()
-    //    {
-    //        base.ClearAll();
+            // Insert records
+            await verbProfileRepository.InsertAsync(verbProfile1In);
+            await verbProfileRepository.InsertAsync(verbProfile2In);
 
-    //        var fixture = new Fixture().Customize(new AutoMoqCustomization());
-    //        var parentEntityIn = fixture.Create<ParentEntity>();
+            // Get the first profile back by id
+            var verbProfile1Out = await verbProfileRepository.GetByIDAsync(verbProfile1In.ID);
 
-    //        parentEntityIn.FirstChild.IsFirstChild = true;
-    //        parentEntityIn.SecondChild.IsFirstChild = false;
+            // Check that verb profile we retreived has correct number of children
+            Assert.Equal(verbProfile1In.Children.Count, verbProfile1Out.Children.Count);
 
-    //        var parentEntity2In = fixture.Create<ParentEntity>();
+            //Check that all the children we have retreived have the correct property values
+            for (int i = 0; i < verbProfile1In.Children.Count; i++)
+            {
+                Assert.Equal(verbProfile1In.Children[i].ID, verbProfile1Out.Children[i].ID);
+                Assert.Equal(verbProfile1In.Children[i].Title, verbProfile1Out.Children[i].Title);
+                Assert.Equal(verbProfile1In.Children[i].Category, verbProfile1Out.Children[i].Category);
+                Assert.Equal(verbProfile1In.Children[i].Code, verbProfile1Out.Children[i].Code);
+                Assert.Equal(verbProfile1In.Children[i].IsHighlighted, verbProfile1Out.Children[i].IsHighlighted);
+                Assert.Equal(verbProfile1In.Children[i].Order, verbProfile1Out.Children[i].Order);
+                Assert.Equal(verbProfile1In.Children[i].ShowComment, verbProfile1Out.Children[i].ShowComment);
+                Assert.Equal(verbProfile1In.Children[i].ShowImage, verbProfile1Out.Children[i].ShowImage);
+                Assert.Equal(verbProfile1In.Children[i].ShowSignature, verbProfile1Out.Children[i].ShowSignature);
+            }
+        }
 
-    //        ParentEntityRepository repository = new ParentEntityRepository(_dataService);
+        [Fact]
+        // Tests a repository can deal with an entity type which has a child relationships
+        // with more than one entity type
+        public async Task Repository_MultipleChildRelation_Insert_GetByID()
+        {
+            base.ClearAll();
 
-    //        // Insert records
-    //        await repository.InsertAsync(parentEntityIn);
-    //        await repository.InsertAsync(parentEntity2In);
+            var parentEntityIn = _fixture.Create<ParentEntity>();
 
-    //        // Get the first entity back by id
-    //        var parentEntityOut = await repository.GetByIDAsync(parentEntityIn.ID);
+            parentEntityIn.FirstChild.IsFirstChild = true;
+            parentEntityIn.SecondChild.IsFirstChild = false;
 
-    //        // Check that the entity we retreived has correct number of children (of both types)
-    //        Assert.Equal(parentEntityIn.Children.Count, parentEntityOut.Children.Count);
-    //        Assert.Equal(parentEntityIn.Children2.Count, parentEntityOut.Children2.Count);
+            var parentEntity2In = _fixture.Create<ParentEntity>();
 
-    //        // Check that all the children we have retreived have the correct property values
-    //        for (int i = 0; i < parentEntityIn.Children.Count; i++)
-    //        {
-    //            Assert.Equal(parentEntityIn.Children[i].ID, parentEntityOut.Children[i].ID);
-    //            Assert.Equal(parentEntityIn.Children[i].Title, parentEntityOut.Children[i].Title);
-    //        }
+            ParentEntityRepository repository = new ParentEntityRepository(_dataService);
 
-    //        // Check that all the children we have retreived have the correct property values
-    //        for (int i = 0; i < parentEntityIn.Children2.Count; i++)
-    //        {
-    //            Assert.Equal(parentEntityIn.Children2[i].ID, parentEntityOut.Children2[i].ID);
-    //            Assert.Equal(parentEntityIn.Children2[i].Title, parentEntityOut.Children2[i].Title);
-    //        }
+            // Insert records
+            await repository.InsertAsync(parentEntityIn);
+            await repository.InsertAsync(parentEntity2In);
 
-    //        // Check single child relationship
-    //        Assert.Equal(parentEntityIn.Child.ID, parentEntityOut.Child.ID);
-    //        Assert.Equal(parentEntityIn.Child.Title, parentEntityOut.Child.Title);
+            // Get the first entity back by id
+            var parentEntityOut = await repository.GetByIDAsync(parentEntityIn.ID);
 
-    //        // Check multi child relationship
-    //        Assert.Equal(parentEntityIn.FirstChild.ID, parentEntityOut.FirstChild.ID);
-    //        Assert.Equal(parentEntityIn.FirstChild.Title, parentEntityOut.FirstChild.Title);
-    //        Assert.Equal(parentEntityIn.FirstChild.IsFirstChild, parentEntityOut.FirstChild.IsFirstChild);
+            // Check that the entity we retreived has correct number of children (of both types)
+            Assert.Equal(parentEntityIn.Children.Count, parentEntityOut.Children.Count);
+            Assert.Equal(parentEntityIn.Children2.Count, parentEntityOut.Children2.Count);
 
-    //        Assert.Equal(parentEntityIn.SecondChild.ID, parentEntityOut.SecondChild.ID);
-    //        Assert.Equal(parentEntityIn.SecondChild.Title, parentEntityOut.SecondChild.Title);
-    //        Assert.Equal(parentEntityIn.SecondChild.IsFirstChild, parentEntityOut.SecondChild.IsFirstChild);
-    //    }
+            // Check that all the children we have retreived have the correct property values
+            for (int i = 0; i < parentEntityIn.Children.Count; i++)
+            {
+                Assert.Equal(parentEntityIn.Children[i].ID, parentEntityOut.Children[i].ID);
+                Assert.Equal(parentEntityIn.Children[i].Title, parentEntityOut.Children[i].Title);
+            }
 
-    //    [Fact]
-    //    // Tests a repository can deal with an entity type which has nested child relationships
-    //    // e.g. Grandparent -> Parent -> Child
-    //    public async Task Repository_NestedChildRelation_Insert_GetByID()
-    //    {
-    //        base.ClearAll();
+            // Check that all the children we have retreived have the correct property values
+            for (int i = 0; i < parentEntityIn.Children2.Count; i++)
+            {
+                Assert.Equal(parentEntityIn.Children2[i].ID, parentEntityOut.Children2[i].ID);
+                Assert.Equal(parentEntityIn.Children2[i].Title, parentEntityOut.Children2[i].Title);
+            }
 
-    //        var fixture = new Fixture().Customize(new AutoMoqCustomization());
-    //        var grandParentEntityIn = fixture.Create<GrandParentEntity>();
-    //        var grandParentEntity2In = fixture.Create<GrandParentEntity>();
+            // Check single child relationship
+            Assert.Equal(parentEntityIn.Child.ID, parentEntityOut.Child.ID);
+            Assert.Equal(parentEntityIn.Child.Title, parentEntityOut.Child.Title);
 
-    //        GrandParentEntityRepository repository = new GrandParentEntityRepository(_dataService);
+            // Check multi child relationship
+            Assert.Equal(parentEntityIn.FirstChild.ID, parentEntityOut.FirstChild.ID);
+            Assert.Equal(parentEntityIn.FirstChild.Title, parentEntityOut.FirstChild.Title);
+            Assert.Equal(parentEntityIn.FirstChild.IsFirstChild, parentEntityOut.FirstChild.IsFirstChild);
 
-    //        // Insert records
-    //        await repository.InsertAsync(grandParentEntityIn);
-    //        await repository.InsertAsync(grandParentEntity2In);
+            Assert.Equal(parentEntityIn.SecondChild.ID, parentEntityOut.SecondChild.ID);
+            Assert.Equal(parentEntityIn.SecondChild.Title, parentEntityOut.SecondChild.Title);
+            Assert.Equal(parentEntityIn.SecondChild.IsFirstChild, parentEntityOut.SecondChild.IsFirstChild);
+        }
 
-    //        // Get the first entity back by id
-    //        var grandParentEntityOut = await repository.GetByIDAsync(grandParentEntityIn.ID);
+        [Fact]
+        // Tests a repository can deal with an entity type which has nested child relationships
+        // e.g. Grandparent -> Parent -> Child
+        public async Task Repository_NestedChildRelation_Insert_GetByID()
+        {
+            base.ClearAll();
 
-    //        CheckEntityTreesAreSame(grandParentEntityIn, grandParentEntityOut);
-    //    }
+            var grandParentEntityIn = _fixture.Create<GrandParentEntity>();
+            var grandParentEntity2In = _fixture.Create<GrandParentEntity>();
 
-    //    [Fact]
-    //    public async Task Repository_NestedChildRelation_InsertMany_GetAll()
-    //    {
-    //        base.ClearAll();
+            var repository = new GrandParentEntityRepository(_dataService);
 
-    //        var fixture = new Fixture().Customize(new AutoMoqCustomization());
+            // Insert records
+            await repository.InsertAsync(grandParentEntityIn);
+            await repository.InsertAsync(grandParentEntity2In);
 
-    //        GrandParentEntityRepository repository = new GrandParentEntityRepository(_dataService);
+            // Get the first entity back by id
+            var grandParentEntityOut = await repository.GetByIDAsync(grandParentEntityIn.ID);
 
-    //        // Insert records
-    //        List<GrandParentEntity> grandParentEntitiesIn = fixture.CreateMany<GrandParentEntity>().ToList();
-    //        await repository.InsertAsync(grandParentEntitiesIn);
+            CheckEntityTreesAreSame(grandParentEntityIn, grandParentEntityOut);
+        }
 
-    //        // Get all the entities out
-    //        var grandParentEntitiesOut = (await repository.GetAllAsync()).ToList();
+        [Fact]
+        public async Task Repository_NestedChildRelation_InsertMany_GetAll()
+        {
+            base.ClearAll();
 
-    //        // Check that we got the same number of entities back out
-    //        Assert.Equal(grandParentEntitiesIn.ToList().Count, grandParentEntitiesOut.ToList().Count);
+            var repository = new GrandParentEntityRepository(_dataService);
 
-    //        // Check down the hierarchy that property values line up
-    //        for (int i = 0; i < grandParentEntitiesIn.Count; i++)
-    //        {
-    //            CheckEntityTreesAreSame(grandParentEntitiesIn[i], grandParentEntitiesOut[i]);
-    //        }
-    //    }
+            // Insert records
+            List<GrandParentEntity> grandParentEntitiesIn = _fixture.CreateMany<GrandParentEntity>().ToList();
+            await repository.InsertAsync(grandParentEntitiesIn);
 
-    //    [Fact]
-    //    // Tests a repository can deal with an entity type which has nested child relationships
-    //    // e.g. Grandparent -> Parent -> Child
-    //    public async Task Repository_NestedChildRelation_DeleteAll()
-    //    {
-    //        base.ClearAll();
+            // Get all the entities out
+            var grandParentEntitiesOut = (await repository.GetAllAsync()).ToList();
 
-    //        var fixture = new Fixture().Customize(new AutoMoqCustomization());
-    //        var grandParentEntityIn = fixture.Create<GrandParentEntity>();
+            // Check that we got the same number of entities back out
+            Assert.Equal(grandParentEntitiesIn.ToList().Count, grandParentEntitiesOut.ToList().Count);
 
-    //        GrandParentEntityRepository repository = new GrandParentEntityRepository(_dataService);
+            // Check down the hierarchy that property values line up
+            for (int i = 0; i < grandParentEntitiesIn.Count; i++)
+            {
+                CheckEntityTreesAreSame(grandParentEntitiesIn[i], grandParentEntitiesOut[i]);
+            }
+        }
 
-    //        // Insert records
-    //        await repository.InsertAsync(grandParentEntityIn);
+        [Fact]
+        // Tests a repository can deal with an entity type which has nested child relationships
+        // e.g. Grandparent -> Parent -> Child
+        public async Task Repository_NestedChildRelation_DeleteAll()
+        {
+            base.ClearAll();
 
-    //        // DeleteAll
-    //        await repository.DeleteAllAsync();
+            var grandParentEntityIn = _fixture.Create<GrandParentEntity>();
 
-    //        // Check the table and all its child tables are now empty
-    //        Assert.Empty(_dataService.GetDBConnection().Table<GrandParentEntity>());
-    //        Assert.Empty(_dataService.GetDBConnection().Table<ParentEntity>());
-    //        Assert.Empty(_dataService.GetDBConnection().Table<ChildEntity>());
-    //        Assert.Empty(_dataService.GetDBConnection().Table<ChildEntity2>());
-    //        Assert.Empty(_dataService.GetDBConnection().Table<SingleChildEntity>());
-    //    }
+            var repository = new GrandParentEntityRepository(_dataService);
 
-    //    #region helper functions
+            // Insert records
+            await repository.InsertAsync(grandParentEntityIn);
 
-    //    private void CheckEntityTreesAreSame(GrandParentEntity grandParentEntityIn, GrandParentEntity grandParentEntityOut)
-    //    {
-    //        // Check down the hierarchy that property values line up
-    //        for (int i = 0; i < grandParentEntityIn.Children.Count; i++)
-    //        {
-    //            Assert.Equal(grandParentEntityIn.Children[i].ID, grandParentEntityOut.Children[i].ID);
-    //            Assert.Equal(grandParentEntityIn.Children[i].Title, grandParentEntityOut.Children[i].Title);
+            // DeleteAll
+            await repository.DeleteAllAsync();
 
-    //            // Check that the chidlren have correct number of children 
-    //            Assert.Equal(grandParentEntityIn.Children[i].Children.Count, grandParentEntityOut.Children[i].Children.Count);
+            var asyncConnection = _dataService.GetAsyncDBConnection();
 
-    //            for (int j = 0; j < grandParentEntityIn.Children[i].Children.Count; j++)
-    //            {
-    //                Assert.Equal(grandParentEntityIn.Children[i].Children[j].ID, grandParentEntityOut.Children[i].Children[j].ID);
-    //                Assert.Equal(grandParentEntityIn.Children[i].Children[j].Title, grandParentEntityOut.Children[i].Children[j].Title);
-    //            }
+            // Check the table and all its child tables are now empty
+            Assert.Empty(await asyncConnection.Table<GrandParentEntity>().ToListAsync());
+            Assert.Empty(await asyncConnection.Table<ParentEntity>().ToListAsync());
+            Assert.Empty(await asyncConnection.Table<ChildEntity>().ToListAsync());
+            Assert.Empty(await asyncConnection.Table<ChildEntity2>().ToListAsync());
+            Assert.Empty(await asyncConnection.Table<SingleChildEntity>().ToListAsync());
+        }
 
-    //            // Check single child relationship
-    //            Assert.Equal(grandParentEntityIn.Children[i].Child.ID, grandParentEntityOut.Children[i].Child.ID);
-    //            Assert.Equal(grandParentEntityIn.Children[i].Child.Title, grandParentEntityOut.Children[i].Child.Title);
+        #region helper functions
 
-    //        }
-    //    }
+        private void CheckEntityTreesAreSame(GrandParentEntity grandParentEntityIn, GrandParentEntity grandParentEntityOut)
+        {
+            // Check down the hierarchy that property values line up
+            for (int i = 0; i < grandParentEntityIn.Children.Count; i++)
+            {
+                Assert.Equal(grandParentEntityIn.Children[i].ID, grandParentEntityOut.Children[i].ID);
+                Assert.Equal(grandParentEntityIn.Children[i].Title, grandParentEntityOut.Children[i].Title);
 
-    //    #endregion
+                // Check that the chidlren have correct number of children 
+                Assert.Equal(grandParentEntityIn.Children[i].Children.Count, grandParentEntityOut.Children[i].Children.Count);
 
-    //}
+                for (int j = 0; j < grandParentEntityIn.Children[i].Children.Count; j++)
+                {
+                    Assert.Equal(grandParentEntityIn.Children[i].Children[j].ID, grandParentEntityOut.Children[i].Children[j].ID);
+                    Assert.Equal(grandParentEntityIn.Children[i].Children[j].Title, grandParentEntityOut.Children[i].Children[j].Title);
+                }
+
+                // Check single child relationship
+                Assert.Equal(grandParentEntityIn.Children[i].Child.ID, grandParentEntityOut.Children[i].Child.ID);
+                Assert.Equal(grandParentEntityIn.Children[i].Child.Title, grandParentEntityOut.Children[i].Child.Title);
+
+            }
+        }
+
+        #endregion
+
+    }
 
     #region Test Repository Classes
 

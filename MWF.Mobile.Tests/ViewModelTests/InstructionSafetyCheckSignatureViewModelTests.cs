@@ -108,8 +108,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             return profiles;
         }
 
-
-
         // Checks that after initialization and selecting "done" the safety check is signed with the signature and the navigation service is called
         [Fact]
         public async Task InstructionSafetyCheckSignatureVM_InitandDone()
@@ -123,7 +121,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await vm.Init(_navData);
 
-            vm.DoneCommand.Execute(null);
+            await vm.DoneAsync();
 
             //check the sfaety data has been signed
             Assert.Equal(vm.SignatureEncodedImage, _safetyCheckService.CurrentVehicleSafetyCheckData.Signature.EncodedImage);
@@ -133,8 +131,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(x => x == _navData)), Times.Once);
 
         }
-
-
 
     }
 

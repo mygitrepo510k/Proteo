@@ -29,10 +29,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         private Mock<IGatewayService> _mockGatewayService;
         private Mock<ILogMessageRepository> _mockLogMessageRepo;
         private Mock<IDeviceInfo> _mockDeviceInfo;
-        private Mock<ICustomUserInteraction> _mockUserInteraction;
 
         #endregion Private Members
-
 
         #region Setup
 
@@ -50,8 +48,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
-
-            _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockGatewayService = _fixture.InjectNewMock<IGatewayService>();
         }
@@ -88,19 +84,20 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            _mockLogMessageRepo.Setup(mlm => mlm.GetAllAsync()).ReturnsAsync(_fixture.CreateMany<LogMessage>());
+            var logMessages = _fixture.CreateMany<LogMessage>();
+            _mockLogMessageRepo.Setup(mlm => mlm.GetAllAsync()).ReturnsAsync(logMessages);
 
             HttpResult result = new HttpResult();
             result.StatusCode = System.Net.HttpStatusCode.OK;
 
-            _mockGatewayService.Setup(mgs => mgs.PostLogMessageAsync(It.IsAny<DeviceLogMessage>())).Returns(Task.FromResult<HttpResult>(result));
+            _mockGatewayService.Setup(mgs => mgs.PostLogMessageAsync(It.IsAny<DeviceLogMessage>())).ReturnsAsync(result);
 
             var loggingService = _fixture.Create<LoggingService>();
 
             await loggingService.UploadLoggedEventsAsync();
 
-            _mockLogMessageRepo.Verify(mlm => mlm.DeleteAsync(It.IsAny<LogMessage>()), Times.Exactly(3));
-
+            _mockLogMessageRepo.Verify(mlm => mlm.DeleteAsync(It.IsAny<LogMessage>()), Times.Exactly(logMessages.Count()));
+            _mockLogMessageRepo.Verify(mlm => mlm.InsertAsync(It.Is<LogMessage>(lm => lm.LogType == Core.Enums.LogType.LogFailure)), Times.Never);
         }
 
         [Fact]
@@ -108,17 +105,22 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            _mockLogMessageRepo.Setup(mlm => mlm.GetAllAsync()).ReturnsAsync(_fixture.CreateMany<LogMessage>());
+            var logMessages = _fixture.CreateMany<LogMessage>();
+            _mockLogMessageRepo.Setup(mlm => mlm.GetAllAsync()).ReturnsAsync(logMessages);
 
             HttpResult result = new HttpResult();
 
-            _mockGatewayService.Setup(mgs => mgs.PostLogMessageAsync(It.IsAny<DeviceLogMessage>())).Returns(Task.FromResult<HttpResult>(result));
+            _mockGatewayService.Setup(mgs => mgs.PostLogMessageAsync(It.IsAny<DeviceLogMessage>())).ReturnsAsync(result);
 
             var loggingService = _fixture.Create<LoggingService>();
 
             await loggingService.UploadLoggedEventsAsync();
 
-            _mockUserInteraction.Verify(mui => mui.Alert(It.IsAny<string>(), It.IsAny<System.Action>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            var messageCount = logMessages.Count();
+            _mockLogMessageRepo.Verify(mlm => mlm.DeleteAsync(It.IsAny<LogMessage>()), Times.Exactly(messageCount));
+            _mockLogMessageRepo.Verify(mlm => mlm.InsertAsync(It.Is<LogMessage>(lm => lm.LogType == Core.Enums.LogType.LogFailure)), Times.Exactly(messageCount));
         }
+
     }
+
 }

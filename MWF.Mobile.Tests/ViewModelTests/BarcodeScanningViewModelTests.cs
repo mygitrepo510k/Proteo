@@ -201,7 +201,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             //set some other status values on the barcode
             barcodeItemViewModel.DeliveryComments = "Some comments.";
-            barcodeScanningVM.CompleteScanningCommand.Execute(null);
+            await barcodeScanningVM.CompleteScanningAsync();
 
             //check that the properties for the barcode were set correctly on the datachunk
             var dataChunk = navData.GetDataChunk();

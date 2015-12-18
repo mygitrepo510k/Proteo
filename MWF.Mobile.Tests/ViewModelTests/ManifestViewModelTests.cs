@@ -67,7 +67,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         ///  Tests that the Manifest creates successfully
         /// </summary>
         [Fact]
-        public void ManifestVM_SuccessfulCreationOfInstruction()
+        public async Task ManifestVM_SuccessfulCreationOfInstruction()
         {
             base.ClearAll();
 
@@ -81,7 +81,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataStartedList);
             _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataNotStartedList);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
+            await viewModel.Init();
 
             Assert.Equal((mobileDataStartedList.Count + mobileDataNotStartedList.Count), viewModel.InstructionsCount);
             
@@ -95,7 +96,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the refresh function on the manifest instruction list works.
         /// </summary>
         [Fact]
-        public void ManifestVM_SuccessfulInstructionRefresh()
+        public async Task ManifestVM_SuccessfulInstructionRefresh()
         {
             base.ClearAll();
 
@@ -109,9 +110,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataStartedList);
             _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataNotStartedList);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
+            await viewModel.Init();
 
-            viewModel.RefreshListCommand.Execute(null);
+            await viewModel.UpdateInstructionsListAsync();
 
             _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
             _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
@@ -121,7 +123,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the instruction count is correct and doesn't count the dummy mobile data.
         /// </summary>
         [Fact]
-        public void ManifestVM_CorrectInstructionCount()
+        public async Task ManifestVM_CorrectInstructionCount()
         {
             base.ClearAll();
 
@@ -135,7 +137,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataStartedList);
             _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataNotStartedList);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
+            await viewModel.Init();
 
             Assert.Equal((mobileDataStartedList.Count + mobileDataNotStartedList.Count), viewModel.InstructionsCount);
         }
@@ -158,7 +161,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataStartedList);
             _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataNotStartedList);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
 
             Assert.Equal(0, viewModel.InstructionsCount);
         }
@@ -167,7 +170,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// This test make sure instructions are included within the display retention
         /// </summary>
         [Fact]
-        public void ManifestVM_InstructionDisplayRetention_Include()
+        public async Task ManifestVM_InstructionDisplayRetention_Include()
         {
             base.ClearAll();
 
@@ -189,7 +192,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataStartedList);
             _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataNotStartedList);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
+            await viewModel.Init();
 
             Assert.Equal((mobileDataStartedList.Count + mobileDataNotStartedList.Count), viewModel.InstructionsCount);
         }
@@ -212,7 +216,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataStartedList);
             _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataNotStartedList);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
 
             Assert.Equal(0, viewModel.InstructionsCount);
         }
@@ -221,7 +225,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// This test make sure instructions are included within the display span
         /// </summary>
         [Fact]
-        public void ManifestVM_InstructionDisplaySpan_Include()
+        public async Task ManifestVM_InstructionDisplaySpan_Include()
         {
             base.ClearAll();
 
@@ -243,7 +247,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataStartedList);
             _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataNotStartedList);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
+            await viewModel.Init();
 
             Assert.Equal((mobileDataStartedList.Count + mobileDataNotStartedList.Count), viewModel.InstructionsCount);
         }
@@ -254,7 +259,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// on the refresh of the manifest instruction list.
         /// </summary>
         [Fact]
-        public void ManifestVM_NoInternetShowToast()
+        public async Task ManifestVM_NoInternetShowToast()
         {
             base.ClearAll();
 
@@ -263,9 +268,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var toast = new Mock<IToast>();
             _fixture.Inject<IToast>(toast.Object);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
 
-            viewModel.RefreshListCommand.Execute(null);
+            await viewModel.UpdateInstructionsListAsync();
 
             toast.Verify(t => t.Show("No internet connection!"));
 
@@ -275,7 +280,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the "No Active Instructions" Item displays when no items are in the active instruction section.
         /// </summary>
         [Fact]
-        public void ManifestVM_ShowNoInstructionItem_ActiveInstruction()
+        public async Task ManifestVM_ShowNoInstructionItem_ActiveInstruction()
         {
             base.ClearAll();
 
@@ -285,7 +290,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataStartedList);
             _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataNotStartedList);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
+            await viewModel.Init();
 
             Assert.Equal("No Active Instructions", viewModel.Sections.First().First().PointDescripion);
         }
@@ -294,7 +300,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the "No Instructions" Item displays when no items are in the instruction section.
         /// </summary>
         [Fact]
-        public void ManifestVM_ShowNoInstructionItem_NonActiveInstruction()
+        public async Task ManifestVM_ShowNoInstructionItem_NonActiveInstruction()
         {
             base.ClearAll();
 
@@ -304,24 +310,25 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(mdr => mdr.GetInProgressInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataStartedList);
             _mobileDataRepoMock.Setup(mdr => mdr.GetNotStartedInstructionsAsync(It.IsAny<Guid>())).ReturnsAsync(mobileDataNotStartedList);
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
+            await viewModel.Init();
 
             Assert.Equal("No Instructions", viewModel.Sections.ElementAt(1).First().PointDescripion);
         }
 
         [Fact]
-        public void ManifestVM_CheckInstructionNotification()
+        public async Task ManifestVM_CheckInstructionNotification()
         {
-
             base.ClearAll();
 
-            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
+            var viewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create();
+            await viewModel.Init();
 
             _mobileData.GroupTitle = "UpdateTitle";
 
-            viewModel.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await viewModel.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
-            //It is checked twice because it checks when it creates the view model and when you refresh.
+            //It is checked twice because it checks on view model Init() and when you refresh.
             _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Exactly(2));
             _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Exactly(2));
 

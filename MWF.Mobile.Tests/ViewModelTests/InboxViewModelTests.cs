@@ -59,25 +59,25 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Tests
 
         [Fact]
-        public void InstructionVM_FragmentTitle()
+        public async Task InboxVM_FragmentTitle()
         {
             base.ClearAll();
 
             var inboxVM = _fixture.Create<InboxViewModel>();
+            await inboxVM.Init();
 
             Assert.Equal("Inbox", inboxVM.FragmentTitle);
-
         }
 
         [Fact]
-        public void InstructionVM_RefreshMessages()
+        public async Task InboxVM_RefreshMessages()
         {
             base.ClearAll();
 
             List<MobileData> messages = new List<MobileData>();
             int validMessageCount = 0;
 
-            for(var i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
                 var message = _fixture.Create<MobileData>();
                 message.Order.Type = Core.Enums.InstructionType.OrderMessage;
@@ -90,8 +90,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(ms => ms.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID))).ReturnsAsync(messages);
 
             var inboxVM = _fixture.Create<InboxViewModel>();
+            await inboxVM.Init();
 
-            inboxVM.RefreshMessagesCommand.Execute(null);
+            await inboxVM.RefreshMessagesAsync();
 
             //Its twice because when the viewmodel is created then it calls refreshMessages()
             _mobileDataRepoMock.Verify(md => md.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));
@@ -103,16 +104,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InboxVM_CheckInstructionNotification()
+        public async Task InboxVM_CheckInstructionNotification()
         {
-
             base.ClearAll();
 
             var inboxVM = _fixture.Create<InboxViewModel>();
+            await inboxVM.Init();
 
-            inboxVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, new Guid());
+            await inboxVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, new Guid());
 
-            //Its twice because when the viewmodel is created then it calls refreshMessages()
+            //It's twice because the viewmodel Init calls refreshMessages()
             _mobileDataRepoMock.Verify(md => md.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));
 
             //Should only pull from the database because new instructions would of just been inserted
@@ -122,5 +123,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         #endregion Tests
+
     }
+
 }

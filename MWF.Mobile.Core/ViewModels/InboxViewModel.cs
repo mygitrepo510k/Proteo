@@ -35,10 +35,9 @@ namespace MWF.Mobile.Core.ViewModels
             _infoService = infoService;
             _navigationService = navigationService;
             _gatewayPollingService = gatewayPollingService;
-
         }
 
-        public override async void Start()
+        public async Task Init()
         {
             await this.RefreshMessagesAsync();
         }
@@ -68,7 +67,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private async Task RefreshMessagesAsync()
+        public async Task RefreshMessagesAsync()
         {
             await _gatewayPollingService.PollForInstructionsAsync();
             await this.ReloadPageAsync();

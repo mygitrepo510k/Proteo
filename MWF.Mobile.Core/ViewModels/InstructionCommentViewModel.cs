@@ -27,7 +27,6 @@ namespace MWF.Mobile.Core.ViewModels
         private NavData<MobileData> _navData;
         private IInfoService _infoService;
 
-
         #endregion
 
         #region Construction
@@ -46,7 +45,6 @@ namespace MWF.Mobile.Core.ViewModels
             _mobileData = navData.Data;
         }
 
-
         #endregion
 
         #region Public Properties
@@ -54,10 +52,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _advanceInstructionCommentCommand;
         public ICommand AdvanceInstructionCommentCommand
         {
-            get
-            {
-                return (_advanceInstructionCommentCommand = _advanceInstructionCommentCommand ?? new MvxCommand(async () => await this.AdvanceInstructionCommentAsync()));
-            }
+            get { return (_advanceInstructionCommentCommand = _advanceInstructionCommentCommand ?? new MvxCommand(async () => await this.AdvanceInstructionCommentAsync())); }
         }
 
         public string InstructionCommentButtonLabel
@@ -89,9 +84,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private Task AdvanceInstructionCommentAsync()
+        public Task AdvanceInstructionCommentAsync()
         {
             var dataChunks = _navData.GetAllDataChunks();
+
             foreach (var dataChunk in dataChunks)
             {
                 dataChunk.Comment = CommentText;
@@ -100,9 +96,9 @@ namespace MWF.Mobile.Core.ViewModels
             return _navigationService.MoveToNextAsync(_navData);
         }
 
-        private void RefreshPage(Guid ID)
+        private async Task RefreshPageAsync(Guid ID)
         {
-            _navData.ReloadInstruction(ID, _repositories);
+            await _navData.ReloadInstructionAsync(ID, _repositories);
             _mobileData = _navData.Data;
             RaiseAllPropertiesChanged();
         }
@@ -127,7 +123,8 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible) 
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
-                    RefreshPage(instructionID);
+
+                    await this.RefreshPageAsync(instructionID);
                 }
                 else
                 {

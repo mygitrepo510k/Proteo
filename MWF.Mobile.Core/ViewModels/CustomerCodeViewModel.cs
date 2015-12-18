@@ -51,28 +51,24 @@ namespace MWF.Mobile.Core.ViewModels
             _configRepository = repositories.ConfigRepository;
         }
 
-        public void Init()
+        public async Task Init()
         {
-
-        }
-
-        public override async void Start()
-        {
-            base.Start();
 #if DEBUG
             await this.ClearAllDataAsync();
 
-            //Firmin
-            //_userInteraction.Confirm("DEBUGGING: use the Firmin customer code?", (bool ok) => { if (ok) this.CustomerCode = "A2A67DE7-DC95-49D9-BF53-34829CF865C9"; });
-            //Demo.ProteoMobile Customer Code
-            //_userInteraction.Confirm("DEBUGGING: use the MWF Dev customer code?", (bool ok) => { if (ok) this.CustomerCode = "C697166B-2E1B-45B0-8F77-270C4EADC031"; });
-            //Demo.ProteoEnterprise Customer Code
-            //_userInteraction.Confirm("DEBUGGING: use the Proteo Demo customer code?", (bool ok) => { if (ok) this.CustomerCode = "DB78C027-CA85-4DF3-A25A-760562C4EEB5"; });
-            //Fagan & Whalley
-            _userInteraction.Confirm("DEBUGGING: use the Fagan & Whalley customer code?", (bool ok) => { if (ok) this.CustomerCode = "B448BEF1-9320-4AAB-A529-06605A288A96"; });
-            //Bomfords
-            //_userInteraction.Confirm("DEBUGGING: use the Bomfords customer code?", (bool ok) => { if (ok) this.CustomerCode = "0DA9F71D-3A0F-4351-BCE1-A49D2D9AECC1"; });
+            var debugCustomerCodes = new Dictionary<string, string>
+            {
+                { "Firmin", "A2A67DE7-DC95-49D9-BF53-34829CF865C9" },
+                { "MWF Dev", "C697166B-2E1B-45B0-8F77-270C4EADC031" },
+                { "Proteo Demo", "DB78C027-CA85-4DF3-A25A-760562C4EEB5" },
+                { "Fagan & Whalley", "B448BEF1-9320-4AAB-A529-06605A288A96" },
+                { "Bomfords", "0DA9F71D-3A0F-4351-BCE1-A49D2D9AECC1" },
+            };
 
+            var debugSuggestedCustomer = "Fagan & Whalley";
+
+            if (await _userInteraction.ConfirmAsync(string.Format("DEBUGGING: use the {0} customer code?", debugSuggestedCustomer)))
+                this.CustomerCode = debugCustomerCodes[debugSuggestedCustomer];
 #endif
         }
 
@@ -122,7 +118,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                _enterCodeCommand = _enterCodeCommand ?? new MvxCommand(async () => await EnterCodeAsync());
+                _enterCodeCommand = _enterCodeCommand ?? new MvxCommand(async () => await this.EnterCodeAsync());
                 return _enterCodeCommand;
             }
         }
@@ -130,7 +126,7 @@ namespace MWF.Mobile.Core.ViewModels
         private string _errorMessage;
         private string _unexpectedErrorMessage = "Unfortunately, there was a problem setting up your device, try restarting the device and try again.";
 
-        private async Task EnterCodeAsync()
+        public async Task EnterCodeAsync()
         {
             if (string.IsNullOrWhiteSpace(this.CustomerCode))
             {

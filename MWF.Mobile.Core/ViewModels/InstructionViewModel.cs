@@ -172,26 +172,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ICommand ProgressInstructionCommand
         {
-            get
-            {
-                return (_progressInstructionCommand = _progressInstructionCommand ?? new MvxCommand(async () => await ProgressInstructionAsync()));
-            }
+            get { return (_progressInstructionCommand = _progressInstructionCommand ?? new MvxCommand(async () => await ProgressInstructionAsync())); }
         }
 
         public ICommand ShowOrderCommand
         {
-            get
-            {
-                return (_showOrderCommand = _showOrderCommand ?? new MvxCommand<Item>(v => ShowOrder(v)));
-            }
+            get { return (_showOrderCommand = _showOrderCommand ?? new MvxCommand<Item>(v => ShowOrder(v))); }
         }
 
         public ICommand EditTrailerCommand
         {
-            get
-            {
-                return (_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(async () => await EditTrailerAsync()));
-            }
+            get { return (_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(async () => await EditTrailerAsync())); }
         }
 
         #endregion Public Properties
@@ -204,7 +195,7 @@ namespace MWF.Mobile.Core.ViewModels
             return _navigationService.MoveToNextAsync(_navData);
         }
 
-        private async Task ProgressInstructionAsync()
+        public async Task ProgressInstructionAsync()
         {
             await UpdateProgressAsync();
 

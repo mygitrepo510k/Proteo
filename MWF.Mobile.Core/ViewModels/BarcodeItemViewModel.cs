@@ -34,6 +34,7 @@ namespace MWF.Mobile.Core.ViewModels
             _barcodeScanningViewModel = barcodeScanningViewModel;
 
             this.DamageStatuses = damageStatuses;
+
             if (damageStatuses != null)
                 this.DamageStatus = damageStatuses[0];
         }
@@ -72,24 +73,13 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        public string OrderID
-        {
-            get;
-            set;
-        }
+        public string OrderID { get; set; }
 
-        public Guid MobileDataID
-        {
-            get;
-            set;
-        }
+        public Guid MobileDataID { get; set; }
 
         public string DamageIndicatorText
         {
-            get
-            {
-                return (DamageStatus.Code == "POD") ? string.Empty : DamageStatus.Text.Substring(0, 1); ;
-            }
+            get { return (DamageStatus.Code == "POD") ? string.Empty : DamageStatus.Text.Substring(0, 1); }
         }
 
         public List<DamageStatus> DamageStatuses
@@ -140,25 +130,21 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                if (!IsDelivered.HasValue) return DamageStatus.Code;
+                if (!IsDelivered.HasValue)
+                    return DamageStatus.Code;
+
                 return (IsDelivered.Value) ? DamageStatus.Code : NOT_DELIVERED_CODE;
             }
         }
 
         public bool ValidComments
         {
-            get
-            {
-                return ((this.IsDelivered.Value && this.DamageStatus.Code == "POD") || !string.IsNullOrEmpty(this.DeliveryComments));
-            }
+            get { return ((this.IsDelivered.Value && this.DamageStatus.Code == "POD") || !string.IsNullOrEmpty(this.DeliveryComments)); }
         }
 
         public virtual bool IsDummy
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         private bool _isSelected ;
@@ -175,7 +161,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _selectBarcodeCommand;
         public ICommand SelectBarcodeCommand
         {
-            get { return (_selectBarcodeCommand = _selectBarcodeCommand ?? new MvxCommand(async () => await SelectBarcodeAsync())); }
+            get { return (_selectBarcodeCommand = _selectBarcodeCommand ?? new MvxCommand(async () => await this.SelectBarcodeAsync())); }
         }
 
         public override string FragmentTitle
@@ -204,7 +190,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region private methods
 
-        private async Task SelectBarcodeAsync()
+        public async Task SelectBarcodeAsync()
         {
             if (this.IsDummy)
                 return; 

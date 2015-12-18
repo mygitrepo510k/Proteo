@@ -164,13 +164,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.Equal("Checked: ", displaySafetyCheckVM.TrailerSafetyCheckStatus);
         }
 
-
         [Fact]
         public async Task DisplaySafetyCheckVM_CreationOfSafetyCheckFaultItemViewModels()
         {
             base.ClearAll();
 
-            var displaySafetyCheckVM = _fixture.Create<DisplaySafetyCheckViewModel>();
+            var displaySafetyCheckVM = _fixture.Build<DisplaySafetyCheckViewModel>().Without(dscvm => dscvm.SafetyCheckFaultItemViewModels).Create();
 
             int faultsCount = _latestSafetyCheck.TrailerSafetyCheck.Faults.Count() + _latestSafetyCheck.VehicleSafetyCheck.Faults.Count();
             await displaySafetyCheckVM.Init();

@@ -10,6 +10,10 @@ using SQLite.Net.Async;
 namespace MWF.Mobile.Core.Database
 {
 
+    /// <summary>
+    /// Wrapper class around SQLiteAsyncConnection, allowing implementation of an interface to make it testable.
+    /// </summary>
+    /// <remarks>Other methods of SQLiteAsyncConnection may need to be added to this class and the IAsyncConnection interface - only the ones currently used have been added so far.</remarks>
     public class AsyncConnection : SQLiteAsyncConnection, IAsyncConnection
     {
 

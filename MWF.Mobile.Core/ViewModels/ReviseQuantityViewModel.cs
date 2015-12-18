@@ -84,17 +84,14 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _reviseQuantityCommand;
         public ICommand ReviseQuantityCommand
         {
-            get
-            {
-                return (_reviseQuantityCommand = _reviseQuantityCommand ?? new MvxCommand(async () => await this.ReviseQuantityAsync()));
-            }
+            get { return (_reviseQuantityCommand = _reviseQuantityCommand ?? new MvxCommand(async () => await this.ReviseQuantityAsync())); }
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private async Task ReviseQuantityAsync()
+        public async Task ReviseQuantityAsync()
         {
             foreach (var order in _mobileData.Order.Items)
             {

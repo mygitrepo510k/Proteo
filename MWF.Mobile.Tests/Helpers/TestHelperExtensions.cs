@@ -97,7 +97,7 @@ namespace MWF.Mobile.Tests.Helpers
         public static Mock<ICustomUserInteraction> ConfirmAsyncReturnsTrueIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
         {
             userInteractionMock.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
-                    .Returns(Task.FromResult(true));
+                    .ReturnsAsync(true);
 
             return userInteractionMock;
         }
@@ -106,7 +106,7 @@ namespace MWF.Mobile.Tests.Helpers
         public static Mock<ICustomUserInteraction> ConfirmAsyncReturnsFalseIfTitleStartsWith(this Mock<ICustomUserInteraction> userInteractionMock, string messageStartsWith)
         {
             userInteractionMock.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.Is<String>(s => s.StartsWith(messageStartsWith)), It.IsAny<String>(), It.IsAny<String>()))
-                    .Returns(Task.FromResult(false));
+                    .ReturnsAsync(false);
 
             return userInteractionMock;
         }

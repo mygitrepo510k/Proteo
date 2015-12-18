@@ -109,17 +109,14 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _instructionDoneCommand;
         public ICommand InstructionDoneCommand
         {
-            get
-            {
-                return (_instructionDoneCommand = _instructionDoneCommand ?? new MvxCommand(async () => await this.InstructionDoneAsync()));
-            }
+            get { return (_instructionDoneCommand = _instructionDoneCommand ?? new MvxCommand(async () => await this.InstructionDoneAsync())); }
         }
 
         #endregion
 
         #region Private Methods
 
-        private async Task InstructionDoneAsync()
+        public async Task InstructionDoneAsync()
         {
             var deliveryOptions = _navData.GetWorseCaseDeliveryOptions();
 
@@ -154,9 +151,9 @@ namespace MWF.Mobile.Core.ViewModels
             await _navigationService.MoveToNextAsync(_navData);
         }
 
-        private void RefreshPage(Guid ID)
+        private async Task RefreshPageAsync(Guid ID)
         {
-            _navData.ReloadInstruction(ID, _repositories);
+            await _navData.ReloadInstructionAsync(ID, _repositories);
             _mobileData = _navData.Data;
             RaiseAllPropertiesChanged();
         }
@@ -181,7 +178,8 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible) 
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
-                    RefreshPage(instructionID);
+
+                    await this.RefreshPageAsync(instructionID);
                 }
                 else
                 {

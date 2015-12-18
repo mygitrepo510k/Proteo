@@ -48,19 +48,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that on successful authentication the VehicleListViewModel is navigated to
         /// </summary>
         [Fact]
-        public void PasscodeVM_SuccessfulAuthenticationRedirectsToVehicleListView()
+        public async Task PasscodeVM_SuccessfulAuthenticationRedirectsToVehicleListView()
         {
             base.ClearAll();
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNextAsync());
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync()).Returns(Task.FromResult(0));
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var vm = _fixture.Create<PasscodeViewModel>();
             vm.Passcode = "9999";
 
-            vm.LoginCommand.Execute(null);
-
+            await vm.LoginAsync();
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
@@ -71,7 +70,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that when the SendDiagnostics command is used the navigation service is called
         /// </summary>
         [Fact]
-        public void PasscodeVM_SendDiagnosticsCommand()
+        public async Task PasscodeVM_SendDiagnosticsCommand()
         {
             base.ClearAll();
 
@@ -81,7 +80,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<PasscodeViewModel>();
 
-            vm.SendDiagnosticsCommand.Execute(null);
+            await vm.SendDiagnosticsAsync();
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(It.Is<NavData>(nd=> nd.OtherData["Diagnostics"] != null)), Times.Once);
@@ -92,7 +91,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that on successful authentication a driver 
         /// </summary>
         [Fact]
-        public void PasscodeVM_SuccessfulAuthenticationStoresDriver()
+        public async Task PasscodeVM_SuccessfulAuthenticationStoresDriver()
         {
             base.ClearAll();
 
@@ -115,7 +114,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var vm = _fixture.Create<PasscodeViewModel>();
             vm.Passcode = testDriver.Passcode;
 
-            vm.LoginCommand.Execute(null);
+            await vm.LoginAsync();
 
             Assert.NotNull(startUpService.LoggedInDriver);
             Assert.Equal(testDriver.LastName, startUpService.LoggedInDriver.LastName);
@@ -125,7 +124,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that on successful authentication a current driver 
         /// </summary>
         [Fact]
-        public void PasscodeVM_SuccessfulAuthenticationStoresCurrentDriver()
+        public async Task PasscodeVM_SuccessfulAuthenticationStoresCurrentDriver()
         {
             base.ClearAll();
 
@@ -137,39 +136,36 @@ namespace MWF.Mobile.Tests.ViewModelTests
       
             vm.Passcode = "9999";
 
-            vm.LoginCommand.Execute(null);
+            await vm.LoginAsync();
 
             currentDriverRepository.Verify(cdr => cdr.InsertAsync(It.Is<CurrentDriver>( cd => cd.ID == _driver.ID )), Times.Once);
 
         }
 
-
         [Fact]
-        public void PasscodeVM_BlankPasscodeDoesntRedirectToVehicleView()
+        public async Task PasscodeVM_BlankPasscodeDoesntRedirectToVehicleView()
         {
             base.ClearAll();
 
             var vm = _fixture.Create<PasscodeViewModel>();
             vm.Passcode = "";
 
-            vm.LoginCommand.Execute(null);
+            await vm.LoginAsync();
 
             var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;
             Assert.Equal(0, mockDispatcher.Requests.Count);
         }
 
-
         [Fact]
-        public void PasscodeVM_IncorrectPassword()
+        public async Task PasscodeVM_IncorrectPassword()
         {
             base.ClearAll();
 
             // Set incorrect password
             var vm = _fixture.Create<PasscodeViewModel>();
             vm.Passcode = "1212";
-        
 
-            vm.LoginCommand.Execute(null);
+            await vm.LoginAsync();
 
             // Check we didn't redirect anywhere
             var mockDispatcher = Ioc.Resolve<IMvxMainThreadDispatcher>() as MockDispatcher;

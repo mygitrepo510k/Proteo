@@ -41,8 +41,6 @@ namespace MWF.Mobile.Core.ViewModels
             // we only want to effect the changes if the user presses "done"
             _originalBarcodeItemViewModel = navData.Data;
             _barcodeItemViewModel = _originalBarcodeItemViewModel.Clone();
-
-
         }
 
         #endregion
@@ -151,7 +149,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public System.Windows.Input.ICommand DoneCommand
         {
-            get { return (_doneCommand = _doneCommand ?? new MvxCommand( () => DoDoneCommand())); }
+            get { return (_doneCommand = _doneCommand ?? new MvxCommand(() => this.DoDoneCommand())); }
         }
 
         public bool UserChangesDetected

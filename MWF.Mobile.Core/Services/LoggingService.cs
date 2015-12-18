@@ -92,7 +92,6 @@ namespace MWF.Mobile.Core.Services
 
         public async Task UploadLoggedEventsAsync()
         {
-
             if (_isSubmitting)
                 return;
 
@@ -127,11 +126,7 @@ namespace MWF.Mobile.Core.Services
 						try
                         {
                             var response = await _gatewayService.PostLogMessageAsync(deviceMessage);
-
-                            if (!response.Succeeded)
-                            {
-                                await this.HandleLoggingFailureAsync(e, events.ToList());
-                            }
+                            isException = !response.Succeeded;
                         }
                         catch
                         {
@@ -142,7 +137,6 @@ namespace MWF.Mobile.Core.Services
 							await this.HandleLoggingFailureAsync(e, events.ToList());
 
                         await _loggedRepository.DeleteAsync(e);
-                       
                     }
                 }
             }

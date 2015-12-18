@@ -32,7 +32,6 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
 
         public static MobileApplicationDataChunkContentActivity GetAdditionalDataChunk(this NavData navData, MobileData mobileData)
         {
-
             object obj = null;
             Dictionary<Guid, MobileApplicationDataChunkContentActivity> dataChunks;
             
@@ -55,13 +54,10 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
             }
 
             return dataChunk;
-
         }
-
 
         public static IEnumerable<MobileApplicationDataChunkContentActivity> GetAllDataChunks(this NavData<MobileData> navData)
         {
-
             List<MobileApplicationDataChunkContentActivity> dataChunks = new List<MobileApplicationDataChunkContentActivity>();
 
             dataChunks.Add(navData.GetDataChunk());
@@ -74,10 +70,9 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
             }
 
             return dataChunks;
-
         }
 
-        public async static void ReloadInstruction(this NavData<MobileData> navData, Guid ID, IRepositories repositories)
+        public static async Task ReloadInstructionAsync(this NavData<MobileData> navData, Guid ID, IRepositories repositories)
         {
             var mobileData = await repositories.MobileDataRepository.GetByIDAsync(ID);
 
@@ -97,13 +92,10 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
                     additionalInstructions.Add(mobileData);
                 }
             }
-
         }
-
 
         public static MobileData GetMobileData(this NavData navData)
         {
-
             if (navData is NavData<MobileData>)
                 return (navData as NavData<MobileData>).Data;
 

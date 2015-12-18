@@ -33,7 +33,8 @@ namespace MWF.Mobile.Tests.RepositoryTests
             _asyncConnectionMock = new Mock<Core.Database.IAsyncConnection>();
             _connectionMock = new Mock<Core.Database.IConnection>();
             _asyncConnectionMock.Setup(c => c.RunInTransactionAsync(It.IsAny<Action<Core.Database.IConnection>>(), It.IsAny<CancellationToken>()))
-                .Callback((Action<Core.Database.IConnection> a, CancellationToken ct) => a.Invoke(_connectionMock.Object));
+                .Callback<Action<Core.Database.IConnection>, CancellationToken>((a, ct) => a.Invoke(_connectionMock.Object))
+                .Returns(Task.FromResult(0));
 
             var dataServiceMock = Mock.Of<IDataService>(ds => ds.GetAsyncDBConnection() == _asyncConnectionMock.Object);
             _fixture.Register<IDataService>(() => dataServiceMock);

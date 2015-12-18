@@ -303,7 +303,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             safetyCheckFaultVM.Init(navItem);
 
-            _mockUserInteraction.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>())).Returns(Task.FromResult<bool>(false));
+            _mockUserInteraction.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>())).ReturnsAsync(false);
 
             await safetyCheckFaultVM.OnBackButtonPressedAsync();
 
@@ -337,7 +337,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         // Checks that when the delete command is executed on a fault image the image is deleted from the view model (initially) and the data
         // model (when done has been pressed)
         [Fact]
-        public void SafetyCheckFaultImageVM_Delete_OK()
+        public async Task SafetyCheckFaultImageVM_Delete_OK()
         {
             base.ClearAll();
 
@@ -354,7 +354,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Delete Picture");
 
             //delete the last image
-            safetyCheckFaultVM.Images[previousImageCount - 1].DeleteCommand.Execute(null);
+            await safetyCheckFaultVM.Images[previousImageCount - 1].DeleteAsync();
 
             // should have one less image in view model 
             Assert.Equal(previousImageCount - 1, safetyCheckFaultVM.Images.Count);
@@ -368,14 +368,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             // Data model should now have one image less
             Assert.Equal(previousImageCount - 1, _vehicleSafetyCheckFault.Images.Count);
 
-
         }
 
         [Fact]
         // Checks that when the user cancels out of an image deletion nothing is actually deleted
-        public void SafetyCheckFaultImageVM_Delete_Cancel()
+        public async Task SafetyCheckFaultImageVM_Delete_Cancel()
         {
-
             base.ClearAll();
 
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
@@ -391,21 +389,18 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.ConfirmReturnsFalse();
 
             // attempt to delete the last image
-            safetyCheckFaultVM.Images[previousImageCount - 1].DeleteCommand.Execute(null);
+            await safetyCheckFaultVM.Images[previousImageCount - 1].DeleteAsync();
 
             // nothing should have been deleted since we cancelled out of the deletion
             Assert.Equal(previousImageCount, safetyCheckFaultVM.Images.Count);
             Assert.Equal(previousImageCount, _vehicleSafetyCheckFault.Images.Count);
 
-
         }
-
 
         [Fact]
         // Checks that when the Display command is executed on an image the image is displayed in a popup image
         public void SafetyCheckFaultImageVM_DisplayImage()
         {
-
             base.ClearAll();
 
             var customUI = new Mock<ICustomUserInteraction>();

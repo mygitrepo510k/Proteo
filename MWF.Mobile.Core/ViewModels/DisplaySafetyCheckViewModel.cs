@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -39,8 +40,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task Init()
         {
-            base.Start();
-
             _latestSafetyCheckData = await _repositories.LatestSafetyCheckRepository.GetForDriverAsync(_infoService.LoggedInDriver.ID);
 
             //If there is no safety check data to view, then sends them back to where they came.
@@ -107,8 +106,8 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _infoService.LoggedInDriver.DisplayName; }
         }
 
-        private List<DisplaySafetyCheckFaultItemViewModel> _safetyCheckFaultItemViewModels = new List<DisplaySafetyCheckFaultItemViewModel>();
-        public List<DisplaySafetyCheckFaultItemViewModel> SafetyCheckFaultItemViewModels
+        private ObservableCollection<DisplaySafetyCheckFaultItemViewModel> _safetyCheckFaultItemViewModels = new ObservableCollection<DisplaySafetyCheckFaultItemViewModel>();
+        public ObservableCollection<DisplaySafetyCheckFaultItemViewModel> SafetyCheckFaultItemViewModels
         {
             get { return _safetyCheckFaultItemViewModels; }
             set { _safetyCheckFaultItemViewModels = value; RaisePropertyChanged(() => SafetyCheckFaultItemViewModels); }
@@ -133,13 +132,16 @@ namespace MWF.Mobile.Core.ViewModels
         private void GenerateSafetyCheckFaultItems(List<SafetyCheckFault> faults, bool isTrailer)
         {
             // Add the safety check item view models
-            this.SafetyCheckFaultItemViewModels.AddRange(faults.Select(scf => new DisplaySafetyCheckFaultItemViewModel()
+            foreach (var fault in faults)
             {
-                FaultCheckTitle = scf.Title,
-                FaultCheckComment = (string.IsNullOrWhiteSpace(scf.Comment) ? "" : " - " + scf.Comment),
-                FaultStatus = GetFaultStatusKey(scf.Status),
-                FaultType = (isTrailer ? "TRL" : "VEH"),
-            }));
+                this.SafetyCheckFaultItemViewModels.Add(new DisplaySafetyCheckFaultItemViewModel
+                {
+                    FaultCheckTitle = fault.Title,
+                    FaultCheckComment = (string.IsNullOrWhiteSpace(fault.Comment) ? "" : " - " + fault.Comment),
+                    FaultStatus = GetFaultStatusKey(fault.Status),
+                    FaultType = (isTrailer ? "TRL" : "VEH"),
+                });
+            }
 
             RaisePropertyChanged(() => SafetyCheckFaultItemViewModels);
         }

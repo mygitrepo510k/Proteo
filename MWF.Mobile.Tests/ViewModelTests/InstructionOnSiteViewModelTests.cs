@@ -43,7 +43,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            var mockConfigRepo = _fixture.InjectNewMock<IConfigRepository>();
+            mockConfigRepo.Setup(cr => cr.GetAsync()).ReturnsUsingFixture(_fixture);
+
+            _fixture.Inject(Mock.Of<IRepositories>(r => r.ConfigRepository == mockConfigRepo.Object && r.MobileDataRepository == _mockMobileDataRepo.Object));
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
@@ -56,7 +59,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
-
         }
 
         #endregion Setup
@@ -64,7 +66,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Test
 
         [Fact]
-        public void InstructionOnSiteVM_FragmentTitle_Collect()
+        public async Task InstructionOnSiteVM_FragmentTitle_Collect()
         {
             base.ClearAll();
 
@@ -72,13 +74,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
-            instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Collect On Site", instructionOnSiteVM.FragmentTitle);
         }
 
         [Fact]
-        public void InstructionOnSiteVM_FragmentTitle_Deliver()
+        public async Task InstructionOnSiteVM_FragmentTitle_Deliver()
         {
             base.ClearAll();
 
@@ -86,13 +88,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
-            instructionOnSiteVM.Init(new NavData<MobileData>() { Data = mobileData });
+            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = mobileData });
 
             Assert.Equal("Deliver On Site", instructionOnSiteVM.FragmentTitle);
         }
 
         [Fact]
-        public void InstructionOnSiteVM_NavButton_Collect_Complete()
+        public async Task InstructionOnSiteVM_NavButton_Collect_Complete()
         {
             base.ClearAll();
 
@@ -100,13 +102,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
-            instructionOnSiteVM.Init(new NavData<MobileData>() { Data = mobileData });
+            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = mobileData });
 
             Assert.Equal("Complete", instructionOnSiteVM.InstructionCommentButtonLabel);
         }
 
         [Fact]
-        public void InstructionOnSiteVM_NavButton_Deliver_Complete()
+        public async Task InstructionOnSiteVM_NavButton_Deliver_Complete()
         {
             base.ClearAll();
 
@@ -114,13 +116,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
-            instructionOnSiteVM.Init(new NavData<MobileData>() { Data = mobileData });
+            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = mobileData });
 
             Assert.Equal("Complete", instructionOnSiteVM.InstructionCommentButtonLabel);
         }
 
         [Fact]
-        public void InstructionOnSiteVM_NavButton_Collect_Continue()
+        public async Task InstructionOnSiteVM_NavButton_Collect_Continue()
         {
             base.ClearAll();
 
@@ -128,13 +130,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
-            instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Continue", instructionOnSiteVM.InstructionCommentButtonLabel);
         }
 
         [Fact]
-        public void InstructionOnSiteVM_NavButton_Deliver_Continue()
+        public async Task InstructionOnSiteVM_NavButton_Deliver_Continue()
         {
             base.ClearAll();
 
@@ -142,7 +144,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
 
-            instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             Assert.Equal("Continue", instructionOnSiteVM.InstructionCommentButtonLabel);
         }
@@ -155,38 +157,34 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
             instructionOnSiteVM.IsVisible = true;
 
-            instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             await instructionOnSiteVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _navigationService.Verify(ns => ns.GoToManifestAsync(), Times.Once);
-
         }
-
 
         [Fact]
         public async Task InstructionOnSiteVM_CheckInstructionNotification_Update_Confirm()
         {
-
             base.ClearAll();
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
             instructionOnSiteVM.IsVisible = true;
 
-            instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
             await instructionOnSiteVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockMobileDataRepo.Verify(mdr => mdr.GetByIDAsync(It.Is<Guid>(gui => gui.ToString() == _mobileData.ID.ToString())), Times.Exactly(1));
-
         }
-
 
         #endregion Test
 
     }
+
 }

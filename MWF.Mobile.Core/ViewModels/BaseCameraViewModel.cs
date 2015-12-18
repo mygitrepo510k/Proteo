@@ -74,10 +74,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string CommentHintText
         {
-            get
-            {
-                return (HasPhotoBeenTaken) ? "Type Comment" : "Take a photo to enter a comment";
-            }
+            get { return (HasPhotoBeenTaken) ? "Type Comment" : "Take a photo to enter a comment"; }
         }
 
         public string InstructionsText
@@ -109,25 +106,19 @@ namespace MWF.Mobile.Core.ViewModels
         public ObservableCollection<CameraImageViewModel> ImagesVM
         {
             get { return _imagesVM; }
-            private set
-            {
-                _imagesVM = value; RaisePropertyChanged(() => ImagesVM);
-            }
+            private set { _imagesVM = value; RaisePropertyChanged(() => ImagesVM); }
         }
 
         public bool HasPhotoBeenTaken
         {
-            get
-            {
-                return (ImagesVM.Count > 0) ? true : false;
-            }
+            get { return ImagesVM.Any(); }
         }
 
         #endregion Public Properties
 
         #region Private Methods
 
-        protected abstract Task DoDoneCommandAsync();
+        public abstract Task DoDoneCommandAsync();
 
         private void TakePicture()
         {

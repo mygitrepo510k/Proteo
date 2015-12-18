@@ -137,20 +137,22 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         [Fact]
         // Tests that when a processed barcode item is selected it shows the barcode status modal
-        public void BarcodeItemVM_Select_SingleSelect_Processed()
+        public async Task BarcodeItemVM_Select_SingleSelect_Processed()
         {
             base.ClearAll();
+
+            await _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
 
             var barcodeItemVM = new BarcodeItemViewModel(_mockNavigationService.Object, _damageStatuses, _barcodeScanningViewModel);
 
             barcodeItemVM.IsDelivered = true;
 
-            barcodeItemVM.SelectBarcodeCommand.Execute(null);
+            await barcodeItemVM.SelectBarcodeAsync();
 
-            _mockNavigationService.Verify(ns => ns.ShowModalViewModel<BarcodeStatusViewModel, bool>(It.Is<BarcodeItemViewModel>(x => x == barcodeItemVM),
-                                                                                                     It.Is<NavData<BarcodeItemViewModel>>(x => x.Data == barcodeItemVM),
-                                                                                                     It.IsAny<Action<bool>>()));
-         
+            _mockNavigationService.Verify(ns => ns.ShowModalViewModel<BarcodeStatusViewModel, bool>(
+                It.Is<BarcodeItemViewModel>(x => x == barcodeItemVM),
+                It.Is<NavData<BarcodeItemViewModel>>(x => x.Data == barcodeItemVM),
+                It.IsAny<Action<bool>>()));
         }
 
         [Fact]
@@ -170,14 +172,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _barcodeScanningViewModel.MarkBarcodeAsProcessed(selectedBarcodeItem);
             selectedBarcodeItem.IsSelected = true;
 
-            barcodeItemVM.SelectBarcodeCommand.Execute(null);
+            await barcodeItemVM.SelectBarcodeAsync();
 
             // Check the selected barcode was passed into the modal as the part of the nav data
             _mockNavigationService.Verify(ns => ns.ShowModalViewModel<BarcodeStatusViewModel, bool>(
                 It.Is<BarcodeItemViewModel>(x => x == barcodeItemVM),
                 It.Is<NavData<BarcodeItemViewModel>>(x => x.Data == barcodeItemVM && (x.OtherData["SelectedBarcodes"] as List<BarcodeItemViewModel>)[0] == selectedBarcodeItem),
                 It.IsAny<Action<bool>>()));
-
         }
 
         [Fact]
@@ -192,11 +193,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Mark Barcode as");
 
-            barcodeItemVM.SelectBarcodeCommand.Execute(null);
+            await barcodeItemVM.SelectBarcodeAsync();
 
             Assert.Equal(barcodeItemVM, _barcodeScanningViewModel.MarkAsProcessedBarcodeItem);
             Assert.False(_barcodeScanningViewModel.MarkAsProcessedWasScanned);
-
         }
 
         #endregion Test

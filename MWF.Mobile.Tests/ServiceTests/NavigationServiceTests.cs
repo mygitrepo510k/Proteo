@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cirrious.MvvmCross.Platform;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
+using Cirrious.MvvmCross.ViewModels;
 using Cirrious.MvvmCross.Views;
 using Moq;
 using MWF.Mobile.Core.Enums;
@@ -41,12 +42,13 @@ namespace MWF.Mobile.Tests.ServiceTests
         private Mock<IApplicationProfileRepository> _mockApplicationProfile;
         private Mock<IDataChunkService> _mockDataChunkService;
         private Mock<ISafetyProfileRepository> _mockSafetyProfileRepository;
+        private Mock<IConfigRepository> _mockConfigRepo;
 
         protected override void AdditionalSetup()
         {
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
-            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Complete Instruction");
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Complete Instruction");
             _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.Is<string>(s => s == "Change Trailer?"), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<ICustomUserInteraction, bool>(true);
             _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.Is<string>(s => s == "Do you want to enter a comment for this instruction?"), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<ICustomUserInteraction, bool>(true);
 
@@ -72,12 +74,40 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockSafetyProfileRepository = _fixture.InjectNewMock<ISafetyProfileRepository>();
 
+            _mockConfigRepo = _fixture.InjectNewMock<IConfigRepository>();
+            _mockConfigRepo.Setup(mcr => mcr.GetAsync()).ReturnsUsingFixture(_fixture);
+
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
+            _mockDataChunkService
+                .Setup(dcs => dcs.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.IsAny<bool>(), It.IsAny<bool>()))
+                .Returns(Task.FromResult(0));
 
             var test = Ioc.Resolve<IMvxMessenger>();
 
+        }
+
+        private void InjectCustomPresenter<TActivityViewModel, TFragmentViewModel>()
+            where TActivityViewModel : BaseActivityViewModel
+            where TFragmentViewModel : BaseFragmentViewModel
+        {
+            this.InjectCustomPresenter(_fixture.Create<TActivityViewModel>(), _fixture.Create<TFragmentViewModel>());
+        }
+
+        private void InjectCustomPresenter<TActivityViewModel, TFragmentViewModel>(TFragmentViewModel fragmentViewModel)
+            where TActivityViewModel : BaseActivityViewModel
+            where TFragmentViewModel : BaseFragmentViewModel
+        {
+            this.InjectCustomPresenter(_fixture.Create<TActivityViewModel>(), fragmentViewModel);
+        }
+
+        private void InjectCustomPresenter<TActivityViewModel, TFragmentViewModel>(TActivityViewModel activityViewModel, TFragmentViewModel fragmentViewModel)
+            where TActivityViewModel : BaseActivityViewModel
+            where TFragmentViewModel : BaseFragmentViewModel
+        {
+            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => cp.CurrentActivityViewModel == activityViewModel && cp.CurrentFragmentViewModel == fragmentViewModel);
+            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
         }
 
         #endregion
@@ -291,10 +321,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => cp.CurrentActivityViewModel == _fixture.Create<ActivityViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<FragmentViewModel1>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<ActivityViewModel, FragmentViewModel1>();
             var service = _fixture.Create<NavigationService>();
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
@@ -315,9 +342,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => cp.CurrentActivityViewModel == _fixture.Create<ActivityViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<FragmentViewModel1>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<ActivityViewModel, FragmentViewModel1>();
 
             var service = _fixture.Create<NavigationService>();
             Ioc.RegisterSingleton<INavigationService>(service);
@@ -359,9 +384,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => cp.CurrentActivityViewModel == _fixture.Create<ActivityViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<FragmentViewModel1>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<ActivityViewModel, FragmentViewModel1>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -375,10 +398,8 @@ namespace MWF.Mobile.Tests.ServiceTests
         public async Task NavigationService_GoBack()
         {
             base.ClearAll();
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => 
-                                                                cp.CurrentActivityViewModel == _fixture.Create<ActivityViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<FragmentViewModel2>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+
+            this.InjectCustomPresenter<ActivityViewModel, FragmentViewModel2>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -402,9 +423,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => cp.CurrentActivityViewModel == _fixture.Create<ActivityViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<FragmentViewModel1>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<ActivityViewModel, FragmentViewModel1>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -425,10 +444,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as a StartUpViewModel, current fragment model a customer model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<CustomerCodeViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<StartupViewModel, CustomerCodeViewModel>();
  
             var service = _fixture.Create<NavigationService>();
 
@@ -448,11 +464,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as a StartUpViewModel,  current fragment model a passcode model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<PasscodeViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<StartupViewModel, PasscodeViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -472,11 +484,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as a StartUpViewModel,  current fragment model a passcode model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<PasscodeViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<StartupViewModel, PasscodeViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -498,11 +506,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as a StartUpViewModel,  current fragment model a diagnostics model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<DiagnosticsViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<StartupViewModel, DiagnosticsViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -523,10 +527,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as StartUpViewModel, current fragment model as a vehicle list view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<VehicleListViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<StartupViewModel, VehicleListViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -546,10 +547,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as StartUpViewModel, current fragment model as a vehicle list view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<TrailerListViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<StartupViewModel, TrailerListViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -569,13 +567,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             //omit properties causing circular dependencies
-            var safetyCheckViewModel = _fixture.Build<SafetyCheckViewModel>().Without(s=>s.SafetyCheckItemViewModels).Create<SafetyCheckViewModel>();
+            var safetyCheckViewModel = _fixture.Build<SafetyCheckViewModel>().Without(s => s.SafetyCheckItemViewModels).Create();
 
             // presenter will report the current activity view model as StartUpViewModel, current fragment model as a safety check view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == safetyCheckViewModel);
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<StartupViewModel, SafetyCheckViewModel>(safetyCheckViewModel);
 
             SetUpOdometerRequired(true);
 
@@ -600,10 +595,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var safetyCheckViewModel = _fixture.Build<SafetyCheckViewModel>().Without(s => s.SafetyCheckItemViewModels).Create<SafetyCheckViewModel>();
 
             // presenter will report the current activity view model as StartUpViewModel, current fragment model as a safety check view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == safetyCheckViewModel);
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<StartupViewModel, SafetyCheckViewModel>(safetyCheckViewModel);
 
             SetUpOdometerRequired(false);
 
@@ -628,10 +620,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var safetyCheckViewModel = _fixture.Build<SafetyCheckViewModel>().Without(s => s.SafetyCheckItemViewModels).Create<SafetyCheckViewModel>();
 
             // presenter will report the current activity view model as StartUpViewModel, current fragment model as a safety check view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == safetyCheckViewModel);
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<StartupViewModel, SafetyCheckViewModel>(safetyCheckViewModel);
 
             // Set up so that there are no safety profiles
             SetUpNoSafetyProfiles();
@@ -654,10 +643,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as StartUpViewModel, current fragment model as an odometer view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<OdometerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<StartupViewModel, OdometerViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -680,12 +666,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             SetUpSafetyCheckData(false);
 
             // presenter will report the current activity view model as StartUpViewModel, current fragment model as a safety check view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<SafetyCheckSignatureViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
-            
+            this.InjectCustomPresenter<StartupViewModel, SafetyCheckSignatureViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -708,12 +689,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             SetUpSafetyCheckData(true);
 
             // presenter will report the current activity view model as StartUpViewModel, current fragment model as a safety check view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<SafetyCheckSignatureViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
-
+            this.InjectCustomPresenter<StartupViewModel, SafetyCheckSignatureViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -735,11 +711,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var closeApplicationMock = _fixture.InjectNewMock<ICloseApplication>();
 
             // presenter will report the current activity view model as a StartUpViewModel,  current fragment model a passcode model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<StartupViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<PasscodeViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<StartupViewModel, PasscodeViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -761,11 +733,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject(manifestViewModel);
 
             // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp => 
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == manifestViewModel);
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<MainViewModel, ManifestViewModel>(manifestViewModel);
 
             var service = _fixture.Create<NavigationService>();
 
@@ -790,11 +758,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
             // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == manifestViewModel);
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<MainViewModel, ManifestViewModel>(manifestViewModel);
 
             var service = _fixture.Create<NavigationService>();
 
@@ -821,11 +785,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<MainViewModel, InstructionViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -847,18 +807,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<MainViewModel, InstructionViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
-            var navItemMock = Mock.Of<NavData<MobileData>>();
+            var navData = new NavData<MobileData> { Data = _mobileData };
 
             // Move to the next view model
-            await service.MoveToNextAsync(navItemMock);
+            await service.MoveToNextAsync(navData);
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -866,18 +822,13 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(InstructionOnSiteViewModel), request.ViewModelType);
         }
 
- 
-
         [Fact]
         public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToCommentScreen()
         {
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
@@ -906,10 +857,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, false, null);
 
@@ -938,10 +886,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, false, false, true, null);
 
@@ -965,15 +910,11 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToComplete()
+        public async Task NavigationService_Mappings_Instructions_Collection_InstructionOnSiteToConfirmTimes()
         {
             base.ClearAll();
 
-            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, null);
 
@@ -990,12 +931,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Move to the next view model
             await service.MoveToNextAsync(navData);
 
-            //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ConfirmTimesViewModel), request.ViewModelType);
         }
-
 
         #region Trailer Selection via "Change Trailer" Button on instruction screen
 
@@ -1007,10 +946,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, InstructionProgress.NotStarted);
 
@@ -1050,10 +986,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, InstructionProgress.NotStarted);
 
@@ -1097,10 +1030,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, InstructionProgress.NotStarted);
 
@@ -1137,10 +1067,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels));
 
             // presenter will report the current activity view model as MainView, current fragment model as a the instruction safety check 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionSafetyCheckViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionSafetyCheckViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
@@ -1183,10 +1110,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels));
 
             // presenter will report the current activity view model as MainView, current fragment model as a the instruction safety check 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionSafetyCheckSignatureViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionSafetyCheckSignatureViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
@@ -1249,10 +1173,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
@@ -1281,10 +1202,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
@@ -1329,10 +1247,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
@@ -1366,10 +1281,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
@@ -1410,10 +1322,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
@@ -1444,10 +1353,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, false, null);
 
@@ -1478,10 +1384,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
 
@@ -1512,10 +1415,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
@@ -1551,10 +1451,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, false, false, true, null);
 
@@ -1585,18 +1482,14 @@ namespace MWF.Mobile.Tests.ServiceTests
         [Fact]
         //Tests the case where a trailer was selected but it was the same as the current trailer (i.e no safety check logic)
         //and the bypass comment option is enabled
-        public async Task NavigationService_Mappings_Instructions_Collection_TrailerToComplete()
+        public async Task NavigationService_Mappings_Instructions_Collection_TrailerToConfirmTimes()
         {
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, null);
-
 
             var trailer = _fixture.Create<MWF.Mobile.Core.Models.Trailer>();
             var infoServiceMock = _fixture.InjectNewMock<IInfoService>();
@@ -1618,9 +1511,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ConfirmTimesViewModel), request.ViewModelType);
         }
-
 
         // Tests the case on the safety check screen where no safety check profile was detected for the updated trailer, so no signature is required so the comment screen can be navigated to
         // Since the selected trailer differs from the one on the order then the order is updated and the revised trailer chunk set
@@ -1633,10 +1525,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels));
 
             // presenter will report the current activity view model as MainView, current fragment model as a the instruction safety check 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionSafetyCheckViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionSafetyCheckViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
@@ -1678,10 +1567,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels));
 
             // presenter will report the current activity view model as MainView, current fragment model as a the instruction safety check 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionSafetyCheckViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionSafetyCheckViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
@@ -1719,10 +1605,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels));
 
             // presenter will report the current activity view model as MainView, current fragment model as a the instruction safety check 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionSafetyCheckSignatureViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionSafetyCheckSignatureViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
@@ -1783,10 +1666,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels));
 
             // presenter will report the current activity view model as MainView, current fragment model as a the instruction safety check 
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionSafetyCheckSignatureViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionSafetyCheckSignatureViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, false, false, false, false, true, null);
 
@@ -1849,10 +1729,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionCommentViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionCommentViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, true, true, false, false, true, null);
 
@@ -1870,15 +1747,11 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public async Task NavigationService_Mappings_Instructions_Collection_CommentToComplete()
+        public async Task NavigationService_Mappings_Instructions_Collection_CommentToConfirmTimes()
         {
             base.ClearAll();
 
-            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionCommentViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionCommentViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, null);
 
@@ -1889,7 +1762,29 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Move to the next view model
             await service.MoveToNextAsync(navData);
 
-            //Check that the trailer list view model was navigated to
+            //Check that the confirm times view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(ConfirmTimesViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public async Task NavigationService_Mappings_Instructions_Collection_ConfirmTimesToComplete()
+        {
+            base.ClearAll();
+
+            this.InjectCustomPresenter<MainViewModel, ConfirmTimesViewModel>();
+
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, null);
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navData = new NavData<MobileData>() { Data = mobileData };
+
+            // Move to the next view model
+            await service.MoveToNextAsync(navData);
+
+            //Check that the manifest view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
@@ -1901,10 +1796,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, true, false, false, false, false, true, null);
 
@@ -1927,10 +1819,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, false, false, false, false, false, null);
 
@@ -1953,10 +1842,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, false, false, false, false, true, null);
 
@@ -1979,10 +1865,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, true, true, false, false, true, null);
 
@@ -2000,15 +1883,12 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public async Task NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToComplete()
+        public async Task NavigationService_Mappings_Instructions_Delivery_InstructionOnSiteToConfirmTimes()
         {
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, false, false, true, null);
 
@@ -2022,7 +1902,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ConfirmTimesViewModel), request.ViewModelType);
         }
 
         [Fact]
@@ -2031,10 +1911,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionClausedViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionClausedViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, false, false, false, false, true, null);
 
@@ -2057,10 +1934,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionClausedViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionClausedViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, true, true, false, false, true, null);
 
@@ -2078,15 +1952,11 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public async Task NavigationService_Mappings_Instructions_Delivery_ClausedToComplete()
+        public async Task NavigationService_Mappings_Instructions_Delivery_ClausedToConfirmTimes()
         {
             base.ClearAll();
 
-            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionClausedViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionClausedViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, false, false, true, null);
 
@@ -2097,22 +1967,39 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Move to the next view model
             await service.MoveToNextAsync(navData);
 
-            //Check that the trailer list view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(ConfirmTimesViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public async Task NavigationService_Mappings_Instructions_Delivery_ConfirmTimesToComplete()
+        {
+            base.ClearAll();
+
+            this.InjectCustomPresenter<MainViewModel, ConfirmTimesViewModel>();
+
+            var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, false, false, true, null);
+
+            var service = _fixture.Create<NavigationService>();
+
+            var navData = new NavData<MobileData>() { Data = mobileData };
+
+            // Move to the next view model
+            await service.MoveToNextAsync(navData);
+
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
         }
-        
+
         [Fact]
         public async Task NavigationService_Mappings_Instructions_Delivery_CommentToSignatureScreen()
         {
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionCommentViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionCommentViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, true, true, false, false, true, null);
 
@@ -2130,15 +2017,12 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public async Task NavigationService_Mappings_Instructions_Delivery_CommentToComplete()
+        public async Task NavigationService_Mappings_Instructions_Delivery_CommentToConfirmTimes()
         {
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionCommentViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionCommentViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, false, false, true, null);
 
@@ -2152,7 +2036,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
-            Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
+            Assert.Equal(typeof(ConfirmTimesViewModel), request.ViewModelType);
         }
 
         [Fact]
@@ -2161,10 +2045,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an order view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<OrderViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, OrderViewModel>();
 
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, false, false, true, null);
@@ -2188,10 +2069,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an order view view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<OrderViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, OrderViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, false, false, false, false, true, MWF.Mobile.Core.Enums.InstructionProgress.Driving);
 
@@ -2214,10 +2092,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<OrderViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, OrderViewModel>();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, true, false, false, false, false, true, MWF.Mobile.Core.Enums.InstructionProgress.OnSite);
 
@@ -2240,10 +2115,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
 
             var service = _fixture.Create<NavigationService>();
@@ -2265,10 +2137,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionViewModel>();
 
 
             var service = _fixture.Create<NavigationService>();
@@ -2289,10 +2158,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction trailer view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrailerViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrailerViewModel>();
 
             _mockUserInteraction.Setup(mui => mui.ConfirmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync<ICustomUserInteraction, bool>(false);
 
@@ -2327,10 +2193,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as a camera view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, SidebarCameraViewModel>();
 
 
             var service = _fixture.Create<NavigationService>();
@@ -2352,10 +2215,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, SidebarCameraViewModel>();
 
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, Core.Enums.InstructionProgress.NotStarted);
@@ -2379,10 +2239,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as a camera view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, SidebarCameraViewModel>();
 
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, Core.Enums.InstructionProgress.OnSite);
@@ -2406,10 +2263,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, SidebarCameraViewModel>();
 
 
             var mobileDataRepositoryMock = _fixture.InjectNewMock<IMobileDataRepository>();
@@ -2436,10 +2290,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, SidebarCameraViewModel>();
 
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, Core.Enums.InstructionProgress.NotStarted);
@@ -2463,10 +2314,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<SidebarCameraViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, SidebarCameraViewModel>();
 
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, Core.Enums.InstructionProgress.OnSite);
@@ -2489,10 +2337,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<DisplaySafetyCheckViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, DisplaySafetyCheckViewModel>();
 
 
 
@@ -2515,10 +2360,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<DisplaySafetyCheckViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, DisplaySafetyCheckViewModel>();
 
 
             _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, Core.Enums.InstructionProgress.NotStarted);
@@ -2542,10 +2384,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<DisplaySafetyCheckViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, DisplaySafetyCheckViewModel>();
 
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, Core.Enums.InstructionProgress.OnSite);
@@ -2569,10 +2408,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<DisplaySafetyCheckViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, DisplaySafetyCheckViewModel>();
 
 
 
@@ -2596,10 +2432,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<DisplaySafetyCheckViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, DisplaySafetyCheckViewModel>();
 
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, Core.Enums.InstructionProgress.NotStarted);
@@ -2623,10 +2456,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<DisplaySafetyCheckViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, DisplaySafetyCheckViewModel>();
 
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, Core.Enums.InstructionProgress.OnSite);
@@ -2654,11 +2484,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
             // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == manifestViewModel);
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<MainViewModel, ManifestViewModel>(manifestViewModel);
 
             var service = _fixture.Create<NavigationService>();
 
@@ -2670,7 +2496,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(InstructionTrunkProceedViewModel), request.ViewModelType);
-
 
         }
 
@@ -2684,11 +2509,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var manifestViewModel = _fixture.Build<ManifestViewModel>().Without(mvm => mvm.Sections).Create<ManifestViewModel>();
 
             // presenter will report the current activity view model as a MainViewModel,  current fragment model a passcode model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == manifestViewModel);
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<MainViewModel, ManifestViewModel>(manifestViewModel);
 
             var service = _fixture.Create<NavigationService>();
 
@@ -2701,7 +2522,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(InstructionTrunkProceedViewModel), request.ViewModelType);
 
-
         }
 
         [Fact]
@@ -2712,11 +2532,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mobileData.Order.Type = InstructionType.ProceedFrom;
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrunkProceedViewModel>());
-
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionTrunkProceedViewModel>();
 
 
             _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Change Trailer?");
@@ -2737,19 +2553,13 @@ namespace MWF.Mobile.Tests.ServiceTests
         }
 
         [Fact]
-        public async Task NavigationService_Mappings_TrunkTo_Manifest()
+        public async Task NavigationService_Mappings_TrunkTo_ConfirmTimes()
         {
             base.ClearAll();
 
             _mobileData.Order.Type = InstructionType.TrunkTo;
 
-            // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionTrunkProceedViewModel>());
-
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
-
+            this.InjectCustomPresenter<MainViewModel, InstructionTrunkProceedViewModel>();
 
             var service = _fixture.Create<NavigationService>();
 
@@ -2759,11 +2569,33 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             await service.MoveToNextAsync(navData);
 
-            //Check that the startup the manifest view model was navigated to
+            //Check that the confirm times view model was navigated to
+            Assert.Equal(1, _mockViewDispatcher.Requests.Count);
+            var request = _mockViewDispatcher.Requests.First();
+            Assert.Equal(typeof(ConfirmTimesViewModel), request.ViewModelType);
+        }
+
+        [Fact]
+        public async Task NavigationService_Mappings_TrunkTo_Manifest()
+        {
+            base.ClearAll();
+
+            _mobileData.Order.Type = InstructionType.TrunkTo;
+
+            this.InjectCustomPresenter<MainViewModel, ConfirmTimesViewModel>();
+
+            var service = _fixture.Create<NavigationService>();
+
+            //Create a nav item for a mobile data model
+            NavData<MobileData> navData = new NavData<MobileData> { Data = _mobileData };
+            _mobileData.Order.Additional.IsTrailerConfirmationEnabled = false;
+
+            await service.MoveToNextAsync(navData);
+
+            //Check that the manifest view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
             var request = _mockViewDispatcher.Requests.First();
             Assert.Equal(typeof(ManifestViewModel), request.ViewModelType);
-
         }
 
         [Fact]
@@ -2772,10 +2604,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionOnSiteViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionOnSiteViewModel>();
 
             //Skip trailer selection and go straight to barcode screen
             _mockUserInteraction.ConfirmAsyncReturnsFalseIfTitleStartsWith("Change Trailer?");
@@ -2801,14 +2630,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             //presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionViewModel>());
-
+            this.InjectCustomPresenter<MainViewModel, InstructionViewModel>();
 
             SetUpLogOffSafetyCheckRequired(true);
             var service = _fixture.Create<NavigationService>();
-
 
             // Move to the next view model
             await service.Logout_ActionAsync(null);
@@ -2826,11 +2651,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as MainView, current fragment model as an instruction view model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<InstructionViewModel>());
-
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, InstructionViewModel>();
 
             SetUpLogOffSafetyCheckRequired(false);
             var service = _fixture.Create<NavigationService>();
@@ -2851,10 +2672,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             base.ClearAll();
 
             // presenter will report the current activity view model as a mainViewModel,  current fragment model a diagnostics model
-            var mockCustomPresenter = Mock.Of<ICustomPresenter>(cp =>
-                                                                cp.CurrentActivityViewModel == _fixture.Create<MainViewModel>() &&
-                                                                cp.CurrentFragmentViewModel == _fixture.Create<DiagnosticsViewModel>());
-            _fixture.Inject<ICustomPresenter>(mockCustomPresenter);
+            this.InjectCustomPresenter<MainViewModel, DiagnosticsViewModel>();
 
 
             var service = _fixture.Create<NavigationService>();
@@ -2969,19 +2787,18 @@ namespace MWF.Mobile.Tests.ServiceTests
             var safetyCheckService = Mock.Of<ISafetyCheckService>(ss => ss.GetCurrentSafetyCheckData() == safetyCheckData);
             _fixture.Inject<ISafetyCheckService>(safetyCheckService);
 
-
         }
 
         #endregion
 
     }
 
-
     #region Test Classes
 
     public class ActivityViewModel : BaseActivityViewModel
     {
-
+        public ActivityViewModel(IMvxViewModelLoader viewModelLoader) : base(viewModelLoader)
+        { }
     }
 
     public class FragmentViewModel1 : BaseFragmentViewModel

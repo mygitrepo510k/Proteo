@@ -90,11 +90,9 @@ namespace MWF.Mobile.Android.Portable
 
         public string DatabasePath
         {
-            get
-            {
-                return System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
-            }
+            get { return System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal); }
         }
 
     }
+
 }

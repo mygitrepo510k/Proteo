@@ -59,19 +59,20 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that when a vehicle is selected and the confirm message is shown then the navigation service is called 
         /// </summary>
         [Fact]
-        public void VehicleListVM_SelectVehicle_Navigation()
+        public async Task VehicleListVM_SelectVehicle_Navigation()
         {
             base.ClearAll();
 
             _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNextAsync());
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync()).Returns(Task.FromResult(0));
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var vm = _fixture.Create<VehicleListViewModel>();
+            await vm.Init();
 
-            vm.ShowVehicleDetailCommand.Execute(_vehicle);
+            await vm.VehicleDetailAsync(_vehicle);
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
@@ -82,7 +83,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that vehicle is selected and the confirm message the vehicle is stored
         /// </summary>
         [Fact]
-        public void VehicleListVM_SelectVehicle_VehicleStored()
+        public async Task VehicleListVM_SelectVehicle_VehicleStored()
         {
             base.ClearAll();
 
@@ -90,7 +91,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<VehicleListViewModel>();
 
-            vm.ShowVehicleDetailCommand.Execute(_vehicle);
+            await vm.VehicleDetailAsync(_vehicle);
 
             Assert.NotNull(_infoService.LoggedInDriver);
             Assert.Equal(_vehicle.ID, _infoService.LoggedInDriver.LastVehicleID);
@@ -101,7 +102,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that on successful authentication a current drivers vehicle ID 
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulAuthenticationStoresCurrentDriverVehicleID()
+        public async Task VehicleListVM_SuccessfulAuthenticationStoresCurrentDriverVehicleID()
         {
             base.ClearAll();
 
@@ -109,7 +110,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<VehicleListViewModel>();
 
-            vm.ShowVehicleDetailCommand.Execute(_vehicle);
+            await vm.VehicleDetailAsync(_vehicle);
 
             _currentDriverRepository.Verify(cdr => cdr.InsertAsync(It.Is<CurrentDriver>(cd => cd.ID == _driver.LastVehicleID)), Times.Once);   
         }
@@ -119,7 +120,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// on the refresh of the vehicle list.
         /// </summary>
         [Fact]
-        public void VehicleListVM_NoInternetShowToast()
+        public async Task VehicleListVM_NoInternetShowToast()
         {
             base.ClearAll();
 
@@ -130,7 +131,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<VehicleListViewModel>();
 
-            vm.RefreshListCommand.Execute(null);
+            await vm.UpdateVehicleListAsync();
 
             toast.Verify(t => t.Show("No internet connection!"));
              
@@ -140,7 +141,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the list is filtered correctly when you search for a vehicle.
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulVehicleListFilter()
+        public async Task VehicleListVM_SuccessfulVehicleListFilter()
         {
             base.ClearAll();
 
@@ -154,6 +155,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<VehicleListViewModel>();
+            await vm.Init();
+
             vm.VehicleSearchText = "registration";
 
             Assert.Equal(vehicles, vm.Vehicles);
@@ -164,7 +167,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the refresh function on the vehicle list works.
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulVehicleListRefreshNoFilter()
+        public async Task VehicleListVM_SuccessfulVehicleListRefreshNoFilter()
         {
             base.ClearAll();
 
@@ -178,9 +181,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<VehicleListViewModel>();
+            await vm.Init();
+
             vm.VehicleSearchText = "";
 
-            vm.RefreshListCommand.Execute(null);
+            await vm.UpdateVehicleListAsync();
 
             Assert.Equal(vehicles, vm.Vehicles);
             //Its get all twice because it calls it once on setup and another on refresh
@@ -192,7 +197,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that the refresh function on the vehicle list works but refilters the list.
         /// </summary>
         [Fact]
-        public void VehicleListVM_SuccessfulVehicleListRefreshFilter()
+        public async Task VehicleListVM_SuccessfulVehicleListRefreshFilter()
         {
             base.ClearAll();
 
@@ -206,9 +211,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var vm = _fixture.Create<VehicleListViewModel>();
+            await vm.Init();
+
             vm.VehicleSearchText = "Registration";
 
-            vm.RefreshListCommand.Execute(null);
+            await vm.UpdateVehicleListAsync();
 
             Assert.Equal(vehicles, vm.Vehicles);
             //Its get all twice because it calls it once on setup and another on refresh
@@ -217,4 +224,5 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
          
     }
+
 }

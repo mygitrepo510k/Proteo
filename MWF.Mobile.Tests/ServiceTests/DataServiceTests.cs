@@ -8,66 +8,74 @@ using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.Models;
 using SQLite.Net.Attributes;
 using Xunit;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoMoq;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
 
-    //public class DataServiceTests
-    //    : MvxIoCSupportingTest
-    //{
+    public class DataServiceTests
+        : MvxIoCSupportingTest
+    {
 
+        private Mock<IDeviceInfo> _mockDeviceInfo;
+        private SQLite.Net.Interop.ISQLitePlatform _platform;
 
-    //    [Fact]
-    //    public void DataService_ConnectionIsNotNull()
-    //    {
-    //        base.ClearAll();
+        protected override void AdditionalSetup()
+        {
+            base.AdditionalSetup();
 
-    //        var asyncConnectionMock = new Mock<Core.Database.IAsyncConnection>();
-    //        asyncConnectionMock.Setup(c => c.CreateTableAsync<T>());
+            _mockDeviceInfo = new Mock<IDeviceInfo>();
+            _mockDeviceInfo.Setup(di => di.DatabasePath).Returns(string.Empty);
 
-    //        var deviceInfo = new Mock<IDeviceInfo>().Object;
-    //        var dataService = new DataService(deviceInfo);
-    //        var connection = dataService.GetDBConnection();
+            _platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
+        }
 
-    //        Assert.NotNull(connection);
-    //    }
+        [Fact]
+        public void DataService_ConnectionIsNotNull()
+        {
+            base.ClearAll();
 
-    //    [Fact]
-    //    public void DataService_CreateTables()
-    //    {
-    //        base.ClearAll();
+            var dataService = new DataService(_mockDeviceInfo.Object, _platform);
+            var connection = dataService.GetDBConnection();
 
-    //        var asyncConnectionMock = new Mock<Core.Database.IAsyncConnection>();
-    //        asyncConnectionMock.Setup(c => c.CreateTableAsync<T>());
+            Assert.NotNull(connection);
+        }
 
-    //        var deviceInfo = new Mock<IDeviceInfo>().Object;
-    //        var dataService = new DataService(deviceInfo);
-    //        var connection = dataService.GetDBConnection();
+        [Fact]
+        public void DataService_CreateTables()
+        {
+            base.ClearAll();
 
-    //        // Check that the various tables has been created
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<ApplicationProfile>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<CurrentDriver>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<Customer>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<Driver>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<Device>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<GatewayQueueItem>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<Image>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<SafetyCheckData>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<SafetyCheckFault>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<SafetyProfile>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<Signature>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<Trailer>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<Vehicle>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<VehicleView>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<VerbProfile>(), Times.Once);
-    //        asyncConnectionMock.Verify(c => c.CreateTableAsync<VerbProfileItem>(), Times.Once);
-            
+            var fixture = new Fixture().Customize(new AutoMoqCustomization());
 
-    //    }
+            var mockConnection = new Mock<Core.Database.IConnection>();
 
-       
+            var mockDataService = new Mock<DataService>(_mockDeviceInfo.Object, _platform);
+            mockDataService.CallBase = true;
+            mockDataService.Setup(ds => ds.GetDBConnection()).Returns(mockConnection.Object);
+            var dataService = mockDataService.Object;
 
+            // Check that the various tables has been created
+            mockConnection.Verify(c => c.CreateTable<ApplicationProfile>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<CurrentDriver>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<Customer>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<Driver>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<Device>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<GatewayQueueItem>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<Image>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<SafetyCheckData>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<SafetyCheckFault>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<SafetyProfile>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<Signature>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<Trailer>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<Vehicle>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<VehicleView>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<VerbProfile>(), Times.Once);
+            mockConnection.Verify(c => c.CreateTable<VerbProfileItem>(), Times.Once);
 
-    //}
+        }
+
+    }
 
 }

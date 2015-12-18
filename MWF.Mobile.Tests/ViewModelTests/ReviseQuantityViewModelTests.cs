@@ -65,7 +65,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Tests
 
         [Fact]
-        public void ReviseQuantityVM_SuccessfulUpdate()
+        public async Task ReviseQuantityVM_SuccessfulUpdate()
         {
             base.ClearAll();
 
@@ -81,7 +81,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             reviseQuantityVM.OrderQuantity = newQuantity.ToString();
 
-            reviseQuantityVM.ReviseQuantityCommand.Execute(null);
+            await reviseQuantityVM.ReviseQuantityAsync();
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().Quantity, reviseQuantityVM.OrderQuantity);
 

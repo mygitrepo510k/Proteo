@@ -125,13 +125,12 @@ namespace MWF.Mobile.Core.ViewModels
             var modal = _navigationService.ShowModalViewModel<ModalCameraViewModel, bool>(this, _navData, (sendChunk) => {});
         }
 
-        private void RefreshPage(Guid ID)
+        private async Task RefreshPageAsync(Guid ID)
         {
-            _navData.ReloadInstruction(ID, _repositories);
+            await _navData.ReloadInstructionAsync(ID, _repositories);
             _mobileData = _navData.Data;
             RaiseAllPropertiesChanged();
         }
-
 
         #endregion Private Methods
 
@@ -145,7 +144,8 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible) 
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
-                    RefreshPage(instructionID);
+
+                    await this.RefreshPageAsync(instructionID);
                 }
                 else
                 {

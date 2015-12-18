@@ -14,14 +14,14 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         public InstructionSafetyCheckSignatureViewModel(Services.IInfoService infoService, Services.IGatewayQueuedService gatewayQueuedService, ICustomUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService, ISafetyCheckService safetyCheckService)
+            : base(infoService, gatewayQueuedService, userInteraction, repositories, navigationService, safetyCheckService)
         {
-            _infoService = infoService;
-            _gatewayQueuedService = gatewayQueuedService;
-            _userInteraction = userInteraction;
-            _navigationService = navigationService;
-            _repositories = repositories;
-            _safetyCheckService = safetyCheckService;
+        }
 
+        public override Task Init()
+        {
+            // Don't call down to base Init method: what it does is not relevant for instruction safety checks, there is corresponding code specifically for instructions in Init(navData) below.
+            return Task.FromResult(0);
         }
 
         public async Task Init(NavData<MobileData> navData)

@@ -112,7 +112,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public System.Windows.Input.ICommand DoneCommand
         {
-            get { return (_doneCommand = _doneCommand ?? new MvxCommand( () => DoDoneCommand())); }
+            get { return (_doneCommand = _doneCommand ?? new MvxCommand(() => DoDoneCommand())); }
         }
 
         public System.Windows.Input.ICommand TakePictureCommand

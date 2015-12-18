@@ -99,6 +99,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                     var applicationProfileData = await _applicationProfileRepository.GetAllAsync();
                     var applicationProfile = applicationProfileData.First();
+
                     if (DateTime.Now.Subtract(applicationProfile.LastVehicleAndDriverSync).TotalHours > 23)
                     {
                         await UpdateVehicleListAsync();

@@ -58,7 +58,7 @@ namespace MWF.Mobile.Core.ViewModels
         
         public System.Windows.Input.ICommand DeleteCommand
         {
-            get { return (_deleteCommand = _deleteCommand ?? new MvxCommand(async () => await DeleteAsync())); }
+            get { return (_deleteCommand = _deleteCommand ?? new MvxCommand(async () => await this.DeleteAsync())); }
         }
 
 
@@ -66,7 +66,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private async Task DeleteAsync()
+        public async Task DeleteAsync()
         {
             if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Are you sure you want to delete this picture?", "Delete Picture", "Delete", "Cancel"))
                 _parentCameraViewModel.Delete(this);

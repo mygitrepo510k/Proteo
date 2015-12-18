@@ -16,10 +16,12 @@ using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
+
     public class BarcodeScanningViewModel :
         BaseInstructionNotificationViewModel,
         IBackButtonHandler
     {
+
         #region Construction
 
         private MobileData _mobileData = null;
@@ -51,9 +53,8 @@ namespace MWF.Mobile.Core.ViewModels
             _mobileData = navData.Data;
             _additionalInstructions = navData.GetAdditionalInstructions();
 
-            CreateSections();
-
             await this.BuildDamageStatusesAsync();
+            this.CreateSections();
         }
 
         private void CreateSections()
@@ -67,14 +68,12 @@ namespace MWF.Mobile.Core.ViewModels
 
             BarcodeSections.Add(_unprocessedBarcodes);
 
-
             _processedBarcodes = new BarcodeSectionViewModel(this)
             {
                 SectionHeader = "Done",
             };
 
             BarcodeSections.Add(_processedBarcodes);
-
 
             //Initalize the unprocessed collection
             List<BarcodeItemViewModel> barcodeItemsViewModels = new List<BarcodeItemViewModel>();
@@ -93,7 +92,6 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
 
-
             foreach (var vm in barcodeItemsViewModels)
             {
                 _unprocessedBarcodes.Barcodes.Add(vm);
@@ -106,7 +104,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
-
         private ObservableCollection<BarcodeSectionViewModel> _barcodeSections;
         public ObservableCollection<BarcodeSectionViewModel> BarcodeSections
         {
@@ -118,6 +115,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
+                System.Diagnostics.Debug.Assert(_processedBarcodes != null, "SelectBarcodes: _processedBarcodes is null");
                 return _processedBarcodes.Where(x => x.IsSelected);
             }
         }
@@ -143,19 +141,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string InstructionsText
         {
-            get
-            {
-                return "Scan barcodes or select them from the To Do list.";
-            }
+            get { return "Scan barcodes or select them from the To Do list."; }
         }
-
 
         public string CompleteButtonText
         {
-            get
-            {
-                return "Continue";
-            }
+            get { return "Continue"; }
         }
 
         private bool _canScanningBeCompleted;
@@ -164,7 +155,6 @@ namespace MWF.Mobile.Core.ViewModels
             get
             {
                 return _canScanningBeCompleted;
-
             }
             set
             {
@@ -209,7 +199,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             RaisePropertyChanged(() => BarcodeSections);
-
         }
 
         #endregion
@@ -267,7 +256,7 @@ namespace MWF.Mobile.Core.ViewModels
             RequestBarcodeFocus();
         }
 
-        private Task CompleteScanningAsync()
+        public Task CompleteScanningAsync()
         {
             // Update datachunk for this order
             var newScannedDelivery = GetScannedDelivery(_mobileData.ID);
@@ -314,16 +303,15 @@ namespace MWF.Mobile.Core.ViewModels
             RaisePropertyChanged("RequestBarcodeFocus");
         }
 
-        private void RefreshPage(Guid ID)
+        private async Task RefreshPageAsync(Guid ID)
         {
-            _navData.ReloadInstruction(ID, _repositories);
+            await _navData.ReloadInstructionAsync(ID, _repositories);
             _mobileData = _navData.Data;
             _additionalInstructions = _navData.GetAdditionalInstructions();
 
             CreateSections();
             RaiseAllPropertiesChanged();
         }
-
 
         #endregion Private Methods
 
@@ -337,7 +325,8 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible) 
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
-                    this.RefreshPage(instructionID);
+
+                    await this.RefreshPageAsync(instructionID);
                 }
                 else
                 {

@@ -26,13 +26,22 @@ namespace MWF.Mobile.Core.ViewModels
         protected NavData<MobileData> _navData;
         protected IRepositories _repositories;
 
-        #endregion
+        #endregion private/protected members
 
         #region construction
-        public async override void Start()
-        {
-            base.Start();
 
+        public SafetyCheckSignatureViewModel(Services.IInfoService infoService, Services.IGatewayQueuedService gatewayQueuedService, ICustomUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService, ISafetyCheckService safetyCheckService)
+        {
+            _infoService = infoService;
+            _gatewayQueuedService = gatewayQueuedService;
+            _userInteraction = userInteraction;
+            _navigationService = navigationService;
+            _repositories = repositories;
+            _safetyCheckService = safetyCheckService;
+        }
+
+        public virtual async Task Init()
+        {
             // Retrieve the vehicle and trailer safety check data from the startup info service
             _safetyCheckData = _safetyCheckService.GetCurrentSafetyCheckData();
             SafetyProfile safetyProfileVehicle = null;
@@ -65,8 +74,6 @@ namespace MWF.Mobile.Core.ViewModels
             if ((safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant)
                || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant))
             {
-
-
                 switch (combinedOverallStatus)
                 {
                     case Enums.SafetyCheckStatus.Failed:
@@ -86,23 +93,6 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 this.ConfirmationText = config.SafetyCheckPassText;
             }
-
-        }
-        public SafetyCheckSignatureViewModel(Services.IInfoService infoService, Services.IGatewayQueuedService gatewayQueuedService, ICustomUserInteraction userInteraction, Repositories.IRepositories repositories, INavigationService navigationService, ISafetyCheckService safetyCheckService)
-        {
-            _infoService = infoService;
-            _gatewayQueuedService = gatewayQueuedService;
-            _userInteraction = userInteraction;
-            _navigationService = navigationService;
-            _repositories = repositories;
-            _safetyCheckService = safetyCheckService;
-
-            
-        }
-
-        public SafetyCheckSignatureViewModel()
-        {
-
         }
 
         #endregion construction
@@ -162,7 +152,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion properties
 
-        private async Task DoneAsync()
+        public async Task DoneAsync()
         {
             if (string.IsNullOrWhiteSpace(SignatureEncodedImage))
             {
@@ -175,7 +165,6 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 safetyCheckData.Signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
             }
-
 
             await _navigationService.MoveToNextAsync(_navData);
         }

@@ -13,7 +13,13 @@ namespace MWF.Mobile.Core.ViewModels
 		: MvxViewModel
     {
 
-        private IMvxViewModel _initialViewModel;
+        private readonly IMvxViewModelLoader _viewModelLoader = null;
+        private IMvxViewModel _initialViewModel = null;
+
+        public BaseActivityViewModel(IMvxViewModelLoader viewModelLoader)
+        {
+            _viewModelLoader = viewModelLoader;
+        }
 
         public IMvxViewModel InitialViewModel
         {
@@ -24,10 +30,8 @@ namespace MWF.Mobile.Core.ViewModels
         protected void SetInitialViewModel<TViewModel>(IMvxBundle parameters = null)
             where TViewModel : IMvxViewModel
         {
-            var viewModel = Mvx.IocConstruct<TViewModel>();
-            viewModel.Init(parameters ?? new MvxBundle());
-            viewModel.Start();
-
+            var request = MvxViewModelRequest.GetDefaultRequest(typeof(TViewModel));
+            var viewModel = _viewModelLoader.LoadViewModel(request, parameters);
             this.InitialViewModel = viewModel;
         }
 

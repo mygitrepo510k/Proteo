@@ -95,12 +95,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedCollectionInstructions.First() };
-            addDeliveriesVM.Init(navData);
-            addDeliveriesVM.Start();
-            await Task.Delay(50); // allow async void Start() to complete
+            await addDeliveriesVM.Init(navData);
 
             Assert.Equal(0, addDeliveriesVM.DeliveryInstructions.Count);
-           
         }
 
         [Fact]
@@ -116,9 +113,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
-            addDeliveriesVM.Init(navData);
-            addDeliveriesVM.Start();
-            await Task.Delay(50); // allow async void Start() to complete
+            await addDeliveriesVM.Init(navData);
 
             // should be one less than the total delivery instructions (the vm's own mobile data should not be counted)
             // i.e. you can't a delivery to itself
@@ -150,9 +145,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             //set vm's own mobile data to not use barcode scanning
             navData.Data.Order.Items.FirstOrDefault().Additional.BarcodeScanRequiredForDelivery = false;
 
-            addDeliveriesVM.Init(navData);
-            addDeliveriesVM.Start();
-            await Task.Delay(50); // allow async void Start() to complete
+            await addDeliveriesVM.Init(navData);
 
             // should see no matching delivery instructions
             Assert.Equal(0, addDeliveriesVM.DeliveryInstructions.Count);
@@ -177,9 +170,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var additionalInstruction = nonCompletedDeliveryInstructions.Last();
             navData.GetAdditionalInstructions().Add(additionalInstruction);
 
-            addDeliveriesVM.Init(navData);
-            addDeliveriesVM.Start();
-            await Task.Delay(50); // allow async void Start() to complete
+            await addDeliveriesVM.Init(navData);
 
             // the delivery that lives is already added as an additional delivery should be selected
             Assert.True(addDeliveriesVM.DeliveryInstructions.Single(x => x.MobileData == additionalInstruction).IsSelected);
@@ -199,9 +190,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
-            addDeliveriesVM.Init(navData);
-            addDeliveriesVM.Start();
-            await Task.Delay(50); // allow async void Start() to complete
+            await addDeliveriesVM.Init(navData);
 
             // select one of the deliveries
             var selectedDelivery = addDeliveriesVM.DeliveryInstructions.Last();
@@ -216,9 +205,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             // since user pressed "done" the modal should have returned with true
             _mockMessenger.Verify(mm => mm.Publish(It.Is<ModalNavigationResultMessage<bool>>(msg => msg.Result == true)), Times.Once);
-
         }
-
 
         [Fact]
         public void InstructionAddDeliveriesVM_Done_RemoveDelivery()

@@ -61,29 +61,28 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Tests
 
         [Fact]
-        public void InstructionCommmentVM_CommentAddToMobileApplicationDataChunkService()
+        public async Task InstructionCommmentVM_CommentAddToMobileApplicationDataChunkService()
         {
             base.ClearAll();
 
-            var InstructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
+            var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
 
             var navData = new NavData<MobileData>() { Data = _mobileData };
             var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
             navData.OtherData["DataChunk"] = dataChunk;
 
-            InstructionCommentVM.Init(navData);
+            instructionCommentVM.Init(navData);
 
             var inputText = "This is a test comment";
 
-            InstructionCommentVM.CommentText = inputText;
+            instructionCommentVM.CommentText = inputText;
 
             var mockDataChunkActivity = _fixture.Create<MobileApplicationDataChunkContentActivity>();
             mockDataChunkActivity.Comment = inputText;
 
+            await instructionCommentVM.AdvanceInstructionCommentAsync();
 
-            InstructionCommentVM.AdvanceInstructionCommentCommand.Execute(null);
-
-            Assert.Equal(dataChunk.Comment, InstructionCommentVM.CommentText);   
+            Assert.Equal(dataChunk.Comment, instructionCommentVM.CommentText);   
         }
 
         [Fact]

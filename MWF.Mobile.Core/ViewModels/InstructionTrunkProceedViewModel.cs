@@ -66,17 +66,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ICommand CompleteInstructionCommand
         {
-            get
-            {
-                return (_completeInstructionCommand = _completeInstructionCommand ?? new MvxCommand(async () => await this.CompleteInstructionAsync()));
-            }
+            get { return (_completeInstructionCommand = _completeInstructionCommand ?? new MvxCommand(async () => await this.CompleteInstructionAsync())); }
         }
 
         #endregion Public Properties
 
         #region Private Methods
 
-        private Task CompleteInstructionAsync()
+        public Task CompleteInstructionAsync()
         {
             return _navigationService.MoveToNextAsync(_navData);
         }

@@ -50,14 +50,9 @@ namespace MWF.Mobile.Core.ViewModels
             _repositories = repositories;
         }
 
-        public void Init(MessageModalNavItem navData)
+        public async Task Init(MessageModalNavItem navData)
         {
             _navData = navData;
-        }
-
-        public override async void Start()
-        {
-            base.Start();
             await this.GetMobileDataFromRepositoryAsync(_navData.MobileDataID);
             _isMessageRead = _navData.IsRead;
         }
@@ -88,17 +83,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public ICommand ReadMessageCommand
         {
-            get
-            {
-                return (_readMessageCommand = _readMessageCommand ?? new MvxCommand(async () => await this.ReadMessageAsync()));
-            }
+            get { return (_readMessageCommand = _readMessageCommand ?? new MvxCommand(async () => await this.ReadMessageAsync())); }
         }
 
         #endregion Public Properties
 
         #region Private Methods
 
-        private async Task ReadMessageAsync()
+        public async Task ReadMessageAsync()
         {
             if (!_isMessageRead)
             {

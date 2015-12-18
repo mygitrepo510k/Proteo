@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
@@ -14,14 +15,14 @@ namespace MWF.Mobile.Core.ViewModels
     {
         private readonly IRepositories _repositories = null; 
         
-        public StartupViewModel(IRepositories repositories)
+        public StartupViewModel(IMvxViewModelLoader viewModelLoader, IRepositories repositories)
+            : base(viewModelLoader)
         {
             _repositories = repositories;
         }
 
-        public override async void Start()
+        public async Task Init()
         {
-            base.Start();
             await this.SetInitialViewModelAsync();
         }
 

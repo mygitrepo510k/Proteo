@@ -233,7 +233,7 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
         }
 
         [Fact]
-        public void NavDataHelper_ReloadInstruction_ReloadMainInstruction()
+        public async Task NavDataHelper_ReloadInstruction_ReloadMainInstruction()
         {
             base.ClearAll();
 
@@ -244,14 +244,13 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
             var reloadedMobileData = _fixture.Create<MobileData>();
             _mobileDataRepositoryMock.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync( reloadedMobileData);
 
-            navData.ReloadInstruction(navData.Data.ID, _repositories);
+            await navData.ReloadInstructionAsync(navData.Data.ID, _repositories);
 
             Assert.Equal(reloadedMobileData, navData.Data);
-
         }
 
         [Fact]
-        public void NavDataHelper_ReloadInstruction_ReloadAdditionalInstruction()
+        public async Task NavDataHelper_ReloadInstruction_ReloadAdditionalInstruction()
         {
             base.ClearAll();
 
@@ -264,11 +263,10 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
 
             var originalInstruction = additionalInstructions[0];
 
-            navData.ReloadInstruction(additionalInstructions[0].ID, _repositories);
+            await navData.ReloadInstructionAsync(additionalInstructions[0].ID, _repositories);
 
             Assert.Contains(reloadedMobileData, additionalInstructions);
             Assert.DoesNotContain(originalInstruction, additionalInstructions);
-
         }
 
         #endregion

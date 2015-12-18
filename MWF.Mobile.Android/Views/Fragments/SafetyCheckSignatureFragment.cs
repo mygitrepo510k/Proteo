@@ -43,7 +43,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             return view;
         }
 
-        void DoneButton_Click(object sender, EventArgs e)
+        private async void DoneButton_Click(object sender, EventArgs e)
         {
             //TODO: can we achieve this using data binding?
             var viewModel = (SafetyCheckSignatureViewModel)ViewModel;
@@ -61,7 +61,7 @@ namespace MWF.Mobile.Android.Views.Fragments
                 }
             }
 
-            viewModel.DoneCommand.Execute(null);
+            await viewModel.DoneAsync();
         }
     }
 }

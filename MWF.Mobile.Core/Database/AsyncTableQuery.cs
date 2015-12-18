@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 namespace MWF.Mobile.Core.Database
 {
 
+    /// <summary>
+    /// Wrapper class around SQLite.Net.Async.AsyncTableQuery<T>, allowing implementation of an interface to make it testable.
+    /// </summary>
+    /// <remarks>Other methods of the underlying AsyncTableQuery may need to be added to this class and the IAsyncTableQuery interface - only the ones currently used have been added so far.</remarks>
     public class AsyncTableQuery<T> : IAsyncTableQuery<T>
         where T : class
     {

@@ -33,7 +33,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
-        protected override async Task DoDoneCommandAsync()
+        public override async Task DoDoneCommandAsync()
         {
             List<Image> images = new List<Image>();
 

@@ -22,7 +22,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public override Task Init()
         {
-            // Don't call down to base Init method: what it does is not relevant for instruction safety checks, there is corresponding code in Init(navData) below.
+            // Don't call down to base Init method: what it does is not relevant for instruction safety checks, there is corresponding code specifically for instructions in Init(navData) below.
             return Task.FromResult(0);
         }
 

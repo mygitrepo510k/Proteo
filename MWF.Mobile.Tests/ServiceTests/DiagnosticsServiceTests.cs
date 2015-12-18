@@ -57,7 +57,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockUpload.Setup(u => u.UploadFileAsync(It.IsAny<Uri>(),
                                             It.IsAny<string>(),
                                             It.IsAny<string>(),
-                                            It.IsAny<string>())).Returns(Task.FromResult<bool>(true));
+                                            It.IsAny<string>())).ReturnsAsync(true);
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.Create<IMvxMessenger>());
 
@@ -174,7 +174,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockUpload.Setup(u => u.UploadFileAsync(It.IsAny<Uri>(),
                                          It.IsAny<string>(),
                                          It.IsAny<string>(),
-                                         It.IsAny<string>())).Returns(Task.FromResult<bool>(false));
+                                         It.IsAny<string>())).ReturnsAsync(false);
 
             var diagnosticsService = _fixture.Create<DiagnosticsService>();
 

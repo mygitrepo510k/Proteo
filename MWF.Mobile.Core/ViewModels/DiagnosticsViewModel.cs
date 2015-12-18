@@ -94,7 +94,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                _sendDiagnosticsCommand = _sendDiagnosticsCommand ?? new MvxCommand(async () => await UploadDiagnosticsAsync());
+                _sendDiagnosticsCommand = _sendDiagnosticsCommand ?? new MvxCommand(async () => await this.UploadDiagnosticsAsync());
                 return _sendDiagnosticsCommand;
             }
         }
@@ -103,7 +103,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region private methods
 
-        private async Task UploadDiagnosticsAsync()
+        public async Task UploadDiagnosticsAsync()
         {
             if (!_reachability.IsConnected())
             {

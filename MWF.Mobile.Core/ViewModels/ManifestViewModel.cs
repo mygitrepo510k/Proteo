@@ -66,16 +66,13 @@ namespace MWF.Mobile.Core.ViewModels
 
             _initialised = true;
 
-            //Mvx.Resolve<ICheckForSoftwareUpdates>().Check();
+            Mvx.Resolve<ICheckForSoftwareUpdates>().Check();
 
             CreateSections();
-            
         }
 
-        public async override void Start()
+        public async Task Init()
         {
-            base.Start();
-
             await RefreshInstructionsAsync();
         }
 
@@ -139,7 +136,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private async Task UpdateInstructionsListAsync()
+        public async Task UpdateInstructionsListAsync()
         {
             if (!_reachability.IsConnected())
             {

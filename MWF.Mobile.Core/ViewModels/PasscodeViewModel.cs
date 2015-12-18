@@ -104,7 +104,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        private Task LoginAsync()
+        public Task LoginAsync()
         {
             if (string.IsNullOrWhiteSpace(this.Passcode))
             {
@@ -115,7 +115,7 @@ namespace MWF.Mobile.Core.ViewModels
             return this.AuthenticateAsync();
         }
 
-        private Task SendDiagnosticsAsync()
+        public Task SendDiagnosticsAsync()
         {
             NavData<object> navData = new NavData<object>();
             navData.OtherData["Diagnostics"] = true;         

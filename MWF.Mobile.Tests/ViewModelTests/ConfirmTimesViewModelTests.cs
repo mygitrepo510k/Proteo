@@ -61,52 +61,43 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Tests
 
         [Fact]
-        public void InstructionCommmentVM_OverRideOnSiteDateTimeAddToMobileApplicationDataChunkService()
+        public async Task ConfirmTimesVM_OverrideOnSiteDateTimeAddToMobileApplicationDataChunkService()
         {
             base.ClearAll();
 
-            var confirmTimesVM = _fixture.Create<ConfirmTimesViewModel>();
-
             var navData = new NavData<MobileData>() { Data = _mobileData };
-            var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
-            navData.OtherData["DataChunk"] = dataChunk;
 
+            var confirmTimesVM = _fixture.Create<ConfirmTimesViewModel>();
             confirmTimesVM.Init(navData);
 
             var onSiteDateTime = DateTime.Now.AddDays(-1);
-
             confirmTimesVM.OnSiteDateTime = onSiteDateTime;
 
-            var mockDataChunkActivity = _fixture.Create<MobileApplicationDataChunkContentActivity>();
+            await confirmTimesVM.AdvanceConfirmTimesAsync();
 
-            confirmTimesVM.ButtonAdvanceConfirmTimes.Execute(null);
-
-            Assert.Equal(dataChunk.OverRiddenOnSiteDateTime, confirmTimesVM.OnSiteDateTime);   
+            Assert.Equal(onSiteDateTime, navData.Data.OnSiteDateTime);   
         }
+
         [Fact]
-        public void InstructionCommmentVM_OverRideCompleteDateTimeAddToMobileApplicationDataChunkService()
+        public async Task ConfirmTimesVM_OverrideCompleteDateTimeAddToMobileApplicationDataChunkService()
         {
             base.ClearAll();
 
-            var confirmTimesVM = _fixture.Create<ConfirmTimesViewModel>();
-
             var navData = new NavData<MobileData>() { Data = _mobileData };
-            var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
-            navData.OtherData["DataChunk"] = dataChunk;
 
+            var confirmTimesVM = _fixture.Create<ConfirmTimesViewModel>();
             confirmTimesVM.Init(navData);
 
             var completeDateTime = DateTime.Now.AddDays(-1);
-
             confirmTimesVM.CompleteDateTime = completeDateTime;
 
-            var mockDataChunkActivity = _fixture.Create<MobileApplicationDataChunkContentActivity>();
+            await confirmTimesVM.AdvanceConfirmTimesAsync();
 
-            confirmTimesVM.ButtonAdvanceConfirmTimes.Execute(null);
-
-            Assert.Equal(dataChunk.OverRiddenCompleteDateTime, confirmTimesVM.CompleteDateTime);
+            Assert.Equal(completeDateTime, navData.Data.CompleteDateTime);
         }
 
         #endregion Tests
+
     }
+
 }

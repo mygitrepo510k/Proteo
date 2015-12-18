@@ -105,7 +105,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _gatewayMock = _fixture.InjectNewMock<IGatewayService>();
             _gatewayMock.Setup(g => g.GetDriverInstructionsAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                        .Returns(Task.FromResult(mobileDatas))
+                        .ReturnsAsync(mobileDatas)
                         .Callback<string, Guid, DateTime, DateTime>((s1, g, dt1, dt2) => { startDate = dt1; endDate = dt2; });
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
@@ -190,7 +190,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             List<MobileData> insertList = new List<MobileData>();
 
             _mockMobileDataRepo.Setup(mdr => mdr.InsertAsync(It.IsAny<MobileData>()))
-                               .Callback<MobileData>(md => { insertList.Add(md); });
+                .Callback<MobileData>(md => { insertList.Add(md); })
+                .Returns(Task.FromResult(0));
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
@@ -453,7 +454,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _gatewayMock.Setup(
                 gm =>
                 gm.GetDriverInstructionsAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(),
-                    It.IsAny<DateTime>())).Returns(Task.FromResult(mobileDatas));
+                    It.IsAny<DateTime>())).ReturnsAsync(mobileDatas);
 
             _fixture.Inject(_gatewayMock.Object);
         }
@@ -473,7 +474,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _gatewayMock.Setup(
                 gm =>
                 gm.GetDriverInstructionsAsync(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<DateTime>(),
-                    It.IsAny<DateTime>())).Returns(Task.FromResult(mobileDatas));
+                    It.IsAny<DateTime>())).ReturnsAsync(mobileDatas);
 
             _fixture.Inject(_gatewayMock.Object);
         }

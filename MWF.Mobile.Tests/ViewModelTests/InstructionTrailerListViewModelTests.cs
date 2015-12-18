@@ -30,7 +30,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMvxMessenger> _mockMessenger;
         private Mock<INavigationService> _navigationServiceMock;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
-
+        private Mock<IRepositories> _mockRepositories;
 
         protected override void AdditionalSetup()
         {
@@ -42,11 +42,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<ICustomUserInteraction>(mockUserInteraction.Object);
 
             _mockUserInteraction = new Mock<ICustomUserInteraction>();
-            _mockUserInteraction.Setup(ui => ui.Confirm(It.IsAny<string>(), It.IsAny<Action<bool>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Callback<string, Action<bool>, string, string, string>((s1, a, s2, s3, s4) => a.Invoke(true));
+            _mockUserInteraction.Setup(ui => ui.ConfirmAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
             Ioc.RegisterSingleton<ICustomUserInteraction>(_mockUserInteraction.Object);
 
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
-            _fixture.Customize<TrailerListViewModel>(tlvm => tlvm.Without(x => x.DefaultTrailerReg));
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
@@ -62,10 +61,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationServiceMock = _fixture.InjectNewMock<INavigationService>();
             Ioc.RegisterSingleton<INavigationService>(_navigationServiceMock.Object);
+
+            var repositories = _fixture.Create<IRepositories>();
+            _fixture.Inject(repositories);
+            _mockRepositories = Mock.Get(repositories);
+
+            var applicationRepository = Mock.Of<IApplicationProfileRepository>(apr => apr.GetAllAsync() == Task.FromResult(_fixture.CreateMany<Core.Models.ApplicationProfile>()));
+            _mockRepositories.Setup(r => r.ApplicationRepository).Returns(applicationRepository);
         }
-
-
-
 
         /// <summary>
         /// Tests the view model can be initialized correctly
@@ -79,16 +82,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var trailers = _fixture.CreateMany<Core.Models.Trailer>();
             trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
-            _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
-
-            var vm = _fixture.Create<InstructionTrailerViewModel>();
+            _mockRepositories.Setup(r => r.TrailerRepository).Returns(trailerRepository.Object);
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             var navData = new NavData<MobileData>() { Data = mobileData };
             //set the trailer in the current order to have the same registration as first trailer
             mobileData.Order.Additional.Trailer.TrailerId = trailers.First().Registration;
 
+            var vm = _fixture.Build<InstructionTrailerViewModel>().With(itvm => itvm.TrailerSearchText, string.Empty).Create();
             await vm.Init(navData);
 
             Assert.Equal(vm.DefaultTrailerReg, mobileData.Order.Additional.Trailer.TrailerId);
@@ -96,7 +97,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             // first item in list should be the "default" i.e. it is the one specified in the order
             Assert.True(vm.Trailers.First().IsDefault);
             Assert.True(vm.Trailers.First().TrailerText.EndsWith("(as order)"));
-
         }
 
         /// <summary>
@@ -112,14 +112,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var trailers = _fixture.CreateMany<Core.Models.Trailer>();
             trailerRepository.Setup(vr => vr.GetAllAsync()).ReturnsAsync(trailers);
 
-            _fixture.Inject<ITrailerRepository>(trailerRepository.Object);
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
-
-            var vm = _fixture.Create<InstructionTrailerViewModel>();
+            _mockRepositories.Setup(r => r.TrailerRepository).Returns(trailerRepository.Object);
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             var navData = new NavData<MobileData>() { Data = mobileData };
 
+            var vm = _fixture.Build<InstructionTrailerViewModel>().With(itvm => itvm.TrailerSearchText, string.Empty).Create();
             await vm.Init(navData);
 
             var trailerItem = vm.Trailers.First();
@@ -128,14 +126,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your trailer");
 
             //select the first trailer
-            vm.TrailerSelectCommand.Execute(trailerItem);
+            await vm.ConfirmTrailerAsync(trailerItem);
 
             //Should have set the updated trailer on the nav data
             Assert.Equal(navData.OtherData["UpdatedTrailer"], trailerItem.Trailer);
 
             _navigationServiceMock.Verify( ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(nd => nd == navData)));
-
-
         }
 
         [Fact]
@@ -157,9 +153,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _navigationServiceMock.Verify(ns => ns.GoToManifestAsync(), Times.Once);
-
         }
-
 
         [Fact]
         public async Task InstructionTrailerListVM_CheckInstructionNotification_Update_Confirm()
@@ -170,8 +164,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == mobileData.ID))).ReturnsAsync(mobileData);
-            var repositories = _fixture.Create<Repositories>();
-            _fixture.Inject<IRepositories>(repositories);
+
+            _mockRepositories.Setup(r => r.MobileDataRepository).Returns(mockMobileDataRepo.Object);
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
@@ -189,8 +183,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-      
-
-        
     }
+
 }

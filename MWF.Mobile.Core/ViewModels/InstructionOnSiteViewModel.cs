@@ -44,19 +44,15 @@ namespace MWF.Mobile.Core.ViewModels
             _dataChunkService = dataChunkService;
         }
 
-        public void Init(NavData<MobileData> navData)
+        public async Task Init(NavData<MobileData> navData)
         {
             navData.Reinflate();
             _navData = navData;
             _mobileData = navData.Data;
             _orderList = new ObservableCollection<Item>(_mobileData.Order.Items);
-        }
-
-        public override async void Start()
-        {
-            base.Start();
             var config = await _repositories.ConfigRepository.GetAsync();
             this.IsDeliveryAddEnabled = _mobileData.Order.Type == Enums.InstructionType.Deliver && config.DeliveryAdd;
+            this.SetInstructionCommentButtonLabel();
         }
 
         #endregion
@@ -66,28 +62,19 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _advanceInstructionOnSiteCommand;
         public ICommand AdvanceInstructionOnSiteCommand
         {
-            get
-            {
-                return (_advanceInstructionOnSiteCommand = _advanceInstructionOnSiteCommand ?? new MvxCommand(async () => await this.AdvanceInstructionOnSiteAsync()));
-            }
+            get { return (_advanceInstructionOnSiteCommand = _advanceInstructionOnSiteCommand ?? new MvxCommand(async () => await this.AdvanceInstructionOnSiteAsync())); }
         }
 
         private MvxCommand<Item> _showInstructionOrderCommand;
         public ICommand ShowInstructionOrderCommand
         {
-            get
-            {
-                return(_showInstructionOrderCommand = _showInstructionOrderCommand ?? new MvxCommand<Item>(o => ShowOrder(o)));
-            }
+            get { return(_showInstructionOrderCommand = _showInstructionOrderCommand ?? new MvxCommand<Item>(o => ShowOrder(o))); }
         }
 
         private MvxCommand _addDeliveriesCommand;
         public ICommand AddDeliveriesCommand
         {
-            get
-            {
-                return (_addDeliveriesCommand = _addDeliveriesCommand ?? new MvxCommand(() => AddDeliveries()));
-            }
+            get { return (_addDeliveriesCommand = _addDeliveriesCommand ?? new MvxCommand(() => AddDeliveries())); }
         }
 
         private ObservableCollection<Item> _orderList;
@@ -97,33 +84,18 @@ namespace MWF.Mobile.Core.ViewModels
             set { _orderList = value; RaisePropertyChanged(() => OrderList); }
         }
 
+        private string _instructionCommentButtonLabel;
         public string InstructionCommentButtonLabel
         {
-            get
-            {
-                var deliveryOptions = _navData.GetWorseCaseDeliveryOptions();
-
-                return ((_mobileData.Order.Type == Enums.InstructionType.Collect
-                    && (_mobileData.Order.Additional.CustomerNameRequiredForCollection
-                    || _mobileData.Order.Additional.CustomerSignatureRequiredForCollection 
-                    || _mobileData.Order.Additional.IsTrailerConfirmationEnabled))
-                    || (_mobileData.Order.Type == Enums.InstructionType.Deliver
-                    && (deliveryOptions.CustomerNameRequiredForDelivery
-                    || deliveryOptions.CustomerSignatureRequiredForDelivery
-                    || deliveryOptions.BarcodeScanRequiredForDelivery
-                    || !deliveryOptions.BypassCommentsScreen
-                    || !deliveryOptions.BypassCleanClausedScreen))) ? "Continue" : "Complete";
-            }
+            get { return _instructionCommentButtonLabel; }
+            set { _instructionCommentButtonLabel = value; RaisePropertyChanged(() => InstructionCommentButtonLabel); }
         }
 
         public string HeaderText { get { return "Select an order for further details"; } }
 
         public string AddDeliveriesButtonLabel
         {
-            get
-            {
-                return "Add/Remove Deliveries";
-            }
+            get { return "Add/Remove Deliveries"; }
         }
 
         public bool IsDeliveryAddEnabled { get; private set; }
@@ -187,7 +159,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AddDeliveries()
         {
-
             _navigationService.ShowModalViewModel<InstructionAddDeliveriesViewModel, bool>(this, _navData, (modified) =>
             {
                 if (modified)
@@ -201,6 +172,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             List<Item> newOrderList = new List<Item>(_mobileData.Order.Items);
             var additionalInstructions = _navData.GetAdditionalInstructions();
+
             foreach (var additionalInstruction in additionalInstructions)
             {
                 newOrderList.AddRange(additionalInstruction.Order.Items);
@@ -209,14 +181,30 @@ namespace MWF.Mobile.Core.ViewModels
             this.OrderList = new ObservableCollection<Item>(newOrderList);
         }
 
-        private void RefreshPage(Guid ID)
+        private async Task RefreshPageAsync(Guid ID)
         {
-
-            _navData.ReloadInstruction(ID, _repositories);
+            await _navData.ReloadInstructionAsync(ID, _repositories);
             _mobileData = _navData.Data;
 
             RefreshOrders();
             RaiseAllPropertiesChanged();
+        }
+
+        private void SetInstructionCommentButtonLabel()
+        {
+            var deliveryOptions = _navData.GetWorseCaseDeliveryOptions();
+
+            this.InstructionCommentButtonLabel =
+                ((_mobileData.Order.Type == Enums.InstructionType.Collect
+                && (_mobileData.Order.Additional.CustomerNameRequiredForCollection
+                || _mobileData.Order.Additional.CustomerSignatureRequiredForCollection
+                || _mobileData.Order.Additional.IsTrailerConfirmationEnabled))
+                || (_mobileData.Order.Type == Enums.InstructionType.Deliver
+                && (deliveryOptions.CustomerNameRequiredForDelivery
+                || deliveryOptions.CustomerSignatureRequiredForDelivery
+                || deliveryOptions.BarcodeScanRequiredForDelivery
+                || !deliveryOptions.BypassCommentsScreen
+                || !deliveryOptions.BypassCleanClausedScreen))) ? "Continue" : "Complete";
         }
 
         #endregion
@@ -250,7 +238,8 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
-                    RefreshPage(instructionID);
+
+                    await this.RefreshPageAsync(instructionID);
                 }
                 else
                 {

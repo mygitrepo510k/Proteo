@@ -54,11 +54,17 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<BarcodeScanningViewModel>(vm => vm.Without(x => x.BarcodeSections));
             _fixture.Customize<BarcodeScanningViewModel>(vm => vm.Without(x => x.BarcodeInput));
 
-
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
 
+            _damageStatuses = _fixture.CreateMany<DamageStatus>().ToList();
+            _damageStatuses[0].Code = "POD";
+            _damageStatuses[1].Code = "PODD";
+        }
+
+        private async Task SetupBarcodeScanningViewModel()
+        {
             _barcodeScanningViewModel = _fixture.Create<BarcodeScanningViewModel>();
-            _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
+            await _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
             // mark all the barcode items as processed
             _barcodeScanningViewModel.MarkBarcodeAsProcessed(_barcodeScanningViewModel.BarcodeSections[0].Barcodes[0]);
             _barcodeScanningViewModel.MarkBarcodeAsProcessed(_barcodeScanningViewModel.BarcodeSections[0].Barcodes[0]);
@@ -67,16 +73,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _barcodeItemViewModel1 = _barcodeScanningViewModel.BarcodeSections[1].Barcodes[0];
             _barcodeItemViewModel2 = _barcodeScanningViewModel.BarcodeSections[1].Barcodes[1];
             _barcodeItemViewModel3 = _barcodeScanningViewModel.BarcodeSections[1].Barcodes[2];
-
-            _damageStatuses = _fixture.CreateMany<DamageStatus>().ToList();
-            _damageStatuses[0].Code = "POD";
-            _damageStatuses[1].Code = "PODD";
         }
 
         #endregion Setup
 
         #region Test
-        
+
         [Fact]
         public void BarcodeStatusVM_FragmentTitle()
         {
@@ -85,14 +87,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
 
             Assert.Equal("Set Pallet Status", barcodeStatusVM.FragmentTitle);
-
         }
 
         [Fact]
         // checks that when initialised with a single barcode the pallet id of the view model is correct
-        public void BarcodeStatusVM_SingleBarcode_PalletID()
+        public async Task BarcodeStatusVM_SingleBarcode_PalletID()
         {
             base.ClearAll();
+
+            await this.SetupBarcodeScanningViewModel();
 
             var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
 
@@ -104,9 +107,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         [Fact]
         // checks that when initialised with multiple the pallet id of the view model is correct
-        public void BarcodeStatusVM_MultipleBarcode_PalletID()
+        public async Task BarcodeStatusVM_MultipleBarcode_PalletID()
         {
             base.ClearAll();
+
+            await this.SetupBarcodeScanningViewModel();
 
             var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
 
@@ -123,9 +128,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
         [Fact]
         // checks that modifying barcode properties doesn't modify properties on the barcode passed in
         // (those changes should only take effect when the user presses "done")
-        public void BarcodeStatusVM_ModifyBarcode()
+        public async Task BarcodeStatusVM_ModifyBarcode()
         {
             base.ClearAll();
+
+            await this.SetupBarcodeScanningViewModel();
 
             var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
 
@@ -141,15 +148,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
             // original barcode shouldn't have changed
             Assert.Equal(originalBarcode.IsDelivered, _barcodeItemViewModel1.IsDelivered);
             Assert.Equal(originalBarcode.DeliveryComments, _barcodeItemViewModel1.DeliveryComments);
-
-
         }
 
         [Fact]
         // checks that when "done" is pressed changes made are set back on the original barcode
-        public void BarcodeStatusVM_Done()
+        public async Task BarcodeStatusVM_Done()
         {
             base.ClearAll();
+
+            await this.SetupBarcodeScanningViewModel();
 
             var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
 
@@ -165,14 +172,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
             // original barcode should have changed
             Assert.Equal(_barcodeItemViewModel1.IsDelivered, barcodeStatusVM.Barcode.IsDelivered);
             Assert.Equal(_barcodeItemViewModel1.DeliveryComments, barcodeStatusVM.Barcode.DeliveryComments);
-
         }
 
         [Fact]
         // checks that when "done" is pressed when multiple barcodes have been selected, changes made are set back on all those barcodes      
-        public void BarcodeStatusVM_MultipleDone()
+        public async Task BarcodeStatusVM_MultipleDone()
         {
             base.ClearAll();
+
+            await this.SetupBarcodeScanningViewModel();
 
             var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
 
@@ -202,13 +210,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             //check that the "isSelected" flags have been cleared
             Assert.False(_barcodeItemViewModel2.IsSelected);
             Assert.False(_barcodeItemViewModel3.IsSelected);
-
-
         }
-
 
         #endregion Test
 
-
     }
+
 }

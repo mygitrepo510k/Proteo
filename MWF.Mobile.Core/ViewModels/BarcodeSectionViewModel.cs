@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cirrious.CrossCore;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -17,7 +18,6 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _barcodes = new ObservableCollection<BarcodeItemViewModel>();
             _barcodeScanningViewModel = barcodeScanningViewModel;
-
         }
 
         private ObservableCollection<BarcodeItemViewModel> _barcodes;

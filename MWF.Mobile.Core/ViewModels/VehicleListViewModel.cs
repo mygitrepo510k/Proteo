@@ -54,17 +54,19 @@ namespace MWF.Mobile.Core.ViewModels
             
         }
 
-        public async override void Start()
+        public async Task Init()
         {
-            base.Start();
             Vehicles = _originalVehicleList = await _vehicleRepository.GetAllAsync();
             _vehicleListCount = FilteredVehicleCount;
 
             await this.LastVehicleSelectAsync();
         }
+
+        private string _vehicleSelectText;
         public string VehicleSelectText
         {
-            get { return "Select vehicle - Showing " + FilteredVehicleCount + " of " + VehicleListCount; }
+            get { return _vehicleSelectText; }
+            set { _vehicleSelectText = value; RaisePropertyChanged(() => VehicleSelectText); }
         }
 
         public override string FragmentTitle
@@ -139,13 +141,10 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand<Vehicle> _showVehicleDetailCommand;
         public ICommand ShowVehicleDetailCommand
         {
-            get
-            {
-                return (_showVehicleDetailCommand = _showVehicleDetailCommand ?? new MvxCommand<Vehicle>(async v => await VehicleDetailAsync(v)));
-            }
+            get { return (_showVehicleDetailCommand = _showVehicleDetailCommand ?? new MvxCommand<Vehicle>(async v => await this.VehicleDetailAsync(v))); }
         }
 
-        private async Task VehicleDetailAsync(Vehicle vehicle)
+        public async Task VehicleDetailAsync(Vehicle vehicle)
         {
             if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(vehicle.Registration, "Confirm your vehicle", "Confirm"))
             {
@@ -166,28 +165,30 @@ namespace MWF.Mobile.Core.ViewModels
         public string VehicleSearchText
         {
             get { return _vehicleSearchText; }
-            set { _vehicleSearchText = value; FilterList(); RaisePropertyChanged(() => VehicleSelectText); }
+            set { _vehicleSearchText = value; this.FilterList(); RaisePropertyChanged(() => VehicleSearchText); }
         }
 
         private void FilterList()
         {
-            if (string.IsNullOrEmpty(VehicleSearchText))
+            if (_originalVehicleList != null)
             {
-                Vehicles = _originalVehicleList;
-            }
-            else
-            {
-                Vehicles = _originalVehicleList.Where(t => t.Registration != null && t.Registration.ToUpper().Contains(VehicleSearchText.ToUpper()));
+                if (string.IsNullOrEmpty(VehicleSearchText))
+                {
+                    Vehicles = _originalVehicleList;
+                }
+                else
+                {
+                    Vehicles = _originalVehicleList.Where(t => t.Registration != null && t.Registration.ToUpper().Contains(VehicleSearchText.ToUpper()));
+                }
+
+                this.VehicleSelectText = string.Format("Select vehicle - Showing {0} of {1}", FilteredVehicleCount, VehicleListCount);
             }
         }
 
         private MvxCommand _refreshListCommand;
         public ICommand RefreshListCommand
         {
-            get
-            {
-                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(async () => await UpdateVehicleListAsync()));
-            }
+            get { return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(async () => await this.UpdateVehicleListAsync())); }
         }
 
         public async Task UpdateVehicleListAsync()
@@ -223,7 +224,7 @@ namespace MWF.Mobile.Core.ViewModels
                     //Recalls the filter text if there is text in the search field.
                     if (VehicleSearchText != null)
                     {
-                        FilterList();
+                        this.FilterList();
                     }
                 }
             }

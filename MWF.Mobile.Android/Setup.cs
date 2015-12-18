@@ -65,6 +65,8 @@ namespace MWF.Mobile.Android
             Mvx.RegisterSingleton<ILaunchPhone>(() => new Portable.LaunchPhone());
             Mvx.RegisterSingleton<IUpload>(() => new Portable.Upload());
 
+            Mvx.RegisterSingleton<SQLite.Net.Interop.ISQLitePlatform>(() => new SQLite.Net.Platform.XamarinAndroid.SQLitePlatformAndroid());
+
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             AndroidEnvironment.UnhandledExceptionRaiser += (sender, args) =>

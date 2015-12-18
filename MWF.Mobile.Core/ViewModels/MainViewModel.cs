@@ -35,7 +35,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Constructor
 
-        public MainViewModel(INavigationService navigationService)
+        public MainViewModel(IMvxViewModelLoader viewModelLoader, INavigationService navigationService)
+            : base(viewModelLoader)
         {
             this.SetInitialViewModel<ManifestViewModel>();
 

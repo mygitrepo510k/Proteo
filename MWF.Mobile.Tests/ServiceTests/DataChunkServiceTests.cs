@@ -71,7 +71,6 @@ namespace MWF.Mobile.Tests.ServiceTests
 
         #endregion Setup
 
-
         #region Tests
 
         /// <summary>

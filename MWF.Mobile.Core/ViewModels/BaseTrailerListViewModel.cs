@@ -47,8 +47,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task Init()
         {
-            base.Start();
-
             var _vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID);
 
             if (_vehicle != null)
@@ -125,22 +123,14 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _refreshListCommand;
         public ICommand RefreshListCommand
         {
-            get
-            {
-                return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(async () => await UpdateTrailerListAsync()));
-            }
+            get { return (_refreshListCommand = _refreshListCommand ?? new MvxCommand(async () => await this.UpdateTrailerListAsync())); }
         }
 
         private MvxCommand<TrailerItemViewModel> _trailerSelectCommand;
         public ICommand TrailerSelectCommand
         {
-            get
-            {
-                var title = "Confirm your trailer";
-                return (_trailerSelectCommand = _trailerSelectCommand ?? new MvxCommand<TrailerItemViewModel>(async t => await ConfirmTrailerAsync(t.Trailer, title, t.Trailer.Registration)));
-            }
+            get { return (_trailerSelectCommand = _trailerSelectCommand ?? new MvxCommand<TrailerItemViewModel>(async tivm => await this.ConfirmTrailerAsync(tivm))); }
         }
-
 
         private bool _isBusy = false;
         public bool IsBusy
@@ -170,12 +160,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand<Trailer> _notrailerSelectCommand;
         public ICommand NoTrailerSelectCommand
         {
-            get
-            {
-                var title = "No trailer";
-                var message = "Confirm you don't have a trailer";
-                return (_notrailerSelectCommand = _notrailerSelectCommand ?? new MvxCommand<Trailer>(async t => await ConfirmTrailerAsync(null, title, message)));
-            }
+            get { return (_notrailerSelectCommand = _notrailerSelectCommand ?? new MvxCommand<Trailer>(async t => await this.ConfirmNoTrailerAsync())); }
         }
 
         public string DefaultTrailerReg { get; private set; }
@@ -192,9 +177,22 @@ namespace MWF.Mobile.Core.ViewModels
                 await this.GetTrailerModelsAsync();
         }
 
+        public Task ConfirmNoTrailerAsync()
+        {
+            var title = "No trailer";
+            var message = "Confirm you don't have a trailer";
+            return this.ConfirmTrailerAsync(null, title, message);
+        }
+
+        public Task ConfirmTrailerAsync(TrailerItemViewModel tivm)
+        {
+            var title = "Confirm your trailer";
+            return this.ConfirmTrailerAsync(tivm.Trailer, title, tivm.Trailer.Registration);
+        }
+
         protected abstract Task ConfirmTrailerAsync(Trailer trailer, string title, string message);
 
-        protected async Task UpdateTrailerListAsync()
+        public async Task UpdateTrailerListAsync()
         {
             this.IsBusy = true;
             ProgressMessage = "Updating Trailers.";
@@ -239,12 +237,12 @@ namespace MWF.Mobile.Core.ViewModels
 
                 //Recalls the filter text if there is text in the search field.
                 if (TrailerSearchText != null)
-                    FilterList();
+                    this.FilterList();
             }
+
             this.IsBusy = false;
             await UpdateVehicleListAsync();
             await UpdateSafetyProfilesAsync();
-            
         }
 
         protected async Task UpdateSafetyProfilesAsync()
@@ -332,6 +330,7 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task GetTrailerModelsAsync()
         {
             var data = await _repositories.TrailerRepository.GetAllAsync();
+
             _originalTrailerList = data.Select(x => new TrailerItemViewModel() 
             { 
                 Trailer = x,
@@ -351,9 +350,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         private bool _isDefault;
 
-
-
         public Trailer Trailer { get; set; }
+
         public bool IsDefault 
         {
             get { return _isDefault; }

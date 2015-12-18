@@ -163,7 +163,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionVM_ProgressButtonText_NotStarted()
+        public async Task InstructionVM_ProgressButtonText_NotStarted()
         {
             base.ClearAll();
 
@@ -175,7 +175,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal("Drive", instructionVM.ProgressButtonText);
 
-            instructionVM.ProgressInstructionCommand.Execute(null);
+            await instructionVM.ProgressInstructionAsync();
 
             Assert.True(_mobileData.ProgressState == Core.Enums.InstructionProgress.Driving);
 
@@ -184,7 +184,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionVM_ProgressButton_Driving()
+        public async Task InstructionVM_ProgressButton_Driving()
         {
             base.ClearAll();
 
@@ -196,7 +196,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal("On Site", instructionVM.ProgressButtonText);
 
-            instructionVM.ProgressInstructionCommand.Execute(null);
+            await instructionVM.ProgressInstructionAsync();
 
             Assert.True(_mobileData.ProgressState == Core.Enums.InstructionProgress.OnSite);
 
@@ -205,7 +205,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionVM_ProgressButton_OnSite()
+        public async Task InstructionVM_ProgressButton_OnSite()
         {
             base.ClearAll();
 
@@ -217,7 +217,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal("On Site", instructionVM.ProgressButtonText);
 
-            instructionVM.ProgressInstructionCommand.Execute(null);
+            await instructionVM.ProgressInstructionAsync();
 
             // Shouldn't have set to complete yet
             Assert.True(_mobileData.ProgressState == Core.Enums.InstructionProgress.OnSite);

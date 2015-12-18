@@ -37,9 +37,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             //mock the gateway service
             _gatewayServiceMock = new Mock<IGatewayService>();
-            _gatewayServiceMock.Setup(gs => gs.GetDriversAsync()).Returns(Task.FromResult<IEnumerable<Driver>>(new List<Driver>()));
+            _gatewayServiceMock.Setup(gs => gs.GetDriversAsync()).ReturnsAsync(Enumerable.Empty<Driver>());
             _fixture.Inject<IGatewayService>(_gatewayServiceMock.Object);
-
         }
 
         [Theory]
@@ -66,7 +65,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Inject<IDriverRepository>(driverRepositoryMock.Object);
 
             // set up the gaeway service license check
-            _gatewayServiceMock.Setup(gsm => gsm.LicenceCheckAsync(It.Is<Guid>(g => g == _matchingPasscodes.First().ID))).Returns(Task.FromResult<bool>(isCurrentlyLicensed));
+            _gatewayServiceMock.Setup(gsm => gsm.LicenceCheckAsync(It.Is<Guid>(g => g == _matchingPasscodes.First().ID))).ReturnsAsync(isCurrentlyLicensed);
 
             //set up whether the driver has been previously licensed successfully
             _matchingPasscodes.First().IsLicensed = waspreviouslyLicensed;

@@ -92,7 +92,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void CommentHintText_TakePicture()
+        public async Task CommentHintText_TakePicture()
         {
             base.ClearAll();
 
@@ -109,19 +109,17 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.Equal(true, cameraVM.HasPhotoBeenTaken);
 
             //// Invoke the done command
-            cameraVM.DoneCommand.Execute(null);
+            await cameraVM.DoDoneCommandAsync();
 
             _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Once);
             _mockImageUploadService.Verify(mis => mis.SendPhotoAndCommentAsync(It.IsAny<string>(), It.IsAny<List<Image>>(), It.IsAny<Driver>(), It.IsAny<List<MobileData>>()), Times.Once);
-
         }
 
         // Checks that when the delete command is executed on a fault image the image is deleted from the view model (initially) and the data
         // model (when done has been pressed)
         [Fact]
-        public void CameraVM_Delete_OK()
+        public async Task CameraVM_Delete_OK()
         {
-
             base.ClearAll();
 
             var cameraVM = _fixture.Build<SidebarCameraViewModel>().Without(p => p.CommentText).Create<SidebarCameraViewModel>();
@@ -135,18 +133,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Delete Picture");
 
             //delete the last image
-            cameraVM.ImagesVM[previousImageCount - 1].DeleteCommand.Execute(null);
+            await cameraVM.ImagesVM[previousImageCount - 1].DeleteAsync();
 
             // should have one less image in view model 
             Assert.Equal(previousImageCount - 1, cameraVM.ImagesVM.Count);
-
         }
 
         [Fact]
         // Checks that when the user cancels out of an image deletion nothing is actually deleted
-        public void CameraVM_Delete_Cancel()
+        public async Task CameraVM_Delete_Cancel()
         {
-
             base.ClearAll();
 
             var cameraVM = _fixture.Build<SidebarCameraViewModel>().Without(p => p.CommentText).Create<SidebarCameraViewModel>();
@@ -160,12 +156,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.ConfirmReturnsFalse();
 
             // attempt to delete the last image
-            cameraVM.ImagesVM[previousImageCount - 1].DeleteCommand.Execute(null);
+            await cameraVM.ImagesVM[previousImageCount - 1].DeleteAsync();
 
             // nothing should have been deleted since we cancelled out of the deletion
             Assert.Equal(previousImageCount, cameraVM.ImagesVM.Count);
-
-
         }
 
         [Fact]
@@ -191,15 +185,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
                                                   It.Is<string>(s => s == "Close")));
         }
 
-
         [Fact]
         public async Task CameraVM_CheckInstructionNotification_Delete()
         {
-
             base.ClearAll();
 
-            _mockUserInteraction.Setup(cui => cui.Alert(It.IsAny<string>(), It.IsAny<Action>(), It.IsAny<string>(), It.IsAny<string>()))
-            .Callback<string, Action, string, string>((s1, a, s2, s3) => a.Invoke());
+            _mockUserInteraction.Setup(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(0));
 
             _navigationService.SetupGet( x=> x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData});
 
@@ -212,9 +204,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _navigationService.Verify(ns => ns.GoToManifestAsync(), Times.Once);
-
         }
-
 
         [Fact]
         public async Task CameraVM_CheckInstructionNotification_Update_Confirm()

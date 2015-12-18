@@ -81,7 +81,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNextAsync());
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync()).Returns(Task.FromResult(0));
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your trailer");
@@ -89,7 +89,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var vm = _fixture.Create<TrailerListViewModel>();
             await vm.Init();
 
-            vm.TrailerSelectCommand.Execute(_trailerItemViewModel);
+            await vm.ConfirmTrailerAsync(_trailerItemViewModel);
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
@@ -99,7 +99,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// Tests that on successful authentication a drivers trailer ID 
         /// </summary>
         [Fact]
-        public void TrailerListVM_SuccessfulAuthenticationStoresDriverTrailerID()
+        public async Task TrailerListVM_SuccessfulAuthenticationStoresDriverTrailerID()
         {
             base.ClearAll();
 
@@ -107,36 +107,34 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<TrailerListViewModel>();
 
-            vm.TrailerSelectCommand.Execute(_trailerItemViewModel);
+            await vm.ConfirmTrailerAsync(_trailerItemViewModel);
 
             Assert.NotNull(_infoService.LoggedInDriver);
             Assert.Equal(_trailer.ID, _infoService.LoggedInDriver.LastSecondaryVehicleID);
-
         }
 
         /// <summary>
         /// Tests that on successful selection of no trailer 
         /// </summary>
         [Fact]
-        public void TrailerListVM_SuccessfulSelectionOfNoTrailer()
+        public async Task TrailerListVM_SuccessfulSelectionOfNoTrailer()
         {
             base.ClearAll();
 
             var vm = _fixture.Create<TrailerListViewModel>();
 
-            vm.NoTrailerSelectCommand.Execute(null);
+            await vm.ConfirmNoTrailerAsync();
 
             Assert.NotNull(_infoService.LoggedInDriver);
             Assert.Equal(Guid.Empty, _infoService.LoggedInDriver.LastSecondaryVehicleID);
-
         }
 
         /// <summary>
         /// Tests that the toast message appears when there is no internet connection
         /// on the refresh of the trailer list.
         /// </summary>
-        [Fact(Skip = "Temporarily disabled during trailer select refactor")]
-        public void TrailerListVM_NoInternetShowToast()
+        [Fact]
+        public async Task TrailerListVM_NoInternetShowToast()
         {
             base.ClearAll();
 
@@ -147,7 +145,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<TrailerListViewModel>();
 
-            vm.RefreshListCommand.Execute(null);
+            await vm.UpdateTrailerListAsync();
 
             toast.Verify(t => t.Show("No internet connection!"));
 
@@ -195,7 +193,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.TrailerSearchText = "";
 
-            vm.RefreshListCommand.Execute(null);
+            await vm.UpdateTrailerListAsync();
 
             var trailerModels = vm.Trailers.Select(x => x.Trailer);
 
@@ -223,7 +221,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             vm.TrailerSearchText = "Registration";
 
-            vm.RefreshListCommand.Execute(null);
+            await vm.UpdateTrailerListAsync();
 
             var trailerModels = vm.Trailers.Select(x => x.Trailer);
 
@@ -232,5 +230,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _trailerRepository.Verify(vr => vr.GetAllAsync(), Times.Exactly(2));
 
         }
+
     }
+
 }

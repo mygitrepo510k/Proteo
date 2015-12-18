@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.MvvmCross.Test.Core;
+using Cirrious.MvvmCross.ViewModels;
 using Moq;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Tests.Helpers;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
@@ -16,15 +18,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
     public class StartupViewModelTests : MvxIoCSupportingTest
     {
         private IFixture _fixture;
+        private Mock<IMvxViewModelLoader> _viewModelLoader;
 
         protected override void AdditionalSetup()
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
-
+            _viewModelLoader = _fixture.InjectNewMock<IMvxViewModelLoader>();
         }
 
         [Fact]
-        public void StartupVM_EmptyCustomerRepository()
+        public async Task StartupVM_EmptyCustomerRepository()
         {
             base.ClearAll();
 
@@ -33,14 +36,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var startUpViewModel = _fixture.Create<StartupViewModel>();
+            await startUpViewModel.Init();
 
             // startup view model should return a customer code view model
-            Assert.IsType(typeof(CustomerCodeViewModel), startUpViewModel.InitialViewModel);
-
+            _viewModelLoader.Verify(vml => vml.LoadViewModel(It.Is<MvxViewModelRequest>(vmr => vmr.ViewModelType == typeof(CustomerCodeViewModel)), It.IsAny<IMvxBundle>()));
         }
 
         [Fact]
-        public void StartupVM_NonEmptyCustomerRepository()
+        public async Task StartupVM_NonEmptyCustomerRepository()
         {
             base.ClearAll();
 
@@ -48,10 +51,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var startUpViewModel = _fixture.Create<StartupViewModel>();
+            await startUpViewModel.Init();
 
             // startup view model should return a passcode view model
-            Assert.IsType(typeof(PasscodeViewModel), startUpViewModel.InitialViewModel);
-
+            _viewModelLoader.Verify(vml => vml.LoadViewModel(It.Is<MvxViewModelRequest>(vmr => vmr.ViewModelType == typeof(PasscodeViewModel)), It.IsAny<IMvxBundle>()));
         }
+
     }
+
 }

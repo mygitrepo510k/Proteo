@@ -7,8 +7,8 @@ using System;
 using System.Net;
 using System.Diagnostics;
 using System.IO;
-using SQLite.Net.Platform.Generic;
 using System.Threading.Tasks;
+using Cirrious.CrossCore;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -21,23 +21,23 @@ namespace MWF.Mobile.Core.Services
         private readonly IDeviceInfo _deviceInfo = null;
         private const string DBNAME = "db.sql";
         private SQLite.Net.SQLiteConnectionString _connectionString = null;
+        private SQLite.Net.Interop.ISQLitePlatform _platform = null;
         private string _path = "";
-        private SQLitePlatformGeneric _platform = null;
         private SQLiteConnectionPool _connectionPool = null;
 
         #endregion
 
         #region Construction
 
-        public DataService(IDeviceInfo deviceInfo)
+        public DataService(IDeviceInfo deviceInfo, SQLite.Net.Interop.ISQLitePlatform platform)
         {
             _deviceInfo = deviceInfo;
+            _platform = platform;
             _path = Path.Combine(_deviceInfo.DatabasePath, DBNAME);
-            _platform = new SQLite.Net.Platform.Generic.SQLitePlatformGeneric();
             _connectionString = new SQLiteConnectionString(_path, true);
             _connectionPool = new SQLiteConnectionPool(_platform);
 
-            CreateTablesIfRequired();
+            this.CreateTablesIfRequired();
         }
 
         #endregion
@@ -54,13 +54,13 @@ namespace MWF.Mobile.Core.Services
 
         #region Properties
 
-        public Database.IConnection GetDBConnection()
+        public virtual Database.IConnection GetDBConnection()
         {
             var _conn = new Database.Connection(_platform, _path, SQLite.Net.Interop.SQLiteOpenFlags.ReadWrite | SQLite.Net.Interop.SQLiteOpenFlags.Create | SQLite.Net.Interop.SQLiteOpenFlags.FullMutex);            
             return _conn;
         }
 
-        public Database.IAsyncConnection GetAsyncDBConnection()
+        public virtual Database.IAsyncConnection GetAsyncDBConnection()
         {
             return new Database.AsyncConnection(() => _connectionPool.GetConnection(_connectionString));
         }
@@ -81,37 +81,37 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         private void CreateTablesIfRequired()
         {
-            var connection = this.GetAsyncDBConnection();
-            connection.CreateTableAsync<Additional>();
-            connection.CreateTableAsync<Models.Instruction.Address>();
-            connection.CreateTableAsync<ApplicationProfile>();
-            connection.CreateTableAsync<ConfirmQuantity>();
-            connection.CreateTableAsync<CurrentDriver>();
-            connection.CreateTableAsync<Customer>();
-            connection.CreateTableAsync<DeliveryDescription>();
-            connection.CreateTableAsync<Device>();
-            connection.CreateTableAsync<Driver>();
-            connection.CreateTableAsync<GatewayQueueItem>();
-            connection.CreateTableAsync<Instruction>();
-            connection.CreateTableAsync<Image>();
-            connection.CreateTableAsync<ItemAdditional>();
-            connection.CreateTableAsync<Item>();
-            connection.CreateTableAsync<LatestSafetyCheck>();
-            connection.CreateTableAsync<LogMessage>();
-            connection.CreateTableAsync<MWFMobileConfig>();
-            connection.CreateTableAsync<MobileData>();
-            connection.CreateTableAsync<Order>();
-            connection.CreateTableAsync<SafetyCheckData>();
-            connection.CreateTableAsync<SafetyCheckFault>();
-            connection.CreateTableAsync<SafetyCheckFaultType>();
-            connection.CreateTableAsync<SafetyProfile>();
-            connection.CreateTableAsync<Signature>();
-            connection.CreateTableAsync<Vehicle>();
-            connection.CreateTableAsync<Models.Trailer>();
-            connection.CreateTableAsync<Models.Instruction.Trailer>();
-            connection.CreateTableAsync<VehicleView>();
-            connection.CreateTableAsync<VerbProfile>();
-            connection.CreateTableAsync<VerbProfileItem>();
+            var connection = this.GetDBConnection();
+            connection.CreateTable<Additional>();
+            connection.CreateTable<Models.Instruction.Address>();
+            connection.CreateTable<ApplicationProfile>();
+            connection.CreateTable<ConfirmQuantity>();
+            connection.CreateTable<CurrentDriver>();
+            connection.CreateTable<Customer>();
+            connection.CreateTable<DeliveryDescription>();
+            connection.CreateTable<Device>();
+            connection.CreateTable<Driver>();
+            connection.CreateTable<GatewayQueueItem>();
+            connection.CreateTable<Instruction>();
+            connection.CreateTable<Image>();
+            connection.CreateTable<ItemAdditional>();
+            connection.CreateTable<Item>();
+            connection.CreateTable<LatestSafetyCheck>();
+            connection.CreateTable<LogMessage>();
+            connection.CreateTable<MWFMobileConfig>();
+            connection.CreateTable<MobileData>();
+            connection.CreateTable<Order>();
+            connection.CreateTable<SafetyCheckData>();
+            connection.CreateTable<SafetyCheckFault>();
+            connection.CreateTable<SafetyCheckFaultType>();
+            connection.CreateTable<SafetyProfile>();
+            connection.CreateTable<Signature>();
+            connection.CreateTable<Vehicle>();
+            connection.CreateTable<Models.Trailer>();
+            connection.CreateTable<Models.Instruction.Trailer>();
+            connection.CreateTable<VehicleView>();
+            connection.CreateTable<VerbProfile>();
+            connection.CreateTable<VerbProfileItem>();
         }
 
         #endregion

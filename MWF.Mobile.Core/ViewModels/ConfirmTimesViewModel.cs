@@ -27,7 +27,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion
 
-
         #region Properties
         private DateTime _onSiteDateTime;
         public DateTime OnSiteDateTime
@@ -61,13 +60,14 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion Properties
 
         #region Private Methods
-        private async Task AdvanceConfirmTimesAsync()
+
+        public async Task AdvanceConfirmTimesAsync()
         {
             _navData.Data.OnSiteDateTime = OnSiteDateTime;
             _navData.Data.CompleteDateTime = CompleteDateTime;
             var additionalInstructions = _navData.GetAdditionalInstructions();
 
-            foreach(var instruction in additionalInstructions)
+            foreach (var instruction in additionalInstructions)
             {
                 instruction.OnSiteDateTime = OnSiteDateTime;
                 instruction.CompleteDateTime = CompleteDateTime;
@@ -94,9 +94,9 @@ namespace MWF.Mobile.Core.ViewModels
             OnSiteDateTime = navData.Data.OnSiteDateTime;
         }
 
-        private void RefreshPage(Guid ID)
+        private async Task RefreshPageAsync(Guid ID)
         {
-            _navData.ReloadInstruction(ID, _repositories);
+            await _navData.ReloadInstructionAsync(ID, _repositories);
             _mobileData = _navData.Data;
             RaiseAllPropertiesChanged();
         }
@@ -110,10 +110,7 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand _confirmTimesCommand;
         public ICommand ButtonAdvanceConfirmTimes
         {
-            get
-            {
-                return (_confirmTimesCommand = _confirmTimesCommand?? new MvxCommand(async () => await AdvanceConfirmTimesAsync()));
-            }
+            get { return (_confirmTimesCommand = _confirmTimesCommand?? new MvxCommand(async () => await this.AdvanceConfirmTimesAsync())); }
         }
 
         #endregion
@@ -128,7 +125,8 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     if (this.IsVisible)
                         await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
-                    RefreshPage(instructionID);
+
+                    await this.RefreshPageAsync(instructionID);
                 }
                 else
                 {

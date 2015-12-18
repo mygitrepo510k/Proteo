@@ -75,7 +75,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Test
 
         [Fact]
-        public void InstructionSignatureVM_Complete_Signature()
+        public async Task InstructionSignatureVM_Complete_Signature()
         {
             base.ClearAll();
 
@@ -87,8 +87,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.Init(navData);
 
-
-            instructionSignatureVM.InstructionDoneCommand.Execute(null);
+            await instructionSignatureVM.InstructionDoneAsync();
 
             _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny <NavData<MobileData>>()), Times.Once);
 
@@ -98,7 +97,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         }
 
         [Fact]
-        public void InstructionSignatureVM_NullSignatureCheck_Collect()
+        public async Task InstructionSignatureVM_NullSignatureCheck_Collect()
         {
             base.ClearAll();
 
@@ -111,13 +110,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionSignatureVM.InstructionDoneCommand.Execute(null);
+            await instructionSignatureVM.InstructionDoneAsync();
 
             _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
-        public void InstructionSignatureVM_NullSignatureCheck_Deliver()
+        public async Task InstructionSignatureVM_NullSignatureCheck_Deliver()
         {
             base.ClearAll();
 
@@ -130,13 +129,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionSignatureVM.InstructionDoneCommand.Execute(null);
+            await instructionSignatureVM.InstructionDoneAsync();
 
             _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
-        public void InstructionSignatureVM_NullCustomerNameCheck_Collect()
+        public async Task InstructionSignatureVM_NullCustomerNameCheck_Collect()
         {
             base.ClearAll();
 
@@ -149,13 +148,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionSignatureVM.InstructionDoneCommand.Execute(null);
+            await instructionSignatureVM.InstructionDoneAsync();
 
             _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Never);
         }
 
         [Fact]
-        public void InstructionSignatureVM_NullCustomerNameCheck_Deliver()
+        public async Task InstructionSignatureVM_NullCustomerNameCheck_Deliver()
         {
             base.ClearAll();
 
@@ -168,7 +167,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.Init(new NavData<MobileData>() { Data = _mobileData });
 
-            instructionSignatureVM.InstructionDoneCommand.Execute(null);
+            await instructionSignatureVM.InstructionDoneAsync();
 
             _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Never);
         }

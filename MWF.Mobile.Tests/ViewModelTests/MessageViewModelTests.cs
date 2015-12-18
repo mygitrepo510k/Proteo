@@ -34,8 +34,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMvxMessenger> _mockMvxMessenger;
         private Mock<IDataChunkService> _mockDataChunkService;
 
-
-
         protected override void AdditionalSetup()
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -48,7 +46,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
-            _mockDataChunkService.Setup(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)));
+            _mockDataChunkService
+                .Setup(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)))
+                .Returns(Task.FromResult(0));
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -66,13 +66,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// This is determined if the mobile data has a point (MobileData.Order.Addresses)
         /// </summary>
         [Fact]
-        public void MessageVM_MessageWithPoint_Setup()
+        public async Task MessageVM_MessageWithPoint_Setup()
         {
             base.ClearAll();
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
+            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
 
             Assert.Equal("Message with a Point", MessageVM.FragmentTitle);
             Assert.Equal(true, MessageVM.isWithPoint);
@@ -85,7 +85,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         /// This is determined if the mobile data is null (MobileData.Order.Addresses)
         /// </summary>
         [Fact]
-        public void MessageVM_Message_Setup()
+        public async Task MessageVM_Message_Setup()
         {
             base.ClearAll();
 
@@ -93,16 +93,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
+            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
 
             Assert.Equal("Message", MessageVM.FragmentTitle);
             Assert.Equal(false, MessageVM.isWithPoint);
             Assert.Equal(string.Empty, MessageVM.Address);
-
         }
 
         [Fact]
-        public void MessageVM_Message_ReadButton_Unread()
+        public async Task MessageVM_Message_ReadButton_Unread()
         {
             base.ClearAll();
 
@@ -110,17 +109,17 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = false });
+            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = false });
 
             Assert.Equal("Mark as read", MessageVM.ReadButtonText);
 
-            MessageVM.ReadMessageCommand.Execute(null);
+            await MessageVM.ReadMessageAsync();
 
             _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Once);
         }
 
         [Fact]
-        public void MessageVM_Message_ReadButton_Read()
+        public async Task MessageVM_Message_ReadButton_Read()
         {
             base.ClearAll();
 
@@ -128,49 +127,51 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = true });
+            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = true });
 
             Assert.Equal("Return", MessageVM.ReadButtonText);
 
-            MessageVM.ReadMessageCommand.Execute(null);
+            await MessageVM.ReadMessageAsync();
 
             _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Never);
 
         }
 
         [Fact]
-        public void MessageVM_MessageWithPoint_ReadButton_Unread()
+        public async Task MessageVM_MessageWithPoint_ReadButton_Unread()
         {
             base.ClearAll();
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = false });
+            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = false });
 
             Assert.Equal("Mark as read", MessageVM.ReadButtonText);
 
-            MessageVM.ReadMessageCommand.Execute(null);
+            await MessageVM.ReadMessageAsync();
 
             _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Once);
         }
 
         [Fact]
-        public void MessageVM_MessageWithPoint_ReadButton_Read()
+        public async Task MessageVM_MessageWithPoint_ReadButton_Read()
         {
             base.ClearAll();
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = true });
+            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = true });
 
             Assert.Equal("Return", MessageVM.ReadButtonText);
 
-            MessageVM.ReadMessageCommand.Execute(null);
+            await MessageVM.ReadMessageAsync();
 
             _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Never);
 
         }
 
         #endregion Test
+
     }
+
 }

@@ -40,12 +40,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _dataService = new Mock<IDataService>();
             var asyncConnection = _fixture.Create<Core.Database.IAsyncConnection>();
             var connectionMock = new Mock<Core.Database.IConnection>();
-            _dataService.Setup(c => c.RunInTransactionAsync(It.IsAny<Action<Core.Database.IConnection>>())).Callback((Action<Core.Database.IConnection> a) => a.Invoke(connectionMock.Object));
+
+            _dataService.Setup(c => c.RunInTransactionAsync(It.IsAny<Action<Core.Database.IConnection>>()))
+                .Callback<Action<Core.Database.IConnection>>(a => a.Invoke(connectionMock.Object))
+                .Returns(Task.FromResult(0));
+
             _fixture.Register<IDataService>(() => _dataService.Object);
         }
 
         [Fact]
-        public void CustCodeVM_NoInternetDoesNotShowSpinner()
+        public async Task CustCodeVM_NoInternetDoesNotShowSpinner()
         {
             base.ClearAll();
 
@@ -55,14 +59,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             ccvm.CustomerCode = "123";
             ccvm.IsBusy = false;
 
-            ccvm.EnterCodeCommand.Execute(null);
+            await ccvm.EnterCodeAsync();
 
             Assert.Equal(false, ccvm.IsBusy);
         }
 
         [Fact]
         //Tests that when the customer code is invalid, an alert with an error message is shown
-        public void CustCodeVM_InvalidCustomerCode()
+        public async Task CustCodeVM_InvalidCustomerCode()
         {
             base.ClearAll();
 
@@ -73,29 +77,28 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var ccvm = _fixture.Create<CustomerCodeViewModel>();
 
             // Enter the code
-            ccvm.EnterCodeCommand.Execute(null);
+            await ccvm.EnterCodeAsync();
 
             // check error message has returned
             _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s == "The customer passcode you submitted doesn't exist, check the passcode and try again."), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
-
         }
 
         [Fact]
         //Tests that when an exception is thrown by the gateway service (or sql service) an error message is displayed
-        public void CustCodeVM_SetUpException()
+        public async Task CustCodeVM_SetUpException()
         {
             base.ClearAll();
 
             // Get device throws an exception
             var gatewayService = new Mock<IGatewayService>();
-            gatewayService.Setup(gs => gs.CreateDeviceAsync()).Returns(Task.FromResult<bool>(true));
+            gatewayService.Setup(gs => gs.CreateDeviceAsync()).ReturnsAsync(true);
             gatewayService.Setup(gs => gs.GetDeviceAsync(It.IsAny<string>())).Callback(() => { throw new Exception(); });
             _fixture.Register<IGatewayService>(() => gatewayService.Object);
 
             var ccvm = _fixture.Create<CustomerCodeViewModel>();
 
             // Enter the code
-            ccvm.EnterCodeCommand.Execute(null);
+            await ccvm.EnterCodeAsync();
 
             // check error message has returned
             _mockUserInteraction.Verify(ui => ui.AlertAsync(It.Is<string>(s => s == "Unfortunately, there was a problem setting up your device, try restarting the device and try again."), It.IsAny<string>(), It.IsAny<string>()), Times.Once());
@@ -105,17 +108,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
         [Fact]
         // Tests that what when a valid customer code is entered
         // data is pulled from the web services, customer code is persisted in the db
-        public void CustCodeVM_ValidCustomerCode()
+        public async Task CustCodeVM_ValidCustomerCode()
         {
             base.ClearAll();
 
             Device dev = new Device();
 
-
-
             var gateWayService = Mock.Of<IGatewayService>(gs =>
-                                                             gs.GetDeviceAsync("123") == Task.FromResult<Device>(dev) &&
-                                                             gs.CreateDeviceAsync() == Task.FromResult<bool>(true));
+                gs.GetDeviceAsync("123") == Task.FromResult<Device>(dev) &&
+                gs.CreateDeviceAsync() == Task.FromResult<bool>(true));
 
             _fixture.Register<IGatewayService>(() => gateWayService);
 
@@ -124,27 +125,22 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNextAsync());
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync()).Returns(Task.FromResult(0));
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var ccvm = _fixture.Create<CustomerCodeViewModel>();
             ccvm.CustomerCode = "123";
 
-
             // Enter the code
-            ccvm.EnterCodeCommand.Execute(null);
+            await ccvm.EnterCodeAsync();
 
             //check that the customer repository was written to
             customerRepository.Verify(cr => cr.Insert(It.IsAny<Customer>(), It.IsAny<Core.Database.IConnection>()), Times.Once);
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
-
-
         }
 
-
-
-        
     }
+
 }

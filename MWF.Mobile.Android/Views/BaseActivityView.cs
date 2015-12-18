@@ -35,8 +35,6 @@ namespace MWF.Mobile.Android.Views
         protected const string _hockeyAppSecret = "e9fd0e20c666a1306f14192046232cd7";
         protected ProteoCrashListener _crashListener = new ProteoCrashListener();
 
-        private bool _frameLayoutPopulated = false;
-
         #endregion Protected/Private Fields
 
         #region Construction
@@ -75,7 +73,6 @@ namespace MWF.Mobile.Android.Views
                 transaction.Commit();
 
                 this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
-                _frameLayoutPopulated = true;
             }
         }
 

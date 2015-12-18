@@ -757,8 +757,10 @@ namespace MWF.Mobile.Core.Services
                 else
                 {
                     var mobileDataNav = (NavData<MobileData>)navData;
+                    
                     // send "onsite" data chunk 
                     await _dataChunkService.SendDataChunkAsync(mobileDataNav.GetDataChunk(), mobileDataNav.Data, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+
                     if (mobileDataNav.Data.ProgressState == Enums.InstructionProgress.OnSite)
                         mobileDataNav.Data.OnSiteDateTime = DateTime.Now;
 
@@ -846,7 +848,6 @@ namespace MWF.Mobile.Core.Services
                 }
 
                 this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
-                //CompleteInstruction(mobileNavData);
             }
         }
 
@@ -889,19 +890,17 @@ namespace MWF.Mobile.Core.Services
             {
                 mobileNavData.OtherData["IsProceedFrom"] = null;
                 this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
-                //CompleteInstruction(mobileNavData);
                 return;
             }
 
             var additionalContent = mobileNavData.Data.Order.Additional;
             var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
 
-
-
             if (!itemAdditionalContent.BypassCommentsScreen)
             {
                 bool hasAdvanced = await ConfirmCommentAccessAsync(mobileNavData);
-                if (hasAdvanced) return;
+                if (hasAdvanced)
+                    return;
             }
 
             if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
@@ -911,8 +910,6 @@ namespace MWF.Mobile.Core.Services
             }
 
             this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
-            //CompleteInstruction(mobileNavData);
-            return;
         }
 
         private async Task UpdateTrailerForInstructionAsync(NavData<MobileData> mobileNavData, Models.Trailer trailer)
@@ -1001,13 +998,11 @@ namespace MWF.Mobile.Core.Services
             }
 
             this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
-            //CompleteInstruction(mobileNavData);
         }
 
         /// <summary>
         /// Safety check screen when selecting a new trailer for an instruction. Either moves the use back to
         /// the instruction screen or moves then onto the rest of the collection on site flow
-        /// 
         /// </summary>
         public async Task InstructionSafetyCheckSignature_CustomActionAsync(NavData navData)
         {
@@ -1066,7 +1061,6 @@ namespace MWF.Mobile.Core.Services
             }
 
             this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
-            //CompleteInstruction(mobileNavData);
         }
 
         /// <summary>
@@ -1132,7 +1126,6 @@ namespace MWF.Mobile.Core.Services
             if (navData is NavData<MobileData>)
             {
                 ShowViewModel<ConfirmTimesViewModel>(navData);
-                //CompleteInstruction(mobileNavData);
             }
 
             return Task.FromResult(0);
@@ -1208,7 +1201,6 @@ namespace MWF.Mobile.Core.Services
                 }
 
                 this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
-                //CompleteInstruction(mobileNavData);
             }
         }
 

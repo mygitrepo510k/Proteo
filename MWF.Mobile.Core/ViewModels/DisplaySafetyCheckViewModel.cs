@@ -42,18 +42,26 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _latestSafetyCheckData = await _repositories.LatestSafetyCheckRepository.GetForDriverAsync(_infoService.LoggedInDriver.ID);
 
+            var hasVehicleSafetyCheck = _latestSafetyCheckData.VehicleSafetyCheck != null;
+            var hasTrailerSafetyCheck = _latestSafetyCheckData.TrailerSafetyCheck != null;
+
             //If there is no safety check data to view, then sends them back to where they came.
-            if (_latestSafetyCheckData.VehicleSafetyCheck == null && _latestSafetyCheckData.TrailerSafetyCheck == null)
+            if (!hasVehicleSafetyCheck && !hasTrailerSafetyCheck)
             {
                 await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("A safety check profile for your vehicle and/or trailer has not been completed - Refer to your manual safety check.");
                 await _navigationService.MoveToNextAsync(_navigationService.CurrentNavData);
                 return;
             }
 
-            if (_latestSafetyCheckData.VehicleSafetyCheck != null)
+            this.VehicleRegistration = "Vehicle: " + (hasVehicleSafetyCheck ? _latestSafetyCheckData.VehicleSafetyCheck.VehicleRegistration : string.Empty);
+            this.TrailerRegistration = "Trailer: " + (hasTrailerSafetyCheck ? _latestSafetyCheckData.TrailerSafetyCheck.VehicleRegistration : string.Empty);
+            this.VehicleSafetyCheckStatus = "Checked: " + (hasVehicleSafetyCheck ? _latestSafetyCheckData.VehicleSafetyCheck.EffectiveDate.ToString("g") : string.Empty);
+            this.TrailerSafetyCheckStatus = "Checked: " + (hasTrailerSafetyCheck ? _latestSafetyCheckData.TrailerSafetyCheck.EffectiveDate.ToString("g") : string.Empty);
+
+            if (hasVehicleSafetyCheck)
                 GenerateSafetyCheckFaultItems(_latestSafetyCheckData.VehicleSafetyCheck.Faults, false);
 
-            if (_latestSafetyCheckData.TrailerSafetyCheck != null)
+            if (hasTrailerSafetyCheck)
                 GenerateSafetyCheckFaultItems(_latestSafetyCheckData.TrailerSafetyCheck.Faults, true);
         }
 
@@ -61,24 +69,32 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
+        private string _vehicleRegistration;
         public string VehicleRegistration
         {
-            get { return "Vehicle: " + ((_latestSafetyCheckData.VehicleSafetyCheck != null) ? _latestSafetyCheckData.VehicleSafetyCheck.VehicleRegistration : ""); }
+            get { return _vehicleRegistration; }
+            set { _vehicleRegistration = value; RaisePropertyChanged(() => VehicleRegistration); }
         }
 
+        private string _trailerRegistration;
         public string TrailerRegistration
         {
-            get { return "Trailer: " + ((_latestSafetyCheckData.TrailerSafetyCheck != null) ? _latestSafetyCheckData.TrailerSafetyCheck.VehicleRegistration : ""); }
+            get { return _trailerRegistration; }
+            set { _trailerRegistration = value; RaisePropertyChanged(() => TrailerRegistration); }
         }
 
+        private string _vehicleSafetyCheckStatus;
         public string VehicleSafetyCheckStatus
         {
-            get { return "Checked: " + ((_latestSafetyCheckData.VehicleSafetyCheck != null) ? _latestSafetyCheckData.VehicleSafetyCheck.EffectiveDate.ToString("g") : ""); }
+            get { return _vehicleSafetyCheckStatus; }
+            set { _vehicleSafetyCheckStatus = value; RaisePropertyChanged(() => VehicleSafetyCheckStatus); }
         }
 
+        private string _trailerSafetyCheckStatus;
         public string TrailerSafetyCheckStatus
         {
-            get { return "Checked: " + ((_latestSafetyCheckData.TrailerSafetyCheck != null) ? _latestSafetyCheckData.TrailerSafetyCheck.EffectiveDate.ToString("g") : ""); }
+            get { return _trailerSafetyCheckStatus; }
+            set { _trailerSafetyCheckStatus = value; RaisePropertyChanged(() => TrailerSafetyCheckStatus); }
         }
 
         public string SafetyCheckStatusKey

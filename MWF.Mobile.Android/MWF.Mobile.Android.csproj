@@ -159,9 +159,12 @@
     <Compile Include="Bootstrap\MessengerPluginBootstrap.cs" />
     <Compile Include="Bootstrap\PictureChooserPluginBootstrap.cs" />
     <Compile Include="Bootstrap\VisibilityPluginBootstrap.cs" />
-    <Compile Include="DebugTrace.cs" />
+    <Compile Include="Helpers\AndroidLogReader.cs" />
+    <Compile Include="Helpers\CrashListener.cs" />
+    <Compile Include="Helpers\DebugTrace.cs" />
     <Compile Include="Helpers\CustomActionBarDrawerToggle.cs" />
     <Compile Include="Helpers\DebugDBHelper.cs" />
+    <Compile Include="Helpers\HockeyAppConstants.cs" />
     <Compile Include="Helpers\ListViewChildMeasurer.cs" />
     <Compile Include="LinkerPleaseInclude.cs" />
     <Compile Include="Portable\CheckForSoftwareUpdates.cs" />

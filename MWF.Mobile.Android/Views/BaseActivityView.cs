@@ -18,6 +18,7 @@ using MWF.Mobile.Core.ViewModels.Interfaces;
 using Android.Support.V4.Widget;
 using Android.Content;
 using MWF.Mobile.Android.Portable;
+using MWF.Mobile.Android.Helpers;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -30,10 +31,6 @@ namespace MWF.Mobile.Android.Views
         #region Protected/Private Fields
 
         protected IDictionary<Type, Type> _supportedFragmentViewModels;
-
-        protected const string _hockeyAppID = "7cf7fc0dba2bf468cec55795c004d77d";
-        protected const string _hockeyAppSecret = "e9fd0e20c666a1306f14192046232cd7";
-        protected ProteoCrashListener _crashListener = new ProteoCrashListener();
 
         #endregion Protected/Private Fields
 
@@ -51,10 +48,6 @@ namespace MWF.Mobile.Android.Views
             this.BaseActivityViewModel.WeakSubscribe(() => this.BaseActivityViewModel.InitialViewModel, (s, e) => this.PopulateFrameLayoutWithInitialViewModelFragment());
 
             this.PopulateFrameLayoutWithInitialViewModelFragment();
-
-            HockeyApp.CrashManager.Register(this, _hockeyAppID, new ProteoCrashListener());
-            HockeyApp.TraceWriter.Initialize(_crashListener);
-            HockeyApp.CrashManager.Register(this, _hockeyAppID);
         }
 
         private void PopulateFrameLayoutWithInitialViewModelFragment()
@@ -233,35 +226,6 @@ namespace MWF.Mobile.Android.Views
         }
 
         #endregion Private/Protected Methods
-
-    }
-
-
-    public class ProteoCrashListener : HockeyApp.CrashManagerListener
-    {
-        public override String UserID
-        {
-            get
-            {
-                return new DeviceInfo().GetDeviceIdentifier();
-            }
-        }
-
-        public override String Contact
-        {
-            get
-            {
-                return new DeviceInfo().GetDeviceIdentifier();
-            }
-        }
-
-        public override String Description
-        {
-            get
-            {
-                return new DeviceInfo().GetDeviceIdentifier();
-            }
-        }
 
     }
 

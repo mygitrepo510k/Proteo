@@ -38,7 +38,7 @@ namespace MWF.Mobile.Core.Services
         }
 
         /// <summary>
-        /// This method uploads the databse to the FTP server under the Android Device ID
+        /// This method uploads the database to the FTP server under the Android Device ID
         /// </summary>
         /// <param name="databasePath">The locations of the mySql Database</param>
         public async Task<bool> UploadDiagnosticsAsync(string databasePath)

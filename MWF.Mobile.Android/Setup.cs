@@ -4,15 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Content.PM;
+using Android.Runtime;
 using Cirrious.CrossCore;
 using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Droid.Platform;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Android.Helpers;
 using MWF.Mobile.Android.Portable;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Presentation;
 using MWF.Mobile.Core.Services;
-using Android.Runtime;
 
 namespace MWF.Mobile.Android
 {
@@ -23,14 +24,6 @@ namespace MWF.Mobile.Android
         public Setup(Context applicationContext)
             : base(applicationContext)
         {
-        }
-
-
-        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            HockeyApp.TraceWriter.WriteTrace(e.ExceptionObject);
-            Exception topLevelException = (Exception)e.ExceptionObject;
-            PublishExceptionToLog(topLevelException);
         }
 
         protected override IMvxApplication CreateApp()
@@ -67,18 +60,39 @@ namespace MWF.Mobile.Android
 
             Mvx.RegisterSingleton<SQLite.Net.Interop.ISQLitePlatform>(() => new SQLite.Net.Platform.XamarinAndroid.SQLitePlatformAndroid());
 
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            Mvx.ConstructAndRegisterSingleton<CrashListener, CrashListener>();
+
+            // Register the HockeyApp Crash Manager - note that this doesn't upload existing crash logs since this has to be done from an
+            // android Activity as it involves user interaction, and therefore is done using CrashManager.Execute() from within StartupView.
+            var crashListener = Mvx.Resolve<CrashListener>();
+            HockeyApp.CrashManager.Initialize(this.ApplicationContext, HockeyAppConstants.AppID, crashListener);
+            HockeyApp.TraceWriter.Initialize(crashListener);
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+            {
+                this.LogUnhandledException((Exception)args.ExceptionObject);
+            };
 
             AndroidEnvironment.UnhandledExceptionRaiser += (sender, args) =>
             {
-                HockeyApp.TraceWriter.WriteTrace(args.Exception);
+                this.LogUnhandledException(args.Exception);
                 args.Handled = true;
             };
 
             TaskScheduler.UnobservedTaskException += (sender, args) =>
             {
-                HockeyApp.TraceWriter.WriteTrace(args.Exception);
+                this.LogUnhandledException(args.Exception);
             };
+        }
+
+        private void LogUnhandledException(Exception exception)
+        {
+            var logReader = new AndroidLogReader();
+            // Read any MvxTrace messages that are errors of priority level Warning or higher and set these on the HockeyApp CrashListener's Description property
+            var logMessages = logReader.ReadLog("mvx:W");
+            Mvx.Resolve<CrashListener>().SetDescription(logMessages);
+
+            HockeyApp.TraceWriter.WriteTrace(exception);
         }
 
         protected override System.Collections.Generic.List<System.Reflection.Assembly> ValueConverterAssemblies
@@ -119,7 +133,6 @@ namespace MWF.Mobile.Android
 
         private void PublishExceptionToLog(Exception exception)
         {
-            
             Mvx.Resolve<Cirrious.MvvmCross.Plugins.Messenger.IMvxMessenger>().Publish(new MWF.Mobile.Core.Messages.TopLevelExceptionHandlerMessage(this, exception));
         }
 

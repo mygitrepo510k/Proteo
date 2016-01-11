@@ -2,14 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Attributes;
 using MWF.Mobile.Core.Services;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace MWF.Mobile.Core.Repositories
 {
@@ -105,7 +107,15 @@ namespace MWF.Mobile.Core.Repositories
 
         private void InsertRecursive(IBlueSphereEntity entity, Database.IConnection connection)
         {
-            connection.Insert(entity);
+            try
+            {
+                connection.Insert(entity);
+            }
+            catch
+            {
+                MvxTrace.Error("Failed to insert into table {0}, entity ID {1}.", entity.GetType().GetTableName(), entity.ID);
+                throw;
+            }
 
             var relationshipProperties = entity.GetType().GetChildRelationProperties();
 
@@ -150,7 +160,15 @@ namespace MWF.Mobile.Core.Repositories
         /// <param name="entity"></param>
         private void DeleteRecursive(IBlueSphereEntity entity, Database.IConnection connection)
         {
-            connection.Delete(entity);
+            try
+            {
+                connection.Delete(entity);
+            }
+            catch
+            {
+                MvxTrace.Error("Failed to delete from table {0}, entity ID {1}.", entity.GetType().GetTableName(), entity.ID);
+                throw;
+            }
 
             var relationshipProperties = entity.GetType().GetChildRelationProperties();
 

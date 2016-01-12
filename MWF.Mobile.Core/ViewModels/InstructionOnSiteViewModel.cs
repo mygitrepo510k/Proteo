@@ -44,11 +44,10 @@ namespace MWF.Mobile.Core.ViewModels
             _dataChunkService = dataChunkService;
         }
 
-        public async Task Init(NavData<MobileData> navData)
+        public async Task Init(Guid navID)
         {
-            navData.Reinflate();
-            _navData = navData;
-            _mobileData = navData.Data;
+            _navData = _navigationService.GetNavData<MobileData>(navID);
+            _mobileData = _navData.Data;
             _orderList = new ObservableCollection<Item>(_mobileData.Order.Items);
             var config = await _repositories.ConfigRepository.GetAsync();
             this.IsDeliveryAddEnabled = _mobileData.Order.Type == Enums.InstructionType.Deliver && config.DeliveryAdd;

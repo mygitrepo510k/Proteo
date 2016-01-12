@@ -207,7 +207,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             var navItem = new NavData<BarcodeItemViewModel>() { Data = this };
-            navItem.NavGUID = Guid.NewGuid();
 
             // if there are multiple barcodes selected then add them to the nav item
             if (_barcodeScanningViewModel.SelectedBarcodes.Any())

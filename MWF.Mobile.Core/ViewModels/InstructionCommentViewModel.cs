@@ -38,11 +38,10 @@ namespace MWF.Mobile.Core.ViewModels
             _infoService = infoService;
         }
 
-        public void Init(NavData<MobileData> navData)
+        public void Init(Guid navID)
         {
-            navData.Reinflate();
-            _navData = navData;
-            _mobileData = navData.Data;
+            _navData = _navigationService.GetNavData<MobileData>(navID);
+            _mobileData = _navData.Data;
         }
 
         #endregion

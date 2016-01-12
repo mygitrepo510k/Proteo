@@ -46,12 +46,11 @@ namespace MWF.Mobile.Core.ViewModels
             _repositories = repositories;
         }
 
-        public async Task Init(NavData<MobileData> navData)
+        public async Task Init(Guid navID)
         {
-            navData.Reinflate();
-            _navData = navData;
-            _mobileData = navData.Data;
-            _additionalInstructions = navData.GetAdditionalInstructions();
+            _navData = _navigationService.GetNavData<MobileData>(navID);
+            _mobileData = _navData.Data;
+            _additionalInstructions = _navData.GetAdditionalInstructions();
 
             await this.BuildDamageStatusesAsync();
             this.CreateSections();

@@ -33,6 +33,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<IMvxMessenger> _mockMvxMessenger;
         private Mock<IDataChunkService> _mockDataChunkService;
+        private Mock<INavigationService> _mockNavigationService;
+        private NavData<MessageModalNavItem> _navData;
+        private Guid _navID;
 
         protected override void AdditionalSetup()
         {
@@ -55,6 +58,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMvxMessenger = _fixture.InjectNewMock<IMvxMessenger>();
             Ioc.RegisterSingleton<IMvxMessenger>(_mockMvxMessenger.Object);
 
+            _mockNavigationService = _fixture.InjectNewMock<INavigationService>();
+            Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
+
+            _navData = new NavData<MessageModalNavItem>() { Data = new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = false } };
+            _navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MessageModalNavItem>(_navID)).Returns(_navData);
         }
 
         #endregion Setup
@@ -72,7 +81,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
+            await MessageVM.Init(_navID);
 
             Assert.Equal("Message with a Point", MessageVM.FragmentTitle);
             Assert.Equal(true, MessageVM.isWithPoint);
@@ -93,7 +102,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID });
+            await MessageVM.Init(_navID);
 
             Assert.Equal("Message", MessageVM.FragmentTitle);
             Assert.Equal(false, MessageVM.isWithPoint);
@@ -109,7 +118,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = false });
+            await MessageVM.Init(_navID);
 
             Assert.Equal("Mark as read", MessageVM.ReadButtonText);
 
@@ -126,15 +135,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData.Order.Addresses = new List<Address>();
 
             var MessageVM = _fixture.Create<MessageViewModel>();
+            _navData.Data.IsRead = true;
 
-            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = true });
+            await MessageVM.Init(_navID);
 
             Assert.Equal("Return", MessageVM.ReadButtonText);
 
             await MessageVM.ReadMessageAsync();
 
             _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Never);
-
         }
 
         [Fact]
@@ -144,7 +153,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var MessageVM = _fixture.Create<MessageViewModel>();
 
-            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = false });
+            await MessageVM.Init(_navID);
 
             Assert.Equal("Mark as read", MessageVM.ReadButtonText);
 
@@ -159,8 +168,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var MessageVM = _fixture.Create<MessageViewModel>();
+            _navData.Data.IsRead = true;
 
-            await MessageVM.Init(new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = true });
+            await MessageVM.Init(_navID);
 
             Assert.Equal("Return", MessageVM.ReadButtonText);
 

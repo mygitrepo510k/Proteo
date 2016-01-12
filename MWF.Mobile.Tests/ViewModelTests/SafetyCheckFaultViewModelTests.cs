@@ -75,9 +75,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             Assert.Equal(navItem.OtherData["FaultTypeText"], safetyCheckFaultVM.DiscretionaryOrFailureText);
 
@@ -93,9 +96,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             Assert.Equal(_vehicleSafetyCheckFault.Title, safetyCheckFaultVM.CheckTypeText);
         }
@@ -110,9 +116,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             Assert.Equal(_vehicleSafetyCheckFault.Comment, safetyCheckFaultVM.CommentText);
         }
@@ -131,7 +140,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _vehicleSafetyCheckFault.Comment = string.Empty;
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             Assert.False(safetyCheckFaultVM.HasCommentText);
         }
@@ -146,9 +158,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             Assert.True(safetyCheckFaultVM.HasCommentText);
         }
@@ -163,9 +178,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             Assert.Equal(_vehicleSafetyCheckFault.Images.ToList().Count, safetyCheckFaultVM.Images.Count);
 
@@ -187,9 +205,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _trailerSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             Assert.Equal(navItem.OtherData["FaultTypeText"], safetyCheckFaultVM.DiscretionaryOrFailureText);
             Assert.Equal(_trailerSafetyCheckFault.Title, safetyCheckFaultVM.CheckTypeText);
@@ -208,9 +229,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             // Change the comment text
             safetyCheckFaultVM.CommentText = "Some new text";
@@ -230,9 +254,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             int previousImageCount = safetyCheckFaultVM.Images.Count;
             int previousSequence = safetyCheckFaultVM.Images.Max(i => i.FaultImage.Sequence);
@@ -275,9 +302,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _trailerSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             _mockUserInteraction.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>())).Returns( Task.FromResult<bool>(true));
            
@@ -299,9 +329,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _trailerSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             _mockUserInteraction.Setup(ui => ui.ConfirmAsync(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>())).ReturnsAsync(false);
 
@@ -324,9 +357,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _trailerSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             safetyCheckFaultVM.DoneCommand.Execute(null);
 
@@ -344,9 +380,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             int previousImageCount = safetyCheckFaultVM.Images.Count;
 
@@ -379,9 +418,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             int previousImageCount = safetyCheckFaultVM.Images.Count;
 
@@ -409,9 +451,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var safetyCheckFaultVM = _fixture.Build<SafetyCheckFaultViewModel>().Without(p => p.CommentText).Create<SafetyCheckFaultViewModel>();
 
             NavData<SafetyCheckFault> navItem = new NavData<SafetyCheckFault>() { Data = _vehicleSafetyCheckFault };
-            navItem.OtherData["FaultTypeText"] = "Test Text"; 
+            navItem.OtherData["FaultTypeText"] = "Test Text";
 
-            safetyCheckFaultVM.Init(navItem);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<SafetyCheckFault>(navID)).Returns(navItem);
+
+            safetyCheckFaultVM.Init(navID);
 
             safetyCheckFaultVM.Images[0].DisplayCommand.Execute(null);
 

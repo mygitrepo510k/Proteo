@@ -77,7 +77,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
             navData.OtherData["DataChunk"] = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
-            reviseQuantityVM.Init(navData);
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            reviseQuantityVM.Init(navID);
 
             reviseQuantityVM.OrderQuantity = newQuantity.ToString();
 
@@ -99,7 +102,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
             navData.OtherData["DataChunk"] = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
-            reviseQuantityVM.Init(navData);
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            reviseQuantityVM.Init(navID);
 
             await reviseQuantityVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
@@ -121,7 +127,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             navData.OtherData["Order"] = _mobileData.Order.Items.FirstOrDefault();
             navData.OtherData["DataChunk"] = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
-            reviseQuantityVM.Init(navData);
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            reviseQuantityVM.Init(navID);
 
             await reviseQuantityVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 

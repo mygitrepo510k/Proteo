@@ -72,9 +72,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), null);
 
-            var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
-            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+            await instructionOnSiteVM.Init(navID);
 
             Assert.Equal("Collect On Site", instructionOnSiteVM.FragmentTitle);
         }
@@ -85,10 +88,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), null);
+            var navData = new NavData<MobileData>() { Data = mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
-
-            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = mobileData });
+            await instructionOnSiteVM.Init(navID);
 
             Assert.Equal("Deliver On Site", instructionOnSiteVM.FragmentTitle);
         }
@@ -99,10 +104,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false, true, null);
+            var navData = new NavData<MobileData>() { Data = mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
-
-            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = mobileData });
+            await instructionOnSiteVM.Init(navID);
 
             Assert.Equal("Complete", instructionOnSiteVM.InstructionCommentButtonLabel);
         }
@@ -113,10 +120,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, false, false, true, null);
+            var navData = new NavData<MobileData>() { Data = mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
-
-            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = mobileData });
+            await instructionOnSiteVM.Init(navID);
 
             Assert.Equal("Complete", instructionOnSiteVM.InstructionCommentButtonLabel);
         }
@@ -128,9 +137,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, false, false, false, true, null);
 
-            var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
-            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+            await instructionOnSiteVM.Init(navID);
 
             Assert.Equal("Continue", instructionOnSiteVM.InstructionCommentButtonLabel);
         }
@@ -142,9 +154,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, true, false, false, false, true, null);
 
-            var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
-            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
+            await instructionOnSiteVM.Init(navID);
 
             Assert.Equal("Continue", instructionOnSiteVM.InstructionCommentButtonLabel);
         }
@@ -157,8 +172,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
             instructionOnSiteVM.IsVisible = true;
 
-            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
+            await instructionOnSiteVM.Init(navID);
             await instructionOnSiteVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
@@ -174,8 +192,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var instructionOnSiteVM = _fixture.Create<InstructionOnSiteViewModel>();
             instructionOnSiteVM.IsVisible = true;
 
-            await instructionOnSiteVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
+            await instructionOnSiteVM.Init(navID);
             await instructionOnSiteVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);

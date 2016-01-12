@@ -44,11 +44,10 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
         }
 
-        public async Task Init(NavData<MobileData> navData)
+        public async Task Init(Guid navID)
         {
-            navData.Reinflate();
-            this.MessageId = navData.NavGUID;
-            _navData = navData;
+            _navData = _navigationService.GetNavData<MobileData>(navID);
+            this.MessageId = navID;
             _additionalInstructions = _navData.GetAdditionalInstructions();
             _appProfile = (await _repositories.ApplicationRepository.GetAllAsync()).First();
             await this.GetDeliveryInstructionsAsync();

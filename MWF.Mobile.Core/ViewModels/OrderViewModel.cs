@@ -44,13 +44,12 @@ namespace MWF.Mobile.Core.ViewModels
             _configRepository = repositories.ConfigRepository;
         }
 
-        public async Task Init(NavData<MobileData> navData)
+        public async Task Init(Guid navID)
         {
-            navData.Reinflate();
-            this.MessageId = navData.NavGUID;
-            _navData = navData;
-            _order = navData.OtherData["Order"] as Item;
-            _mobileData = navData.Data;
+            _navData = _navigationService.GetNavData<MobileData>(navID);
+            this.MessageId = navID;
+            _order = _navData.OtherData["Order"] as Item;
+            _mobileData = _navData.Data;
             _mobileConfig = await _configRepository.GetByIDAsync(_mobileData.CustomerId);
         }
 

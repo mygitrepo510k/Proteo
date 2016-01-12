@@ -49,14 +49,13 @@ namespace MWF.Mobile.Core.ViewModels
             _dataChunkService = dataChunkService;
         }
 
-        public void Init(NavData<MobileData> navData)
+        public void Init(Guid navID)
         {
-            navData.Reinflate();
-            this.MessageId = navData.NavGUID;
-            _navData = navData;
-            _order = navData.OtherData["Order"] as Item;
-            _mobileData = navData.Data;
-            _dataChunk = navData.GetAdditionalDataChunk(_mobileData);
+            _navData = _navigationService.GetNavData<MobileData>(navID);
+            this.MessageId = navID;
+            _order = _navData.OtherData["Order"] as Item;
+            _mobileData = _navData.Data;
+            _dataChunk = _navData.GetAdditionalDataChunk(_mobileData);
             OrderQuantity = _order.Quantity;
         }
 

@@ -63,8 +63,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         private async Task SetupBarcodeScanningViewModel()
         {
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
             _barcodeScanningViewModel = _fixture.Create<BarcodeScanningViewModel>();
-            await _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
+            await _barcodeScanningViewModel.Init(navID);
+
             // mark all the barcode items as processed
             _barcodeScanningViewModel.MarkBarcodeAsProcessed(_barcodeScanningViewModel.BarcodeSections[0].Barcodes[0]);
             _barcodeScanningViewModel.MarkBarcodeAsProcessed(_barcodeScanningViewModel.BarcodeSections[0].Barcodes[0]);
@@ -97,9 +102,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await this.SetupBarcodeScanningViewModel();
 
-            var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
+            var navData = new NavData<BarcodeItemViewModel>() { Data = _barcodeItemViewModel1 };
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<BarcodeItemViewModel>(navID)).Returns(navData);
 
-            barcodeStatusVM.Init(new NavData<BarcodeItemViewModel>() { Data = _barcodeItemViewModel1 });
+            var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
+            barcodeStatusVM.Init(navID);
 
             Assert.Equal("Pallet ID", barcodeStatusVM.PalletIDLabel);
             Assert.Equal(_barcodeItemViewModel1.BarcodeText, barcodeStatusVM.PalletIDText);
@@ -118,7 +126,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             // add another two "selected" barcodes
             var navData = new NavData<BarcodeItemViewModel>() { Data = _barcodeItemViewModel1 };
             navData.OtherData["SelectedBarcodes"] = new List<BarcodeItemViewModel>() { _barcodeItemViewModel2, _barcodeItemViewModel3 };
-            barcodeStatusVM.Init(navData);        
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<BarcodeItemViewModel>(navID)).Returns(navData);
+
+            barcodeStatusVM.Init(navID);        
 
             Assert.Equal("Pallet IDs", barcodeStatusVM.PalletIDLabel);
             string expectedString = _barcodeItemViewModel1.BarcodeText + "\n" + _barcodeItemViewModel2.BarcodeText + "\n" + _barcodeItemViewModel3.BarcodeText;
@@ -137,7 +148,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
 
             _barcodeItemViewModel1.IsDelivered = true;
-            barcodeStatusVM.Init(new NavData<BarcodeItemViewModel>() { Data = _barcodeItemViewModel1 });
+            var navData = new NavData<BarcodeItemViewModel>() { Data = _barcodeItemViewModel1 };
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<BarcodeItemViewModel>(navID)).Returns(navData);
+
+            barcodeStatusVM.Init(navID);
 
             var originalBarcode = _barcodeItemViewModel1.Clone();
 
@@ -161,7 +176,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var barcodeStatusVM = _fixture.Create<BarcodeStatusViewModel>();
 
             _barcodeItemViewModel1.IsDelivered = true;
-            barcodeStatusVM.Init(new NavData<BarcodeItemViewModel>() { Data = _barcodeItemViewModel1 });
+            var navData = new NavData<BarcodeItemViewModel>() { Data = _barcodeItemViewModel1 };
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<BarcodeItemViewModel>(navID)).Returns(navData);
+
+            barcodeStatusVM.Init(navID);
 
             // change some properties
             barcodeStatusVM.Barcode.DeliveryComments = "Changed comments";
@@ -189,7 +208,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _barcodeItemViewModel3.IsSelected = true;
             var navData = new NavData<BarcodeItemViewModel>() { Data = _barcodeItemViewModel1 };
             navData.OtherData["SelectedBarcodes"] = new List<BarcodeItemViewModel>() { _barcodeItemViewModel2, _barcodeItemViewModel3 };
-            barcodeStatusVM.Init(navData);        
+
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<BarcodeItemViewModel>(navID)).Returns(navData);
+
+            barcodeStatusVM.Init(navID);        
 
             // change some properties
             barcodeStatusVM.Barcode.DeliveryComments = "Changed comments";

@@ -71,7 +71,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
             navData.OtherData["DataChunk"] = dataChunk;
 
-            instructionCommentVM.Init(navData);
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            instructionCommentVM.Init(navID);
 
             var inputText = "This is a test comment";
 
@@ -92,9 +95,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, true, false, false, false, false, false,true, null);
 
-            var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
-            instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
+            instructionCommentVM.Init(navID);
 
             Assert.Equal("Complete", instructionCommentVM.InstructionCommentButtonLabel);
         }
@@ -106,9 +112,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, true, false, false, false, false, false, true, null);
 
-            var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
-            instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
+            instructionCommentVM.Init(navID);
 
             Assert.Equal("Complete", instructionCommentVM.InstructionCommentButtonLabel);
         }
@@ -119,10 +128,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, false, true, true, false, false, true, null);
+            var navData = new NavData<MobileData>() { Data = mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
-
-            instructionCommentVM.Init(new NavData<MobileData>() { Data = mobileData });
+            instructionCommentVM.Init(navID);
 
             Assert.Equal("Continue", instructionCommentVM.InstructionCommentButtonLabel);
         }
@@ -133,10 +144,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Deliver, false, false, true, true, false, false, true, null);
+            var navData = new NavData<MobileData>() { Data = mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
-
-            instructionCommentVM.Init(new NavData<MobileData>() { Data = mobileData });
+            instructionCommentVM.Init(navID);
 
             Assert.Equal("Continue", instructionCommentVM.InstructionCommentButtonLabel);
         }
@@ -146,10 +159,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
             instructionCommentVM.IsVisible = true;
-
-            instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionCommentVM.Init(navID);
 
             await instructionCommentVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
@@ -164,10 +180,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
             var instructionCommentVM = _fixture.Create<InstructionCommentViewModel>();
             instructionCommentVM.IsVisible = true;
-
-            instructionCommentVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionCommentVM.Init(navID);
 
             await instructionCommentVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
 

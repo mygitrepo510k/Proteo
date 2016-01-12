@@ -95,7 +95,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedCollectionInstructions.First() };
-            await addDeliveriesVM.Init(navData);
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            await addDeliveriesVM.Init(navID);
 
             Assert.Equal(0, addDeliveriesVM.DeliveryInstructions.Count);
         }
@@ -113,7 +116,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
-            await addDeliveriesVM.Init(navData);
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            await addDeliveriesVM.Init(navID);
 
             // should be one less than the total delivery instructions (the vm's own mobile data should not be counted)
             // i.e. you can't a delivery to itself
@@ -144,8 +150,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             //set vm's own mobile data to not use barcode scanning
             navData.Data.Order.Items.FirstOrDefault().Additional.BarcodeScanRequiredForDelivery = false;
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
-            await addDeliveriesVM.Init(navData);
+            await addDeliveriesVM.Init(navID);
 
             // should see no matching delivery instructions
             Assert.Equal(0, addDeliveriesVM.DeliveryInstructions.Count);
@@ -169,8 +177,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             // set the instruction to already have one "additional instruction"
             var additionalInstruction = nonCompletedDeliveryInstructions.Last();
             navData.GetAdditionalInstructions().Add(additionalInstruction);
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
-            await addDeliveriesVM.Init(navData);
+            await addDeliveriesVM.Init(navID);
 
             // the delivery that lives is already added as an additional delivery should be selected
             Assert.True(addDeliveriesVM.DeliveryInstructions.Single(x => x.MobileData == additionalInstruction).IsSelected);
@@ -190,7 +200,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var addDeliveriesVM = _fixture.Create<InstructionAddDeliveriesViewModel>();
             NavData<MobileData> navData = new NavData<MobileData>() { Data = nonCompletedDeliveryInstructions.First() };
-            await addDeliveriesVM.Init(navData);
+
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            await addDeliveriesVM.Init(navID);
 
             // select one of the deliveries
             var selectedDelivery = addDeliveriesVM.DeliveryInstructions.Last();
@@ -225,7 +239,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var additionalInstruction = nonCompletedDeliveryInstructions.Last();
             navData.GetAdditionalInstructions().Add(additionalInstruction);
 
-            addDeliveriesVM.Init(navData);
+            var navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            addDeliveriesVM.Init(navID);
 
             // make sure all the items are unselected
             foreach (var delivery in addDeliveriesVM.DeliveryInstructions)

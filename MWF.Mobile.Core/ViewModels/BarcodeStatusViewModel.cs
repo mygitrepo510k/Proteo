@@ -30,16 +30,15 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        public void Init(NavData<BarcodeItemViewModel> navData)
+        public void Init(Guid navID)
         {
-            base.Init(navData.NavGUID);
-            navData.Reinflate();
+            base.Init(navID);
 
-            _navData = navData;
+            _navData = Mvx.Resolve<Services.INavigationService>().GetNavData<BarcodeItemViewModel>(navID);
 
             // take a copy of the barcode item view model
             // we only want to effect the changes if the user presses "done"
-            _originalBarcodeItemViewModel = navData.Data;
+            _originalBarcodeItemViewModel = _navData.Data;
             _barcodeItemViewModel = _originalBarcodeItemViewModel.Clone();
         }
 

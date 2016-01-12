@@ -306,7 +306,6 @@
     <Compile Include="ViewModels\ModalCameraViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavDataExtensions.cs" />
     <Compile Include="ViewModels\Navigation\MessageModalNavItem.cs" />
-    <Compile Include="ViewModels\Navigation\BarcodeStatusNavItem.cs" />
     <Compile Include="ViewModels\OrderViewModel.cs" />
     <Compile Include="ViewModels\InstructionSignatureViewModel.cs" />
     <Compile Include="ViewModels\InstructionCommentViewModel.cs" />
@@ -315,7 +314,6 @@
     <Compile Include="ViewModels\Navigation\NavData.cs" />
     <Compile Include="ViewModels\ManifestInstructionViewModel.cs" />
     <Compile Include="ViewModels\ManifestSectionViewModel.cs" />
-    <Compile Include="ViewModels\Navigation\IViewModelNavItem.cs" />
     <Compile Include="ViewModels\Navigation\SafetyCheckNavItem.cs" />
     <Compile Include="ViewModels\MenuViewModel.cs" />
     <Compile Include="ViewModels\BaseFragmentViewModel.cs" />

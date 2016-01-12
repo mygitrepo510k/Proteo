@@ -31,6 +31,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<INavigationService> _navigationService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
+        private NavData<MobileData> _navData;
+        private Guid _navID;
 
         protected override void AdditionalSetup()
         {
@@ -54,6 +56,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
 
+            _navData = new NavData<MobileData>() { Data = _mobileData };
+            _navID = Guid.NewGuid();
+            _navigationService.Setup(ns => ns.GetNavData<MobileData>(_navID)).Returns(_navData);
         }
 
         #endregion Setup
@@ -65,17 +70,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var navData = new NavData<MobileData>() { Data = _mobileData };
-
             var confirmTimesVM = _fixture.Create<ConfirmTimesViewModel>();
-            confirmTimesVM.Init(navData);
+            confirmTimesVM.Init(_navID);
 
             var onSiteDateTime = DateTime.Now.AddDays(-1);
             confirmTimesVM.OnSiteDateTime = onSiteDateTime;
 
             await confirmTimesVM.AdvanceConfirmTimesAsync();
 
-            Assert.Equal(onSiteDateTime, navData.Data.OnSiteDateTime);   
+            Assert.Equal(onSiteDateTime, _navData.Data.OnSiteDateTime);   
         }
 
         [Fact]
@@ -83,17 +86,15 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var navData = new NavData<MobileData>() { Data = _mobileData };
-
             var confirmTimesVM = _fixture.Create<ConfirmTimesViewModel>();
-            confirmTimesVM.Init(navData);
+            confirmTimesVM.Init(_navID);
 
             var completeDateTime = DateTime.Now.AddDays(-1);
             confirmTimesVM.CompleteDateTime = completeDateTime;
 
             await confirmTimesVM.AdvanceConfirmTimesAsync();
 
-            Assert.Equal(completeDateTime, navData.Data.CompleteDateTime);
+            Assert.Equal(completeDateTime, _navData.Data.CompleteDateTime);
         }
 
         #endregion Tests

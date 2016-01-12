@@ -38,12 +38,11 @@ namespace MWF.Mobile.Core.ViewModels
             _pictureChooserTask = pictureChooserTask;
         }
 
-
-        public void Init(NavData<SafetyCheckFault> navData)
+        public void Init(Guid navID)
         {
-            navData.Reinflate();
+            var navData = Mvx.Resolve<INavigationService>().GetNavData<SafetyCheckFault>(navID);
 
-            base.Init(navData.NavGUID);
+            base.Init(navID);
 
             _originalSafetyCheckFault = navData.Data;
 
@@ -52,7 +51,6 @@ namespace MWF.Mobile.Core.ViewModels
             _safetyCheckFault = _originalSafetyCheckFault.Clone();
 
             PopulateImageList();
-            
         }
 
         #endregion

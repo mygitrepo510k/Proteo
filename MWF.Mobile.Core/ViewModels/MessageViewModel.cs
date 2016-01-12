@@ -22,7 +22,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Members
 
-        private MessageModalNavItem _navData;
+        private MessageModalNavItem _navItem;
 
         private MobileData _mobileData;
 
@@ -50,11 +50,12 @@ namespace MWF.Mobile.Core.ViewModels
             _repositories = repositories;
         }
 
-        public async Task Init(MessageModalNavItem navData)
+        public async Task Init(Guid navID)
         {
-            _navData = navData;
-            await this.GetMobileDataFromRepositoryAsync(_navData.MobileDataID);
-            _isMessageRead = _navData.IsRead;
+            var navData = Mvx.Resolve<INavigationService>().GetNavData<MessageModalNavItem>(navID);
+            _navItem = navData.Data;
+            await this.GetMobileDataFromRepositoryAsync(_navItem.MobileDataID);
+            _isMessageRead = _navItem.IsRead;
         }
 
         #endregion Construction

@@ -46,11 +46,10 @@ namespace MWF.Mobile.Core.ViewModels
             _applicationProfileRepository = _repositories.ApplicationRepository;
         }
 
-        public async Task Init(NavData<MobileData> navData)
+        public async Task Init(Guid navID)
         {
-            _navData = navData;
-            _navData.Reinflate();
-            _mobileData = navData.Data;
+            _navData = _navigationService.GetNavData<MobileData>(navID);
+            _mobileData = _navData.Data;
 
             //set the default trailer to be the one specified on the order
             if (_mobileData.Order.Additional.Trailer != null)

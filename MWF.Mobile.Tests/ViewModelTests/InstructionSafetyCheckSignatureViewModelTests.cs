@@ -119,7 +119,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<InstructionSafetyCheckSignatureViewModel>();
 
-            await vm.Init(_navData);
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(_navData);
+
+            await vm.Init(navID);
 
             await vm.DoneAsync();
 

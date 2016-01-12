@@ -32,16 +32,16 @@ namespace MWF.Mobile.Core.ViewModels
         /// </summary> 
         /// <typeparam name="TViewModel">View Model to show (must be a subclass of  ModalBaseActivityModel) </typeparam>
         /// <typeparam name="TResult">The result type the modal view model will return</typeparam>
-        /// <param name="navItem">Navigation object containing parameters for the modal view model</param>
-        /// <param name="onResult"> Action to run when the modal view has closed, returning with a result</param>
+        /// <param name="navID">Navigation ID to allow the modal to retrieve its parameter data from the navigation service</param>
+        /// <param name="onResult">Action to run when the modal view has closed, returning with a result</param>
         /// <returns></returns>
-        public bool ShowModalViewModel<TViewModel, TResult>(IModalNavItem navItem, Action<TResult> onResult)
+        public bool ShowModalViewModel<TViewModel, TResult>(Guid navID, Action<TResult> onResult)
             where TViewModel : IModalViewModel<TResult>
         {
             _modalSubscriptionToken = Messenger.SubscribeOnMainThread<ModalNavigationResultMessage<TResult>>(msg =>
             {
                 // make sure message ids match up
-                if (msg.MessageId == navItem.NavGUID)
+                if (msg.MessageId == navID)
                 {
                     if (_modalSubscriptionToken != null)
                         Messenger.Unsubscribe<ModalNavigationResultMessage<TResult>>(_modalSubscriptionToken);
@@ -50,7 +50,7 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             });
 
-            return ShowViewModel<TViewModel>(navItem);
+            return ShowViewModel<TViewModel>(new { navID = navID });
         }
 
         #region IVisible

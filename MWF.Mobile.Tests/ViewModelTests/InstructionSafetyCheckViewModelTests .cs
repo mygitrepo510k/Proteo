@@ -37,6 +37,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Core.Models.Driver _driver;
         IEnumerable<SafetyProfile> _safetyProfiles;
         private SafetyProfile _safetyProfile;
+        private Guid _navID;
 
         protected override void AdditionalSetup()
         {
@@ -67,7 +68,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
-
             _mockSafetyProfileRepository = _fixture.InjectNewMock<ISafetyProfileRepository>();
 
             var repositories = _fixture.Create<Repositories>();
@@ -77,8 +77,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
 
             _safetyProfiles = CreateSafetyProfiles();
-            
 
+            _navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(_navID)).Returns(_navData);
         }
 
         private IEnumerable<SafetyProfile> CreateSafetyProfiles()
@@ -103,7 +104,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<InstructionSafetyCheckViewModel>();
 
-            await vm.Init(_navData);
+            await vm.Init(_navID);
 
             // check that we got the right safety profile for the trailer
             Assert.Equal(vm.SafetyProfileTrailer, _safetyProfile);
@@ -133,7 +134,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<InstructionSafetyCheckViewModel>();
 
-            await vm.Init(_navData);
+            await vm.Init(_navID);
 
             // no safety profile required for the trailer
             Assert.Null(vm.SafetyProfileTrailer);

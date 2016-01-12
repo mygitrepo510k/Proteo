@@ -39,11 +39,10 @@ namespace MWF.Mobile.Core.ViewModels
             _repositories = repositories;
         }
 
-        public void Init(NavData<MobileData> navData)
+        public void Init(Guid navID)
         {
-            _navData = navData;
-            navData.Reinflate();
-            _mobileData = navData.Data;
+            _navData = _navigationService.GetNavData<MobileData>(navID);
+            _mobileData = _navData.Data;
         }
 
         #endregion Construction

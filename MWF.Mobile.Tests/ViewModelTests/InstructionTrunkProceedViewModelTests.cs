@@ -35,7 +35,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IInfoService> _mockInfoService;
         private Mock<IMvxMessenger> _mockMessenger;
-
+        private NavData<MobileData> _navData;
+        private Guid _navID;
 
         protected override void AdditionalSetup()
         {
@@ -63,6 +64,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
 
+            _navData = new NavData<MobileData>() { Data = _mobileData };
+            _navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(_navID)).Returns(_navData);
         }
 
         #endregion Setup
@@ -76,7 +80,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
 
-            InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            InstructionTrunkProceedVM.Init(_navID);
 
             Assert.Equal("Trunk To", InstructionTrunkProceedVM.FragmentTitle);
 
@@ -89,7 +93,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
 
-            InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            InstructionTrunkProceedVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.RouteTitle, InstructionTrunkProceedVM.RunID);
 
@@ -103,7 +107,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
             _mobileData.Order.Type = InstructionType.ProceedFrom;
 
-            InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            InstructionTrunkProceedVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Arrive.ToStringIgnoreDefaultDate(), InstructionTrunkProceedVM.ArriveDepartDateTime);
             Assert.Equal("Depart", InstructionTrunkProceedVM.ArriveDepartLabelText);
@@ -120,7 +124,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
 
-            InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            InstructionTrunkProceedVM.Init(_navID);
 
             Assert.Equal(string.Empty, InstructionTrunkProceedVM.ArriveDepartDateTime);
 
@@ -134,7 +138,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
             _mobileData.Order.Type = InstructionType.TrunkTo;
 
-            InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            InstructionTrunkProceedVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Arrive.ToStringIgnoreDefaultDate(), InstructionTrunkProceedVM.ArriveDepartDateTime);
             Assert.Equal("Arrive", InstructionTrunkProceedVM.ArriveDepartLabelText);
@@ -151,7 +155,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
 
-            InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            InstructionTrunkProceedVM.Init(_navID);
 
             Assert.Equal(string.Empty, InstructionTrunkProceedVM.ArriveDepartDateTime);
 
@@ -166,7 +170,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
 
-            InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            InstructionTrunkProceedVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode, InstructionTrunkProceedVM.Address);
 
@@ -179,7 +183,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
 
-            instructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionTrunkProceedVM.Init(_navID);
 
             await instructionTrunkProceedVM.CompleteInstructionAsync();
 
@@ -194,7 +198,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
             InstructionTrunkProceedVM.IsVisible = true;
 
-            InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            InstructionTrunkProceedVM.Init(_navID);
 
             await InstructionTrunkProceedVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
@@ -213,7 +217,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var InstructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
             InstructionTrunkProceedVM.IsVisible = true;
 
-            InstructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            InstructionTrunkProceedVM.Init(_navID);
 
             _mobileData.GroupTitle = "UpdateTitle";
 
@@ -233,7 +237,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var instructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
             _mobileData.Order.Type = InstructionType.ProceedFrom;
 
-            instructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionTrunkProceedVM.Init(_navID);
 
             Assert.Equal("Proceed From", instructionTrunkProceedVM.FragmentTitle);
 
@@ -247,7 +251,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var instructionTrunkProceedVM = _fixture.Create<InstructionTrunkProceedViewModel>();
             _mobileData.Order.Type = InstructionType.TrunkTo;
 
-            instructionTrunkProceedVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionTrunkProceedVM.Init(_navID);
 
             Assert.Equal("Trunk To", instructionTrunkProceedVM.FragmentTitle);
 

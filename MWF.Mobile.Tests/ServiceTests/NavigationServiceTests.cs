@@ -122,21 +122,9 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var service = _fixture.Create<NavigationService>();
 
-            service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
+            service.InsertNavAction<ActivityViewModel, FragmentViewModel1, FragmentViewModel2>();
 
             Assert.True(service.NavActionExists<ActivityViewModel, FragmentViewModel1>());
-
-        }
-
-        [Fact]
-        public void NavigationService_InsertNavAction_InvalidDestType()
-        {
-            base.ClearAll();
-
-            var service = _fixture.Create<NavigationService>();
-
-            // Destination type is not an MvxModel
-            Assert.Throws<ArgumentException>(() => service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(HttpService)));
 
         }
 
@@ -153,13 +141,13 @@ namespace MWF.Mobile.Tests.ServiceTests
             NavData<Driver> navData = new NavData<Driver> { Data = driver }; 
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertCustomNavAction<ActivityViewModel, FragmentViewModel1>((a) => { myObj = a; return Task.FromResult(0); });
+            service.InsertCustomNavAction<ActivityViewModel, FragmentViewModel1>((id, data) => { myObj = data; return Task.FromResult(0); });
 
             Assert.True(service.NavActionExists<ActivityViewModel, FragmentViewModel1>());
 
             var navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
 
-            await navAction.Invoke(navData);
+            await navAction.Invoke(Guid.NewGuid(), navData);
 
             Assert.Equal(navData, myObj);
 
@@ -173,7 +161,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Specify that from StartUp/PassCode view model we should navigate back to customer code model
-            service.InsertBackNavAction<ActivityViewModel, FragmentViewModel2>(typeof(FragmentViewModel1));
+            service.InsertBackNavAction<ActivityViewModel, FragmentViewModel2, FragmentViewModel1>();
 
             Assert.True(service.BackNavActionExists<ActivityViewModel, FragmentViewModel2>());
 
@@ -192,13 +180,13 @@ namespace MWF.Mobile.Tests.ServiceTests
             NavData<Driver> navData = new NavData<Driver> { Data = driver }; 
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertCustomBackNavAction<ActivityViewModel, FragmentViewModel1>((a) => { myObj = a; return Task.FromResult(0); });
+            service.InsertCustomBackNavAction<ActivityViewModel, FragmentViewModel1>((id, data) => { myObj = data; return Task.FromResult(0); });
 
             Assert.True(service.BackNavActionExists<ActivityViewModel, FragmentViewModel1>());
 
             var navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
 
-            await navAction.Invoke(navData);
+            await navAction.Invoke(Guid.NewGuid(), navData);
 
             Assert.Equal(navData, myObj);         
 
@@ -223,14 +211,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
+            service.InsertNavAction<ActivityViewModel, FragmentViewModel1, FragmentViewModel2>();
 
             var navAction = service.GetNavAction<ActivityViewModel, FragmentViewModel1>();
 
             Assert.NotNull(navAction);
 
             // run the nav action
-            await navAction.Invoke(null);
+            await navAction.Invoke(Guid.Empty, null);
 
             //Check that the passcode view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -247,14 +235,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Specify that from StartUp/APsscode view model we should navigate to FragmentViewModel1
-            service.InsertBackNavAction<ActivityViewModel, FragmentViewModel2>(typeof(FragmentViewModel1));
+            service.InsertBackNavAction<ActivityViewModel, FragmentViewModel2, FragmentViewModel1>();
 
             var navAction = service.GetBackNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel2));
 
             Assert.NotNull(navAction);
 
             // run the nav action
-            await navAction.Invoke(null);
+            await navAction.Invoke(Guid.Empty, null);
 
             //Check that the customer view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Hints.Count);
@@ -272,14 +260,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
+            service.InsertNavAction<ActivityViewModel, FragmentViewModel1, FragmentViewModel2>();
 
             var navAction = service.GetNavAction(typeof(ActivityViewModel), typeof(FragmentViewModel1));
 
             Assert.NotNull(navAction);
 
             // run the nav action
-            await navAction.Invoke(null);
+            await navAction.Invoke(Guid.Empty, null);
 
             //Check that the passcode view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -325,7 +313,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
+            service.InsertNavAction<ActivityViewModel, FragmentViewModel1, FragmentViewModel2>();
 
             // Move to the next view model
             await service.MoveToNextAsync();
@@ -348,15 +336,15 @@ namespace MWF.Mobile.Tests.ServiceTests
             Ioc.RegisterSingleton<INavigationService>(service);
 
             // Specify that from StartUp/CustomerCode view model we should navigate to FragmentViewModel2
-            service.InsertNavAction<ActivityViewModel, FragmentViewModel1>(typeof(FragmentViewModel2));
+            service.InsertNavAction<ActivityViewModel, FragmentViewModel1, FragmentViewModel2>();
 
             //Create an object to pass through as a parameter 
             Driver driver = _fixture.Create<Driver>();
             Vehicle vehicle = _fixture.Create<Vehicle>();
-            NavData<Driver> navData = new NavData<Driver> { Data = driver };
+            var navData = new NavData<Driver> { Data = driver };
             navData.OtherData["vehicle"] = vehicle;
 
-            await service.MoveToNextAsync(navData);
+            var navID = await service.MoveToNextAsync(navData);
 
             //Check that the startup the instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -365,15 +353,15 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             // check that the nav item guid was passed through correctly
             var parametersObjectOut = request.ParameterValues.First();
-            Assert.Equal("NavGUID", parametersObjectOut.Key);
-            Assert.Equal(navData.NavGUID.ToString(), parametersObjectOut.Value);
+            Assert.Equal("navID", parametersObjectOut.Key);
+            Assert.Equal(navID.ToString(), parametersObjectOut.Value);
 
             // check that the nav item can be "re-inflated" by the nav service
 
             //clear down the nav data
             navData.OtherData = null;
             navData.Data = null;
-            navData.Reinflate();
+            navData = service.GetNavData<Driver>(navID);
 
             Assert.Equal(driver, navData.Data);
             Assert.Equal(vehicle, navData.OtherData["vehicle"]);
@@ -404,7 +392,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Specify that from current view models we should navigate back to FragmentViewModel1
-            service.InsertBackNavAction<ActivityViewModel, FragmentViewModel2>(typeof(FragmentViewModel1));
+            service.InsertBackNavAction<ActivityViewModel, FragmentViewModel2, FragmentViewModel1>();
 
             // Move to the next view model
             Assert.True(service.IsBackActionDefined());
@@ -746,8 +734,6 @@ namespace MWF.Mobile.Tests.ServiceTests
             Assert.Equal(typeof(StartupViewModel), request.ViewModelType);
         }
 
-
-
         [Fact]
         public async Task NavigationService_Mappings_Manifest_Instructions()
         {
@@ -763,8 +749,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             //Create a nav item for a mobile data model
-            NavData<MobileData> navData = new NavData<MobileData> { Data = _mobileData };
-            await service.MoveToNextAsync(navData);
+            var navData = new NavData<MobileData> { Data = _mobileData };
+            var navID = await service.MoveToNextAsync(navData);
 
             //Check that the startup the instruction view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -774,9 +760,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             // check that the supplied parameters were passed through correctly
             var parametersObjectOut = request.ParameterValues.First();
 
-            Assert.Equal("NavGUID", parametersObjectOut.Key);
-            Assert.Equal(navData.NavGUID.ToString(), parametersObjectOut.Value);
-
+            Assert.Equal("navID", parametersObjectOut.Key);
+            Assert.Equal(navID.ToString(), parametersObjectOut.Value);
         }
 
         [Fact]
@@ -2636,7 +2621,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var service = _fixture.Create<NavigationService>();
 
             // Move to the next view model
-            await service.Logout_ActionAsync(null);
+            await service.LogoutAsync();
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);
@@ -2656,9 +2641,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             SetUpLogOffSafetyCheckRequired(false);
             var service = _fixture.Create<NavigationService>();
 
-
             // Move to the next view model
-            await service.Logout_ActionAsync(null);
+            await service.LogoutAsync();
 
             //Check that the trailer list view model was navigated to
             Assert.Equal(1, _mockViewDispatcher.Requests.Count);

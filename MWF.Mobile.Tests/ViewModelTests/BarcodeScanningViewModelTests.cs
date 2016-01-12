@@ -35,7 +35,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IInfoService> _mockInfoService;
         private Mock<IMvxMessenger> _mockMessenger;
         private VerbProfile _verbProfile;
-
+        private NavData<MobileData> _navData;
+        private Guid _navID;
 
         protected override void AdditionalSetup()
         {
@@ -68,6 +69,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<BarcodeScanningViewModel>(vm => vm.Without(x => x.BarcodeInput));
 
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
+
+            _navData = new NavData<MobileData>() { Data = _mobileData };
+            _navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(_navID)).Returns(_navData);
         }
 
         #endregion Setup
@@ -80,8 +85,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
-
-            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(_navID);
 
             Assert.Equal("Deliver Scan", barcodeScanningVM.FragmentTitle);
 
@@ -95,7 +99,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
 
-            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(_navID);
 
             // Check the section headers are corrrect
             Assert.Equal("To Do", barcodeScanningVM.BarcodeSections[0].SectionHeader);
@@ -139,8 +143,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _verbProfile.Code = "PFORCE";
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
-
-            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(_navID);
 
             var barcodeItemViewModel = barcodeScanningVM.BarcodeSections[0].Barcodes[0];
 
@@ -168,8 +171,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData.Order.Items.RemoveRange(1, _mobileData.Order.Items.Count - 1);
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
-
-            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(_navID);
 
             // CanBeCompleted should be false to start with
             Assert.False(barcodeScanningVM.CanScanningBeCompleted);
@@ -192,8 +194,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData.Order.Items.RemoveRange(1, _mobileData.Order.Items.Count - 1);
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
-            var navData = new NavData<MobileData>() { Data = _mobileData };
-            await barcodeScanningVM.Init(navData);
+            await barcodeScanningVM.Init(_navID);
 
             // Mark the only view model as processed
             var barcodeItemViewModel = barcodeScanningVM.BarcodeSections[0].Barcodes[0];
@@ -204,7 +205,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await barcodeScanningVM.CompleteScanningAsync();
 
             //check that the properties for the barcode were set correctly on the datachunk
-            var dataChunk = navData.GetDataChunk();
+            var dataChunk = _navData.GetDataChunk();
 
             Assert.Equal(barcodeItemViewModel.BarcodeText, dataChunk.ScannedDelivery.Barcodes[0].BarcodeText);
             Assert.True(dataChunk.ScannedDelivery.Barcodes[0].IsDelivered);
@@ -215,7 +216,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
 
             //check that the navigation service was called
-            _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(x => x == navData)));
+            _mockNavigationService.Verify(ns => ns.MoveToNextAsync(It.Is<NavData<MobileData>>(x => x == _navData)));
 
         }
 
@@ -225,9 +226,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
-            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
+            await barcodeScanningVM.Init(navID);
 
             // set the barcode input to be the same as the input barcode of the first view model
             var barcodeToInput = barcodeScanningVM.BarcodeSections[0].Barcodes[0];
@@ -252,8 +256,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
-
-            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(_navID);
 
             // set the barcode input to be a nonsense code
             barcodeScanningVM.BarcodeInput = "nonsense1010110";
@@ -273,8 +276,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
-
-            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(_navID);
 
             // set the barcode input to be the same as the input barcode of the first view model
             var barcodeToInput = barcodeScanningVM.BarcodeSections[0].Barcodes[0];
@@ -299,8 +301,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
-
-            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(_navID);
 
             _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Mark Barcode as Manually Processed?");
 
@@ -320,15 +321,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         }
 
-
         [Fact]
         public async Task BarcodeScanningVM_SelectedBarcodes()
         {
             base.ClearAll();
 
             var barcodeScanningVM = _fixture.Create<BarcodeScanningViewModel>();
-
-            await barcodeScanningVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            await barcodeScanningVM.Init(_navID);
 
             // shouldn't have any selected barcodes to start with
             Assert.Equal(0, barcodeScanningVM.SelectedBarcodes.Count());

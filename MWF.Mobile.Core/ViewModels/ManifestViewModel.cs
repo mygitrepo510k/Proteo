@@ -163,7 +163,7 @@ namespace MWF.Mobile.Core.ViewModels
                 // get instruction data models from repository and order them
                 var activeInstructionsDataModels = await _mobileDataRepository.GetInProgressInstructionsAsync(_infoService.LoggedInDriver.ID);
                 var nonActiveInstructionsDataModels = await _mobileDataRepository.GetNotStartedInstructionsAsync(_infoService.LoggedInDriver.ID);
-                Mvx.Trace("  -- got instrcutions from database");
+                Mvx.Trace("  -- got instructions from database");
 
                 if (!_displayRetention.HasValue || !_displaySpan.HasValue)
                 {

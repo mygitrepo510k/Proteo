@@ -89,8 +89,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             //set the trailer in the current order to have the same registration as first trailer
             mobileData.Order.Additional.Trailer.TrailerId = trailers.First().Registration;
 
+            var navID = Guid.NewGuid();
+            _navigationServiceMock.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
             var vm = _fixture.Build<InstructionTrailerViewModel>().With(itvm => itvm.TrailerSearchText, string.Empty).Create();
-            await vm.Init(navData);
+            await vm.Init(navID);
 
             Assert.Equal(vm.DefaultTrailerReg, mobileData.Order.Additional.Trailer.TrailerId);
 
@@ -117,8 +120,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             var navData = new NavData<MobileData>() { Data = mobileData };
 
+            var navID = Guid.NewGuid();
+            _navigationServiceMock.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
             var vm = _fixture.Build<InstructionTrailerViewModel>().With(itvm => itvm.TrailerSearchText, string.Empty).Create();
-            await vm.Init(navData);
+            await vm.Init(navID);
 
             var trailerItem = vm.Trailers.First();
 
@@ -143,10 +149,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
 
+            var navID = Guid.NewGuid();
+            _navigationServiceMock.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
             var vm = _fixture.Create<InstructionTrailerViewModel>();
             vm.IsVisible = true;
 
-            await vm.Init(new NavData<MobileData>() { Data = mobileData });
+            await vm.Init(navID);
 
             await vm.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, mobileData.ID);
 
@@ -169,11 +178,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             // set the trailer the user has selected to be the same as current trailer and the one specified on the order
             var navData = new NavData<MobileData>() { Data = mobileData };
+            var navID = Guid.NewGuid();
+            _navigationServiceMock.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
             var vm = _fixture.Create<InstructionTrailerViewModel>();
             vm.IsVisible = true;
 
-            await vm.Init(new NavData<MobileData>() { Data = mobileData });
+            await vm.Init(navID);
 
             await vm.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, mobileData.ID);
 

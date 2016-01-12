@@ -141,7 +141,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            await _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            await _barcodeScanningViewModel.Init(navID);
 
             var barcodeItemVM = new BarcodeItemViewModel(_mockNavigationService.Object, _damageStatuses, _barcodeScanningViewModel);
 
@@ -161,7 +165,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            await _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            await _barcodeScanningViewModel.Init(navID);
 
             var barcodeItemVM = new BarcodeItemViewModel(_mockNavigationService.Object, _damageStatuses, _barcodeScanningViewModel);
 
@@ -187,7 +195,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            await _barcodeScanningViewModel.Init(new NavData<MobileData>() { Data = _mobileData });
+            var navData = new NavData<MobileData>() { Data = _mobileData };
+            var navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
+
+            await _barcodeScanningViewModel.Init(navID);
 
             var barcodeItemVM = new BarcodeItemViewModel(_mockNavigationService.Object, _damageStatuses, _barcodeScanningViewModel);
 

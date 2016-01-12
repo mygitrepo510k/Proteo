@@ -114,7 +114,9 @@ namespace MWF.Mobile.Core.ViewModels
         public void OpenMessageModal(Action<bool> callback)
         {
             var navItem = new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = (_mobileData.ProgressState == Enums.InstructionProgress.Complete) };
-            var modal = _baseViewModel.ShowModalViewModel<MessageViewModel, bool>(navItem, (sendChunk) =>
+            var navData = new NavData<MessageModalNavItem> { Data = navItem };
+
+            var modal = _navigationService.ShowModalViewModel<MessageViewModel, bool>(_baseViewModel, navData, (sendChunk) =>
             {
                 //This is to update any read messages in the inbox.
                 //For some reason the Manifest screen doesn't need it because it just removes the items from the manifest.
@@ -130,7 +132,9 @@ namespace MWF.Mobile.Core.ViewModels
         private void OpenMessageModal()
         {
             var navItem = new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = (_mobileData.ProgressState == Enums.InstructionProgress.Complete) };
-            var modal = _baseViewModel.ShowModalViewModel<MessageViewModel, bool>(navItem, (sendChunk) =>
+            var navData = new NavData<MessageModalNavItem> { Data = navItem };
+
+            var modal = _navigationService.ShowModalViewModel<MessageViewModel, bool>(_baseViewModel, navData, (sendChunk) =>
             {
                 //This is to update any read messages in the inbox.
                 //For some reason the Manifest screen doesn't need it because it just removes the items from the manifest.

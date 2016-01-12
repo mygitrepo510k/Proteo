@@ -35,6 +35,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IInfoService> _mockInfoService;
         private Mock<IMvxMessenger> _mockMessenger;
+        private NavData<MobileData> _navData;
+        private Guid _navID;
 
         protected override void AdditionalSetup()
         {
@@ -59,6 +61,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockInfoService = _fixture.InjectNewMock<IInfoService>();
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
 
+            _navData = new NavData<MobileData>() { Data = _mobileData };
+            _navID = Guid.NewGuid();
+            _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(_navID)).Returns(_navData);
         }
 
         #endregion Setup
@@ -72,7 +77,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Type.ToString(), instructionVM.FragmentTitle);
 
@@ -85,7 +90,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.RouteTitle, instructionVM.RunID);
 
@@ -98,7 +103,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Arrive.ToStringIgnoreDefaultDate(), instructionVM.ArriveDateTime);
 
@@ -113,7 +118,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal(string.Empty, instructionVM.ArriveDateTime);
 
@@ -126,7 +131,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Depart.ToStringIgnoreDefaultDate(), instructionVM.DepartDateTime);
 
@@ -141,7 +146,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal(string.Empty, instructionVM.DepartDateTime);
 
@@ -156,7 +161,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode, instructionVM.Address);
 
@@ -171,7 +176,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.ProgressState = Core.Enums.InstructionProgress.NotStarted;
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal("Drive", instructionVM.ProgressButtonText);
 
@@ -192,7 +197,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.ProgressState = Core.Enums.InstructionProgress.Driving;
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal("On Site", instructionVM.ProgressButtonText);
 
@@ -213,7 +218,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.ProgressState = Core.Enums.InstructionProgress.OnSite;
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.Equal("On Site", instructionVM.ProgressButtonText);
 
@@ -237,7 +242,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.False(instructionVM.ChangeTrailerAllowed);
 
@@ -254,7 +259,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.True(instructionVM.ChangeTrailerAllowed);
 
@@ -271,7 +276,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var instructionVM = _fixture.Create<InstructionViewModel>();
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             Assert.False(instructionVM.ChangeTrailerAllowed);
 
@@ -285,7 +290,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var instructionVM = _fixture.Create<InstructionViewModel>();
             instructionVM.IsVisible = true;
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             await instructionVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
 
@@ -304,7 +309,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var instructionVM = _fixture.Create<InstructionViewModel>();
             instructionVM.IsVisible = true;
 
-            instructionVM.Init(new NavData<MobileData>() { Data = _mobileData });
+            instructionVM.Init(_navID);
 
             _mobileData.GroupTitle = "UpdateTitle";
 

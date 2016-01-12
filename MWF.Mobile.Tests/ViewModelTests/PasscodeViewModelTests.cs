@@ -75,7 +75,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var navigationServiceMock = new Mock<INavigationService>();
-            navigationServiceMock.Setup(ns => ns.MoveToNextAsync(It.IsAny<NavData>())).Returns(Task.FromResult(0));
+            navigationServiceMock.Setup(ns => ns.MoveToNextAsync(It.IsAny<NavData>())).Returns(Task.FromResult(Guid.NewGuid()));
             _fixture.Inject<INavigationService>(navigationServiceMock.Object);
 
             var vm = _fixture.Create<PasscodeViewModel>();
@@ -84,7 +84,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(It.Is<NavData>(nd=> nd.OtherData["Diagnostics"] != null)), Times.Once);
-
         }
 
         /// <summary>

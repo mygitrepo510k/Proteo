@@ -26,10 +26,9 @@ namespace MWF.Mobile.Core.ViewModels
             return Task.FromResult(0);
         }
 
-        public async Task Init(NavData<MobileData> navData)
+        public async Task Init(Guid navID)
         {
-            _navData = navData;
-            _navData.Reinflate();
+            _navData = _navigationService.GetNavData<MobileData>(navID);
 
             Models.Trailer trailer = _navData.OtherData["UpdatedTrailer"] as Models.Trailer;
 

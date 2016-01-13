@@ -424,14 +424,14 @@ namespace MWF.Mobile.Core.Services
             return typeof(BaseActivityViewModel).IsAssignableFrom(activityType) && typeof(BaseFragmentViewModel).IsAssignableFrom(fragmentType);
         }
 
-        private async Task<bool> ConfirmCommentAccessAsync(NavData navData)
+        private async Task<bool> ConfirmCommentAccessAsync(Guid navID, NavData navData)
         {
             var advanceToCommentScreen = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Do you want to enter a comment for this instruction?", "", "Yes", "No");
 
             if (advanceToCommentScreen)
             {
                 navData.OtherData["VisitedCommentScreen"] = true;
-                this.ShowViewModel<InstructionCommentViewModel>(navData);
+                this.ShowViewModel<InstructionCommentViewModel>(navID);
             }
             else
             {
@@ -441,14 +441,12 @@ namespace MWF.Mobile.Core.Services
             return advanceToCommentScreen;
         }
 
-        private async Task<bool> IsCleanInstructionAsync(NavData navData)
+        private async Task<bool> IsCleanInstructionAsync(Guid navID)
         {
             var isClean = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("Is the delivery clean?", "", "Yes", "No");
 
             if (!isClean)
-            {
-                this.ShowViewModel<InstructionClausedViewModel>(navData);
-            }
+                this.ShowViewModel<InstructionClausedViewModel>(navID);
 
             return isClean;
         }
@@ -744,7 +742,7 @@ namespace MWF.Mobile.Core.Services
             {
                 if (navData.OtherData.IsDefined("IsTrailerEditFromInstructionScreen"))
                 {
-                    ShowViewModel<InstructionTrailerViewModel>(navID);
+                    this.ShowViewModel<InstructionTrailerViewModel>(navID);
                 }
                 else
                 {
@@ -756,7 +754,7 @@ namespace MWF.Mobile.Core.Services
                     if (mobileDataNav.Data.ProgressState == Enums.InstructionProgress.OnSite)
                         mobileDataNav.Data.OnSiteDateTime = DateTime.Now;
 
-                    ShowViewModel<InstructionOnSiteViewModel>(navID);
+                    this.ShowViewModel<InstructionOnSiteViewModel>(navID);
                 }
             }
         }
@@ -820,15 +818,17 @@ namespace MWF.Mobile.Core.Services
                 if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver &&
                     !deliveryOptions.BypassCleanClausedScreen)
                 {
-                    bool isClean = await IsCleanInstructionAsync(mobileNavData);
+                    bool isClean = await IsCleanInstructionAsync(navID);
 
-                    if (!isClean) return;
+                    if (!isClean)
+                        return;
                 }
 
                 if ((mobileNavData.Data.Order.Type == Enums.InstructionType.Collect && !itemAdditionalContent.BypassCommentsScreen) ||
                      (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver && !deliveryOptions.BypassCommentsScreen))
                 {
-                    bool hasAdvanced = await ConfirmCommentAccessAsync(mobileNavData);
+                    bool hasAdvanced = await ConfirmCommentAccessAsync(navID, mobileNavData);
+
                     if (hasAdvanced)
                         return;
                 }
@@ -872,17 +872,17 @@ namespace MWF.Mobile.Core.Services
                 else
                 {
                     // else trailer select was via collection on-site flow
-                    await this.CompleteInstructionTrailerSelectionAsync(mobileNavData);
+                    await this.CompleteInstructionTrailerSelectionAsync(navID, mobileNavData);
                 }
             }
         }
 
-        private async Task CompleteInstructionTrailerSelectionAsync(NavData<MobileData> mobileNavData)
+        private async Task CompleteInstructionTrailerSelectionAsync(Guid navID, NavData<MobileData> mobileNavData)
         {
             if (mobileNavData.OtherData.IsDefined("IsProceedFrom"))
             {
                 mobileNavData.OtherData["IsProceedFrom"] = null;
-                this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
+                this.ShowViewModel<ConfirmTimesViewModel>(navID);
                 return;
             }
 
@@ -891,18 +891,19 @@ namespace MWF.Mobile.Core.Services
 
             if (!itemAdditionalContent.BypassCommentsScreen)
             {
-                bool hasAdvanced = await ConfirmCommentAccessAsync(mobileNavData);
+                bool hasAdvanced = await ConfirmCommentAccessAsync(navID, mobileNavData);
+
                 if (hasAdvanced)
                     return;
             }
 
             if (additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection)
             {
-                this.ShowViewModel<InstructionSignatureViewModel>(mobileNavData);
+                this.ShowViewModel<InstructionSignatureViewModel>(navID);
                 return;
             }
 
-            this.ShowViewModel<ConfirmTimesViewModel>(mobileNavData);
+            this.ShowViewModel<ConfirmTimesViewModel>(navID);
         }
 
         private async Task UpdateTrailerForInstructionAsync(NavData<MobileData> mobileNavData, Models.Trailer trailer)
@@ -950,7 +951,7 @@ namespace MWF.Mobile.Core.Services
                 }
                 else
                 {
-                    await this.CompleteInstructionTrailerSelectionAsync(mobileNavData);
+                    await this.CompleteInstructionTrailerSelectionAsync(navID, mobileNavData);
                 }
             }
             else
@@ -971,15 +972,17 @@ namespace MWF.Mobile.Core.Services
             if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver &&
                 !deliveryOptions.BypassCleanClausedScreen)
             {
-                bool isClean = await IsCleanInstructionAsync(mobileNavData);
+                bool isClean = await IsCleanInstructionAsync(navID);
 
-                if (!isClean) return;
+                if (!isClean)
+                    return;
             }
 
             if ((mobileNavData.Data.Order.Type == Enums.InstructionType.Collect && !itemAdditionalContent.BypassCommentsScreen) ||
                     (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver && !deliveryOptions.BypassCommentsScreen))
             {
-                bool hasAdvanced = await ConfirmCommentAccessAsync(mobileNavData);
+                bool hasAdvanced = await ConfirmCommentAccessAsync(navID, mobileNavData);
+
                 if (hasAdvanced)
                     return;
             }
@@ -1027,7 +1030,7 @@ namespace MWF.Mobile.Core.Services
             else
             {
                 // otherwise continue with collection on site flow
-                await this.CompleteInstructionTrailerSelectionAsync(mobileNavData);
+                await this.CompleteInstructionTrailerSelectionAsync(navID, mobileNavData);
                 return;
             }
         }
@@ -1043,7 +1046,7 @@ namespace MWF.Mobile.Core.Services
             if ((mobileNavData.Data.Order.Type == Enums.InstructionType.Collect && !itemAdditionalContent.BypassCommentsScreen) ||
                  (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver && !deliveryOptions.BypassCommentsScreen))
             {
-                bool hasAdvanced = await ConfirmCommentAccessAsync(mobileNavData);
+                bool hasAdvanced = await ConfirmCommentAccessAsync(navID, mobileNavData);
                 if (hasAdvanced)
                     return;
             }
@@ -1109,7 +1112,7 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public Task InstructionComment_CustomBackActionAsync(Guid navID, NavData navData)
         {
-            ShowViewModel<InstructionOnSiteViewModel>(navID);
+            this.ShowViewModel<InstructionOnSiteViewModel>(navID);
             return Task.FromResult(0);
         }
 
@@ -1119,7 +1122,7 @@ namespace MWF.Mobile.Core.Services
         public Task InstructionSignature_CustomActionAsync(Guid navID, NavData navData)
         {
             if (navData is NavData<MobileData>)
-                ShowViewModel<ConfirmTimesViewModel>(navID);
+                this.ShowViewModel<ConfirmTimesViewModel>(navID);
 
             return Task.FromResult(0);
         }
@@ -1132,9 +1135,9 @@ namespace MWF.Mobile.Core.Services
         {
 
             if (navData.OtherData.IsDefined("VisitedCommentScreen"))
-                ShowViewModel<InstructionCommentViewModel>(navID);
+                this.ShowViewModel<InstructionCommentViewModel>(navID);
             else
-                ShowViewModel<InstructionOnSiteViewModel>(navID);
+                this.ShowViewModel<InstructionOnSiteViewModel>(navID);
 
             return Task.FromResult(0);
         }
@@ -1147,9 +1150,9 @@ namespace MWF.Mobile.Core.Services
                 return GoToManifestAsync();
 
             if (navData.OtherData.IsDefined("VisitedCommentScreen"))
-                ShowViewModel<InstructionCommentViewModel>(navID);
+                this.ShowViewModel<InstructionCommentViewModel>(navID);
             else
-                ShowViewModel<InstructionOnSiteViewModel>(navID);
+                this.ShowViewModel<InstructionOnSiteViewModel>(navID);
 
             return Task.FromResult(0);
         }

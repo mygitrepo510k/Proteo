@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-using Cirrious.CrossCore;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class CustomerCodeViewModel : BaseFragmentViewModel
+    public class CustomerCodeViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
 
         private readonly Services.IGatewayService _gatewayService;
@@ -31,8 +32,9 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IVerbProfileRepository _verbProfileRepository;
         private readonly IConfigRepository _configRepository;
+        private readonly ICloseApplication _closeApplication;
 
-        public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, ICustomUserInteraction userInteraction, INavigationService navigationService)
+        public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, ICustomUserInteraction userInteraction, INavigationService navigationService, ICloseApplication closeApplication)
         {
             _gatewayService = gatewayService;
             _dataService = dataService;
@@ -49,6 +51,7 @@ namespace MWF.Mobile.Core.ViewModels
             _vehicleRepository = repositories.VehicleRepository;
             _verbProfileRepository = repositories.VerbProfileRepository;
             _configRepository = repositories.ConfigRepository;
+            _closeApplication = closeApplication;
         }
 
         public async Task Init()
@@ -245,5 +248,18 @@ namespace MWF.Mobile.Core.ViewModels
             await _configRepository.DeleteAllAsync();
         }
 
+        #region IBackButtonHandler Implementation
+
+        public Task<bool> OnBackButtonPressedAsync()
+        {
+            // Always close the app on Back button press on this screen
+            // (in Debug mode the user may have been routed to here from the passcode screen, but Back button should not navigate back to there)
+            _closeApplication.CloseApp();
+            return Task.FromResult(false);
+        }
+
+        #endregion IBackButtonHandler Implementation
+
     }
+
 }

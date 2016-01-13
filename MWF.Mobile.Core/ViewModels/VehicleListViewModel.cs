@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
@@ -155,7 +156,16 @@ namespace MWF.Mobile.Core.ViewModels
 
                 await _currentDriverRepository.DeleteAsync(newDriver);
                 newDriver.LastVehicleID = vehicle.ID;
-                await _currentDriverRepository.InsertAsync(newDriver);
+
+                try
+                {
+                    await _currentDriverRepository.InsertAsync(newDriver);
+                }
+                catch (Exception ex)
+                {
+                    MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "CurrentDriverRepository", "InsertAsync", ex.StackTrace);
+                    throw;
+                }
 
                 await this.ShowTrailerScreenAsync(vehicle);
             }
@@ -217,7 +227,15 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     await _vehicleRepository.DeleteAllAsync();
 
-                    await _vehicleRepository.InsertAsync(vehicles);
+                    try
+                    {
+                        await _vehicleRepository.InsertAsync(vehicles);
+                    }
+                    catch (Exception ex)
+                    {
+                        MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "VehicleRepository", "InsertAsync", ex.StackTrace);
+                        throw;
+                    }
 
                     Vehicles = _originalVehicleList = await _vehicleRepository.GetAllAsync();
 
@@ -254,14 +272,25 @@ namespace MWF.Mobile.Core.ViewModels
                 if (safetyProfiles != null)
                 {
                     await _safetyProfileRepository.DeleteAllAsync();
-                    await _safetyProfileRepository.InsertAsync(safetyProfiles);
+
+                    try
+                    {
+                        await _safetyProfileRepository.InsertAsync(safetyProfiles);
+                    }
+                    catch (Exception ex)
+                    {
+                        MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "SafetyProfileRepository", "InsertAsync", ex.StackTrace);
+                        throw;
+                    }
                 }
             }
 
             var safetyProfileData = await _safetyProfileRepository.GetAllAsync();
+
             if (safetyProfileData.ToList().Count == 0)
                 await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("No Profiles Found.");
         }
+
     }
 
 }

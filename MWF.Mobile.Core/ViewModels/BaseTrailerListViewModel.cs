@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
-
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -231,7 +231,15 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 await _repositories.TrailerRepository.DeleteAllAsync();
 
-                await _repositories.TrailerRepository.InsertAsync(trailers);
+                try
+                {
+                    await _repositories.TrailerRepository.InsertAsync(trailers);
+                }
+                catch (Exception ex)
+                {
+                    MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "TrailerRepository", "InsertAsync", ex.StackTrace);
+                    throw;
+                }
 
                 await GetTrailerModelsAsync();
 
@@ -269,7 +277,16 @@ namespace MWF.Mobile.Core.ViewModels
                 if (safetyProfiles != null)
                 {
                     await safetyProfileRepository.DeleteAllAsync();
-                    await safetyProfileRepository.InsertAsync(safetyProfiles);
+
+                    try
+                    {
+                        await safetyProfileRepository.InsertAsync(safetyProfiles);
+                    }
+                    catch (Exception ex)
+                    {
+                        MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "SafetyProfileRepository", "InsertAsync", ex.StackTrace);
+                        throw;
+                    }
                 }
             }
 
@@ -318,8 +335,18 @@ namespace MWF.Mobile.Core.ViewModels
             if (vehicles != null && vehicles.Any())
             {
                 await _repositories.VehicleRepository.DeleteAllAsync();
-                await _repositories.VehicleRepository.InsertAsync(vehicles);
-                // we need to updat the selected vehicle as the profile could have changed.
+
+                try
+                {
+                    await _repositories.VehicleRepository.InsertAsync(vehicles);
+                }
+                catch (Exception ex)
+                {
+                    MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "VehicleRepository", "InsertAsync", ex.StackTrace);
+                    throw;
+                }
+
+                // we need to update the selected vehicle as the profile could have changed.
                 var currentvehicle = vehicles.First(v => v.ID == _infoService.CurrentVehicle.ID);
                 _infoService.CurrentVehicle = currentvehicle;
             }

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Enums;
 using MWF.Mobile.Core.Models.GatewayServiceRequest;
@@ -153,7 +153,16 @@ namespace MWF.Mobile.Core.Services
 
                                     if (instructionToAdd == null)
                                     {
-                                        await _repositories.MobileDataRepository.InsertAsync(instruction);
+                                        try
+                                        {
+                                            await _repositories.MobileDataRepository.InsertAsync(instruction);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "MobileDataRepository", "InsertAsync", ex.StackTrace);
+                                            throw;
+                                        }
+
                                         notifyInstruction = true;
                                     }
 
@@ -173,7 +182,16 @@ namespace MWF.Mobile.Core.Services
                                         instruction.LatestDataChunkSequence = instructionToUpdate.LatestDataChunkSequence;
                                     }
 
-                                    await _repositories.MobileDataRepository.InsertAsync(instruction);
+                                    try
+                                    {
+                                        await _repositories.MobileDataRepository.InsertAsync(instruction);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "MobileDataRepository", "InsertAsync", ex.StackTrace);
+                                        throw;
+                                    }
+
                                     notifyInstruction = true;
                                     Mvx.Trace("completed updating instruction." + instruction.ID);
                                     PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);

@@ -150,23 +150,43 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Signature"; }
         }
 
+        private bool _isProgressing;
+        public bool IsProgressing
+        {
+            get { return _isProgressing; }
+            set { _isProgressing = value; RaisePropertyChanged(() => IsProgressing); }
+        }
+
+
         #endregion properties
 
         public async Task DoneAsync()
         {
+            if (this.IsProgressing)
+                return;
+
             if (string.IsNullOrWhiteSpace(SignatureEncodedImage))
             {
                 await _userInteraction.AlertAsync("A signature is required to complete a safety check");
                 return;
             }
 
-            // Set the signature on the vehicle and trailer safety checks
-            foreach (var safetyCheckData in _safetyCheckData)
-            {
-                safetyCheckData.Signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
-            }
+            this.IsProgressing = true;
 
-            await _navigationService.MoveToNextAsync(_navData);
+            try
+            {
+                // Set the signature on the vehicle and trailer safety checks
+                foreach (var safetyCheckData in _safetyCheckData)
+                {
+                    safetyCheckData.Signature = new Models.Signature { EncodedImage = this.SignatureEncodedImage };
+                }
+
+                await _navigationService.MoveToNextAsync(_navData);
+            }
+            finally
+            {
+                this.IsProgressing = false;
+            }
         }
 
     }

@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using Cirrious.CrossCore.Platform;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -108,7 +109,16 @@ namespace MWF.Mobile.Core.ViewModels
                         await UpdateSafetyProfilesAsync();
 
                         applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
-                        await _applicationProfileRepository.UpdateAsync(applicationProfile);
+
+                        try
+                        {
+                            await _applicationProfileRepository.UpdateAsync(applicationProfile);
+                        }
+                        catch (Exception ex)
+                        {
+                            MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "ApplicationProfileRepository", "UpdateAsync", ex.StackTrace);
+                            throw;
+                        }
                     }
                 }
                 finally

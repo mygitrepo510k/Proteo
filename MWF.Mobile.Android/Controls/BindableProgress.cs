@@ -18,7 +18,6 @@ namespace MWF.Mobile.Android.Controls
         public BindableProgress(Context context)
         {
             _context = context;
-
         }
 
         private ProgressDialog _dialog;
@@ -34,7 +33,7 @@ namespace MWF.Mobile.Android.Controls
                 if (value == Visible)
                     return;
                 
-                if(value)
+                if (value)
                 {
                     _dialog = new ProgressDialog(_context);
                     _dialog.SetTitle(Title);

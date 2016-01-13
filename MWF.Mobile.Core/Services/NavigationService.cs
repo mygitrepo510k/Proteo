@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.ViewModels;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Models;
@@ -14,7 +15,6 @@ using MWF.Mobile.Core.Utilities;
 using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
-
 
 namespace MWF.Mobile.Core.Services
 {
@@ -313,7 +313,16 @@ namespace MWF.Mobile.Core.Services
             await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Your license is no longer valid. Logging out.");
 
             _infoService.LoggedInDriver.IsLicensed = false;
-            await _repositories.DriverRepository.UpdateAsync(_infoService.LoggedInDriver);
+
+            try
+            {
+                await _repositories.DriverRepository.UpdateAsync(_infoService.LoggedInDriver);
+            }
+            catch (Exception ex)
+            {
+                MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "DriverRepository", "UpdateAsync", ex.StackTrace);
+                throw;
+            }
 
             await this.DoLogoutAsync();
         }
@@ -669,7 +678,6 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public async Task Signature_CustomAction_LoginAsync(Guid navID, NavData navData)
         {
-
             // commit safety check data to repositories and bluesphere
             await _safetyCheckService.CommitSafetyCheckDataAsync();
 
@@ -687,8 +695,8 @@ namespace MWF.Mobile.Core.Services
         }
 
         /// <summary>
-        /// Commits the safety check and does the logout if we were doing a logout sfaety check
-        ///  Otherwise this must have have been a safety check from the sidebar so go back to manifestscreen
+        /// Commits the safety check and does the logout if we were doing a logout safety check
+        ///  Otherwise this must have have been a safety check from the sidebar so go back to manifest screen
         /// </summary>
         public async Task Signature_CustomAction_SidebarAsync(Guid navID, NavData navData)
         {

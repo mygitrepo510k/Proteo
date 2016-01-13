@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Cirrious.CrossCore;
-using Cirrious.MvvmCross.Plugins.Messenger;
-using Newtonsoft.Json;
-using MWF.Mobile.Core.Repositories;
 using System.Xml.Serialization;
+using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
+using Cirrious.MvvmCross.Plugins.Messenger;
+using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Utilities;
+using Newtonsoft.Json;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -113,7 +114,16 @@ namespace MWF.Mobile.Core.Services
             {
                 var serializedContent = JsonConvert.SerializeObject(requestContent);
                 var queueItem = new Models.GatewayQueueItem { ID = Guid.NewGuid(), JsonSerializedRequestContent = serializedContent, QueuedDateTime = DateTime.Now };
-                await _queueItemRepository.InsertAsync(queueItem);
+
+                try
+                {
+                    await _queueItemRepository.InsertAsync(queueItem);
+                }
+                catch (Exception ex)
+                {
+                    MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "GatewayQueueItemRepository", "InsertAsync", ex.StackTrace);
+                    throw;
+                }
 
                 // Always attempt to sync with the MWF Mobile Gateway service whenever items are added to the queue (providing the GatewayQueueTimerService has been started)
                 await UploadQueueAsync();

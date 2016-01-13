@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
@@ -140,7 +141,16 @@ namespace MWF.Mobile.Core.ViewModels
                     {
                         CurrentDriver newDriver = new CurrentDriver();
                         newDriver.ID = _infoService.LoggedInDriver.ID;
-                        await _currentDriverRepository.InsertAsync(newDriver);
+
+                        try
+                        {
+                            await _currentDriverRepository.InsertAsync(newDriver);
+                        }
+                        catch (Exception ex)
+                        {
+                            MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "CurrentDriverRepository", "InsertAsync", ex.StackTrace);
+                            throw;
+                        }
                     }
 
                     // Start the gateway queue timer which will cause submission of any queued data to the MWF Mobile gateway service on a repeat basis

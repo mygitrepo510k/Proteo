@@ -1,12 +1,10 @@
-﻿using Cirrious.CrossCore;
-using MWF.Mobile.Core.Models;
-using MWF.Mobile.Core.Models.Instruction;
-using MWF.Mobile.Core.Portable;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Cirrious.CrossCore.Platform;
+using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -88,11 +86,19 @@ namespace MWF.Mobile.Core.Services
                 {
 
                     var mobileDataToUpdate = await _repositories.MobileDataRepository.GetByIDAsync(instruction.ID);
+
                     if (mobileDataToUpdate != null)
-                    {
                         await _repositories.MobileDataRepository.DeleteAsync(mobileDataToUpdate);
+
+                    try
+                    {
+                        await _repositories.MobileDataRepository.InsertAsync(instruction);
                     }
-                    await _repositories.MobileDataRepository.InsertAsync(instruction);
+                    catch (Exception ex)
+                    {
+                        MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "MobileDataRepository", "InsertAsync", ex.StackTrace);
+                        throw;
+                    }
                 }
 
             }
@@ -207,17 +213,26 @@ namespace MWF.Mobile.Core.Services
             if (deleteMobileData)
             {
                 var oldMobileData = await _repositories.MobileDataRepository.GetByIDAsync(mobileData.ID);
+
                 if (oldMobileData != null)
                    await _repositories.MobileDataRepository.DeleteAsync(oldMobileData);
             }
             else
             {
                 var mobileDataToUpdate = await _repositories.MobileDataRepository.GetByIDAsync(mobileData.ID);
+
                 if (mobileDataToUpdate != null)
-                {
                     await _repositories.MobileDataRepository.DeleteAsync(mobileDataToUpdate);
+
+                try
+                {
+                    await _repositories.MobileDataRepository.InsertAsync(mobileData);
                 }
-                await _repositories.MobileDataRepository.InsertAsync(mobileData);
+                catch (Exception ex)
+                {
+                    MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "MobileDataRepository", "InsertAsync", ex.StackTrace);
+                    throw;
+                }
             }
         }
 

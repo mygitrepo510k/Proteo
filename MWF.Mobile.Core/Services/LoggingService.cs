@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.GatewayServiceRequest;
@@ -57,14 +58,14 @@ namespace MWF.Mobile.Core.Services
 
         public Task LogEventAsync(Exception exception)
         {
-			var loggedException = this.GetExceptionLogMessage(exception);
-            return _loggedRepository.InsertAsync(loggedException);
+            var loggedException = this.GetExceptionLogMessage(exception);
+            return this.InsertLogMessage(loggedException);
         }
 
-		public Task LogEventAsync(Models.LogMessage exceptionLogMessage)
+        public Task LogEventAsync(Models.LogMessage exceptionLogMessage)
 		{
-			return _loggedRepository.InsertAsync(exceptionLogMessage);
-		}
+            return this.InsertLogMessage(exceptionLogMessage);
+        }
 
         public Task LogEventAsync(string eventDescription, Enums.LogType type)
         {
@@ -75,7 +76,7 @@ namespace MWF.Mobile.Core.Services
                 LogType = type
             };
 
-            return _loggedRepository.InsertAsync(loggedEvent);
+            return this.InsertLogMessage(loggedEvent);
         }
 
         public Task LogEventAsync(string eventDescription, Enums.LogType type, params object[] args)
@@ -87,7 +88,7 @@ namespace MWF.Mobile.Core.Services
                 LogType = type
             };
 
-            return _loggedRepository.InsertAsync(loggedEvent);
+            return this.InsertLogMessage(loggedEvent);
         }
 
         public async Task UploadLoggedEventsAsync()
@@ -160,5 +161,20 @@ namespace MWF.Mobile.Core.Services
             await this.LogEventAsync(ex);
             _closeApplication.CloseApp();
         }
+
+        private Task InsertLogMessage(LogMessage logMessage)
+        {
+            try
+            {
+                return _loggedRepository.InsertAsync(logMessage);
+            }
+            catch (Exception ex)
+            {
+                MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "LogMessageRepository", "InsertAsync", ex.StackTrace);
+                throw;
+            }
+        }
+
     }
+
 }

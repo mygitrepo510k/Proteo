@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
-
 
 namespace MWF.Mobile.Core.Services
 {
@@ -65,10 +64,18 @@ namespace MWF.Mobile.Core.Services
         private async Task<bool> IsLicensedAsync(Driver driver)
         {
             if (_reachability.IsConnected())
-
             {
-                 driver.IsLicensed = await _gatewayService.LicenceCheckAsync(driver.ID);
-                 await _driverRepository.UpdateAsync(driver);
+                driver.IsLicensed = await _gatewayService.LicenceCheckAsync(driver.ID);
+
+                try
+                {
+                    await _driverRepository.UpdateAsync(driver);
+                }
+                catch (Exception ex)
+                {
+                    MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "DriverRepository", "UpdateAsync", ex.StackTrace);
+                    throw;
+                }
             }
 
             return driver.IsLicensed;
@@ -85,7 +92,16 @@ namespace MWF.Mobile.Core.Services
         {
             IEnumerable<Driver> drivers = await _gatewayService.GetDriversAsync();
             await _driverRepository.DeleteAllAsync();
-            await _driverRepository.InsertAsync(drivers);           
+
+            try
+            {
+                await _driverRepository.InsertAsync(drivers);
+            }
+            catch (Exception ex)
+            {
+                MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "DriverRepository", "InsertAsync", ex.StackTrace);
+                throw;
+            }
         }
 
         #endregion

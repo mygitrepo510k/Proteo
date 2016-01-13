@@ -2,28 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Binding.BindingContext;
-using SignaturePad;
+using MWF.Mobile.Android.Controls;
 using MWF.Mobile.Core.ViewModels;
-
+using SignaturePad;
 using AndroidGraphics = Android.Graphics;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
-    public class SafetyCheckSignatureFragment : MvxFragment
+    public class SafetyCheckSignatureFragment : BaseFragment
     {
-        SignaturePadView signaturePad;
+
+        private SignaturePadView _signaturePad;
+        private BindableProgress _bindableProgress;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -31,16 +27,28 @@ namespace MWF.Mobile.Android.Views.Fragments
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             var view = this.BindingInflate(Resource.Layout.Fragment_SafetyCheckSignature, null);
 
-            signaturePad = view.FindViewById<SignaturePadView>(Resource.Id.signature_view);
-            signaturePad.StrokeColor = AndroidGraphics.Color.Black;
-            signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209); // Match the color of an EditText
-            signaturePad.SignaturePrompt.Text = string.Empty;
-            signaturePad.ClearLabel.TextSize = 20.0f;
-            
+            _signaturePad = view.FindViewById<SignaturePadView>(Resource.Id.signature_view);
+            _signaturePad.StrokeColor = AndroidGraphics.Color.Black;
+            _signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209); // Match the color of an EditText
+            _signaturePad.SignaturePrompt.Text = string.Empty;
+            _signaturePad.ClearLabel.TextSize = 20.0f;
+
             var doneButton = view.FindViewById<Button>(Resource.Id.button_done);
             doneButton.Click += this.DoneButton_Click;
 
             return view;
+        }
+
+        public override void OnViewCreated(View view, Bundle savedInstanceState)
+        {
+            base.OnViewCreated(view, savedInstanceState);
+
+            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
+            _bindableProgress.Message = "Storing safety check";
+
+            var set = this.CreateBindingSet<SafetyCheckSignatureFragment, SafetyCheckSignatureViewModel>();
+            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsProgressing);
+            set.Apply();
         }
 
         private async void DoneButton_Click(object sender, EventArgs e)
@@ -48,11 +56,11 @@ namespace MWF.Mobile.Android.Views.Fragments
             //TODO: can we achieve this using data binding?
             var viewModel = (SafetyCheckSignatureViewModel)ViewModel;
 
-            if (signaturePad.IsBlank)
+            if (_signaturePad.IsBlank)
                 viewModel.SignatureEncodedImage = null;
             else
             {
-                var image = signaturePad.GetImage(AndroidGraphics.Color.Black, AndroidGraphics.Color.White, 0.5f, shouldCrop: false);
+                var image = _signaturePad.GetImage(AndroidGraphics.Color.Black, AndroidGraphics.Color.White, 0.5f, shouldCrop: false);
 
                 using (var ms = new MemoryStream())
                 {
@@ -63,5 +71,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             await viewModel.DoneAsync();
         }
+
     }
+
 }

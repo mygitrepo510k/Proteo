@@ -37,9 +37,9 @@ namespace MWF.Mobile.Core.Repositories
             return this.DeleteAllRecursiveAsync(typeof(T), connection);
         }
 
-        public virtual async Task DeleteAsync(T entity)
+        public virtual Task DeleteAsync(T entity)
         {
-            await _dataService.RunInTransactionAsync(c =>
+            return _dataService.RunInTransactionAsync(c =>
             {
                 this.DeleteRecursive(entity, c);
             });
@@ -79,9 +79,9 @@ namespace MWF.Mobile.Core.Repositories
             this.InsertRecursive(entity, connection);
         }
 
-        public virtual async Task InsertAsync(T entity)
+        public virtual Task InsertAsync(T entity)
         {
-            await _dataService.RunInTransactionAsync(c =>
+            return _dataService.RunInTransactionAsync(c =>
             {
                 this.InsertRecursive(entity, c);
             });
@@ -97,9 +97,9 @@ namespace MWF.Mobile.Core.Repositories
             }
         }
 
-        public virtual async Task InsertAsync(IEnumerable<T> entities)
+        public virtual Task InsertAsync(IEnumerable<T> entities)
         {
-            await _dataService.RunInTransactionAsync(c =>
+            return _dataService.RunInTransactionAsync(c =>
             {
                 this.Insert(entities, c);
             });
@@ -111,10 +111,9 @@ namespace MWF.Mobile.Core.Repositories
             {
                 connection.Insert(entity);
             }
-            catch
+            catch (Exception ex)
             {
-                MvxTrace.Error("Failed to insert into table {0}, entity ID {1}.", entity.GetType().GetTableName(), entity.ID);
-                throw;
+                throw new Exception(string.Format("Failed to insert into table {0}, entity ID {1}.", entity.GetType().GetTableName(), entity.ID), ex);
             }
 
             var relationshipProperties = entity.GetType().GetChildRelationProperties();
@@ -129,9 +128,9 @@ namespace MWF.Mobile.Core.Repositories
             }
         }
 
-        public virtual async Task UpdateAsync(T entity)
+        public virtual Task UpdateAsync(T entity)
         {
-            await _dataService.RunInTransactionAsync(c =>
+            return _dataService.RunInTransactionAsync(c =>
             {
                 var data = c.Table<T>().ToList();
 
@@ -164,10 +163,9 @@ namespace MWF.Mobile.Core.Repositories
             {
                 connection.Delete(entity);
             }
-            catch
+            catch (Exception ex)
             {
-                MvxTrace.Error("Failed to delete from table {0}, entity ID {1}.", entity.GetType().GetTableName(), entity.ID);
-                throw;
+                throw new Exception(string.Format("Failed to delete from table {0}, entity ID {1}.", entity.GetType().GetTableName(), entity.ID), ex);
             }
 
             var relationshipProperties = entity.GetType().GetChildRelationProperties();

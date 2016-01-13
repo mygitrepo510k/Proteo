@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Messages;
@@ -184,6 +185,13 @@ namespace MWF.Mobile.Core.ViewModels
             get { return (_editTrailerCommand = _editTrailerCommand ?? new MvxCommand(async () => await EditTrailerAsync())); }
         }
 
+        private bool _isUpdatingProgress;
+        public bool IsUpdatingProgress
+        {
+            get { return _isUpdatingProgress; }
+            set { _isUpdatingProgress = value; RaisePropertyChanged(() => IsUpdatingProgress); }
+        }
+
         #endregion Public Properties
 
         #region Private Methods
@@ -196,12 +204,24 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task ProgressInstructionAsync()
         {
-            await UpdateProgressAsync();
+            if (this.IsUpdatingProgress)
+                return;
 
-            if (_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
+            this.IsUpdatingProgress = true;
+
+            try
             {
-                _navData.OtherData["IsTrailerEditFromInstructionScreen"] = null;
-                await _navigationService.MoveToNextAsync(_navData);
+                await UpdateProgressAsync();
+
+                if (_mobileData.ProgressState == Enums.InstructionProgress.OnSite)
+                {
+                    _navData.OtherData["IsTrailerEditFromInstructionScreen"] = null;
+                    await _navigationService.MoveToNextAsync(_navData);
+                }
+            }
+            finally
+            {
+                this.IsUpdatingProgress = false;
             }
         }
 
@@ -217,7 +237,15 @@ namespace MWF.Mobile.Core.ViewModels
                 _mobileData.ProgressState = Enums.InstructionProgress.OnSite;
             }
 
-            await _repositories.MobileDataRepository.UpdateAsync(_mobileData);
+            try
+            {
+                await _repositories.MobileDataRepository.UpdateAsync(_mobileData);
+            }
+            catch (Exception ex)
+            {
+                MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "MobileDataRepository", "UpdateAsync", ex.StackTrace);
+                throw;
+            }
 
             RaisePropertyChanged(() => ProgressButtonText);
         }

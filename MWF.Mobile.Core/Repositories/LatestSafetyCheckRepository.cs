@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
-using SQLite.Net.Attributes;
+using Cirrious.CrossCore.Platform;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Services;
 
@@ -37,7 +35,15 @@ namespace MWF.Mobile.Core.Repositories
             if (latestSafetyCheckForDriver != null)
                 await this.DeleteAsync(latestSafetyCheckForDriver);
 
-            await this.InsertAsync(latestSafetyCheck);
+            try
+            {
+                await this.InsertAsync(latestSafetyCheck);
+            }
+            catch (Exception ex)
+            {
+                MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "LatestSafetyCheckRepository", "InsertAsync", ex.StackTrace);
+                throw;
+            }
         }
 
     }

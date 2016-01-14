@@ -154,7 +154,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await barcodeItemVM.SelectBarcodeAsync();
 
             _mockNavigationService.Verify(ns => ns.ShowModalViewModel<BarcodeStatusViewModel, bool>(
-                It.Is<BarcodeItemViewModel>(x => x == barcodeItemVM),
                 It.Is<NavData<BarcodeItemViewModel>>(x => x.Data == barcodeItemVM),
                 It.IsAny<Action<bool>>()));
         }
@@ -184,7 +183,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             // Check the selected barcode was passed into the modal as the part of the nav data
             _mockNavigationService.Verify(ns => ns.ShowModalViewModel<BarcodeStatusViewModel, bool>(
-                It.Is<BarcodeItemViewModel>(x => x == barcodeItemVM),
                 It.Is<NavData<BarcodeItemViewModel>>(x => x.Data == barcodeItemVM && (x.OtherData["SelectedBarcodes"] as List<BarcodeItemViewModel>)[0] == selectedBarcodeItem),
                 It.IsAny<Action<bool>>()));
         }

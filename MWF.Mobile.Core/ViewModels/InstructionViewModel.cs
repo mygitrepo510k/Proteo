@@ -260,7 +260,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             navData.OtherData["Order"] = order;
 
-            _navigationService.ShowModalViewModel<OrderViewModel, bool>(this, navData, (modified) =>
+            _navigationService.ShowModalViewModel<OrderViewModel, bool>(navData, (modified) =>
             {
                 if (modified)
                 {

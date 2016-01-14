@@ -15,6 +15,7 @@ using MWF.Mobile.Core.Utilities;
 using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
+using MWF.Mobile.Core.Messages;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -49,6 +50,7 @@ namespace MWF.Mobile.Core.Services
         private Timer _loginSessionTimer;
         private readonly IMvxMessenger _messenger = null;
         private MvxSubscriptionToken _notificationToken;
+        private MvxSubscriptionToken _modalSubscriptionToken = null;
 
         #endregion
 
@@ -196,16 +198,34 @@ namespace MWF.Mobile.Core.Services
             await navAction.Invoke(Guid.Empty, null);
         }
 
-        public bool ShowModalViewModel<TViewModel, TResult>(BaseFragmentViewModel viewModel, NavData navData, Action<TResult> onResult)
-            where TViewModel : IModalViewModel<TResult>
+        /// <summary>
+        /// Shows a view modal that will return a result value when it is closed
+        /// </summary>
+        /// <see cref="http://www.gregshackles.com/2012/11/returning-results-from-view-models-in-mvvmcross/" />
+        /// <typeparam name="TModalViewModel">View Model to show (must implement  IModalViewModel) </typeparam>
+        /// <typeparam name="TResult">The result type the modal view model will return</typeparam>
+        /// <param name="navData">Data needed by the modal.  A navID guid will be passed to the modal's Init method and it can retrieve the data using navigationService.GetNavData(navID).</param>
+        /// <param name="onResult">Action to run when the modal view has closed, returning with a result</param>
+        public bool ShowModalViewModel<TModalViewModel, TResult>(NavData navData, Action<TResult> onResult)
+            where TModalViewModel : IModalViewModel<TResult>
         {
-            Type currentActivityType = _presenter.CurrentActivityViewModel.GetType();
-            Type currentFragmentType = _presenter.CurrentFragmentViewModel.GetType();
-
             var navID = AddNavDataToDictionary(navData);
             _currentNavData = navData;
 
-            return viewModel.ShowModalViewModel<TViewModel, TResult>(navID, onResult);
+            _modalSubscriptionToken = _messenger.SubscribeOnMainThread<ModalNavigationResultMessage<TResult>>(msg =>
+            {
+                // make sure message ids match up
+                if (msg.MessageId == navID)
+                {
+                    if (_modalSubscriptionToken != null)
+                        _messenger.Unsubscribe<ModalNavigationResultMessage<TResult>>(_modalSubscriptionToken);
+
+                    if (onResult != null)
+                        onResult(msg.Result);
+                }
+            });
+
+            return ShowViewModel<TModalViewModel>(new { navID = navID });
         }
 
         public async Task<Guid> MoveToNextAsync(NavData navData)

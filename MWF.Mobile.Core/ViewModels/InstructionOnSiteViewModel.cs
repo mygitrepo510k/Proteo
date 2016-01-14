@@ -126,7 +126,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             navData.OtherData["Order"] = order;
 
-            _navigationService.ShowModalViewModel<OrderViewModel, bool>(this, navData, (modified) =>
+            _navigationService.ShowModalViewModel<OrderViewModel, bool>(navData, (modified) =>
                 {
                     if (modified)
                     {
@@ -158,7 +158,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void AddDeliveries()
         {
-            _navigationService.ShowModalViewModel<InstructionAddDeliveriesViewModel, bool>(this, _navData, (modified) =>
+            _navigationService.ShowModalViewModel<InstructionAddDeliveriesViewModel, bool>(_navData, (modified) =>
             {
                 if (modified)
                 {

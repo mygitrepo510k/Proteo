@@ -97,7 +97,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void ReviseQuantity(Item order)
         {
-            _navigationService.ShowModalViewModel<ReviseQuantityViewModel, bool>(this, _navData, (confirmed) => {});
+            _navigationService.ShowModalViewModel<ReviseQuantityViewModel, bool>(_navData, (confirmed) => {});
 
             //_navigationService.MoveToNext(_navData);
         }

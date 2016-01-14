@@ -1,5 +1,4 @@
-﻿using SQLite.Net.Attributes;
-using Cirrious.MvvmCross.Test.Core;
+﻿using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
@@ -12,7 +11,6 @@ using Ploeh.AutoFixture.AutoMoq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using MWF.Mobile.Core.Repositories.Interfaces;
@@ -31,6 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IApplicationProfileRepository> _mockApplicationProfile;
         private Mock<IMvxMessenger> _mockMessenger;
         private Mock<ICheckForSoftwareUpdates> _mockCheckForSoftwareUpdates;
+        private Mock<INavigationService> _mockNavigationService;
 
         protected override void AdditionalSetup()
         {
@@ -61,6 +60,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             _mockCheckForSoftwareUpdates = Ioc.RegisterNewMock<ICheckForSoftwareUpdates>();
+
+            _mockNavigationService = _fixture.InjectNewMock<INavigationService>();
+            Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
         }
 
         /// <summary>

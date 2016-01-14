@@ -32,7 +32,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public void Init(Guid navID)
         {
-            base.Init(navID);
+            SetMessageID(navID);
 
             _navData = Mvx.Resolve<Services.INavigationService>().GetNavData<BarcodeItemViewModel>(navID);
 

@@ -23,39 +23,35 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Members
 
         private MessageModalNavItem _navItem;
-
         private MobileData _mobileData;
-
         private IRepositories _repositories;
-
         private IDataChunkService _dataChunkService;
         private IInfoService _infoService;
-
         private MvxCommand _readMessageCommand;
-
         private bool _isMessageRead;
 
         #endregion Private Members
 
         #region Construction
 
-        public MessageViewModel(
-            IRepositories repositories, 
-            IInfoService infoService, 
-            IDataChunkService dataChunkService)
+        public MessageViewModel(IRepositories repositories, IInfoService infoService, IDataChunkService dataChunkService)
         {
             _dataChunkService = dataChunkService;
             _infoService = infoService;
-
             _repositories = repositories;
         }
 
         public async Task Init(Guid navID)
         {
+            SetMessageID(navID);
+
             var navData = Mvx.Resolve<INavigationService>().GetNavData<MessageModalNavItem>(navID);
             _navItem = navData.Data;
-            await this.GetMobileDataFromRepositoryAsync(_navItem.MobileDataID);
+
+            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(_navItem.MobileDataID);
             _isMessageRead = _navItem.IsRead;
+
+            RaiseAllPropertiesChanged();
         }
 
         #endregion Construction
@@ -68,19 +64,31 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                return (this.isWithPoint)
+                return (_mobileData != null && this.isWithPoint)
                     ? _mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode
                     : string.Empty;
             }
         }
 
-        public string PointDescription { get { return _mobileData.Order.Description; } }
+        public string PointDescription
+        {
+            get { return _mobileData == null ? string.Empty : _mobileData.Order.Description; }
+        }
 
-        public string AddressLabelText { get { return "Address"; } }
+        public string AddressLabelText
+        {
+            get { return "Address"; }
+        }
 
-        public string ReadButtonText { get { return _isMessageRead ? "Return" : "Mark as read"; } }
+        public string ReadButtonText
+        {
+            get { return _mobileData == null ? string.Empty : (_isMessageRead ? "Return" : "Mark as read"); }
+        }
 
-        public bool isWithPoint { get { return _mobileData.Order.Addresses.Count > 0; } }
+        public bool isWithPoint
+        {
+            get { return _mobileData == null ? false : _mobileData.Order.Addresses.Any(); }
+        }
 
         public ICommand ReadMessageCommand
         {
@@ -101,12 +109,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             ReturnResult(!_isMessageRead);
-        }
-
-        private async Task GetMobileDataFromRepositoryAsync(Guid ID)
-        {
-            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
-            RaiseAllPropertiesChanged();
         }
 
         #endregion Private Methods

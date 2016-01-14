@@ -214,7 +214,7 @@ namespace MWF.Mobile.Core.ViewModels
                 navItem.OtherData["SelectedBarcodes"] = _barcodeScanningViewModel.SelectedBarcodes.ToList();
             }
 
-            _navigationService.ShowModalViewModel<BarcodeStatusViewModel, bool>(this, navItem, (modified) =>
+            _navigationService.ShowModalViewModel<BarcodeStatusViewModel, bool>(navItem, (modified) =>
             {
                 if (modified)
                 {

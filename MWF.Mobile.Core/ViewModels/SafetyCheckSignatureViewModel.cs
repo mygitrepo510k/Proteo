@@ -157,7 +157,6 @@ namespace MWF.Mobile.Core.ViewModels
             set { _isProgressing = value; RaisePropertyChanged(() => IsProgressing); }
         }
 
-
         #endregion properties
 
         public async Task DoneAsync()

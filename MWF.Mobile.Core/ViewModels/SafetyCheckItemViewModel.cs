@@ -97,13 +97,10 @@ namespace MWF.Mobile.Core.ViewModels
                     {
                         string faultTypeText = (value == Enums.SafetyCheckStatus.DiscretionaryPass) ? "Discretionary Pass" : "Failure";
 
-
-                        //var navItem = new SafetyCheckNavItem() { FaultID = this.SafetyCheckFault.ID, IsVehicle = this.IsVehicle, FaultTypeText = faultTypeText };
-
-                        NavData<SafetyCheckFault> safetyCheckNavItem = new NavData<SafetyCheckFault>() { Data = this.SafetyCheckFault };
+                        var safetyCheckNavItem = new NavData<SafetyCheckFault>() { Data = this.SafetyCheckFault };
                         safetyCheckNavItem.OtherData["FaultTypeText"] = faultTypeText;
 
-                        _navigationService.ShowModalViewModel<SafetyCheckFaultViewModel, bool>(_safetyCheckViewModel, safetyCheckNavItem, (faultLogged) =>
+                        _navigationService.ShowModalViewModel<SafetyCheckFaultViewModel, bool>(safetyCheckNavItem, (faultLogged) =>
                         {
                             if (faultLogged)
                             {
@@ -115,7 +112,6 @@ namespace MWF.Mobile.Core.ViewModels
                             }
 
                         });                      
-
                     }
                     else
                     {
@@ -125,11 +121,10 @@ namespace MWF.Mobile.Core.ViewModels
                         this.SafetyCheckFault.IsDiscretionaryPass = _checkStatus == Enums.SafetyCheckStatus.DiscretionaryPass;
                         RaisePropertyChanged(() => CheckStatus);
                     }
-                   
-               
                 }
             }
         }
 
     }
+
 }

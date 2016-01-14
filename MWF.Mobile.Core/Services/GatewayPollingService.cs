@@ -215,7 +215,7 @@ namespace MWF.Mobile.Core.Services
                             }
 
                             if (notifyInstruction)
-                                manifestInstructionVMsForNotification.Add(new ManifestInstructionViewModel(currentViewModel, null, instruction));
+                                manifestInstructionVMsForNotification.Add(new ManifestInstructionViewModel(currentViewModel, instruction));
                         }
 
                         Mvx.Trace("Successfully inserted instructions into Repository.");

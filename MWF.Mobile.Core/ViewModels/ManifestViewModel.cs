@@ -216,9 +216,9 @@ namespace MWF.Mobile.Core.ViewModels
                 }
 
                 // Create the view models
-                var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this, _navigationService, md));
-                var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this, _navigationService, md));
-                var messageViewModels = messageDataModels.Select(md => new ManifestInstructionViewModel(this, _navigationService, md));
+                var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this, md));
+                var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this, md));
+                var messageViewModels = messageDataModels.Select(md => new ManifestInstructionViewModel(this, md));
                 Mvx.Trace("  -- Created View Models");
 
                 // Update the observable collections in each section

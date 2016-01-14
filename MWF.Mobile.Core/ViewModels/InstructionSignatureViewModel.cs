@@ -130,7 +130,7 @@ namespace MWF.Mobile.Core.ViewModels
                     || (_mobileData.Order.Type == Enums.InstructionType.Deliver && deliveryOptions.CustomerNameRequiredForDelivery))
                     && string.IsNullOrWhiteSpace(CustomerName))
             {
-                await _userInteraction.AlertAsync("The signers name is required");
+                await _userInteraction.AlertAsync("The signer's name is required");
                 return;
             }
 

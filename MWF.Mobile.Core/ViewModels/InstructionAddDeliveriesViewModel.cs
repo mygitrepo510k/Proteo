@@ -67,7 +67,7 @@ namespace MWF.Mobile.Core.ViewModels
            
             // build view models
 
-            var viewModels = nonCompletedDeliveries.Select(i => new ManifestInstructionViewModel(this, _navigationService, i) { IsSelected = _additionalInstructions.Any( ai => ai.ID == i.ID) });
+            var viewModels = nonCompletedDeliveries.Select(i => new ManifestInstructionViewModel(this, i) { IsSelected = _additionalInstructions.Any( ai => ai.ID == i.ID) });
             this.DeliveryInstructions = new ObservableCollection<ManifestInstructionViewModel>(viewModels);
 
             _originalSelection = GetSelectionSummary();

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.MvvmCross.Plugins.Messenger;
@@ -32,6 +31,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private Mock<IMvxMessenger> _mockMvxMessenger;
         private IInfoService _mockInfoService;
         private Mock<IDataChunkService> _mockDataChunkService;
+        private Mock<INavigationService> _mockNavigationService;
 
         protected override void AdditionalSetup()
         {
@@ -68,6 +68,8 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
 
+            _mockNavigationService = _fixture.InjectNewMock<INavigationService>();
+            Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
         }
 
         [Fact]
@@ -363,7 +365,6 @@ namespace MWF.Mobile.Tests.ServiceTests
                 mgqs.AddToQueueAsync(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
 
             _mockDataChunkService.Verify(mms => mms.SendReadChunkAsync(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()), Times.Once);
-
         }
 
         [Fact]

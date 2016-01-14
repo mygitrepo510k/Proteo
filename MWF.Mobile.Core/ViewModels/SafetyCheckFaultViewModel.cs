@@ -42,7 +42,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var navData = Mvx.Resolve<INavigationService>().GetNavData<SafetyCheckFault>(navID);
 
-            base.Init(navID);
+            SetMessageID(navID);
 
             _originalSafetyCheckFault = navData.Data;
 

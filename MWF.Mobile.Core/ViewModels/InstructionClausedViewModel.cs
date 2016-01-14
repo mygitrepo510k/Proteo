@@ -121,7 +121,7 @@ namespace MWF.Mobile.Core.ViewModels
         private void OpenCameraScreen()
         {
 
-            var modal = _navigationService.ShowModalViewModel<ModalCameraViewModel, bool>(this, _navData, (sendChunk) => {});
+            var modal = _navigationService.ShowModalViewModel<ModalCameraViewModel, bool>(_navData, (sendChunk) => {});
         }
 
         private async Task RefreshPageAsync(Guid ID)

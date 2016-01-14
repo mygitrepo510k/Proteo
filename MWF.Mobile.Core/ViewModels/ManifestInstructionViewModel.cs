@@ -1,11 +1,11 @@
-﻿using Cirrious.MvvmCross.ViewModels;
-using MWF.Mobile.Core.Models.Instruction;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Services;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -13,17 +13,17 @@ namespace MWF.Mobile.Core.ViewModels
     public class ManifestInstructionViewModel : MvxViewModel
     {
 
-        private readonly INavigationService _navigationService;
         private readonly MobileData _mobileData;
         private readonly BaseFragmentViewModel _baseViewModel;
+        private readonly INavigationService _navigationService;
 
-        public ManifestInstructionViewModel(BaseFragmentViewModel viewModel, INavigationService navigationService, MobileData mobileData)
+        public ManifestInstructionViewModel(BaseFragmentViewModel viewModel, MobileData mobileData)
         {
             _baseViewModel = viewModel;
-            _navigationService = navigationService;
             _mobileData = mobileData;
-        }
 
+            _navigationService = Mvx.Resolve<INavigationService>();
+        }
 
         public MobileData MobileData
         {
@@ -52,18 +52,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Enums.InstructionType InstructionType
         {
-            get
-            {
-                return _mobileData.Order.Type;
-            }
+            get { return _mobileData.Order.Type; }
         }
 
         public Enums.InstructionProgress ProgressState
         {
-            get
-            {
-                return _mobileData.ProgressState;
-            }
+            get { return _mobileData.ProgressState; }
         }
 
         private bool _isSelected;
@@ -82,22 +76,32 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                if (InstructionType == default(Enums.InstructionType))
-                    return _selectInstructionCommand;
-                else if (InstructionType == Enums.InstructionType.OrderMessage)
-                    return (_selectInstructionCommand = _selectInstructionCommand ?? new MvxCommand(OpenMessageModal));
+                if (_selectInstructionCommand == null)
+                {
+                    switch (this.InstructionType)
+                    {
+                        case default(Enums.InstructionType):
+                            _selectInstructionCommand = null; // non-clickable blank "instruction" used in instruction sections that contain no items
+                            break;
 
-                return (_selectInstructionCommand = _selectInstructionCommand ?? new MvxCommand(async () => await this.SelectInstructionAsync()));
+                        case Enums.InstructionType.OrderMessage:
+                            _selectInstructionCommand = new MvxCommand(SelectOrderMessage);
+                            break;
+
+                        default:
+                            _selectInstructionCommand = new MvxCommand(async () => await this.SelectInstructionAsync());
+                            break;
+                    }
+                }
+
+                return _selectInstructionCommand;
             }
         }
 
         private MvxCommand _toggleIsSelectedInstructionCommand;
         public ICommand ToggleIsSelectedInstructionCommand
         {
-            get
-            {
-                return (_toggleIsSelectedInstructionCommand = _toggleIsSelectedInstructionCommand ?? new MvxCommand(ToggleIsSelectedInstruction));
-            }
+            get { return (_toggleIsSelectedInstructionCommand = _toggleIsSelectedInstructionCommand ?? new MvxCommand(ToggleIsSelectedInstruction)); }
         }
 
         private Task SelectInstructionAsync()
@@ -111,38 +115,23 @@ namespace MWF.Mobile.Core.ViewModels
             this.IsSelected = !this.IsSelected;
         }
 
+        public void SelectOrderMessage()
+        {
+            this.OpenMessageModal(modalResult =>
+            {
+                // Update any read messages in the inbox.
+                var inboxVM = _baseViewModel as InboxViewModel;
+
+                if (inboxVM != null)
+                    inboxVM.RefreshMessagesCommand.Execute(null);
+            });
+        }
+
         public void OpenMessageModal(Action<bool> callback)
         {
             var navItem = new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = (_mobileData.ProgressState == Enums.InstructionProgress.Complete) };
             var navData = new NavData<MessageModalNavItem> { Data = navItem };
-
-            var modal = _navigationService.ShowModalViewModel<MessageViewModel, bool>(_baseViewModel, navData, (sendChunk) =>
-            {
-                //This is to update any read messages in the inbox.
-                //For some reason the Manifest screen doesn't need it because it just removes the items from the manifest.
-                var inboxVM = _baseViewModel as InboxViewModel;
-
-                if (inboxVM != null)
-                    inboxVM.RefreshMessagesCommand.Execute(null);
-
-                callback(sendChunk);
-            });
-        }
-
-        private void OpenMessageModal()
-        {
-            var navItem = new MessageModalNavItem { MobileDataID = _mobileData.ID, IsRead = (_mobileData.ProgressState == Enums.InstructionProgress.Complete) };
-            var navData = new NavData<MessageModalNavItem> { Data = navItem };
-
-            var modal = _navigationService.ShowModalViewModel<MessageViewModel, bool>(_baseViewModel, navData, (sendChunk) =>
-            {
-                //This is to update any read messages in the inbox.
-                //For some reason the Manifest screen doesn't need it because it just removes the items from the manifest.
-                var inboxVM = _baseViewModel as InboxViewModel;
-
-                if (inboxVM != null)
-                    inboxVM.RefreshMessagesCommand.Execute(null);
-            });
+            _navigationService.ShowModalViewModel<MessageViewModel, bool>(navData, callback);
         }
 
         private string GenerateMessageTypeText()

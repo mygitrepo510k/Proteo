@@ -75,7 +75,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             var messages = allMessages
                 .Where(i => i.EffectiveDate > DateTime.Today.AddDays(-7))
-                .Select(m => new ManifestInstructionViewModel(this, _navigationService, m))
+                .Select(m => new ManifestInstructionViewModel(this, m))
                 .OrderBy(m => m.ProgressState)
                 .ThenBy(m => m.ArrivalDate);
 

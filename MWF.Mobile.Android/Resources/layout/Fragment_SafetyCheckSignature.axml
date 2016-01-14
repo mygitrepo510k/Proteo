@@ -28,5 +28,5 @@
   <Button
     android:id="@+id/button_done"
     style="@style/Proteo.Button.Bottom"
-    local:MvxBind="Text DoneLabel" />
+    local:MvxBind="Text DoneLabel; Enabled IsProgressing, Converter=BoolInverse;" />
 </RelativeLayout>

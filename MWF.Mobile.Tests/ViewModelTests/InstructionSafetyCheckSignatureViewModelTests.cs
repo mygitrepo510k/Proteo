@@ -44,7 +44,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         protected override void AdditionalSetup()
         {
-
             _mockUserInteraction = new Mock<ICustomUserInteraction>();
             Ioc.RegisterSingleton<ICustomUserInteraction>(_mockUserInteraction.Object);
 
@@ -59,14 +58,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _driver = _fixture.Create<Driver>();
 
-
             _infoService = _fixture.Create<InfoService>();
             _fixture.Inject<IInfoService>(_infoService);
             _infoService.LoggedInDriver = _driver;
 
             _safetyCheckService = _fixture.Create<SafetyCheckService>();
             _fixture.Inject<ISafetyCheckService>(_safetyCheckService);
-
 
             _mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false,true, null);
             _navData = new NavData<MobileData>() { Data = _mobileData };
@@ -90,7 +87,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
 
             _safetyProfiles = CreateSafetyProfiles();
-
         }
 
         private IEnumerable<SafetyProfile> CreateSafetyProfiles()
@@ -117,7 +113,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(_safetyProfiles);
             _mockConfigRepository.Setup(cr => cr.GetAsync()).ReturnsAsync(Mock.Of<Core.Models.MWFMobileConfig>());
 
-            var vm = _fixture.Create<InstructionSafetyCheckSignatureViewModel>();
+            var vm = _fixture.Build<InstructionSafetyCheckSignatureViewModel>().With(x => x.IsProgressing, false).Create();
 
             var navID = Guid.NewGuid();
             _mockNavigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(_navData);

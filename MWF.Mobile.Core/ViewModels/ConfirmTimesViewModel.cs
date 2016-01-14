@@ -44,36 +44,50 @@ namespace MWF.Mobile.Core.ViewModels
 
         public bool ShowOnSiteConfirmation
         {
-            get
-            {
-                return (_mobileData.Order.Type == Enums.InstructionType.Collect || _mobileData.Order.Type == Enums.InstructionType.Deliver);
-            }
+            get { return (_mobileData.Order.Type == Enums.InstructionType.Collect || _mobileData.Order.Type == Enums.InstructionType.Deliver); }
         }
 
         public string ConfirmTimesButtonLabel
         {
-            get
-            {
-                return "Confirm";
-            }
+            get { return "Confirm"; }
         }
+
+        private bool _isProgressing;
+        public bool IsProgressing
+        {
+            get { return _isProgressing; }
+            set { _isProgressing = value; RaisePropertyChanged(() => IsProgressing); }
+        }
+
         #endregion Properties
 
         #region Private Methods
 
         public async Task AdvanceConfirmTimesAsync()
         {
-            _navData.Data.OnSiteDateTime = OnSiteDateTime;
-            _navData.Data.CompleteDateTime = CompleteDateTime;
-            var additionalInstructions = _navData.GetAdditionalInstructions();
+            if (this.IsProgressing)
+                return;
 
-            foreach (var instruction in additionalInstructions)
+            this.IsProgressing = true;
+
+            try
             {
-                instruction.OnSiteDateTime = OnSiteDateTime;
-                instruction.CompleteDateTime = CompleteDateTime;
+                _navData.Data.OnSiteDateTime = OnSiteDateTime;
+                _navData.Data.CompleteDateTime = CompleteDateTime;
+                var additionalInstructions = _navData.GetAdditionalInstructions();
+
+                foreach (var instruction in additionalInstructions)
+                {
+                    instruction.OnSiteDateTime = OnSiteDateTime;
+                    instruction.CompleteDateTime = CompleteDateTime;
+                }
+
+                await _navigationService.MoveToNextAsync(_navData);
             }
-            
-            await _navigationService.MoveToNextAsync(_navData);
+            finally
+            {
+                this.IsProgressing = false;
+            }
         }
 
         #endregion

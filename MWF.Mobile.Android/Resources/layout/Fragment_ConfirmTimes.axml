@@ -77,7 +77,7 @@
     <Button
         android:id="@+id/ButtonAdvanceConfirmTimes"
         style="@style/Proteo.Button.Bottom"
-        local:MvxBind="Text ConfirmTimesButtonLabel; Click ButtonAdvanceConfirmTimes"
+        local:MvxBind="Text ConfirmTimesButtonLabel; Click ButtonAdvanceConfirmTimes; Enabled IsProgressing, Converter=BoolInverse;"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 </RelativeLayout>

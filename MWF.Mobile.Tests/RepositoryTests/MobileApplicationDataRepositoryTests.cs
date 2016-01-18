@@ -46,8 +46,8 @@ namespace MWF.Mobile.Tests.RepositoryTests
             base.ClearAll();
 
             List<MobileData> mobileDataList = new List<MobileData>();
-            mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.OnSite });
-            mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.NotStarted });
+            mobileDataList.Add(new MobileData { ID = Guid.NewGuid(), ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileDataList.Add(new MobileData { ID = Guid.NewGuid(), ProgressState = Core.Enums.InstructionProgress.NotStarted });
 
             var mockTableQuery = new MockAsyncTableQuery<MobileData>(mobileDataList);
 
@@ -69,8 +69,8 @@ namespace MWF.Mobile.Tests.RepositoryTests
             base.ClearAll();
 
             List<MobileData> mobileDataList = new List<MobileData>();
-            mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.OnSite });
-            mobileDataList.Add(new MobileData { ID = new Guid(), ProgressState = Core.Enums.InstructionProgress.NotStarted });
+            mobileDataList.Add(new MobileData { ID = Guid.NewGuid(), ProgressState = Core.Enums.InstructionProgress.OnSite });
+            mobileDataList.Add(new MobileData { ID = Guid.NewGuid(), ProgressState = Core.Enums.InstructionProgress.NotStarted });
 
             var mockTableQuery = new MockAsyncTableQuery<MobileData>(mobileDataList);
 

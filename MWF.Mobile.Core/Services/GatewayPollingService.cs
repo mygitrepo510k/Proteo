@@ -134,11 +134,12 @@ namespace MWF.Mobile.Core.Services
 
                         var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
                         var manifestInstructionVMsForNotification = new List<ManifestInstructionViewModel>(instructions.Count());
+                        var instructionNotificationsToPublish = new Dictionary<Guid, Messages.GatewayInstructionNotificationMessage.NotificationCommand>(instructions.Count());
 
                         // We have a response so check what we need to do (Save/Update/Delete)
                         foreach (var instruction in instructions)
                         {
-                            var notifyInstruction = false;
+                            var popupNotifyInstruction = false;
 
                             Mvx.Trace("started processing instruction." + instruction.ID);
 
@@ -163,11 +164,11 @@ namespace MWF.Mobile.Core.Services
                                             throw;
                                         }
 
-                                        notifyInstruction = true;
+                                        popupNotifyInstruction = true;
                                     }
 
                                     Mvx.Trace("completed adding instruction." + instruction.ID);
-                                    PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, instruction.ID);
+                                    instructionNotificationsToPublish[instruction.ID] = Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add;
                                     break;
 
                                 case SyncState.Update:
@@ -192,9 +193,9 @@ namespace MWF.Mobile.Core.Services
                                         throw;
                                     }
 
-                                    notifyInstruction = true;
+                                    popupNotifyInstruction = true;
                                     Mvx.Trace("completed updating instruction." + instruction.ID);
-                                    PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, instruction.ID);
+                                    instructionNotificationsToPublish[instruction.ID] = Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update;
                                     break;
 
                                 case SyncState.Delete:
@@ -206,33 +207,37 @@ namespace MWF.Mobile.Core.Services
                                         await _repositories.MobileDataRepository.DeleteAsync(oldInstruction);
 
                                         if (oldInstruction.ProgressState != InstructionProgress.Complete)
-                                            notifyInstruction = true;
+                                            popupNotifyInstruction = true;
                                     }
 
                                     Mvx.Trace("completed deleting instruction." + instruction.ID);
-                                    PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, instruction.ID);
+                                    instructionNotificationsToPublish[instruction.ID] = Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete;
                                     break;
                             }
 
-                            if (notifyInstruction)
+                            if (popupNotifyInstruction)
                                 manifestInstructionVMsForNotification.Add(new ManifestInstructionViewModel(currentViewModel, instruction));
                         }
 
-                        Mvx.Trace("Successfully inserted instructions into Repository.");
+                        Mvx.Trace("Successfully inserted/updated/deleted instructions in repository.");
 
                         //Acknowledge that they are on the Device (Not however acknowledged by the driver)
-                        await AcknowledgeInstructionsAsync(instructions);
+                        await this.AcknowledgeInstructionsAsync(instructions);
 
                         Mvx.Trace("Successfully sent device acknowledgement.");
 
                         if (manifestInstructionVMsForNotification.Any())
                         {
-                            Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotification(
+                            var notifiedInstructionVMs = await Mvx.Resolve<ICustomUserInteraction>().PopUpInstructionNotificationAsync(
                                 manifestInstructionVMsForNotification,
-                                done: async notifiedInstructionVMs => await this.SendReadChunksAsync(notifiedInstructionVMs),
                                 title: "Manifest Update",
                                 okButton: "Acknowledge");
+
+                            await this.SendReadChunksAsync(notifiedInstructionVMs);
                         }
+
+                        if (instructionNotificationsToPublish.Any())
+                            _messenger.Publish(new Messages.GatewayInstructionNotificationMessage(this, instructionNotificationsToPublish));
                     }
                 }
                 catch (Exception ex)
@@ -273,9 +278,6 @@ namespace MWF.Mobile.Core.Services
             return _gatewayQueuedService.AddToQueueAsync(syncAckActions);
         }
 
-        private void PublishInstructionNotification(Messages.GatewayInstructionNotificationMessage.NotificationCommand command, Guid instructionID)
-        {
-            _messenger.Publish(new Messages.GatewayInstructionNotificationMessage(this, command, instructionID));
-        }
     }
+
 }

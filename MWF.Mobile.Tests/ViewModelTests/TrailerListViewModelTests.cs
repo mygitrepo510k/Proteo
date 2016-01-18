@@ -44,7 +44,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Register<IReachability>(() => Mock.Of<IReachability>(r => r.IsConnected() == true));
 
-            _driver = new Core.Models.Driver() { LastName = "TestName", ID = new Guid() };
+            _driver = new Core.Models.Driver() { LastName = "TestName", ID = Guid.NewGuid() };
 
             _trailer = new Core.Models.Trailer() { Registration = "TestRegistration", ID = Guid.NewGuid() };
             _trailerItemViewModel = new TrailerItemViewModel() { Trailer = _trailer };

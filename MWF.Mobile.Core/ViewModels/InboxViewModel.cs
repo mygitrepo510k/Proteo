@@ -79,16 +79,19 @@ namespace MWF.Mobile.Core.ViewModels
                 .OrderBy(m => m.ProgressState)
                 .ThenBy(m => m.ArrivalDate);
 
-            _messages.Clear();
-
-            foreach (var message in messages)
+            InvokeOnMainThread(() =>
             {
-                _messages.Add(message);
-            }
+                _messages.Clear();
 
-            RaisePropertyChanged(() => Messages);
-            RaisePropertyChanged(() => MessagesCount);
-            RaisePropertyChanged(() => InboxHeaderText);
+                foreach (var message in messages)
+                {
+                    _messages.Add(message);
+                }
+
+                RaisePropertyChanged(() => Messages);
+                RaisePropertyChanged(() => MessagesCount);
+                RaisePropertyChanged(() => InboxHeaderText);
+            });
         }
 
         #region BaseFragmentViewModel Overrides
@@ -102,9 +105,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel Overrides
 
-        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage message)
         {
-            return ReloadPageAsync();
+            return this.ReloadPageAsync();
         }
 
         #endregion BaseInstructionNotificationViewModel Overrides

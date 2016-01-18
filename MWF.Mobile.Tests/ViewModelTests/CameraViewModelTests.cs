@@ -7,9 +7,12 @@ using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Plugins.PictureChooser;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Tests.Helpers;
@@ -33,6 +36,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IImageUploadService> _mockImageUploadService;
         private Mock<IMvxMessenger> _mockMessenger;
+        private Mock<IRepositories> _mockRepositories;
 
         private byte[] _pictureBytes;
 
@@ -46,9 +50,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _pictureChooserMock = new Mock<IMvxPictureChooserTask>();
             _pictureChooserMock.Setup(pc => pc.TakePicture(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<Action<Stream>>(), It.IsAny<Action>())).
                                 Callback<int, int, Action<Stream>, Action>((s1, s2, a1, a2) => { a1.Invoke(new MemoryStream(_pictureBytes)); });
+
             _fixture.Inject<IMvxPictureChooserTask>(_pictureChooserMock.Object);
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
+            Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
 
             _mockInfoService = _fixture.InjectNewMock<IInfoService>();
             _mockInfoService.Setup(m => m.LoggedInDriver).Returns(_fixture.Create<Driver>());
@@ -57,12 +63,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction.ConfirmReturnsTrue();
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
-            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
-            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+            _mockMessenger.Setup(m => m.Unsubscribe<GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe(It.IsAny<Action<GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             _mockImageUploadService = _fixture.InjectNewMock<IImageUploadService>();
 
-
+            _mockRepositories = _fixture.InjectNewMock<IRepositories>();
+            Ioc.RegisterSingleton<IRepositories>(_mockRepositories.Object);
         }
 
         #endregion Setup
@@ -199,7 +206,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             cameraVM.IsVisible = true;
 
-            await cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            await cameraVM.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Delete));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
@@ -209,7 +216,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
         [Fact]
         public async Task CameraVM_CheckInstructionNotification_Update_Confirm()
         {
-
             base.ClearAll();
 
             var cameraVM = _fixture.Create<SidebarCameraViewModel>();
@@ -218,14 +224,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _navigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
-            await cameraVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            var mobileDataRepository = Mock.Of<IMobileDataRepository>(mdr => mdr.GetByIDAsync(_mobileData.ID) == Task.FromResult(_mobileData));
+            _mockRepositories.Setup(r => r.MobileDataRepository).Returns(mobileDataRepository);
+
+            await cameraVM.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Update));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-
         }
-
 
         #endregion Tests
 
     }
+
 }

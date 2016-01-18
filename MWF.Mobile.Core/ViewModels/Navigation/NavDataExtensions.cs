@@ -72,46 +72,8 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
             return dataChunks;
         }
 
-        public static async Task ReloadInstructionAsync(this NavData<MobileData> navData, Guid ID, IRepositories repositories)
-        {
-            var mobileData = await repositories.MobileDataRepository.GetByIDAsync(ID);
-
-            if (navData.Data.ID == ID)
-            {
-                navData.Data = mobileData;
-            }
-            else
-            {
-                var additionalInstructions = navData.GetAdditionalInstructions();
-
-                var instructionToUpdate = additionalInstructions.FirstOrDefault(ai => ai.ID == ID);
-
-                if (instructionToUpdate != null)
-                {
-                    additionalInstructions.Remove(instructionToUpdate);
-                    additionalInstructions.Add(mobileData);
-                }
-            }
-        }
-
-        public static MobileData GetMobileData(this NavData navData)
-        {
-            if (navData is NavData<MobileData>)
-                return (navData as NavData<MobileData>).Data;
-
-            object obj;
-            navData.OtherData.TryGetValue("MobileData", out obj);
-            if (obj != null)
-            {
-                return obj as MobileData;
-            }
-
-            return null;
-        }
-
         public static List<MobileData> GetAdditionalInstructions(this NavData<MobileData> navData)
         {
-
             if (!navData.OtherData.IsDefined("AdditionalInstructions"))
             {
                 navData.OtherData["AdditionalInstructions"] = new List<MobileData>();
@@ -128,7 +90,6 @@ namespace MWF.Mobile.Core.ViewModels.Navigation.Extensions
 
             return mobileDatas;
         }
-
 
         public static DeliveryOptions GetWorseCaseDeliveryOptions(this NavData<MobileData> navData)
         {

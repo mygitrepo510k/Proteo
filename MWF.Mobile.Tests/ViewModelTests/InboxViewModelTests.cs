@@ -17,6 +17,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using MWF.Mobile.Core.Messages;
+using Cirrious.CrossCore.Core;
+using Cirrious.MvvmCross.Views;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -52,7 +55,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Ioc.RegisterSingleton<IMvxMessenger>(_fixture.InjectNewMock<IMvxMessenger>().Object);
 
-        } 
+            // Mock dispatcher required so that InvokeOnMainThread() delegate is executed inside view model's ReloadPageAsync()
+            var dispatcher = new MockMvxViewDispatcher();
+            Ioc.RegisterSingleton<IMvxMainThreadDispatcher>(dispatcher);
+            Ioc.RegisterSingleton<IMvxViewDispatcher>(dispatcher);
+        }
 
         #endregion Setup
 
@@ -90,6 +97,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileDataRepoMock.Setup(ms => ms.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID))).ReturnsAsync(messages);
 
             var inboxVM = _fixture.Create<InboxViewModel>();
+            inboxVM.ShouldAlwaysRaiseInpcOnUserInterfaceThread(false);
             await inboxVM.Init();
 
             await inboxVM.RefreshMessagesAsync();
@@ -100,7 +108,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             Assert.Equal(validMessageCount, inboxVM.MessagesCount);
             Assert.Equal("Showing " + validMessageCount + " messages", inboxVM.InboxHeaderText);
-        
         }
 
         [Fact]
@@ -111,7 +118,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var inboxVM = _fixture.Create<InboxViewModel>();
             await inboxVM.Init();
 
-            await inboxVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Add, new Guid());
+            await inboxVM.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, Guid.NewGuid(), GatewayInstructionNotificationMessage.NotificationCommand.Add));
 
             //It's twice because the viewmodel Init calls refreshMessages()
             _mobileDataRepoMock.Verify(md => md.GetAllMessagesAsync(It.Is<Guid>(i => i == _driver.ID)), Times.Exactly(2));

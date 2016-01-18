@@ -6,6 +6,7 @@ using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
 using MWF.Mobile.Core.Enums;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
@@ -60,8 +61,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
-            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
-            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+            _mockMessenger.Setup(m => m.Unsubscribe<GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe(It.IsAny<Action<GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             _mockInfoService = _fixture.InjectNewMock<IInfoService>();
 

@@ -14,6 +14,7 @@ using System.Windows.Input;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using Cirrious.CrossCore.Platform;
+using MWF.Mobile.Core.ViewModels.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -43,7 +44,7 @@ namespace MWF.Mobile.Core.ViewModels
                                             IInfoService startUpService)
             : base(gatewayService, repositories, reachabiity, toast, startUpService, navigationService)
         {
-            _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(async m => await CheckInstructionNotificationAsync(m.Command, m.InstructionID));
+            _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(async m => await CheckInstructionNotificationAsync(m));
             _applicationProfileRepository = _repositories.ApplicationRepository;
         }
 
@@ -128,13 +129,6 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private async Task GetMobileDataFromRepositoryAsync(Guid ID)
-        {
-            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
-            _navData.Data = _mobileData;
-            RaiseAllPropertiesChanged();
-        }
-
         #endregion
 
         #region Core.Portable.IDisposable
@@ -154,28 +148,17 @@ namespace MWF.Mobile.Core.ViewModels
                 Messenger.Unsubscribe<Messages.GatewayInstructionNotificationMessage>(_notificationToken);
         }
 
-        public async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage message)
         {
-            if (instructionID == _mobileData.ID)
+            return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                {
-                    if (this.IsVisible)
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
-                    await this.GetMobileDataFromRepositoryAsync(instructionID);
-                }
-                else
-                {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        await _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+                _mobileData = _navData.Data;
+                RaiseAllPropertiesChanged();
+            });
         }
 
         #endregion
 
     }
+
 }

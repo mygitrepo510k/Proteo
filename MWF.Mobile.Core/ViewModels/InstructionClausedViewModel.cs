@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MWF.Mobile.Core.ViewModels.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -25,7 +26,6 @@ namespace MWF.Mobile.Core.ViewModels
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
         private readonly INavigationService _navigationService;
-        private readonly IRepositories _repositories;
 
         #endregion Private Properties
 
@@ -34,7 +34,6 @@ namespace MWF.Mobile.Core.ViewModels
         public InstructionClausedViewModel(INavigationService navigationService, IRepositories repositories)
         {
             _navigationService = navigationService;
-            _repositories = repositories;
         }
 
         public void Init(Guid navID)
@@ -120,41 +119,20 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void OpenCameraScreen()
         {
-
             var modal = _navigationService.ShowModalViewModel<ModalCameraViewModel, bool>(_navData, (sendChunk) => {});
-        }
-
-        private async Task RefreshPageAsync(Guid ID)
-        {
-            await _navData.ReloadInstructionAsync(ID, _repositories);
-            _mobileData = _navData.Data;
-            RaiseAllPropertiesChanged();
         }
 
         #endregion Private Methods
 
         #region BaseInstructionNotificationViewModel
 
-        public override async Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage message)
         {
-            if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
+            return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                {
-                    if (this.IsVisible) 
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
-
-                    await this.RefreshPageAsync(instructionID);
-                }
-                else
-                {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        await _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+                _mobileData = _navData.Data;
+                RaiseAllPropertiesChanged();
+            });
         }
 
         #endregion BaseInstructionNotificationViewModel

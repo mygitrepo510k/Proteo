@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.ViewModels.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -77,37 +78,17 @@ namespace MWF.Mobile.Core.ViewModels
             return _navigationService.MoveToNextAsync(_navData);
         }
 
-        private async Task RefreshPageAsync(Guid ID)
-        {
-            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
-            _navData.Data = _mobileData;
-            RaiseAllPropertiesChanged();
-        }
-
         #endregion Private Methods
 
         #region BaseInstructionNotificationViewModel
 
-        public override async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage message)
         {
-            if (instructionID == _mobileData.ID)
+            return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                {
-                    if (this.IsVisible) 
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
-
-                    await this.RefreshPageAsync(instructionID);
-                }
-                else
-                {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        await _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+                _mobileData = _navData.Data;
+                RaiseAllPropertiesChanged();
+            });
         }
 
         #endregion BaseInstructionNotificationViewModel

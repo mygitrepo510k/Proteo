@@ -12,6 +12,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Extensions;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
@@ -271,13 +272,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        private async Task GetMobileDataFromRepositoryAsync(Guid ID)
-        {
-            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(ID);
-            _navData.Data = _mobileData;
-            RaiseAllPropertiesChanged();
-        }
-
         #endregion Private Methods
 
         #region BaseFragmentViewModel Overrides
@@ -301,25 +295,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage message)
         {
-            if (instructionID == _mobileData.ID)
+            return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                {
-                    if (this.IsVisible) 
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
-                    await GetMobileDataFromRepositoryAsync(instructionID);
-                }
-                else
-                {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        await _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+                _mobileData = _navData.Data;
+                RaiseAllPropertiesChanged();
+            });
         }
 
         #endregion BaseInstructionNotificationViewModel

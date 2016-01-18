@@ -140,6 +140,8 @@
     <Compile Include="Bootstrap\MessengerPluginBootstrap.cs" />
     <Compile Include="Converters\JsonWrappedListConverterTests.cs" />
     <Compile Include="Helpers\MockAsyncTableQuery.cs" />
+    <Compile Include="Helpers\MockMvxViewDispatcher.cs" />
+    <Compile Include="Helpers\MvxShowViewModelRequest.cs" />
     <Compile Include="Helpers\TestHelperExtensions.cs" />
     <Compile Include="Helpers\OmitPropertySpecimentBuilder.cs" />
     <Compile Include="MockDispatcher.cs" />

@@ -11,6 +11,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Extensions;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
@@ -180,15 +181,6 @@ namespace MWF.Mobile.Core.ViewModels
             this.OrderList = new ObservableCollection<Item>(newOrderList);
         }
 
-        private async Task RefreshPageAsync(Guid ID)
-        {
-            await _navData.ReloadInstructionAsync(ID, _repositories);
-            _mobileData = _navData.Data;
-
-            RefreshOrders();
-            RaiseAllPropertiesChanged();
-        }
-
         private void SetInstructionCommentButtonLabel()
         {
             var deliveryOptions = _navData.GetWorseCaseDeliveryOptions();
@@ -229,26 +221,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel Overrides
 
-        public override async Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage message)
         {
-            if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
+            return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                {
-                    if (this.IsVisible)
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
+                _mobileData = _navData.Data;
 
-                    await this.RefreshPageAsync(instructionID);
-                }
-                else
+                InvokeOnMainThread(() =>
                 {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                       await  _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+                    RefreshOrders();
+                    RaiseAllPropertiesChanged();
+                });
+            });
         }
 
         #endregion BaseInstructionNotificationViewModel Overrides

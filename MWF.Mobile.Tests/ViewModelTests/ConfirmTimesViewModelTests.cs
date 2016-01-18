@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using MWF.Mobile.Core.Messages;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -51,8 +52,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
-            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
-            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+            _mockMessenger.Setup(m => m.Unsubscribe<GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe(It.IsAny<Action<GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
 

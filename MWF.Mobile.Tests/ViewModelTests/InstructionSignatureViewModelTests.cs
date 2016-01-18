@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
@@ -35,6 +36,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMvxMessenger> _mockMessenger;
         private NavData<MobileData> _navData;
         private Guid _navID;
+        private Mock<IRepositories> _mockRepositories;
 
         #endregion Private Members
 
@@ -42,7 +44,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         protected override void AdditionalSetup()
         {
-
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _fixture.OmitProperty("EffectiveDateString");
 
@@ -50,6 +51,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
+
+            _mockRepositories = _fixture.InjectNewMock<IRepositories>();
+            _mockRepositories.Setup(r => r.MobileDataRepository).Returns(_mockMobileDataRepo.Object);
+            Ioc.RegisterSingleton<IRepositories>(_mockRepositories.Object);
 
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
             _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Complete Instruction");
@@ -62,12 +67,11 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockDataChunkService.Setup(m => m.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(),  It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(),false, false));
 
-
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
-            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
-            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+            _mockMessenger.Setup(m => m.Unsubscribe<GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe(It.IsAny<Action<GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
 
@@ -327,14 +331,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.Init(_navID);
 
-            await instructionSignatureVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            await instructionSignatureVM.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Delete));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _navigationService.Verify(ns => ns.GoToManifestAsync(), Times.Once);
-
         }
-
 
         [Fact]
         public async Task InstructionSignatureVM_CheckInstructionNotification_Update_Confirm()
@@ -345,7 +347,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             instructionSignatureVM.Init(_navID);
 
-            await instructionSignatureVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await instructionSignatureVM.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Update));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 

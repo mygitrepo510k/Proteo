@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
-
+using MWF.Mobile.Core.ViewModels.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -171,24 +171,16 @@ namespace MWF.Mobile.Core.ViewModels
 
         #endregion Private Methods
 
-
         #region BaseInstructionNotificationViewModel
 
-        public override async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage message)
         {
-            if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData.GetMobileData() != null && _navigationService.CurrentNavData.GetMobileData().ID == instructionID)
-            {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update && this.IsVisible)
-                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Data may have changed.", "This instruction has been updated");
-                else
-                {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        await _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+            var currentMobileNavData = _navigationService.CurrentNavData as NavData<MobileData>;
+
+            if (currentMobileNavData != null)
+                return this.RespondToInstructionNotificationAsync(message, currentMobileNavData, null);
+
+            return Task.FromResult(0);
         }
 
         #endregion BaseInstructionNotificationViewModel

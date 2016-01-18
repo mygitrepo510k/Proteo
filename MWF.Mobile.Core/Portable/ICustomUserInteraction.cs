@@ -14,6 +14,7 @@ namespace MWF.Mobile.Core.Portable
         Task PopUpImageAsync(byte[] bytes, string message, string title = "", string okButton = "OK");
 
         void PopUpInstructionNotification(List<ManifestInstructionViewModel> alteredInstructions, Action<List<ManifestInstructionViewModel>> done = null, string title = "", string okButton = "OK");
+        Task<List<ManifestInstructionViewModel>> PopUpInstructionNotificationAsync(List<ManifestInstructionViewModel> alteredInstructions, string title = "", string okButton = "OK");
 
         void Alert(string message, Action done = null, string title = "", string okButton = "OK");
         Task AlertAsync(string message, string title = "", string okButton = "OK");

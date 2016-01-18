@@ -3,10 +3,7 @@ using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using Moq;
@@ -14,7 +11,6 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.ViewModels;
-using MWF.Mobile.Core.ViewModels.Navigation;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 using MWF.Mobile.Tests.Helpers;
 
@@ -38,7 +34,6 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
             _mobileDataRepositoryMock = new Mock<IMobileDataRepository>();
             _fixture.Inject<IMobileDataRepository>(_mobileDataRepositoryMock.Object);
             _repositories = _fixture.Create<Repositories>();
-
         }
 
         #endregion
@@ -232,43 +227,6 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
             Assert.Equal(customerNameRequired, deliveryOptions.CustomerNameRequiredForDelivery);
         }
 
-        [Fact]
-        public async Task NavDataHelper_ReloadInstruction_ReloadMainInstruction()
-        {
-            base.ClearAll();
-
-            var navData = _fixture.Create<NavData<MobileData>>();
-            var additionalInstructions = _fixture.CreateMany<MobileData>().ToList();
-            navData.OtherData["AdditionalInstructions"] = additionalInstructions;
-
-            var reloadedMobileData = _fixture.Create<MobileData>();
-            _mobileDataRepositoryMock.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync( reloadedMobileData);
-
-            await navData.ReloadInstructionAsync(navData.Data.ID, _repositories);
-
-            Assert.Equal(reloadedMobileData, navData.Data);
-        }
-
-        [Fact]
-        public async Task NavDataHelper_ReloadInstruction_ReloadAdditionalInstruction()
-        {
-            base.ClearAll();
-
-            var navData = _fixture.Create<NavData<MobileData>>();
-            var additionalInstructions = _fixture.CreateMany<MobileData>().ToList();
-            navData.OtherData["AdditionalInstructions"] = additionalInstructions;
-
-            var reloadedMobileData = _fixture.Create<MobileData>();
-            _mobileDataRepositoryMock.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(reloadedMobileData);
-
-            var originalInstruction = additionalInstructions[0];
-
-            await navData.ReloadInstructionAsync(additionalInstructions[0].ID, _repositories);
-
-            Assert.Contains(reloadedMobileData, additionalInstructions);
-            Assert.DoesNotContain(originalInstruction, additionalInstructions);
-        }
-
         #endregion
 
         #region helper functions
@@ -297,9 +255,9 @@ namespace MWF.Mobile.Tests.ViewModels.Navigation
         }
 
 
-       
-        #endregion    
+
+        #endregion
+
     }
 
-   
 }

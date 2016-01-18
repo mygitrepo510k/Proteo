@@ -16,6 +16,7 @@ using Xunit;
 using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Core.Portable;
 using Cirrious.MvvmCross.Plugins.Messenger;
+using MWF.Mobile.Core.Messages;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -32,6 +33,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IInfoService> _mockInfoService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private Mock<IMvxMessenger> _mockMessenger;
+        private Mock<IRepositories> _mockRepositories;
 
         protected override void AdditionalSetup()
         {
@@ -42,6 +44,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
+
+            _mockRepositories = _fixture.InjectNewMock<IRepositories>();
+            _mockRepositories.Setup(r => r.MobileDataRepository).Returns(_mockMobileDataRepo.Object);
+            Ioc.RegisterSingleton<IRepositories>(_mockRepositories.Object);
 
             var mockConfigRepo = _fixture.InjectNewMock<IConfigRepository>();
             mockConfigRepo.Setup(cr => cr.GetAsync()).ReturnsUsingFixture(_fixture);
@@ -55,8 +61,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
-            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
-            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+            _mockMessenger.Setup(m => m.Unsubscribe<GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe(It.IsAny<Action<GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
         }
@@ -177,7 +183,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
             await instructionOnSiteVM.Init(navID);
-            await instructionOnSiteVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            await instructionOnSiteVM.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Delete));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
@@ -197,7 +203,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _navigationService.Setup(ns => ns.GetNavData<MobileData>(navID)).Returns(navData);
 
             await instructionOnSiteVM.Init(navID);
-            await instructionOnSiteVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await instructionOnSiteVM.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Update));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 

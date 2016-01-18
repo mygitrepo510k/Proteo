@@ -11,6 +11,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Extensions;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
@@ -102,15 +103,6 @@ namespace MWF.Mobile.Core.ViewModels
             //_navigationService.MoveToNext(_navData);
         }
 
-        private async Task GetMobileDataFromRepositoryAsync(Guid parentID, Guid childID)
-        {
-            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(parentID);
-            _order = _mobileData.Order.Items.First(i => i.ID == childID);
-            _navData.OtherData["Order"] = _order;
-            _navData.Data = _mobileData;
-            RaiseAllPropertiesChanged();
-        }
-
         #endregion Private Methods
 
         #region BaseFragmentViewModel Overrides
@@ -152,26 +144,17 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage message)
         {
-            if (instructionID == _mobileData.ID)
-            {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                {
-                    if (this.IsVisible)
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated");
+            var orderID = _order.ID;
 
-                    await GetMobileDataFromRepositoryAsync(instructionID, _order.ID);
-                }
-                else
-                {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        await _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+            return this.RespondToInstructionNotificationAsync(message, _navData, () =>
+            {
+                _mobileData = _navData.Data;
+                _order = _mobileData.Order.Items.First(i => i.ID == orderID);
+                _navData.OtherData["Order"] = _order;
+                RaiseAllPropertiesChanged();
+            });
         }
 
         #endregion BaseInstructionNotificationViewModel

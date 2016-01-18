@@ -16,6 +16,7 @@ using Xunit;
 using MWF.Mobile.Core.Repositories.Interfaces;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Messages;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -56,8 +57,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
-            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
-            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+            _mockMessenger.Setup(m => m.Unsubscribe<GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe(It.IsAny<Action<GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             _mockCheckForSoftwareUpdates = Ioc.RegisterNewMock<ICheckForSoftwareUpdates>();
 
@@ -328,7 +329,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.GroupTitle = "UpdateTitle";
 
-            await viewModel.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await viewModel.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Update));
 
             //It is checked twice because it checks on view model Init() and when you refresh.
             _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Exactly(2));

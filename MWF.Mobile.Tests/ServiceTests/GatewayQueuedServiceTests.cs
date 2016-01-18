@@ -11,6 +11,7 @@ using MWF.Mobile.Core.Models;
 using Xunit;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
+using MWF.Mobile.Core.Messages;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
@@ -67,10 +68,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             _fixture.Register<IMvxMessenger>(() => messenger);
 
             // We don't have the GatewayQueueTimerService so replicate the trigger -> publish elapsed message functionality
-            _token = messenger.Subscribe<Core.Messages.GatewayQueueTimerCommandMessage>(m =>
+            _token = messenger.Subscribe<GatewayQueueTimerCommandMessage>(m =>
             {
-                if (m.Command == Core.Messages.GatewayQueueTimerCommandMessage.TimerCommand.Trigger)
-                    messenger.Publish(new Core.Messages.GatewayQueueTimerElapsedMessage(this));
+                if (m.Command == GatewayQueueTimerCommandMessage.TimerCommand.Trigger)
+                    messenger.Publish(new GatewayQueueTimerElapsedMessage(this));
             });
         }
 

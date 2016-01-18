@@ -267,7 +267,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage message)
         {
             return this.RefreshInstructionsAsync();
         }

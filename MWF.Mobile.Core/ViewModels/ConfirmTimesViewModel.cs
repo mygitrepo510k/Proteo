@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 using Cirrious.MvvmCross.ViewModels;
 using System.Windows.Input;
+using MWF.Mobile.Core.ViewModels.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -19,11 +20,9 @@ namespace MWF.Mobile.Core.ViewModels
         #region Private Fields
 
         private readonly INavigationService _navigationService;
-        private readonly IRepositories _repositories;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
         private IInfoService _infoService;
-
 
         #endregion
 
@@ -95,7 +94,6 @@ namespace MWF.Mobile.Core.ViewModels
         public ConfirmTimesViewModel(INavigationService navigationService, IRepositories repositories, IInfoService infoService)
         {
             _navigationService = navigationService;
-            _repositories = repositories;
             _infoService = infoService;
         }
 
@@ -105,13 +103,6 @@ namespace MWF.Mobile.Core.ViewModels
             _mobileData = _navData.Data;
             CompleteDateTime = DateTime.Now;
             OnSiteDateTime = _navData.Data.OnSiteDateTime;
-        }
-
-        private async Task RefreshPageAsync(Guid ID)
-        {
-            await _navData.ReloadInstructionAsync(ID, _repositories);
-            _mobileData = _navData.Data;
-            RaiseAllPropertiesChanged();
         }
 
         #region BaseFragmentViewModel Overrides
@@ -130,26 +121,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel Overrides
 
-        public override async Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage message)
         {
-            if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
+            return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                {
-                    if (this.IsVisible)
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
-
-                    await this.RefreshPageAsync(instructionID);
-                }
-                else
-                {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                       await  _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+                _mobileData = _navData.Data;
+                RaiseAllPropertiesChanged();
+            });
         }
 
         #endregion BaseInstructionNotificationViewModel Overrides

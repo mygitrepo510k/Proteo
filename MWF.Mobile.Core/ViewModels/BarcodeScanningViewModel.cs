@@ -11,6 +11,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Extensions;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
@@ -18,8 +19,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
 
     public class BarcodeScanningViewModel :
-        BaseInstructionNotificationViewModel,
-        IBackButtonHandler
+        BaseInstructionNotificationViewModel, IBackButtonHandler
     {
 
         #region Construction
@@ -204,7 +204,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-
         private async Task BuildDamageStatusesAsync()
         {
             _damageStatuses = new List<DamageStatus>();
@@ -302,40 +301,23 @@ namespace MWF.Mobile.Core.ViewModels
             RaisePropertyChanged("RequestBarcodeFocus");
         }
 
-        private async Task RefreshPageAsync(Guid ID)
-        {
-            await _navData.ReloadInstructionAsync(ID, _repositories);
-            _mobileData = _navData.Data;
-            _additionalInstructions = _navData.GetAdditionalInstructions();
-
-            CreateSections();
-            RaiseAllPropertiesChanged();
-        }
-
         #endregion Private Methods
 
         #region BaseInstructionNotificationViewModel Overrides
 
-        public override async Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage message)
         {
-            if (_navData.GetAllInstructions().Any(i => i.ID == instructionID))
+            return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                {
-                    if (this.IsVisible) 
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "This instruction has been updated.");
+                _mobileData = _navData.Data;
+                _additionalInstructions = _navData.GetAdditionalInstructions();
 
-                    await this.RefreshPageAsync(instructionID);
-                }
-                else
+                InvokeOnMainThread(() =>
                 {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        await _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+                    CreateSections();
+                    RaiseAllPropertiesChanged();
+                });
+            });
         }
 
         #endregion BaseInstructionNotificationViewModel Overrides

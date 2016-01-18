@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Moq;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
+using MWF.Mobile.Core.Repositories.Interfaces;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Tests.Helpers;
@@ -32,6 +34,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IInfoService> _mockInfoService;
         private Mock<ILatestSafetyCheckRepository> _mockLatestSafetyCheckRepository;
         private Mock<IMvxMessenger> _mockMessenger;
+        private Mock<IRepositories> _mockRepositories;
 
         protected override void AdditionalSetup()
         {
@@ -44,20 +47,26 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockInfoService = _fixture.InjectNewMock<IInfoService>();
             _mockInfoService.Setup(m => m.LoggedInDriver).Returns(_fixture.Create<Driver>());
 
-            _mockLatestSafetyCheckRepository = _fixture.InjectNewMock<ILatestSafetyCheckRepository>();
-            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).ReturnsAsync(_latestSafetyCheck);
-
-            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
+            _mockRepositories = _fixture.InjectNewMock<IRepositories>();
+            Ioc.RegisterSingleton<IRepositories>(_mockRepositories.Object);
 
             _mockNavigationService = _fixture.InjectNewMock<INavigationService>();
+            Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
+
+            _mockLatestSafetyCheckRepository = _fixture.InjectNewMock<ILatestSafetyCheckRepository>();
+            _mockLatestSafetyCheckRepository.Setup(mls => mls.GetForDriverAsync(It.IsAny<Guid>())).ReturnsAsync(_latestSafetyCheck);
+            _mockRepositories.Setup(r => r.LatestSafetyCheckRepository).Returns(_mockLatestSafetyCheckRepository.Object);
+
+            var mobileDataRepository = Mock.Of<IMobileDataRepository>(mdr => mdr.GetByIDAsync(_mobileData.ID) == Task.FromResult(_mobileData));
+            _mockRepositories.Setup(r => r.MobileDataRepository).Returns(mobileDataRepository);
 
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
             _mockUserInteraction.ConfirmReturnsTrue();
             _mockUserInteraction.AlertInvokeAction();
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
-            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
-            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+            _mockMessenger.Setup(m => m.Unsubscribe<GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe(It.IsAny<Action<GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
         }
 
         #endregion Setup
@@ -254,7 +263,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockNavigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
-            await displaySafetyCheckVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, _mobileData.ID);
+            await displaySafetyCheckVM.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Delete));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
@@ -271,7 +280,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockNavigationService.SetupGet(x => x.CurrentNavData).Returns(new NavData<MobileData>() { Data = _mobileData });
 
-            await displaySafetyCheckVM.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, _mobileData.ID);
+            await displaySafetyCheckVM.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Update));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }

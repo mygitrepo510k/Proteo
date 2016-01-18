@@ -8,8 +8,10 @@ using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models;
+using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Extensions;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
@@ -183,22 +185,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override async Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(GatewayInstructionNotificationMessage message)
         {
+            var currentMobileNavData = _navigationService.CurrentNavData as NavData<MobileData>;
 
-            if (_navigationService.CurrentNavData != null && _navigationService.CurrentNavData.GetMobileData() != null && _navigationService.CurrentNavData.GetMobileData().ID == instructionID)
-            {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update && this.IsVisible)
-                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Data may have changed.", "This instruction has been updated");
-                else
-                {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "This instruction has been deleted.");
-                        await _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+            if (currentMobileNavData != null)
+                return this.RespondToInstructionNotificationAsync(message, currentMobileNavData, null);
+
+            return Task.FromResult(0);
         }
 
         #endregion BaseInstructionNotificationViewModel

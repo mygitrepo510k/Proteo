@@ -17,6 +17,7 @@ using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Core.Messages;
 
 namespace MWF.Mobile.Tests.ServiceTests
 {
@@ -51,9 +52,8 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 
             //Setup to skip the modal and call the action instead.
-            _mockUserInteraction.Setup(cui => cui.PopUpInstructionNotification(It.IsAny<List<ManifestInstructionViewModel>>(), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<List<ManifestInstructionViewModel>, Action<List<ManifestInstructionViewModel>>, string, string>((s1, a, s2, s3) => _mockDataChunkService.Object.SendReadChunkAsync(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()));
-
+            _mockUserInteraction.Setup(cui => cui.PopUpInstructionNotificationAsync(It.IsAny<List<ManifestInstructionViewModel>>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns<List<ManifestInstructionViewModel>, string, string>((vms, title, ok) => Task.FromResult(vms));
 
             _mockInfoService = Mock.Of<IInfoService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
                                                     && ssr.LoggedInDriver == _fixture.Create<Driver>());
@@ -76,7 +76,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         public async Task GatewayPollingService_AddsSingleInstruction()
         {
             base.ClearAll();
-            var id = new Guid();
+            var id = Guid.NewGuid();
             CreateSingleMobileData(SyncState.Add, id);
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
@@ -129,7 +129,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         public async Task GatewayPollingService_UpdatesSingleInstruction()
         {
             base.ClearAll();
-            var id = new Guid();
+            var id = Guid.NewGuid();
             CreateSingleMobileData(SyncState.Update, id);
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
@@ -149,14 +149,14 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Check that we insert the new instruction
             _mockMobileDataRepo.Verify(mdr => mdr.InsertAsync(It.Is<MobileData>(md => md.ID == id)), Times.Once);
             // Check that it publishes the updated instruction to the current view model
-            _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => id.ToString() == inm.InstructionID.ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update)), Times.Once);
+            _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<GatewayInstructionNotificationMessage>(inm => inm.UpdatedInstructionIDs.Contains(id))), Times.Once);
         }
 
         [Fact]
         public async Task GatewayPollingService_DeletesSingleInstruction()
         {
             base.ClearAll();
-            var id = new Guid();
+            var id = Guid.NewGuid();
             CreateSingleMobileData(SyncState.Delete, id);
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
@@ -174,7 +174,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Check we delete the instruction
             _mockMobileDataRepo.Verify(mdr => mdr.DeleteAsync(It.Is<MobileData>(md => md.ID == id)), Times.Once);
             // Check that it publishes the deleted instruction to the current view model
-            _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => id.ToString() == inm.InstructionID.ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete)), Times.Once);
+            _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<GatewayInstructionNotificationMessage>(inm => inm.DeletedInstructionIDs.Contains(id))));
 
         }
 
@@ -183,9 +183,9 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            var id1 = new Guid();
-            var id2 = new Guid();
-            var id3 = new Guid();
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
             Guid[] ids = { id1, id2, id3 };
             CreateMultipleMobileDatas(SyncState.Add, ids);
 
@@ -219,26 +219,26 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            var id1 = new Guid();
-            var id2 = new Guid();
-            var id3 = new Guid();
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
             Guid[] ids = { id1, id2, id3 };
             CreateMultipleMobileDatas(SyncState.Update, ids);
 
-            List<Guid> getList = new List<Guid>();
-            List<MobileData> deleteList = new List<MobileData>();
-            List<MobileData> insertList = new List<MobileData>();
+            var getList = new List<Guid>();
+            var deleteList = new List<MobileData>();
+            var insertList = new List<MobileData>();
 
             _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>()))
-                               .Callback<Guid>((md) => { getList.Add(md); })
-                               .ReturnsAsync(new MobileData());
+                               .Callback<Guid>(id => { getList.Add(id); })
+                               .Returns((Guid id) => Task.FromResult(new MobileData { ID = id }));
 
             _mockMobileDataRepo.Setup(mdr => mdr.DeleteAsync(It.IsAny<MobileData>()))
-                               .Callback<MobileData>((md) => { deleteList.Add(md); })
+                               .Callback<MobileData>(md => { deleteList.Add(md); })
                                .Returns(Task.FromResult(0));
 
             _mockMobileDataRepo.Setup(mdr => mdr.InsertAsync(It.IsAny<MobileData>()))
-                               .Callback<MobileData>((md) => { insertList.Add(md); })
+                               .Callback<MobileData>(md => { insertList.Add(md); })
                                .Returns(Task.FromResult(0));
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
@@ -275,13 +275,8 @@ namespace MWF.Mobile.Tests.ServiceTests
                 insertCounter++;
             }
 
-            var publishCounter = 0;
-            // Check that we get the instructions
-            foreach (var item in getList)
-            {
-                _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => inm.InstructionID.ToString() == ids[publishCounter].ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update)), Times.Exactly(3));
-                publishCounter++;
-            }
+            // Check that the instruction updates have been published
+            _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<GatewayInstructionNotificationMessage>(inm => inm.UpdatedInstructionIDs.Union(ids).Count() == ids.Count())), Times.Once);
         }
 
         [Fact]
@@ -289,21 +284,21 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            var id1 = new Guid();
-            var id2 = new Guid();
-            var id3 = new Guid();
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
             Guid[] ids = { id1, id2, id3 };
             CreateMultipleMobileDatas(SyncState.Delete, ids);
 
-            List<Guid> getList = new List<Guid>();
-            List<MobileData> deleteList = new List<MobileData>();
+            var getList = new List<Guid>();
+            var deleteList = new List<MobileData>();
 
             _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.IsAny<Guid>()))
-                               .Callback<Guid>((md) => { getList.Add(md); })
-                               .ReturnsAsync(new MobileData());
+                               .Callback<Guid>(id => { getList.Add(id); })
+                               .Returns((Guid id) => Task.FromResult(new MobileData { ID = id }));
 
             _mockMobileDataRepo.Setup(mdr => mdr.DeleteAsync(It.IsAny<MobileData>()))
-                               .Callback<MobileData>((md) => { deleteList.Add(md); })
+                               .Callback<MobileData>(md => { deleteList.Add(md); })
                                .Returns(Task.FromResult(0));
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
@@ -332,13 +327,8 @@ namespace MWF.Mobile.Tests.ServiceTests
                 deleteCounter++;
             }
 
-            var publishCounter = 0;
-            // Check that we get the instructions
-            foreach (var item in getList)
-            {
-                _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(inm => inm.InstructionID.ToString() == ids[publishCounter].ToString() && inm.Command == Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete)), Times.Exactly(3));
-                publishCounter++;
-            }
+            // Check that the instruction deletions have been published
+            _mockMvxMessenger.Verify(mm => mm.Publish(It.Is<GatewayInstructionNotificationMessage>(inm => inm.DeletedInstructionIDs.Union(ids).Count() == ids.Count())), Times.Once);
         }
 
         /// <summary>
@@ -348,7 +338,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         public async Task GatewayPollingService_AcknowledgeInstruction()
         {
             base.ClearAll();
-            var id = new Guid();
+            var id = Guid.NewGuid();
             CreateSingleMobileData(SyncState.Add, id);
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
@@ -371,7 +361,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         public async Task GatewayPollingService_SingleInstructionNotificationPopUp()
         {
             base.ClearAll();
-            var id = new Guid();
+            var id = Guid.NewGuid();
             CreateSingleMobileData(SyncState.Add, id);
 
             _fixture.Register<Core.Portable.IReachability>(() => Mock.Of<Core.Portable.IReachability>(r => r.IsConnected()));
@@ -384,7 +374,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Allow the timer to process the queue
             await Task.Delay(2000);
 
-            _mockUserInteraction.Verify(cui => cui.PopUpInstructionNotification(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == 1), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.PopUpInstructionNotificationAsync(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == 1), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueueAsync(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
@@ -397,9 +387,9 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            var id1 = new Guid();
-            var id2 = new Guid();
-            var id3 = new Guid();
+            var id1 = Guid.NewGuid();
+            var id2 = Guid.NewGuid();
+            var id3 = Guid.NewGuid();
             Guid[] ids = { id1, id2, id3 };
             CreateMultipleMobileDatas(SyncState.Delete, ids);
 
@@ -424,7 +414,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             // Allow the timer to process the queue
             await Task.Delay(100);
 
-            _mockUserInteraction.Verify(cui => cui.PopUpInstructionNotification(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == ids.Count()), It.IsAny<Action<List<ManifestInstructionViewModel>>>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _mockUserInteraction.Verify(cui => cui.PopUpInstructionNotificationAsync(It.Is<List<ManifestInstructionViewModel>>(lmd => lmd.Count == ids.Count()), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueueAsync(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);

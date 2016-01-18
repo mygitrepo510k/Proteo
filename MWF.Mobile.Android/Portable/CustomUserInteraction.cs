@@ -171,6 +171,13 @@ namespace MWF.Mobile.Android.Portable
             }, null);
         }
 
+        public Task<List<ManifestInstructionViewModel>> PopUpInstructionNotificationAsync(List<ManifestInstructionViewModel> alteredInstructions, string title = "", string okButton = "OK")
+        {
+            var tcs = new TaskCompletionSource<List<ManifestInstructionViewModel>>();
+            this.PopUpInstructionNotification(alteredInstructions, manifestInstructionViewModels => tcs.SetResult(manifestInstructionViewModels), title, okButton);
+            return tcs.Task;
+        }
+
         public void PopUpImage(byte[] bytes, string message, Action done = null, string title = "", string okButton = "OK")
         {
             Application.SynchronizationContext.Post(ignored =>

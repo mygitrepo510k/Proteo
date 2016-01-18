@@ -1,11 +1,14 @@
-﻿using Cirrious.CrossCore;
-using Cirrious.MvvmCross.Plugins.Messenger;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Cirrious.CrossCore;
+using Cirrious.MvvmCross.Plugins.Messenger;
+using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
+using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -18,22 +21,16 @@ namespace MWF.Mobile.Core.ViewModels
     {
 
         private MvxSubscriptionToken _notificationToken;
+        private IMvxMessenger _messenger;
 
         public BaseInstructionNotificationViewModel()
         {
-            _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(async m => await CheckInstructionNotificationAsync(m.Command, m.InstructionID));
+            _notificationToken = Messenger.Subscribe<Messages.GatewayInstructionNotificationMessage>(async m => await CheckInstructionNotificationAsync(m));
         }
 
-        private IMvxMessenger _messenger;
-
-
-
-        protected new IMvxMessenger Messenger
+        protected IMvxMessenger Messenger
         {
-            get
-            {
-                return (_messenger = _messenger ?? Mvx.Resolve<IMvxMessenger>());
-            }
+            get { return (_messenger = _messenger ?? Mvx.Resolve<IMvxMessenger>()); }
         }
 
         public void UnsubscribeNotificationToken()
@@ -42,7 +39,7 @@ namespace MWF.Mobile.Core.ViewModels
                 Messenger.Unsubscribe<Messages.GatewayInstructionNotificationMessage>(_notificationToken);
         }
 
-        abstract public Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID);
+        public abstract Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage message);
 
         public void Dispose()
         {

@@ -11,6 +11,7 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Extensions;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
@@ -150,16 +151,6 @@ namespace MWF.Mobile.Core.ViewModels
             return string.Join(" ", this.DeliveryInstructions.Select(i => i.IsSelected.ToString()).ToArray());
         }
 
-        private async Task RefreshPageAsync()
-        {
-            _navData.Data = await _repositories.MobileDataRepository.GetByIDAsync(_navData.Data.ID);
-            _navData.GetAdditionalInstructions().Clear();
-
-            await GetDeliveryInstructionsAsync();
-
-            RaiseAllPropertiesChanged();
-        }
-
         #endregion
 
         #region IModalViewModel
@@ -205,26 +196,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseInstructionNotificationViewModel
 
-        public override async Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage.NotificationCommand notificationType, Guid instructionID)
+        public override Task CheckInstructionNotificationAsync(Messages.GatewayInstructionNotificationMessage message)
         {
-            if ( _navData.Data.ID == instructionID || this.DeliveryInstructions.Any(x => x.InstructionID == instructionID))
+            return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
-                if (notificationType == GatewayInstructionNotificationMessage.NotificationCommand.Update)
-                {
-                    if (this.IsVisible) 
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Now refreshing the page.", "Instructions have been updated");
+                _navData.GetAdditionalInstructions().Clear();
 
-                    await this.RefreshPageAsync();
-                }
-                else
+                InvokeOnMainThread(async () =>
                 {
-                    if (this.IsVisible)
-                    {
-                        await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Redirecting you back to the manifest screen", "Instructions on this delivery have been deleted.");
-                        await _navigationService.GoToManifestAsync();
-                    }
-                }
-            }
+                    await this.GetDeliveryInstructionsAsync();
+                    RaiseAllPropertiesChanged();
+                });
+            });
         }
 
         #endregion

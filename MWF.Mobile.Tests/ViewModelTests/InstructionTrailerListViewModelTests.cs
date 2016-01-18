@@ -7,6 +7,7 @@ using Cirrious.MvvmCross.Plugins.Messenger;
 using Cirrious.MvvmCross.Test.Core;
 using Cirrious.MvvmCross.Views;
 using Moq;
+using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
@@ -56,8 +57,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Inject<IInfoService>(_infoService);
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
-            _mockMessenger.Setup(m => m.Unsubscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
-            _mockMessenger.Setup(m => m.Subscribe<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>(It.IsAny<Action<MWF.Mobile.Core.Messages.GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
+            _mockMessenger.Setup(m => m.Unsubscribe<GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
+            _mockMessenger.Setup(m => m.Subscribe(It.IsAny<Action<GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             _navigationServiceMock = _fixture.InjectNewMock<INavigationService>();
             Ioc.RegisterSingleton<INavigationService>(_navigationServiceMock.Object);
@@ -65,6 +66,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             var repositories = _fixture.Create<IRepositories>();
             _fixture.Inject(repositories);
             _mockRepositories = Mock.Get(repositories);
+            Ioc.RegisterSingleton<IRepositories>(_mockRepositories.Object);
 
             var applicationRepository = Mock.Of<IApplicationProfileRepository>(apr => apr.GetAllAsync() == Task.FromResult(_fixture.CreateMany<Core.Models.ApplicationProfile>()));
             _mockRepositories.Setup(r => r.ApplicationRepository).Returns(applicationRepository);
@@ -157,7 +159,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await vm.Init(navID);
 
-            await vm.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete, mobileData.ID);
+            await vm.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Delete));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 
@@ -186,7 +188,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await vm.Init(navID);
 
-            await vm.CheckInstructionNotificationAsync(Core.Messages.GatewayInstructionNotificationMessage.NotificationCommand.Update, mobileData.ID);
+            await vm.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Update));
 
             _mockUserInteraction.Verify(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
 

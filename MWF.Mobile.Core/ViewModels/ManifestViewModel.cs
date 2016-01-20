@@ -47,7 +47,7 @@ namespace MWF.Mobile.Core.ViewModels
         private int? _displaySpan = null;
         private bool _initialised;
 
-        #endregion
+        #endregion Private Members
 
         #region Constructor
 
@@ -102,7 +102,7 @@ namespace MWF.Mobile.Core.ViewModels
             Sections.Add(_messageSection);
         }
 
-        #endregion
+        #endregion Constructor
 
         #region Public Properties
 
@@ -132,7 +132,14 @@ namespace MWF.Mobile.Core.ViewModels
             get { return (_refreshStatusesCommand = _refreshStatusesCommand ?? new MvxCommand(async () => await RefreshInstructionsAsync())); }
         }
 
-        #endregion
+        private bool _isRefreshingInstructions;
+        public bool IsRefreshingInstructions
+        {
+            get { return _isRefreshingInstructions; }
+            set { _isRefreshingInstructions = value; RaisePropertyChanged(() => IsRefreshingInstructions); }
+        }
+
+        #endregion Public Properties
 
         #region Private Methods
 
@@ -151,6 +158,8 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task RefreshInstructionsAsync()
         {
+            this.IsRefreshingInstructions = true;
+
             try
             {
                 Mvx.Trace("started refreshing manifest screen");
@@ -237,9 +246,13 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 Mvx.Trace(ex.Message);
             }
+            finally
+            {
+                this.IsRefreshingInstructions = false;
+            }
         }
 
-        #endregion
+        #endregion Private Methods
 
         #region IBackButtonHandler Implementation
 
@@ -263,7 +276,7 @@ namespace MWF.Mobile.Core.ViewModels
             return false;
         }
 
-        #endregion
+        #endregion IBackButtonHandler Implementation
 
         #region BaseInstructionNotificationViewModel
 

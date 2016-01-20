@@ -2,7 +2,9 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Cirrious.MvvmCross.Binding.BindingContext;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
+using MWF.Mobile.Android.Controls;
 using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
@@ -10,7 +12,9 @@ namespace MWF.Mobile.Android.Views.Fragments
 
     public class ManifestFragment : BaseFragment
     {
+
         private IMenu optionsMenu;
+        private BindableProgress _bindableProgress = null;
 
         public ManifestViewModel ManifestViewModel
         {
@@ -26,8 +30,14 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
-            
             base.OnViewCreated(view, savedInstanceState);
+
+            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
+            _bindableProgress.Message = "Refreshing instructions";
+
+            var set = this.CreateBindingSet<ManifestFragment, ManifestViewModel>();
+            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsRefreshingInstructions);
+            set.Apply();
         }
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
@@ -63,7 +73,6 @@ namespace MWF.Mobile.Android.Views.Fragments
             {
                 viewModel.RefreshStatusesCommand.Execute(null);
             }
-
         }
 
         public void SetRefreshActionButtonState(bool refreshing)
@@ -84,6 +93,7 @@ namespace MWF.Mobile.Android.Views.Fragments
                 }
             }
         }
+
     }
 
 }

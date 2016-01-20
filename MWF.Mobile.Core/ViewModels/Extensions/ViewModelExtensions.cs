@@ -44,11 +44,11 @@ namespace MWF.Mobile.Core.ViewModels.Extensions
             else
             {
                 var additionalInstructions = navData.GetAdditionalInstructions();
-                var additionalInstructionIDs = additionalInstructions.Select(i => i.ID);
+                var additionalInstructionIDs = additionalInstructions.Select(i => i.ID).ToList();
 
                 var isThisInstructionUpdated = message.UpdatedInstructionIDs.Contains(instructionID);
-                var updatedAdditionalInstructionIDs = message.UpdatedInstructionIDs.Union(additionalInstructionIDs);
-                var deletedAdditionalInstructionIDs = message.DeletedInstructionIDs.Union(additionalInstructionIDs);
+                var updatedAdditionalInstructionIDs = message.UpdatedInstructionIDs.Union(additionalInstructionIDs).ToList();
+                var deletedAdditionalInstructionIDs = message.DeletedInstructionIDs.Union(additionalInstructionIDs).ToList();
                 var haveAdditionalInstructionsChanged = updatedAdditionalInstructionIDs.Any() || deletedAdditionalInstructionIDs.Any();
 
                 if (isThisInstructionUpdated || haveAdditionalInstructionsChanged)

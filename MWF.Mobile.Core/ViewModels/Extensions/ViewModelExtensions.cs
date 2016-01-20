@@ -28,7 +28,11 @@ namespace MWF.Mobile.Core.ViewModels.Extensions
         /// Note that this action will not be called on the UI thread, so the viewmodel should use InvokeOnMainThread() to execute any code that modifies the UI.</param>
         public static async Task RespondToInstructionNotificationAsync(this IInstructionNotificationViewModel viewModel, Messages.GatewayInstructionNotificationMessage message, NavData<MobileData> navData, Action refreshPage)
         {
+            if (navData.Data.ProgressState == Enums.InstructionProgress.Complete)
+                return;
+
             var instructionID = navData.Data.ID;
+
             var isVisible = !(viewModel is IVisible) || ((IVisible)viewModel).IsVisible;
 
             if (message.DeletedInstructionIDs.Contains(instructionID))
@@ -47,8 +51,8 @@ namespace MWF.Mobile.Core.ViewModels.Extensions
                 var additionalInstructionIDs = additionalInstructions.Select(i => i.ID).ToList();
 
                 var isThisInstructionUpdated = message.UpdatedInstructionIDs.Contains(instructionID);
-                var updatedAdditionalInstructionIDs = message.UpdatedInstructionIDs.Union(additionalInstructionIDs).ToList();
-                var deletedAdditionalInstructionIDs = message.DeletedInstructionIDs.Union(additionalInstructionIDs).ToList();
+                var updatedAdditionalInstructionIDs = message.UpdatedInstructionIDs.Intersect(additionalInstructionIDs).ToList();
+                var deletedAdditionalInstructionIDs = message.DeletedInstructionIDs.Intersect(additionalInstructionIDs).ToList();
                 var haveAdditionalInstructionsChanged = updatedAdditionalInstructionIDs.Any() || deletedAdditionalInstructionIDs.Any();
 
                 if (isThisInstructionUpdated || haveAdditionalInstructionsChanged)

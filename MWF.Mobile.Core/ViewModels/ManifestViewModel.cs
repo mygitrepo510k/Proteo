@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Models.Instruction;
@@ -244,7 +245,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
             catch (Exception ex)
             {
-                Mvx.Trace(ex.Message);
+                MvxTrace.Error("Exception while refreshing manifest screen: {0} at {1}", ex.Message, ex.StackTrace);
             }
             finally
             {

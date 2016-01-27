@@ -37,6 +37,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMvxMessenger> _mockMessenger;
         private Mock<IConfigRepository> _mockConfigRepo;
         private NavData<MobileData> _navData;
+        private MWFMobileConfig _mwfMobileConfig;
         private Guid _navID;
 
         protected override void AdditionalSetup()
@@ -52,7 +53,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockRepositories.Setup(r => r.MobileDataRepository).Returns(_mockMobileDataRepo.Object);
             Ioc.RegisterSingleton<IRepositories>(_mockRepositories.Object);
 
+            _mwfMobileConfig = _fixture.Create<MWFMobileConfig>();
             _mockConfigRepo = _fixture.InjectNewMock<IConfigRepository>();
+            _mockConfigRepo.Setup(mcr => mcr.GetByIDAsync(It.IsAny<Guid>())).Returns(() => Task.FromResult(_mwfMobileConfig));
 
             _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
 
@@ -100,7 +103,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await orderVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().Title, orderVM.OrderLoadNo);
-
         }
 
         [Fact]
@@ -112,7 +114,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await orderVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().DeliveryOrderNumber, orderVM.OrderDeliveryNo);
-
         }
 
         [Fact]
@@ -125,7 +126,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await orderVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().Quantity, orderVM.OrderQuantity);
-
         }
 
         [Fact]
@@ -138,7 +138,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await orderVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().Weight, orderVM.OrderWeight);
-
         }
 
         [Fact]
@@ -151,7 +150,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await orderVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().BusinessType, orderVM.OrderBusinessType);
-
         }
 
         [Fact]
@@ -164,7 +162,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await orderVM.Init(_navID);
 
             Assert.Equal(_mobileData.Order.Items.FirstOrDefault().GoodsType, orderVM.OrderGoodsType);
-
         }
 
         [Fact]
@@ -174,10 +171,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var orderVM = _fixture.Create<OrderViewModel>();
 
-            var config = _fixture.Create<MWFMobileConfig>();
-            config.QuantityIsEditable = true;
-
-            _mockConfigRepo.Setup(mcr => mcr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(config);
+            _mwfMobileConfig.QuantityIsEditable = true;
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
 
@@ -193,10 +187,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var orderVM = _fixture.Create<OrderViewModel>();
 
-            var config = _fixture.Create<MWFMobileConfig>();
-            config.QuantityIsEditable = false;
-
-            _mockConfigRepo.Setup(mcr => mcr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(config);
+            _mwfMobileConfig.QuantityIsEditable = false;
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Collect;
 
@@ -212,10 +203,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
             base.ClearAll();
 
             var orderVM = _fixture.Create<OrderViewModel>();
-
-            var config = _fixture.Create<MWFMobileConfig>();
-
-            _mockConfigRepo.Setup(mcr => mcr.GetByIDAsync(It.IsAny<Guid>())).ReturnsAsync(config);
 
             _mobileData.Order.Type = Core.Enums.InstructionType.Deliver;
 

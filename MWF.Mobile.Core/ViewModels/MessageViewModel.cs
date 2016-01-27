@@ -48,9 +48,15 @@ namespace MWF.Mobile.Core.ViewModels
             var navData = Mvx.Resolve<INavigationService>().GetNavData<MessageModalNavItem>(navID);
             _navItem = navData.Data;
 
-            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(_navItem.MobileDataID);
             _isMessageRead = _navItem.IsRead;
+            _mobileData = await _repositories.MobileDataRepository.GetByIDAsync(_navItem.MobileDataID);
 
+            this.MessageContentText = _mobileData.Order.Items.First().Description;
+            this.IsWithPoint = _mobileData.Order.Addresses.Any();
+            this.PointDescription = _mobileData.Order.Description;
+            this.ReadButtonText = _isMessageRead ? "Return" : "Mark as read";
+            this.Address = this.IsWithPoint ? (_mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode) : string.Empty;
+            
             RaiseAllPropertiesChanged();
         }
 
@@ -58,21 +64,25 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Public Properties
 
-        public string MessageContentText { get { return _mobileData.Order.Items.First().Description; } }
-
-        public string Address
+        private string _messageContentText;
+        public string MessageContentText
         {
-            get
-            {
-                return (_mobileData != null && this.isWithPoint)
-                    ? _mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode
-                    : string.Empty;
-            }
+            get { return _messageContentText; }
+            set { _messageContentText = value; RaisePropertyChanged(() => MessageContentText); }
         }
 
+        private string _address;
+        public string Address
+        {
+            get { return _address; }
+            set { _address = value; RaisePropertyChanged(() => Address); }
+        }
+
+        private string _pointDescription;
         public string PointDescription
         {
-            get { return _mobileData == null ? string.Empty : _mobileData.Order.Description; }
+            get { return _pointDescription; }
+            set { _pointDescription = value; RaisePropertyChanged(() => PointDescription); }
         }
 
         public string AddressLabelText
@@ -80,14 +90,18 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Address"; }
         }
 
+        private string _readButtonText;
         public string ReadButtonText
         {
-            get { return _mobileData == null ? string.Empty : (_isMessageRead ? "Return" : "Mark as read"); }
+            get { return _readButtonText; }
+            set { _readButtonText = value; RaisePropertyChanged(() => ReadButtonText); }
         }
 
-        public bool isWithPoint
+        private bool _isWithPoint;
+        public bool IsWithPoint
         {
-            get { return _mobileData == null ? false : _mobileData.Order.Addresses.Any(); }
+            get { return _isWithPoint; }
+            set { _isWithPoint = value; RaisePropertyChanged(() => IsWithPoint); }
         }
 
         public ICommand ReadMessageCommand
@@ -115,7 +129,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region BaseFragmentViewModel Overrides
 
-        public override string FragmentTitle { get { return (isWithPoint) ? "Message with a Point" : "Message"; } }
+        public override string FragmentTitle
+        {
+            get { return "Message"; }
+        }
 
         #endregion  BaseFragmentViewModel Overrides
 

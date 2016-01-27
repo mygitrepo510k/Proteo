@@ -79,13 +79,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var MessageVM = _fixture.Create<MessageViewModel>();
+            var messageVM = _fixture.Create<MessageViewModel>();
 
-            await MessageVM.Init(_navID);
+            await messageVM.Init(_navID);
 
-            Assert.Equal("Message with a Point", MessageVM.FragmentTitle);
-            Assert.Equal(true, MessageVM.isWithPoint);
-            Assert.Equal(_mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode, MessageVM.Address);
+            Assert.Equal(true, messageVM.IsWithPoint);
+            Assert.Equal(_mobileData.Order.Addresses[0].Lines.Replace("|", "\n") + "\n" + _mobileData.Order.Addresses[0].Postcode, messageVM.Address);
 
         }
 
@@ -100,13 +99,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.Order.Addresses = new List<Address>();
 
-            var MessageVM = _fixture.Create<MessageViewModel>();
+            var messageVM = _fixture.Create<MessageViewModel>();
 
-            await MessageVM.Init(_navID);
+            await messageVM.Init(_navID);
 
-            Assert.Equal("Message", MessageVM.FragmentTitle);
-            Assert.Equal(false, MessageVM.isWithPoint);
-            Assert.Equal(string.Empty, MessageVM.Address);
+            Assert.Equal(false, messageVM.IsWithPoint);
+            Assert.Equal(string.Empty, messageVM.Address);
         }
 
         [Fact]
@@ -116,13 +114,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.Order.Addresses = new List<Address>();
 
-            var MessageVM = _fixture.Create<MessageViewModel>();
+            var messageVM = _fixture.Create<MessageViewModel>();
 
-            await MessageVM.Init(_navID);
+            await messageVM.Init(_navID);
 
-            Assert.Equal("Mark as read", MessageVM.ReadButtonText);
+            Assert.Equal("Mark as read", messageVM.ReadButtonText);
 
-            await MessageVM.ReadMessageAsync();
+            await messageVM.ReadMessageAsync();
 
             _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Once);
         }
@@ -134,14 +132,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mobileData.Order.Addresses = new List<Address>();
 
-            var MessageVM = _fixture.Create<MessageViewModel>();
+            var messageVM = _fixture.Create<MessageViewModel>();
             _navData.Data.IsRead = true;
 
-            await MessageVM.Init(_navID);
+            await messageVM.Init(_navID);
 
-            Assert.Equal("Return", MessageVM.ReadButtonText);
+            Assert.Equal("Return", messageVM.ReadButtonText);
 
-            await MessageVM.ReadMessageAsync();
+            await messageVM.ReadMessageAsync();
 
             _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Never);
         }
@@ -151,13 +149,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var MessageVM = _fixture.Create<MessageViewModel>();
+            var messageVM = _fixture.Create<MessageViewModel>();
 
-            await MessageVM.Init(_navID);
+            await messageVM.Init(_navID);
 
-            Assert.Equal("Mark as read", MessageVM.ReadButtonText);
+            Assert.Equal("Mark as read", messageVM.ReadButtonText);
 
-            await MessageVM.ReadMessageAsync();
+            await messageVM.ReadMessageAsync();
 
             _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Once);
         }
@@ -167,14 +165,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            var MessageVM = _fixture.Create<MessageViewModel>();
+            var messageVM = _fixture.Create<MessageViewModel>();
             _navData.Data.IsRead = true;
 
-            await MessageVM.Init(_navID);
+            await messageVM.Init(_navID);
 
-            Assert.Equal("Return", MessageVM.ReadButtonText);
+            Assert.Equal("Return", messageVM.ReadButtonText);
 
-            await MessageVM.ReadMessageAsync();
+            await messageVM.ReadMessageAsync();
 
             _mockDataChunkService.Verify(dc => dc.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(), It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(), It.Is<bool>(i => i == false), It.Is<bool>(i => i == false)), Times.Never);
 

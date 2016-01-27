@@ -15,6 +15,6 @@ namespace MWF.Mobile.Core.Repositories.Interfaces
         Task<IEnumerable<MobileData>> GetNotStartedInstructionsAsync(Guid driverID);
         Task<IEnumerable<MobileData>> GetNonCompletedMessagesAsync(Guid driverID);
         Task<IEnumerable<MobileData>> GetAllMessagesAsync(Guid driverID);
-
+        Task<IEnumerable<MobileData>> GetObsoleteInstructionsAsync(int dataRetentionDays);
     }
 }

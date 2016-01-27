@@ -27,13 +27,13 @@
                 local:MvxBind="Text MessageContentText" />
             <TextView
                 style="@style/Proteo.TextView.SectionHeading"
-                local:MvxBind="Text AddressLabelText; Visible isWithPoint" />
+                local:MvxBind="Text AddressLabelText; Visible IsWithPoint" />
             <TextView
                 style="@style/Proteo.TextView.SectionContent"
-                local:MvxBind="Text PointDescription; Visible isWithPoint" />
+                local:MvxBind="Text PointDescription; Visible IsWithPoint" />
             <TextView
                 style="@style/Proteo.TextView.SectionContent"
-                local:MvxBind="Text Address; Visible isWithPoint" />
+                local:MvxBind="Text Address; Visible IsWithPoint" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

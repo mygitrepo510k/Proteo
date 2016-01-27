@@ -78,9 +78,11 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (_safetyCheckService.CurrentTrailerSafetyCheckData == null && _safetyCheckService.CurrentVehicleSafetyCheckData == null)
             {
-                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check.");
-                await _navigationService.MoveToNextAsync();
-                await _safetyCheckService.CommitSafetyCheckDataAsync();
+                await Task.WhenAll(
+                    Mvx.Resolve<ICustomUserInteraction>().AlertAsync("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check."),
+                    _safetyCheckService.CommitSafetyCheckDataAsync());
+
+                await this.MoveToNextAsync();
             }
         }
 
@@ -160,7 +162,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(async () => await _navigationService.MoveToNextAsync(_navData));
+                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(async () => await this.MoveToNextAsync());
                 return _checksDoneCommand;
             }
         }
@@ -169,6 +171,9 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
+                if (this.IsProgressing)
+                    return false;
+
                 bool allChecksCompleted = true;
 
                 if ((this.SafetyProfileVehicle != null && this.SafetyProfileVehicle.IsVOSACompliant)
@@ -185,10 +190,6 @@ namespace MWF.Mobile.Core.ViewModels
 
                 return allChecksCompleted;
             }
-            set
-            {
-                RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
-            }
         }
 
         public void CheckSafetyCheckItemsStatus()
@@ -196,9 +197,22 @@ namespace MWF.Mobile.Core.ViewModels
             RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
         }
 
+        private bool _isProgressing;
+        public bool IsProgressing
+        {
+            get { return _isProgressing; }
+            set { _isProgressing = value; RaisePropertyChanged(() => IsProgressing); }
+        }
+
         #endregion
 
         #region Private Methods
+        private Task MoveToNextAsync()
+        {
+            this.IsProgressing = true;
+            RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
+            return _navigationService.MoveToNextAsync(_navData);
+        }
 
         public override string FragmentTitle
         {

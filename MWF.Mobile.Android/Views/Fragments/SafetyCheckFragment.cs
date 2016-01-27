@@ -17,6 +17,7 @@ using Cirrious.MvvmCross.Droid.Views;
 using Cirrious.MvvmCross.Binding.Droid.Views;
 
 using MWF.Mobile.Core.ViewModels;
+using MWF.Mobile.Android.Controls;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
@@ -25,6 +26,7 @@ namespace MWF.Mobile.Android.Views.Fragments
     {
 
         private ListView _itemList;
+        private BindableProgress _bindableProgress;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -39,8 +41,13 @@ namespace MWF.Mobile.Android.Views.Fragments
             _itemList.ItemClick += itemList_ItemClick;
             RegisterForContextMenu(_itemList);
 
+            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
+            _bindableProgress.Message = "Please wait";
+
             var checksDoneButton = (Button)view.FindViewById(Resource.Id.checksdonebutton);
+
             var set = this.CreateBindingSet<SafetyCheckFragment, SafetyCheckViewModel>();
+            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsProgressing);
             set.Bind(checksDoneButton).For(b => b.Enabled).To(vm => vm.CanSafetyChecksBeCompleted);
             set.Apply();
 

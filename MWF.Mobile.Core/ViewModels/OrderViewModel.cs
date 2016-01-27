@@ -52,8 +52,8 @@ namespace MWF.Mobile.Core.ViewModels
             _order = _navData.OtherData["Order"] as Item;
             _mobileData = _navData.Data;
             _mobileConfig = await _configRepository.GetByIDAsync(_mobileData.CustomerId);
+            this.ChangeOrderQuantity = _mobileConfig.QuantityIsEditable && _mobileData.Order.Type != Enums.InstructionType.Deliver;
         }
-
 
         #endregion Construction
 
@@ -77,7 +77,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ChangeOrderQuantityButtonLabel { get { return "Change Quantity"; } }
 
-        public bool ChangeOrderQuantity { get { return _mobileConfig.QuantityIsEditable && _mobileData.Order.Type != Enums.InstructionType.Deliver; } }
+        private bool _changeOrderQuantity;
+        public bool ChangeOrderQuantity
+        {
+            get { return _changeOrderQuantity; }
+            private set { _changeOrderQuantity = value; RaisePropertyChanged(() => ChangeOrderQuantity); }
+        }
 
         #endregion Public Properties
 

@@ -21,7 +21,6 @@ namespace MWF.Mobile.Core.ViewModels
         BaseInstructionNotificationViewModel, 
         IBackButtonHandler
     {
-
         
         #region Private Fields
 
@@ -98,7 +97,12 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Add/Remove Deliveries"; }
         }
 
-        public bool IsDeliveryAddEnabled { get; private set; }
+        private bool _isDeliveryAddEnabled;
+        public bool IsDeliveryAddEnabled
+        {
+            get { return _isDeliveryAddEnabled; }
+            private set { _isDeliveryAddEnabled = value; RaisePropertyChanged(() => IsDeliveryAddEnabled); }
+        }
 
         #endregion
 
@@ -136,7 +140,6 @@ namespace MWF.Mobile.Core.ViewModels
                 }               
             );
         }
-
 
         /// <summary>
         /// Ensures that all the additional instructions added send "onSite" data chunks

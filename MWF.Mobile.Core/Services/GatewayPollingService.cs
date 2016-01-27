@@ -118,6 +118,19 @@ namespace MWF.Mobile.Core.Services
                         _dataSpan = applicationProfile.DataSpan;
                     }
 
+                    var instructionNotificationsToPublish = new Dictionary<Guid, Messages.GatewayInstructionNotificationMessage.NotificationCommand>();
+
+                    // Remove any existing instructions that fall before the data retention period
+                    Mvx.Trace("Removing obsolete instructions.");
+                    var obsoleteInstructions = await _repositories.MobileDataRepository.GetObsoleteInstructionsAsync(_dataRetention.Value);
+                    Mvx.Trace("{0} obsolete instructions to remove.", obsoleteInstructions.Any() ? obsoleteInstructions.Count().ToString() : "No");
+
+                    foreach (var instruction in obsoleteInstructions)
+                    {
+                        await _repositories.MobileDataRepository.DeleteAsync(instruction);
+                        instructionNotificationsToPublish[instruction.ID] = Messages.GatewayInstructionNotificationMessage.NotificationCommand.Delete;
+                    }
+
                     // Call to BlueSphere to check for instructions
                     var instructions = await _gatewayService.GetDriverInstructionsAsync(
                         _infoService.CurrentVehicle.Registration,
@@ -134,7 +147,6 @@ namespace MWF.Mobile.Core.Services
 
                         var currentViewModel = _customPresenter.CurrentFragmentViewModel as BaseFragmentViewModel;
                         var manifestInstructionVMsForNotification = new List<ManifestInstructionViewModel>(instructions.Count());
-                        var instructionNotificationsToPublish = new Dictionary<Guid, Messages.GatewayInstructionNotificationMessage.NotificationCommand>(instructions.Count());
 
                         // We have a response so check what we need to do (Save/Update/Delete)
                         foreach (var instruction in instructions)
@@ -252,7 +264,7 @@ namespace MWF.Mobile.Core.Services
             catch (Exception ex)
             {
                 // if there is an error here, then just continue as this is probably related to a connection issue
-                Mvx.Trace("failed to poll for instructions", ex);
+                MvxTrace.Warning("Failed to poll for instructions: {0} at {1}", ex.Message, ex.StackTrace);
             }
         }
 

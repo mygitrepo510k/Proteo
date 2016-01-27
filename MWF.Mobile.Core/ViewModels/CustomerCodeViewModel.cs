@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
+using Cirrious.CrossCore.Platform;
 using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Extensions;
 using MWF.Mobile.Core.Models;
@@ -154,8 +155,7 @@ namespace MWF.Mobile.Core.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    Mvx.Trace(ex.Message);
-                    //TODO: save to unhandled exceptions log
+                    MvxTrace.Warning("Exception while setting up device: {0} at {1}", ex.Message, ex.StackTrace);
                     success = false;
                     _errorMessage = _unexpectedErrorMessage;
                 }
@@ -168,7 +168,6 @@ namespace MWF.Mobile.Core.ViewModels
                     await _userInteraction.AlertAsync(_errorMessage);
             }
         }
-
 
         // returns false if the customer code is not known
         // throws exceptions if the web services or db inserts fail

@@ -102,5 +102,22 @@ namespace MWF.Mobile.Core.Repositories
 
             return parentItems;
         }
+
+        public async Task<IEnumerable<MobileData>> GetObsoleteInstructionsAsync(int dataRetentionDays)
+        {
+            var connection = _dataService.GetAsyncDBConnection();
+            var dataRetentionDate = DateTime.Today.AddDays(-dataRetentionDays);
+
+            var parentItems = await connection
+                .Table<MobileData>()
+                .Where(m => m.EffectiveDate < dataRetentionDate)
+                .ToListAsync();
+
+            await PopulateChildrenRecursiveAsync(parentItems, connection);
+
+            return parentItems;
+        }
+
     }
+
 }

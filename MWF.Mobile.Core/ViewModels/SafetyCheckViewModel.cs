@@ -210,8 +210,15 @@ namespace MWF.Mobile.Core.ViewModels
         private Task MoveToNextAsync()
         {
             this.IsProgressing = true;
-            RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
-            return _navigationService.MoveToNextAsync(_navData);
+            try
+            {
+                RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
+                return _navigationService.MoveToNextAsync(_navData);
+            }
+            finally
+            {
+                this.IsProgressing = false;
+            }
         }
 
         public override string FragmentTitle

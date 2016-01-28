@@ -247,7 +247,15 @@ namespace MWF.Mobile.Core.ViewModels
             }
             catch (Exception ex)
             {
-                MvxTrace.Error("Exception while refreshing manifest screen: {0}; Most recent action: {1}\nStack trace:{1}", ex.Message, mostRecentAction, ex.StackTrace);
+                MvxTrace.Error("Exception while refreshing manifest screen: {0}; Most recent action: {1}\nCurrent values:\n_mobileDataRepository: {2}\n_infoService: {3}\n_displayRetention: {4}\n_applicationProfileRepository: {5}\n_activeInstructionsSection: {6}\nStack trace: {7}",
+                    ex.Message,
+                    mostRecentAction,
+                    _mobileDataRepository,
+                    _infoService,
+                    _displayRetention,
+                    _applicationProfileRepository,
+                    _activeInstructionsSection,
+                    ex.StackTrace);
             }
             finally
             {

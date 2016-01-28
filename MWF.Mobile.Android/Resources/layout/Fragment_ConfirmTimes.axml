@@ -80,4 +80,6 @@
         local:MvxBind="Text ConfirmTimesButtonLabel; Click ButtonAdvanceConfirmTimes; Enabled IsProgressing, Converter=BoolInverse;"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+  <mwf.BindableProgress
+      local:MvxBind="ShowProgress IsProgressing; Message ProgressMessage;" />
 </RelativeLayout>

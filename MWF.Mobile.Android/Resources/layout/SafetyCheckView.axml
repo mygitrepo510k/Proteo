@@ -15,4 +15,6 @@
         android:layout_above="@id/checksdonebutton"
         local:MvxBind="ItemsSource SafetyCheckItemViewModels"
         local:MvxItemTemplate="@layout/item_safetycheckitem" />
+    <mwf.BindableProgress
+        local:MvxBind="ShowProgress IsProgressing; Message ProgressingMessage;" />
 </RelativeLayout>

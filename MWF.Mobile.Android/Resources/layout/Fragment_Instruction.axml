@@ -81,4 +81,6 @@
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>
+    <mwf.BindableProgress
+        local:MvxBind="ShowProgress IsUpdatingProgress; Message UpdatingProgressMessage;" />
 </RelativeLayout>

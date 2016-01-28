@@ -168,7 +168,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 // clear the passcode
                 this.Passcode = string.Empty;
-                IsBusy = false;
+                //IsBusy = false;
             }
 
 			if (exceptionMsg != null)

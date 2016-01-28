@@ -19,7 +19,6 @@ namespace MWF.Mobile.Android.Views.Fragments
     {
 
         private SignaturePadView _signaturePad;
-        private BindableProgress _bindableProgress;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -37,18 +36,6 @@ namespace MWF.Mobile.Android.Views.Fragments
             doneButton.Click += this.DoneButton_Click;
 
             return view;
-        }
-
-        public override void OnViewCreated(View view, Bundle savedInstanceState)
-        {
-            base.OnViewCreated(view, savedInstanceState);
-
-            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
-            _bindableProgress.Message = "Storing safety check";
-
-            var set = this.CreateBindingSet<SafetyCheckSignatureFragment, SafetyCheckSignatureViewModel>();
-            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsProgressing);
-            set.Apply();
         }
 
         private async void DoneButton_Click(object sender, EventArgs e)

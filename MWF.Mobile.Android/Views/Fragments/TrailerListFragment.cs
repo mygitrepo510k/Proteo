@@ -3,18 +3,16 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
-using Cirrious.MvvmCross.Binding.BindingContext;
 using MWF.Mobile.Core.ViewModels;
-using MWF.Mobile.Android.Controls;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
 
     public class TrailerListFragment : BaseFragment
     {
+
         protected SearchView _searchView;
         protected IMenu optionsMenu;
-        private BindableProgress _bindableProgress;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -22,8 +20,6 @@ namespace MWF.Mobile.Android.Views.Fragments
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             return this.BindingInflate(Resource.Layout.Fragment_TrailerListView, null);
         }
-  
-
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
         {
@@ -34,16 +30,13 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             var searchItem = menu.FindItem(Resource.Id.trailer_action_search).ActionView;
             _searchView = searchItem.JavaCast<SearchView>();
-            
         }
 
         public override void OnPrepareOptionsMenu(IMenu menu)
         {
             base.OnPrepareOptionsMenu(menu);
             _searchView.QueryTextChange += (s, e) => { ((BaseTrailerListViewModel)this.ViewModel).TrailerSearchText = e.NewText; };
-    
         }
-
 
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
@@ -59,7 +52,6 @@ namespace MWF.Mobile.Android.Views.Fragments
             return base.OnOptionsItemSelected(item);
         }
 
-
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -70,15 +62,7 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             this.Activity.ActionBar.Show();
             base.OnViewCreated(view, savedInstanceState);
-
-            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
-            var set = this.CreateBindingSet<TrailerListFragment, TrailerListViewModel>();
-            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsBusy);
-            set.Bind(_bindableProgress).For(p => p.Message).To(vm => vm.ProgressMessage);
-            set.Bind(_bindableProgress).For(p => p.Title).To(vm => vm.ProgressTitle);
-            set.Apply();
         }
-
 
         public void SetRefreshActionButtonState(bool refreshing)
         {
@@ -98,6 +82,7 @@ namespace MWF.Mobile.Android.Views.Fragments
                 }
             }
         }
+
     }
 
 }

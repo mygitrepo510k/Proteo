@@ -17,4 +17,6 @@
         android:layout_below="@id/trailerText"
         local:MvxBind="ItemsSource Trailers; ItemClick TrailerSelectCommand"
         local:MvxItemTemplate="@layout/item_trailer" />
+    <mwf.BindableProgress
+        local:MvxBind="ShowProgress IsBusy; Message ProgressMessage; Title ProgressTitle;" />
 </RelativeLayout>

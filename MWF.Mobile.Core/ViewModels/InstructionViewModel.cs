@@ -193,6 +193,11 @@ namespace MWF.Mobile.Core.ViewModels
             set { _isUpdatingProgress = value; RaisePropertyChanged(() => IsUpdatingProgress); }
         }
 
+        public string UpdatingProgressMessage
+        {
+            get { return "Updating instruction progress"; }
+        }
+
         #endregion Public Properties
 
         #region Private Methods

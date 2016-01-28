@@ -27,4 +27,6 @@
         local:MvxBind="ItemsSource BarcodeSections"
         local:MvxItemTemplate="@layout/item_barcode"
         local:GroupItemTemplate="@layout/item_section" />
+    <mwf.BindableProgress
+        local:MvxBind="ShowProgress IsBusy; Message ScanMessage; Title ScanTitle;" />
 </RelativeLayout>

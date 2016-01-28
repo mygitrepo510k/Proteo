@@ -13,6 +13,8 @@ namespace MWF.Mobile.Android.Presenters
 
     public interface IFragmentHost
     {
+        event EventHandler OnFragmentChanged;
+
         bool Show(MvxViewModelRequest request);
         bool Close(IMvxViewModel viewModel);
         MvxFragment CurrentFragment { get; }
@@ -20,7 +22,6 @@ namespace MWF.Mobile.Android.Presenters
         void CloseToInitialView();
         int FragmentHostID { get; }
         IDictionary<Type, Type> SupportedFragmentViewModels { get; }
-
     }
 
 

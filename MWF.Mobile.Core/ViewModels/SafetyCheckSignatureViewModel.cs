@@ -157,6 +157,11 @@ namespace MWF.Mobile.Core.ViewModels
             set { _isProgressing = value; RaisePropertyChanged(() => IsProgressing); }
         }
 
+        public string ProgressingMessage
+        {
+            get { return "Storing safety check"; }
+        }
+
         #endregion properties
 
         public async Task DoneAsync()

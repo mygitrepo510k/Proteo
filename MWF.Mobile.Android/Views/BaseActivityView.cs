@@ -28,6 +28,8 @@ namespace MWF.Mobile.Android.Views
         : MvxActivity, Presenters.IFragmentHost
     {
 
+        public event EventHandler OnFragmentChanged;
+
         #region Protected/Private Fields
 
         protected IDictionary<Type, Type> _supportedFragmentViewModels;
@@ -65,7 +67,7 @@ namespace MWF.Mobile.Android.Views
                 transaction.Replace(this.FragmentHostID, fragment);
                 transaction.Commit();
 
-                this.ActionBar.Title = (fragment.DataContext as BaseFragmentViewModel).FragmentTitle;
+                this.FragmentChanged(fragment);
             }
         }
 
@@ -88,16 +90,22 @@ namespace MWF.Mobile.Android.Views
                 var continueBack = await (CurrentFragment.DataContext as IBackButtonHandler).OnBackButtonPressedAsync();
 
                 if (continueBack)
-                {
                     base.OnBackPressed();
-                    SetActivityTitleFromFragment();
-                }
             }
             else
             {
                 base.OnBackPressed();
-                SetActivityTitleFromFragment();
             }
+
+            this.FragmentChanged();
+        }
+
+        public virtual void FragmentChanged(MvxFragment fragment = null)
+        {
+            this.SetActivityTitleFromFragment(fragment ?? this.CurrentFragment);
+
+            if (this.OnFragmentChanged != null)
+                this.OnFragmentChanged(this, EventArgs.Empty);
         }
 
         #endregion Public Methods
@@ -136,6 +144,8 @@ namespace MWF.Mobile.Android.Views
             transaction.AddToBackStack(null);
             transaction.Commit();
 
+            this.FragmentChanged(fragment);
+
             return true;
         }
 
@@ -154,7 +164,7 @@ namespace MWF.Mobile.Android.Views
             {
                 FragmentManager.PopBackStackImmediate();
 
-                SetActivityTitleFromFragment();
+                this.FragmentChanged();
 
                 return true;
             }
@@ -173,7 +183,7 @@ namespace MWF.Mobile.Android.Views
                 FragmentManager.PopBackStackImmediate();
             }
 
-            SetActivityTitleFromFragment();
+            this.FragmentChanged();
         }
 
         /// <summary>
@@ -195,7 +205,7 @@ namespace MWF.Mobile.Android.Views
                 FragmentManager.PopBackStackImmediate();
             }
 
-            this.SetActivityTitleFromFragment();
+            this.FragmentChanged();
         }
 
         // Current Fragment in the fragment host. Note although the id being used appears to be that of the 
@@ -220,9 +230,10 @@ namespace MWF.Mobile.Android.Views
             return SupportedFragmentViewModels[viewModelType];
         }
 
-        protected void SetActivityTitleFromFragment()
+        protected void SetActivityTitleFromFragment(MvxFragment fragment)
         {
-            this.ActionBar.Title = ((BaseFragmentViewModel)this.CurrentFragment.DataContext).FragmentTitle;
+            var fragmentViewModel = fragment.DataContext as BaseFragmentViewModel;
+            this.ActionBar.Title = fragmentViewModel == null ? string.Empty : fragmentViewModel.FragmentTitle;
         }
 
         #endregion Private/Protected Methods

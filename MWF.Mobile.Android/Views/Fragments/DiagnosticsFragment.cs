@@ -25,35 +25,17 @@ namespace MWF.Mobile.Android.Views.Fragments
     
     public class DiagnosticsFragment : BaseFragment
     {
-        private BindableProgress _bindableProgress;
+
         private View _view;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             _view = this.BindingInflate(Resource.Layout.Fragment_Diagnostics, null);
             return _view;
         }
-
-
-        public override void OnViewCreated(View view, Bundle savedInstanceState)
-        {
-            
-            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
-            
-            base.OnViewCreated(view, savedInstanceState);
-            var set = this.CreateBindingSet<DiagnosticsFragment, DiagnosticsViewModel>();
-            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsBusy);
-            set.Bind(_bindableProgress).For(p => p.Message).To(vm => vm.ProgressMessage);
-            set.Bind(_bindableProgress).For(p => p.Title).To(vm => vm.ProgressTitle);
-            set.Apply();
-
-          
-
-        }
-
      
     }
+
 }

@@ -20,7 +20,6 @@ namespace MWF.Mobile.Android.Views.Fragments
         private DatePicker onSiteDatePicker = null;
         private DatePicker completeDatePicker = null;
         private LinearLayout onSiteLinearLayout = null;
-        private BindableProgress _bindableProgress = null;
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -32,13 +31,6 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             base.OnViewCreated(view, savedInstanceState);
-
-            _bindableProgress = new BindableProgress(new ContextThemeWrapper(view.Context, Resource.Style.ProteoDialog));
-            _bindableProgress.Message = "Updating instruction progress";
-
-            var set = this.CreateBindingSet<ConfirmTimesFragment, ConfirmTimesViewModel>();
-            set.Bind(_bindableProgress).For(p => p.Visible).To(vm => vm.IsProgressing);
-            set.Apply();
 
             onSiteTimePicker = view.FindViewById<TimePicker>(Resource.Id.onSiteTimePicker);
             completeTimePicker = view.FindViewById<TimePicker>(Resource.Id.completeTimePicker);

@@ -204,6 +204,11 @@ namespace MWF.Mobile.Core.ViewModels
             set { _isProgressing = value; RaisePropertyChanged(() => IsProgressing); }
         }
 
+        public string ProgressingMessage
+        {
+            get { return "Please wait"; }
+        }
+
         #endregion
 
         #region Private Methods

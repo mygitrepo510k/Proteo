@@ -140,6 +140,11 @@ namespace MWF.Mobile.Core.ViewModels
             set { _isRefreshingInstructions = value; RaisePropertyChanged(() => IsRefreshingInstructions); }
         }
 
+        public string RefreshingInstructionsMessage
+        {
+            get { return "Refreshing instructions"; }
+        }
+
         #endregion Public Properties
 
         #region Private Methods

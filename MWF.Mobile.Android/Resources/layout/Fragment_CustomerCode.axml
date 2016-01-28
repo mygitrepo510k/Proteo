@@ -27,4 +27,6 @@
     <TextView
         style="@style/Proteo.TextView.VersionFooter"
         local:MvxBind="Text VersionText" />
+    <mwf.BindableProgress
+        local:MvxBind="ShowProgress IsBusy; Message ProgressMessage; Title ProgressTitle;" />
 </RelativeLayout>

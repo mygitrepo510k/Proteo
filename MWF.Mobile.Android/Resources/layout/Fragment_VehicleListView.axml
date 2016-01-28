@@ -10,4 +10,6 @@
     <Mvx.MvxListView
         local:MvxBind="ItemsSource Vehicles; ItemClick ShowVehicleDetailCommand"
         local:MvxItemTemplate="@layout/item_vehicle" />
+    <mwf.BindableProgress
+        local:MvxBind="ShowProgress IsBusy; Message ProgressMessage; Title ProgressTitle;" />
 </LinearLayout>

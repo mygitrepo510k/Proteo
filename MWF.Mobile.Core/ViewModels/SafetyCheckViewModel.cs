@@ -207,13 +207,17 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion
 
         #region Private Methods
-        private Task MoveToNextAsync()
+        private async Task MoveToNextAsync()
         {
+            if (this.IsProgressing)
+                return;
+
             this.IsProgressing = true;
+
             try
             {
                 RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
-                return _navigationService.MoveToNextAsync(_navData);
+                await _navigationService.MoveToNextAsync(_navData);
             }
             finally
             {

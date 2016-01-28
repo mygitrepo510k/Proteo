@@ -165,11 +165,10 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task RefreshInstructionsAsync()
         {
             this.IsRefreshingInstructions = true;
+            var mostRecentAction = "Started refreshing manifest screen";
 
             try
             {
-                Mvx.Trace("started refreshing manifest screen");
-
                 if (!_initialised)
                     return;
 
@@ -178,7 +177,7 @@ namespace MWF.Mobile.Core.ViewModels
                 // get instruction data models from repository and order them
                 var activeInstructionsDataModels = await _mobileDataRepository.GetInProgressInstructionsAsync(_infoService.LoggedInDriver.ID);
                 var nonActiveInstructionsDataModels = await _mobileDataRepository.GetNotStartedInstructionsAsync(_infoService.LoggedInDriver.ID);
-                Mvx.Trace("  -- got instructions from database");
+                mostRecentAction = "Got instructions from database";
 
                 if (!_displayRetention.HasValue || !_displaySpan.HasValue)
                 {
@@ -188,7 +187,7 @@ namespace MWF.Mobile.Core.ViewModels
                     _displaySpan = applicationProfile.DisplaySpan;
                 }
 
-                Mvx.Trace("  -- set display spans");
+                mostRecentAction = "Set display spans";
                 activeInstructionsDataModels =
                     activeInstructionsDataModels
                     .Where(i => i.EffectiveDate < today.AddDays(_displaySpan.Value) && i.EffectiveDate > today.AddDays(-_displayRetention.Value))
@@ -199,7 +198,7 @@ namespace MWF.Mobile.Core.ViewModels
                     .Where(i => i.EffectiveDate < today.AddDays(_displaySpan.Value) && i.EffectiveDate > today.AddDays(-_displayRetention.Value))
                     .OrderBy(x => x.EffectiveDate);
 
-                Mvx.Trace("  -- getting non complete messages");
+                mostRecentAction = "Getting non complete messages";
                 var nonCompletedeMessages = await _mobileDataRepository.GetNonCompletedMessagesAsync(_infoService.LoggedInDriver.ID);
                 var messageDataModels = nonCompletedeMessages.OrderBy(x => x.EffectiveDate);
 
@@ -209,7 +208,7 @@ namespace MWF.Mobile.Core.ViewModels
                     noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Active Instructions" } });
                     IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
                     activeInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
-                    Mvx.Trace("  -- Created dummy active instructions");
+                    mostRecentAction = "Created dummy active instructions";
                 }
 
                 if (nonActiveInstructionsDataModels.ToList().Count == 0)
@@ -218,7 +217,7 @@ namespace MWF.Mobile.Core.ViewModels
                     noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Instructions" } });
                     IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
                     nonActiveInstructionsDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
-                    Mvx.Trace("  -- Created dummy non active instructions");
+                    mostRecentAction = "Created dummy non active instructions";
                 }
 
                 if (messageDataModels.ToList().Count == 0)
@@ -227,30 +226,28 @@ namespace MWF.Mobile.Core.ViewModels
                     noneShowingList.Add(new DummyMobileData() { Order = new Order() { Description = "No Messages" } });
                     IEnumerable<MobileData> noneShowingEnumerable = noneShowingList;
                     messageDataModels = (IOrderedEnumerable<MobileData>)noneShowingEnumerable.OrderBy(x => 1);
-                    Mvx.Trace("  -- Created dummy messages ");
+                    mostRecentAction = "Created dummy messages ";
                 }
 
                 // Create the view models
                 var activeInstructionsViewModels = activeInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this, md));
                 var nonActiveInstructionsViewModels = nonActiveInstructionsDataModels.Select(md => new ManifestInstructionViewModel(this, md));
                 var messageViewModels = messageDataModels.Select(md => new ManifestInstructionViewModel(this, md));
-                Mvx.Trace("  -- Created View Models");
+                mostRecentAction = "Created View Models";
 
                 // Update the observable collections in each section
                 _activeInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(activeInstructionsViewModels.OrderBy(ivm => ivm.ArrivalDate));
                 _nonActiveInstructionsSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(nonActiveInstructionsViewModels.OrderBy(ivm => ivm.ArrivalDate));
                 _messageSection.Instructions = new ObservableCollection<ManifestInstructionViewModel>(messageViewModels.OrderBy(ivm => ivm.ArrivalDate));
-                Mvx.Trace("  -- Updated collections");
+                mostRecentAction = "Updated collections";
                 // Let the UI know the number of instructions has changed
                 RaisePropertyChanged(() => InstructionsCount);
                 RaisePropertyChanged(() => Sections);
-                Mvx.Trace("  -- Raised Property Changes.");
-
-                Mvx.Trace("finished refreshing manifest screen");
+                mostRecentAction = "Raised Property Changes.";
             }
             catch (Exception ex)
             {
-                MvxTrace.Error("Exception while refreshing manifest screen: {0} at {1}", ex.Message, ex.StackTrace);
+                MvxTrace.Error("Exception while refreshing manifest screen: {0}; Most recent action: {1}\nStack trace:{1}", ex.Message, mostRecentAction, ex.StackTrace);
             }
             finally
             {

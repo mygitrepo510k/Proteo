@@ -71,7 +71,6 @@ namespace MWF.Mobile.Core.ViewModels
                         // Try and update safety profiles before continuing
                         await UpdateSafetyProfilesAsync();
                         ProgressMessage = "Updating Application Profile.";
-                        this.IsBusy = true;
                         applicationProfile = await _gatewayService.GetApplicationProfileAsync();
                         applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
 

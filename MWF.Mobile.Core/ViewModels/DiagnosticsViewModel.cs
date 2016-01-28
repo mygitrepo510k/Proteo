@@ -111,8 +111,9 @@ namespace MWF.Mobile.Core.ViewModels
             }
             else
             {
-                this.IsBusy = true;
                 bool success = false;
+                this.IsBusy = true;
+
                 try
                 {
                     success = await _diagnosticsService.UploadDiagnosticsAsync(_dataService.DatabasePath);
@@ -121,8 +122,10 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     success = false;
                 }
-
-                this.IsBusy = false;
+                finally
+                {
+                    this.IsBusy = false;
+                }
 
                 if (success)
                 {

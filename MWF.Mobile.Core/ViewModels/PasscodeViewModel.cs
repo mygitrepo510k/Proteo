@@ -125,9 +125,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task AuthenticateAsync()
         {
-            IsBusy = true;
             AuthenticationResult result;
 			LogMessage exceptionMsg = null;
+
+            this.IsBusy = true;
 
             try
             {
@@ -168,7 +169,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 // clear the passcode
                 this.Passcode = string.Empty;
-                //IsBusy = false;
+                this.IsBusy = false;
             }
 
 			if (exceptionMsg != null)

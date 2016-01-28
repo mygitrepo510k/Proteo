@@ -194,61 +194,67 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task UpdateTrailerListAsync()
         {
-            this.IsBusy = true;
-            ProgressMessage = "Updating Trailers.";
-
             if (!_reachability.IsConnected())
             {
                 _toast.Show("No internet connection!");
                 return;
             }
 
-            IDictionary<string, IEnumerable<Models.BaseVehicle>> vehicleViewVehicles;
+            this.ProgressMessage = "Updating Trailers.";
+            this.IsBusy = true;
 
             try
             {
-                var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
-
-                vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
-
-                foreach (var vehicleView in vehicleViews)
-                {
-                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
-                }
-            }
-            catch (TaskCanceledException)
-            {
-                // Although we have used reachability to determine that there is an available network connection,
-                // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
-                _toast.Show("Connection failure!");
-                return;
-            }
-
-            var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
-            var trailers = vehiclesAndTrailers.Where(bv => bv.IsTrailer).Select(bv => new Models.Trailer(bv));
-
-            if (trailers != null)
-            {
-                await _repositories.TrailerRepository.DeleteAllAsync();
+                IDictionary<string, IEnumerable<Models.BaseVehicle>> vehicleViewVehicles;
 
                 try
                 {
-                    await _repositories.TrailerRepository.InsertAsync(trailers);
+                    var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
+
+                    vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
+
+                    foreach (var vehicleView in vehicleViews)
+                    {
+                        vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
+                    }
                 }
-                catch (Exception ex)
+                catch (TaskCanceledException)
                 {
-                    MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "TrailerRepository", "InsertAsync", ex.StackTrace);
-                    throw;
+                    // Although we have used reachability to determine that there is an available network connection,
+                    // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
+                    _toast.Show("Connection failure!");
+                    return;
                 }
 
-                await GetTrailerModelsAsync();
+                var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+                var trailers = vehiclesAndTrailers.Where(bv => bv.IsTrailer).Select(bv => new Models.Trailer(bv));
 
-                //Recalls the filter text if there is text in the search field.
-                if (TrailerSearchText != null)
-                    this.FilterList();
+                if (trailers != null)
+                {
+                    await _repositories.TrailerRepository.DeleteAllAsync();
+
+                    try
+                    {
+                        await _repositories.TrailerRepository.InsertAsync(trailers);
+                    }
+                    catch (Exception ex)
+                    {
+                        MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "TrailerRepository", "InsertAsync", ex.StackTrace);
+                        throw;
+                    }
+
+                    await GetTrailerModelsAsync();
+
+                    //Recalls the filter text if there is text in the search field.
+                    if (TrailerSearchText != null)
+                        this.FilterList();
+                }
+            }
+            finally
+            {
+                this.IsBusy = false;
             }
 
-            this.IsBusy = false;
             await UpdateVehicleListAsync();
             await UpdateSafetyProfilesAsync();
         }
@@ -256,41 +262,47 @@ namespace MWF.Mobile.Core.ViewModels
         protected async Task UpdateSafetyProfilesAsync()
         {
             ProgressMessage = "Updating Safety Check Profiles.";
-            this.IsBusy = true;
             var safetyProfileRepository = _repositories.SafetyProfileRepository;
 
-            // First check if we have a internet connection. If we do go and get the latest safety checks from Blue Sphere.
-            if (_reachability.IsConnected())
+            this.IsBusy = true;
+
+            try
             {
-                IEnumerable<SafetyProfile> safetyProfiles = null;
-
-                try
+                // First check if we have a internet connection. If we do go and get the latest safety checks from Blue Sphere.
+                if (_reachability.IsConnected())
                 {
-                    safetyProfiles = await _gatewayService.GetSafetyProfilesAsync();
-                }
-                catch (TaskCanceledException)
-                {
-                    // Although we have used reachability to determine that there is an available network connection,
-                    // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
-                }
-
-                if (safetyProfiles != null)
-                {
-                    await safetyProfileRepository.DeleteAllAsync();
+                    IEnumerable<SafetyProfile> safetyProfiles = null;
 
                     try
                     {
-                        await safetyProfileRepository.InsertAsync(safetyProfiles);
+                        safetyProfiles = await _gatewayService.GetSafetyProfilesAsync();
                     }
-                    catch (Exception ex)
+                    catch (TaskCanceledException)
                     {
-                        MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "SafetyProfileRepository", "InsertAsync", ex.StackTrace);
-                        throw;
+                        // Although we have used reachability to determine that there is an available network connection,
+                        // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
+                    }
+
+                    if (safetyProfiles != null)
+                    {
+                        await safetyProfileRepository.DeleteAllAsync();
+
+                        try
+                        {
+                            await safetyProfileRepository.InsertAsync(safetyProfiles);
+                        }
+                        catch (Exception ex)
+                        {
+                            MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "SafetyProfileRepository", "InsertAsync", ex.StackTrace);
+                            throw;
+                        }
                     }
                 }
             }
-
-            this.IsBusy = false;
+            finally
+            {
+                this.IsBusy = false;
+            }
 
             var profiles = await safetyProfileRepository.GetAllAsync();
 
@@ -300,58 +312,64 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected async Task UpdateVehicleListAsync()
         {
-            ProgressMessage = "Updating Vehicles.";
-            this.IsBusy = true;
             if (!_reachability.IsConnected())
             {
                 _toast.Show("No internet connection!");
                 return;
             }
 
-            IDictionary<string, IEnumerable<Models.BaseVehicle>> vehicleViewVehicles;
+            this.ProgressMessage = "Updating Vehicles.";
+            this.IsBusy = true;
 
             try
             {
-                var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
-
-                vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
-
-                foreach (var vehicleView in vehicleViews)
-                {
-                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
-                }
-            }
-            catch (TaskCanceledException)
-            {
-                // Although we have used reachability to determine that there is an available network connection,
-                // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
-                _toast.Show("Connection failure!");
-                return;
-            }
-
-            var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
-            var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
-
-            if (vehicles != null && vehicles.Any())
-            {
-                await _repositories.VehicleRepository.DeleteAllAsync();
+                IDictionary<string, IEnumerable<Models.BaseVehicle>> vehicleViewVehicles;
 
                 try
                 {
-                    await _repositories.VehicleRepository.InsertAsync(vehicles);
+                    var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
+
+                    vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
+
+                    foreach (var vehicleView in vehicleViews)
+                    {
+                        vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
+                    }
                 }
-                catch (Exception ex)
+                catch (TaskCanceledException)
                 {
-                    MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "VehicleRepository", "InsertAsync", ex.StackTrace);
-                    throw;
+                    // Although we have used reachability to determine that there is an available network connection,
+                    // it is still possible for the data fetch to fail which triggers a TaskCanceledException.
+                    _toast.Show("Connection failure!");
+                    return;
                 }
 
-                // we need to update the selected vehicle as the profile could have changed.
-                var currentvehicle = vehicles.First(v => v.ID == _infoService.CurrentVehicle.ID);
-                _infoService.CurrentVehicle = currentvehicle;
-            }
+                var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+                var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
 
-            this.IsBusy = false;
+                if (vehicles != null && vehicles.Any())
+                {
+                    await _repositories.VehicleRepository.DeleteAllAsync();
+
+                    try
+                    {
+                        await _repositories.VehicleRepository.InsertAsync(vehicles);
+                    }
+                    catch (Exception ex)
+                    {
+                        MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "VehicleRepository", "InsertAsync", ex.StackTrace);
+                        throw;
+                    }
+
+                    // we need to update the selected vehicle as the profile could have changed.
+                    var currentvehicle = vehicles.First(v => v.ID == _infoService.CurrentVehicle.ID);
+                    _infoService.CurrentVehicle = currentvehicle;
+                }
+            }
+            finally
+            {
+                this.IsBusy = false;
+            }
         }
 
         private async Task GetTrailerModelsAsync()

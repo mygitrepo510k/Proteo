@@ -159,8 +159,10 @@ namespace MWF.Mobile.Core.ViewModels
                     success = false;
                     _errorMessage = _unexpectedErrorMessage;
                 }
-
-                this.IsBusy = false;
+                finally
+                {
+                    this.IsBusy = false;
+                }
 
                 if (success)
                     await _navigationService.MoveToNextAsync();

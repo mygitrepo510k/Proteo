@@ -205,52 +205,58 @@ namespace MWF.Mobile.Core.ViewModels
         {
             this.IsBusy = true;
 
-            if (!_reachability.IsConnected())
+            try
             {
-                _toast.Show("No internet connection!");
-            }
-            else
-            {
-                var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
-
-                var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
-
-                foreach (var vehicleView in vehicleViews)
+                if (!_reachability.IsConnected())
                 {
-                    vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
+                    _toast.Show("No internet connection!");
+                }
+                else
+                {
+                    var vehicleViews = await _gatewayService.GetVehicleViewsAsync();
+
+                    var vehicleViewVehicles = new Dictionary<string, IEnumerable<Models.BaseVehicle>>(vehicleViews.Count());
+
+                    foreach (var vehicleView in vehicleViews)
+                    {
+                        vehicleViewVehicles.Add(vehicleView.Title, await _gatewayService.GetVehiclesAsync(vehicleView.Title));
+                    }
+
+                    var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
+                    var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
+
+                    if (vehicles != null)
+                    {
+                        await _vehicleRepository.DeleteAllAsync();
+
+                        try
+                        {
+                            await _vehicleRepository.InsertAsync(vehicles);
+                        }
+                        catch (Exception ex)
+                        {
+                            MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "VehicleRepository", "InsertAsync", ex.StackTrace);
+                            throw;
+                        }
+
+                        Vehicles = _originalVehicleList = await _vehicleRepository.GetAllAsync();
+
+                        //Recalls the filter text if there is text in the search field.
+                        if (VehicleSearchText != null)
+                        {
+                            this.FilterList();
+                        }
+                    }
                 }
 
-                var vehiclesAndTrailers = vehicleViewVehicles.SelectMany(vvv => vvv.Value).DistinctBy(v => v.ID);
-                var vehicles = vehiclesAndTrailers.Where(bv => !bv.IsTrailer).Select(bv => new Models.Vehicle(bv));
-
-                if (vehicles != null)
-                {
-                    await _vehicleRepository.DeleteAllAsync();
-
-                    try
-                    {
-                        await _vehicleRepository.InsertAsync(vehicles);
-                    }
-                    catch (Exception ex)
-                    {
-                        MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "VehicleRepository", "InsertAsync", ex.StackTrace);
-                        throw;
-                    }
-
-                    Vehicles = _originalVehicleList = await _vehicleRepository.GetAllAsync();
-
-                    //Recalls the filter text if there is text in the search field.
-                    if (VehicleSearchText != null)
-                    {
-                        this.FilterList();
-                    }
-                }
+                await UpdateSafetyProfilesAsync();
             }
-
-            await UpdateSafetyProfilesAsync();
-            this.IsBusy = false;    
-
+            finally
+            {
+                this.IsBusy = false;
+            }
         }
+
         protected async Task UpdateSafetyProfilesAsync()
         {
             

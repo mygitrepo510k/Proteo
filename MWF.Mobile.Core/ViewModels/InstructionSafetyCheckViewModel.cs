@@ -50,9 +50,27 @@ namespace MWF.Mobile.Core.ViewModels
             if (_navData.OtherData["UpdatedTrailerSafetyCheckData"] == null)
             {
                 await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("A safety check profile for your trailer has not been found - Perform a manual safety check.");
-                await _navigationService.MoveToNextAsync(_navData);
+                await this.MoveToNextAsync();
             }
 
+        }
+
+        private async Task MoveToNextAsync()
+        {
+            if (this.IsProgressing)
+                return;
+
+            this.IsProgressing = true;
+
+            try
+            {
+                RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
+                await _navigationService.MoveToNextAsync(_navData);
+            }
+            finally
+            {
+                this.IsProgressing = false;
+            }
         }
 
         #endregion

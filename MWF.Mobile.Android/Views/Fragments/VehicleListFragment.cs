@@ -99,14 +99,6 @@ namespace MWF.Mobile.Android.Views.Fragments
             }
         }
 
-
-        public override void OnPause()
-        {
-            base.OnPause();
-
-            var searchMenuItem = this.optionsMenu.FindItem(Resource.Id.vehicle_action_search);
-            searchMenuItem.CollapseActionView();
-        }
     }
 
 }

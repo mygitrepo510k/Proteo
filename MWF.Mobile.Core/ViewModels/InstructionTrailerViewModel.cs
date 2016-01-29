@@ -88,9 +88,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         private async Task UpdateReadyForSafetyCheckAsync(Models.Trailer trailer)
         {
-            // if a trailer has been selected it differs from the current trailer then we need to update
-            // everything requirede to update safety profiles is readiness for the next step
-            if (trailer != null && (!Models.Trailer.SameAs(trailer, _infoService.CurrentTrailer)))
+            // if a trailer has been selected and it differs from the current trailer then we need to update
+            // everything required to update safety profiles in readiness for the next step
+            var trailerDiffersFromCurrentTrailer =
+                trailer != null &&
+                (!_infoService.CurrentTrailerID.HasValue || trailer.ID != _infoService.CurrentTrailerID.Value);
+
+            if (trailerDiffersFromCurrentTrailer)
             {
                 this.IsBusy = true;
 

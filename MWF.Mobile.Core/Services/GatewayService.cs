@@ -239,8 +239,7 @@ namespace MWF.Mobile.Core.Services
                 Password = _deviceInfo.GatewayPassword,
                 MobileApplication = _deviceInfo.MobileApplication,
                 Actions = actions,
-                DriverID = (_infoService.LoggedInDriver!=null) ? _infoService.LoggedInDriver.ID : (Guid?) null
-              
+                DriverID = _infoService.CurrentDriverID,
             };
         }
 

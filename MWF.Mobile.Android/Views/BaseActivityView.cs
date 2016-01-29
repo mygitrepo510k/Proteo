@@ -19,6 +19,8 @@ using Android.Support.V4.Widget;
 using Android.Content;
 using MWF.Mobile.Android.Portable;
 using MWF.Mobile.Android.Helpers;
+using MWF.Mobile.Android.Controls;
+using Android.Views;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -234,6 +236,48 @@ namespace MWF.Mobile.Android.Views
         {
             var fragmentViewModel = fragment.DataContext as BaseFragmentViewModel;
             this.ActionBar.Title = fragmentViewModel == null ? string.Empty : fragmentViewModel.FragmentTitle;
+        }
+
+        protected override void OnSaveInstanceState(Bundle outState)
+        {
+            // Store the info service data so we can pick up where we left off when the activity is recreated
+            var infoService = Mvx.Resolve<Core.Services.IInfoService>();
+
+            outState.PutString("CurrentDriverID", infoService.CurrentDriverID.ToString());
+            outState.PutString("CurrentDriverDisplayName", infoService.CurrentDriverDisplayName);
+            outState.PutString("CurrentVehicleID", infoService.CurrentVehicleID.ToString());
+            outState.PutString("CurrentVehicleRegistration", infoService.CurrentVehicleRegistration);
+            outState.PutString("CurrentTrailerID", infoService.CurrentTrailerID.ToString());
+            outState.PutString("CurrentTrailerRegistration", infoService.CurrentTrailerRegistration);
+            outState.PutInt("Mileage", infoService.Mileage);
+
+            base.OnSaveInstanceState(outState);
+        }
+
+        protected override void OnRestoreInstanceState(Bundle savedInstanceState)
+        {
+            base.OnRestoreInstanceState(savedInstanceState);
+
+            var infoService = Mvx.Resolve<Core.Services.IInfoService>();
+
+            if (!infoService.CurrentDriverID.HasValue)
+            {
+                infoService.CurrentDriverID = NullableGuidParse(savedInstanceState.GetString("CurrentDriverID"));
+                infoService.CurrentDriverDisplayName = savedInstanceState.GetString("CurrentDriverDisplayName");
+                infoService.CurrentVehicleID = NullableGuidParse(savedInstanceState.GetString("CurrentVehicleID"));
+                infoService.CurrentVehicleRegistration = savedInstanceState.GetString("CurrentVehicleRegistration");
+                infoService.CurrentTrailerID = NullableGuidParse(savedInstanceState.GetString("CurrentTrailerID"));
+                infoService.CurrentTrailerRegistration = savedInstanceState.GetString("CurrentTrailerRegistration");
+                infoService.Mileage = savedInstanceState.GetInt("Mileage");
+            }
+        }
+
+        private Guid? NullableGuidParse(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return null;
+
+            return Guid.Parse(input);
         }
 
         #endregion Private/Protected Methods

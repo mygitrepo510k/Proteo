@@ -145,7 +145,7 @@ namespace MWF.Mobile.Core.ViewModels
             stream.CopyTo(memoryStream);
 
             int sequenceNumber = (ImagesVM.Any()) ? _imagesVM.Max(i => i.Image.Sequence) + 1 : 1;
-            Image image = new Image() { ID = Guid.NewGuid(), Sequence = sequenceNumber, Bytes = memoryStream.ToArray(), Filename = string.Format("{0} {1}.jpg", _infoService.LoggedInDriver.DisplayName, DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss")) };
+            Image image = new Image() { ID = Guid.NewGuid(), Sequence = sequenceNumber, Bytes = memoryStream.ToArray(), Filename = string.Format("{0} {1}.jpg", _infoService.CurrentDriverDisplayName, DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss")) };
 
             //Add to view model
             CameraImageViewModel imageViewModel = new CameraImageViewModel(image, this);

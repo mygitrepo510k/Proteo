@@ -115,8 +115,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await vm.LoginAsync();
 
-            Assert.NotNull(startUpService.LoggedInDriver);
-            Assert.Equal(testDriver.LastName, startUpService.LoggedInDriver.LastName);
+            Assert.NotNull(startUpService.CurrentDriverID);
+            Assert.Equal(testDriver.DisplayName, startUpService.CurrentDriverDisplayName);
         }
 
         /// <summary>

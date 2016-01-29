@@ -31,16 +31,6 @@ namespace MWF.Mobile.Core.Models
         [Ignore]
         public string DisplayName { get { return string.Format("{0} {1}", FirstName, LastName); } }
 
-        public Guid LastVehicleID { get; set; }
-
-        public Guid LastSecondaryVehicleID { get; set; } 
-
-        public Guid LastVehicleViewID { get; set; }
-
-        public Guid PhoneProfileID { get; set; }
-
-        public DateTime LastLoggedOn { get; set; }
-
         public bool IsLicensed { get; set; }
 
     }

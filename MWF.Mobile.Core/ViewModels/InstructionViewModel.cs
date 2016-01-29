@@ -108,8 +108,10 @@ namespace MWF.Mobile.Core.ViewModels
         { 
             get 
             {
-                var reg = (_infoService.CurrentTrailer == null) ? "No trailer" : _infoService.CurrentTrailer.Registration;
-                if (reg == OrderTrailerReg) return string.Empty;
+                var reg = string.IsNullOrWhiteSpace(_infoService.CurrentTrailerRegistration) ? "No trailer" : _infoService.CurrentTrailerRegistration;
+
+                if (reg == OrderTrailerReg)
+                    return string.Empty;
 
                 return string.Format("(Current: {0})", reg);
             } 
@@ -236,7 +238,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (_mobileData.ProgressState == Enums.InstructionProgress.NotStarted)
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.Driving;
-                await _dataChunkService.SendDataChunkAsync(_navData.GetDataChunk(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                await _dataChunkService.SendDataChunkAsync(_navData.GetDataChunk(), _mobileData, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleRegistration);
             }
             else if (_mobileData.ProgressState == Enums.InstructionProgress.Driving)
             {

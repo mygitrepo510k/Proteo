@@ -136,12 +136,11 @@ namespace MWF.Mobile.Core.ViewModels
 
                 if (result.Success)
                 {
-                    _infoService.LoggedInDriver = result.Driver;
+                    _infoService.SetCurrentDriver(result.Driver);
 
-                    if (await _currentDriverRepository.GetByIDAsync(_infoService.LoggedInDriver.ID) == null)
+                    if (await _currentDriverRepository.GetByIDAsync(_infoService.CurrentDriverID.Value) == null)
                     {
-                        CurrentDriver newDriver = new CurrentDriver();
-                        newDriver.ID = _infoService.LoggedInDriver.ID;
+                        var newDriver = new CurrentDriver { ID = _infoService.CurrentDriverID.Value };
 
                         try
                         {

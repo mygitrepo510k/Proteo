@@ -154,7 +154,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     additionalInstruction.ProgressState = Enums.InstructionProgress.OnSite;
                     _navData.Data.OnSiteDateTime = DateTime.Now;
-                    await _dataChunkService.SendDataChunkAsync(_navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                    await _dataChunkService.SendDataChunkAsync(_navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleRegistration);
                 }
             }
 

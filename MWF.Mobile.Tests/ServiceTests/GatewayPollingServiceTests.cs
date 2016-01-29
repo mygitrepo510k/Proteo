@@ -33,6 +33,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         private IInfoService _mockInfoService;
         private Mock<IDataChunkService> _mockDataChunkService;
         private Mock<INavigationService> _mockNavigationService;
+        private object ssr;
 
         protected override void AdditionalSetup()
         {
@@ -55,8 +56,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockUserInteraction.Setup(cui => cui.PopUpInstructionNotificationAsync(It.IsAny<List<ManifestInstructionViewModel>>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns<List<ManifestInstructionViewModel>, string, string>((vms, title, ok) => Task.FromResult(vms));
 
-            _mockInfoService = Mock.Of<IInfoService>(ssr => ssr.CurrentVehicle == _fixture.Create<Vehicle>()
-                                                    && ssr.LoggedInDriver == _fixture.Create<Driver>());
+            _mockInfoService = Mock.Of<IInfoService>(s => s.CurrentVehicleID == Guid.NewGuid() && s.CurrentDriverID == Guid.NewGuid());
 
             _fixture.Inject<IInfoService>(_mockInfoService);
 
@@ -354,7 +354,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueueAsync(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
 
-            _mockDataChunkService.Verify(mms => mms.SendReadChunkAsync(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()), Times.Once);
+            _mockDataChunkService.Verify(mms => mms.SendReadChunkAsync(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
@@ -379,7 +379,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueueAsync(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
 
-            _mockDataChunkService.Verify(mms => mms.SendReadChunkAsync(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()), Times.Once);
+            _mockDataChunkService.Verify(mms => mms.SendReadChunkAsync(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
@@ -419,7 +419,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockGatewayQueuedService.Verify(mgqs =>
              mgqs.AddToQueueAsync(It.IsAny<IEnumerable<MWF.Mobile.Core.Models.GatewayServiceRequest.Action<MWF.Mobile.Core.Models.SyncAck>>>()), Times.Once);
 
-            _mockDataChunkService.Verify(mms => mms.SendReadChunkAsync(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Driver>(), It.IsAny<Vehicle>()), Times.Once);
+            _mockDataChunkService.Verify(mms => mms.SendReadChunkAsync(It.IsAny<IEnumerable<MobileData>>(), It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
 
         }
 

@@ -119,7 +119,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 _mobileData.ProgressState = Enums.InstructionProgress.Complete;
 
-                await _dataChunkService.SendDataChunkAsync(new MobileApplicationDataChunkContentActivity(), _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                await _dataChunkService.SendDataChunkAsync(new MobileApplicationDataChunkContentActivity(), _mobileData, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleRegistration);
             }
 
             ReturnResult(!_isMessageRead);

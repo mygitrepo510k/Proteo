@@ -42,7 +42,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _driver = _fixture.Create<Driver>();
 
             _mockInfoService = _fixture.InjectNewMock<IInfoService>();
-            _mockInfoService.Setup(ms => ms.LoggedInDriver).Returns(_driver);
+            _mockInfoService.Setup(ms => ms.CurrentDriverID).Returns(_driver.ID);
 
             _mobileDataRepoMock = _fixture.InjectNewMock<IMobileDataRepository>();
 

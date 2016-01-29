@@ -65,7 +65,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _mockDataChunkService = _fixture.InjectNewMock<IDataChunkService>();
 
-            _mockDataChunkService.Setup(m => m.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(),  It.IsAny<MobileData>(), It.IsAny<Driver>(), It.IsAny<Vehicle>(),false, false));
+            _mockDataChunkService.Setup(m => m.SendDataChunkAsync(It.IsAny<MobileApplicationDataChunkContentActivity>(),  It.IsAny<MobileData>(), It.IsAny<Guid>(), It.IsAny<string>(),false, false));
 
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 

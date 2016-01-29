@@ -15,11 +15,11 @@ namespace MWF.Mobile.Core.Models
             Id = Guid.NewGuid();
         }
 
-        public DriverActivity(Driver currentDriver, Vehicle currentVehicle, Enums.DriverActivity currentActivity)
+        public DriverActivity(Guid currentDriverID, Guid currentVehicleID, Enums.DriverActivity currentActivity)
         {
             Id = Guid.NewGuid();
-            DriverId = currentDriver.ID;
-            VehicleId = currentVehicle.ID;
+            DriverId = currentDriverID;
+            VehicleId = currentVehicleID;
             Activity = (byte)currentActivity;
             var EffectiveDateTime = DateTime.Now;
             EffectiveDate = EffectiveDateTime.AddMilliseconds(-EffectiveDateTime.Millisecond);

@@ -57,7 +57,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Ioc.RegisterSingleton<INavigationService>(_navigationService.Object);
 
             _mockInfoService = _fixture.InjectNewMock<IInfoService>();
-            _mockInfoService.Setup(m => m.LoggedInDriver).Returns(_fixture.Create<Driver>());
+            _mockInfoService.Setup(m => m.CurrentDriverID).Returns(_fixture.Create<Driver>().ID);
 
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
             _mockUserInteraction.ConfirmReturnsTrue();
@@ -119,7 +119,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await cameraVM.DoDoneCommandAsync();
 
             _navigationService.Verify(ns => ns.MoveToNextAsync(It.IsAny<NavData<MobileData>>()), Times.Once);
-            _mockImageUploadService.Verify(mis => mis.SendPhotoAndCommentAsync(It.IsAny<string>(), It.IsAny<List<Image>>(), It.IsAny<Driver>(), It.IsAny<List<MobileData>>()), Times.Once);
+            _mockImageUploadService.Verify(mis => mis.SendPhotoAndCommentAsync(It.IsAny<string>(), It.IsAny<List<Image>>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<List<MobileData>>()), Times.Once);
         }
 
         // Checks that when the delete command is executed on a fault image the image is deleted from the view model (initially) and the data

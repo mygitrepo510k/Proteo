@@ -332,16 +332,22 @@ namespace MWF.Mobile.Core.Services
         {
             await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("Your license is no longer valid. Logging out.");
 
-            _infoService.LoggedInDriver.IsLicensed = false;
+            var driverRepository = _repositories.DriverRepository;
+            var driver = await driverRepository.GetByIDAsync(_infoService.CurrentDriverID.Value);
 
-            try
+            if (driver != null)
             {
-                await _repositories.DriverRepository.UpdateAsync(_infoService.LoggedInDriver);
-            }
-            catch (Exception ex)
-            {
-                MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "DriverRepository", "UpdateAsync", ex.StackTrace);
-                throw;
+                driver.IsLicensed = false;
+
+                try
+                {
+                    await _repositories.DriverRepository.UpdateAsync(driver);
+                }
+                catch (Exception ex)
+                {
+                    MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "DriverRepository", "UpdateAsync", ex.StackTrace);
+                    throw;
+                }
             }
 
             await this.DoLogoutAsync();
@@ -353,9 +359,7 @@ namespace MWF.Mobile.Core.Services
             _gatewayPollingService.StopPollingTimer();
             this.StopLoginSessionTimer();
 
-            _infoService.CurrentVehicle = null;
-            _infoService.CurrentTrailer = null;
-            _infoService.LoggedInDriver = null;
+            _infoService.Clear();
 
             return this.MoveToAsync<StartupViewModel>(Guid.Empty);
         }
@@ -387,20 +391,26 @@ namespace MWF.Mobile.Core.Services
 
         private async Task<SafetyProfile> VehicleSafetyProfileAsync()
         {
-            var data = await _repositories.SafetyProfileRepository.GetAllAsync();
-            var retVal = data.SingleOrDefault(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink);
+            var vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.CurrentVehicleID.Value);
+            var safetyProfiles = await _repositories.SafetyProfileRepository.GetAllAsync();
+            var retVal = safetyProfiles.SingleOrDefault(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink);
             return retVal;
         }
 
-        private Task<SafetyProfile> TrailerSafetyProfileAsync()
+        private async Task<SafetyProfile> TrailerSafetyProfileAsync()
         {
-            return GetTrailerSafetyProfileAsync(_infoService.CurrentTrailer);
+            if (!_infoService.CurrentTrailerID.HasValue)
+                return null;
+
+            var trailer = await _repositories.TrailerRepository.GetByIDAsync(_infoService.CurrentTrailerID.Value);
+            return await this.GetTrailerSafetyProfileAsync(trailer);
         }
 
         private async Task<SafetyProfile> GetTrailerSafetyProfileAsync(Models.Trailer trailer)
         {
             if (trailer == null)
                 return null;
+
             var data = await _repositories.SafetyProfileRepository.GetAllAsync();
             var retVal = data.SingleOrDefault(spv => spv.IntLink == trailer.SafetyCheckProfileIntLink);
 
@@ -513,7 +523,7 @@ namespace MWF.Mobile.Core.Services
         private async Task SendMobileDataAsync(NavData<MobileData> navData)
         {
             navData.Data.ProgressState = Enums.InstructionProgress.Complete;
-            await _dataChunkService.SendDataChunkAsync(navData.GetDataChunk(), navData.Data, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+            await _dataChunkService.SendDataChunkAsync(navData.GetDataChunk(), navData.Data, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleRegistration);
 
             // send any datachunks for addiotional instructions
             var additionalInstructions = navData.GetAdditionalInstructions();
@@ -521,7 +531,7 @@ namespace MWF.Mobile.Core.Services
             {
 
                 additionalInstruction.ProgressState = Enums.InstructionProgress.Complete;
-                await _dataChunkService.SendDataChunkAsync(navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                await _dataChunkService.SendDataChunkAsync(navData.GetAdditionalDataChunk(additionalInstruction), additionalInstruction, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleRegistration);
             }
 
             this.ShowViewModel<ManifestViewModel>();
@@ -529,7 +539,7 @@ namespace MWF.Mobile.Core.Services
 
         private async Task DriverLogInAsync()
         {
-            DriverActivity currentDriver = new DriverActivity(_infoService.LoggedInDriver, _infoService.CurrentVehicle, Enums.DriverActivity.LogOn);
+            var currentDriver = new DriverActivity(_infoService.CurrentDriverID.Value, _infoService.CurrentVehicleID.Value, Enums.DriverActivity.LogOn);
             currentDriver.Smp = _gpsService.GetSmpData(Enums.ReportReason.DriverLogOn);
 
             await _gatewayQueuedService.AddToQueueAsync("fwSetDriverActivity", currentDriver);
@@ -777,7 +787,7 @@ namespace MWF.Mobile.Core.Services
                     var mobileDataNav = (NavData<MobileData>)navData;
                     
                     // send "onsite" data chunk 
-                    await _dataChunkService.SendDataChunkAsync(mobileDataNav.GetDataChunk(), mobileDataNav.Data, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+                    await _dataChunkService.SendDataChunkAsync(mobileDataNav.GetDataChunk(), mobileDataNav.Data, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleRegistration);
 
                     if (mobileDataNav.Data.ProgressState == Enums.InstructionProgress.OnSite)
                         mobileDataNav.Data.OnSiteDateTime = DateTime.Now;
@@ -803,18 +813,20 @@ namespace MWF.Mobile.Core.Services
                 var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
                 var deliveryOptions = mobileNavData.GetWorseCaseDeliveryOptions();
 
-                //Collection
+                // Collection
                 if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
                 {
+                    var currentTrailerID = _infoService.CurrentTrailerID;
+                    var currentTrailer = currentTrailerID.HasValue ? await _repositories.TrailerRepository.GetByIDAsync(currentTrailerID.Value) : null;
 
-                    if (additionalContent.IsTrailerConfirmationEnabled || !Models.Trailer.SameAs(_infoService.CurrentTrailer, mobileNavData.Data.Order.Additional.Trailer))
+                    if (additionalContent.IsTrailerConfirmationEnabled || !Models.Trailer.SameAs(currentTrailer, mobileNavData.Data.Order.Additional.Trailer))
                     {
                         // Note if trailer confirmation is not explicitly enabled, still need to cater for ambiguous case
                         // where the current trailer doesn't match the one specified on the order. Which one does the driver
                         // actually have attached and intend to use for the order?
                         var instructionTrailer = mobileNavData.Data.Order.Additional.Trailer;
                         string orderTrailerMessage = (instructionTrailer == null || instructionTrailer.TrailerId == null) ? "No trailer specified on instruction." : string.Format("Trailer specified on instruction is {0}.", instructionTrailer.TrailerId);
-                        string currentTrailerMessage = (_infoService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _infoService.CurrentTrailer.Registration);
+                        string currentTrailerMessage = (currentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", currentTrailer.Registration);
 
                         string message = orderTrailerMessage + currentTrailerMessage;
                         var isConfirmed = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
@@ -826,7 +838,7 @@ namespace MWF.Mobile.Core.Services
                         }
                         else
                         {
-                            await this.UpdateTrailerForInstructionAsync(mobileNavData, _infoService.CurrentTrailer);
+                            await this.UpdateTrailerForInstructionAsync(mobileNavData, currentTrailer);
                         }
                     }
                 }
@@ -879,10 +891,13 @@ namespace MWF.Mobile.Core.Services
         public async Task InstructionTrailer_CustomActionAsync(Guid navID, NavData navData)
         {
             var mobileNavData = navData as NavData<MobileData>;
-            Models.Trailer trailer = mobileNavData.OtherData["UpdatedTrailer"] as Models.Trailer;
+            var trailer = mobileNavData.OtherData["UpdatedTrailer"] as Models.Trailer;
 
-            // Trailer differs from the current trailer
-            if (trailer != null && (!Models.Trailer.SameAs(trailer, _infoService.CurrentTrailer)))
+            var trailerDiffersFromCurrentTrailer =
+                trailer != null &&
+                (!_infoService.CurrentTrailerID.HasValue || trailer.ID != _infoService.CurrentTrailerID.Value);
+
+            if (trailerDiffersFromCurrentTrailer)
             {
                 this.ShowViewModel<InstructionSafetyCheckViewModel>(navID);
             }
@@ -951,13 +966,10 @@ namespace MWF.Mobile.Core.Services
                 }
 
                 // send the revised trailer data chunk
-                await _dataChunkService.SendDataChunkAsync(mobileNavData.GetDataChunk(), mobileNavData.Data, _infoService.LoggedInDriver, _infoService.CurrentVehicle, updateTrailer: true);
+                await _dataChunkService.SendDataChunkAsync(mobileNavData.GetDataChunk(), mobileNavData.Data, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleRegistration, updateTrailer: true);
             }
 
-            _infoService.CurrentTrailer = trailer;
-
-            if (trailer != null)
-                _infoService.LoggedInDriver.LastSecondaryVehicleID = trailer.ID;
+            _infoService.SetCurrentTrailer(trailer);
         }
 
         public async Task TrailerSafetyCheck_CustomActionAsync(Guid navID, NavData navData)
@@ -1197,9 +1209,12 @@ namespace MWF.Mobile.Core.Services
 
                 if (additionalContent.IsTrailerConfirmationEnabled && mobileNavData.Data.Order.Type == Enums.InstructionType.ProceedFrom)
                 {
+                    var currentTrailerID = _infoService.CurrentTrailerID;
+                    var currentTrailer = currentTrailerID.HasValue ? await _repositories.TrailerRepository.GetByIDAsync(currentTrailerID.Value) : null;
                     var instructionTrailer = mobileNavData.Data.Order.Additional.Trailer;
+
                     string orderTrailerMessage = (instructionTrailer == null || instructionTrailer.TrailerId == null) ? "No trailer specified on instruction." : string.Format("Trailer specified on instruction is {0}.", instructionTrailer.TrailerId);
-                    string currentTrailerMessage = (_infoService.CurrentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", _infoService.CurrentTrailer.Registration);
+                    string currentTrailerMessage = (currentTrailer == null) ? " You currently have no trailer." : string.Format(" Current trailer is {0}.", currentTrailer.Registration);
 
                     string message = orderTrailerMessage + currentTrailerMessage;
                     var isConfirmed = await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, "Change Trailer?", "Select Trailer", "Use Current");
@@ -1212,7 +1227,7 @@ namespace MWF.Mobile.Core.Services
                     }
                     else
                     {
-                        await this.UpdateTrailerForInstructionAsync(mobileNavData, _infoService.CurrentTrailer);
+                        await this.UpdateTrailerForInstructionAsync(mobileNavData, currentTrailer);
                     }
                 }
 

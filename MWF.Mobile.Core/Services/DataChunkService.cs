@@ -43,7 +43,7 @@ namespace MWF.Mobile.Core.Services
         /// This is in the form of a 'Read' Chunk
         /// </summary>
         /// <param name="instructions">The instruction that have been acknowledged</param>
-        public async Task SendReadChunkAsync(IEnumerable<MobileData> instructions, Driver currentDriver, Vehicle currentVehicle)
+        public async Task SendReadChunkAsync(IEnumerable<MobileData> instructions, Guid currentDriverID, string currentVehicleRegistration)
         {
             //The data chunk to be sent.
             MobileApplicationDataChunkCollection dataChunkCollection = new MobileApplicationDataChunkCollection { MobileApplicationDataChunkCollectionObject = new List<MobileApplicationDataChunk>() };
@@ -60,11 +60,11 @@ namespace MWF.Mobile.Core.Services
                 instruction.LatestDataChunkSequence++;
 
                 dataChunkActivity.Activity = 10;
-                dataChunkActivity.DriverId = currentDriver.ID;
+                dataChunkActivity.DriverId = currentDriverID;
                 dataChunkActivity.EffectiveDate = DateTime.Now;
                 dataChunkActivity.EffectiveDate = dataChunkActivity.EffectiveDate.AddMilliseconds(-dataChunkActivity.EffectiveDate.Millisecond);
                 dataChunkActivity.MwfVersion = "";
-                dataChunkActivity.VehicleRegistration = currentVehicle.Registration;
+                dataChunkActivity.VehicleRegistration = currentVehicleRegistration;
                 dataChunkActivity.Smp = _gpsService.GetSmpData(Enums.ReportReason.Begin);
                 dataChunkActivity.Title = "READ";
                 dataChunkActivity.Sequence = instruction.LatestDataChunkSequence;
@@ -111,7 +111,7 @@ namespace MWF.Mobile.Core.Services
         /// this is called for when the instruction goes into Drive, OnSite and is Completed
         /// </summary>
         /// <param name="updateQuantity"></param>
-        public async Task SendDataChunkAsync(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Driver currentDriver, Vehicle currentVehicle, bool updateQuantity = false, bool updateTrailer = false)
+        public async Task SendDataChunkAsync(MobileApplicationDataChunkContentActivity dataChunkActivity, MobileData currentMobileData, Guid currentDriverID, string currentVehicleRegistration, bool updateQuantity = false, bool updateTrailer = false)
         {
             var mobileData = currentMobileData;
             mobileData.LatestDataChunkSequence++;
@@ -128,11 +128,11 @@ namespace MWF.Mobile.Core.Services
             MobileApplicationDataChunkCollection dataChunkCollection = new MobileApplicationDataChunkCollection { MobileApplicationDataChunkCollectionObject = new List<MobileApplicationDataChunk>() };
 
             dataChunkActivity.Activity = 10;
-            dataChunkActivity.DriverId = currentDriver.ID;
+            dataChunkActivity.DriverId = currentDriverID;
             dataChunkActivity.EffectiveDate = DateTime.Now;
             dataChunkActivity.EffectiveDate = dataChunkActivity.EffectiveDate.AddMilliseconds(-dataChunkActivity.EffectiveDate.Millisecond);
             dataChunkActivity.MwfVersion = "";
-            dataChunkActivity.VehicleRegistration = currentVehicle.Registration;
+            dataChunkActivity.VehicleRegistration = currentVehicleRegistration;
 
             dataChunk.EffectiveDate = dataChunkActivity.EffectiveDate;
             dataChunk.ID = Guid.NewGuid();

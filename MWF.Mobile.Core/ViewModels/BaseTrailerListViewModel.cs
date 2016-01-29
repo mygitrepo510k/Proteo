@@ -47,11 +47,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task Init()
         {
-            var _vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID);
-
-            if (_vehicle != null)
-                this.VehicleRegistration = _vehicle.Registration;
-
+            this.VehicleRegistration = _infoService.CurrentVehicleRegistration;
             await this.GetTrailerModelsAsync();
         }
 
@@ -360,10 +356,6 @@ namespace MWF.Mobile.Core.ViewModels
                         MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "VehicleRepository", "InsertAsync", ex.StackTrace);
                         throw;
                     }
-
-                    // we need to update the selected vehicle as the profile could have changed.
-                    var currentvehicle = vehicles.First(v => v.ID == _infoService.CurrentVehicle.ID);
-                    _infoService.CurrentVehicle = currentvehicle;
                 }
             }
             finally
@@ -388,7 +380,6 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion
 
     }
-
 
     public class TrailerItemViewModel : MvxViewModel
     {

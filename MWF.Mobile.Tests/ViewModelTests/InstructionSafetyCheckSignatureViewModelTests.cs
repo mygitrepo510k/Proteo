@@ -31,11 +31,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMvxMessenger> _mockMessenger;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
+        private Core.Models.Driver _driver;
+        private Core.Models.Vehicle _vehicle;
         private Core.Models.Trailer _trailer;
         private Mock<ISafetyProfileRepository> _mockSafetyProfileRepository;
         private Mock<IConfigRepository> _mockConfigRepository;
+        private Mock<IVehicleRepository> _mockVehicleRepo;
         private Mock<INavigationService> _mockNavigationService;
-        private Core.Models.Driver _driver;
         IEnumerable<SafetyProfile> _safetyProfiles;
         private SafetyProfile _trailerSafetyProfile;
         private SafetyProfile _vehicleSafetyProfile;
@@ -56,11 +58,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyProfileVehicle));
             _fixture.Customize<SafetyCheckFault>( vm =>vm.With( x => x.Status, Core.Enums.SafetyCheckStatus.Passed));
 
-            _driver = _fixture.Create<Driver>();
+            _driver = _fixture.Create<Core.Models.Driver>();
+            _vehicle = _fixture.Create<Core.Models.Vehicle>();
+            _trailer = _fixture.Create<Core.Models.Trailer>();
 
             _infoService = _fixture.Create<InfoService>();
             _fixture.Inject<IInfoService>(_infoService);
-            _infoService.LoggedInDriver = _driver;
+            _infoService.SetCurrentDriver(_driver);
+            _infoService.SetCurrentVehicle(_vehicle);
+
+            _navData.OtherData["UpdatedTrailer"] = _trailer;
 
             _safetyCheckService = _fixture.Create<SafetyCheckService>();
             _fixture.Inject<ISafetyCheckService>(_safetyCheckService);
@@ -71,14 +78,14 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _safetyCheckService.CurrentVehicleSafetyCheckData = _vehicleSafetyCheckData = _fixture.Create<SafetyCheckData>();
             _navData.OtherData["UpdatedTrailerSafetyCheckData"] =_trailerSafetyCheckData = _fixture.Create<SafetyCheckData>();
 
-            _trailer = _fixture.Create<Core.Models.Trailer>();
-            _navData.OtherData["UpdatedTrailer"] = _trailer;
-
             var mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
 
             _mockSafetyProfileRepository = _fixture.InjectNewMock<ISafetyProfileRepository>();
             _mockConfigRepository = _fixture.InjectNewMock<IConfigRepository>();
+            _mockVehicleRepo = _fixture.InjectNewMock<IVehicleRepository>();
+
+            _mockVehicleRepo.Setup(vr => vr.GetByIDAsync(_vehicle.ID)).ReturnsAsync(_vehicle);
 
             var repositories = _fixture.Create<Repositories>();
             _fixture.Inject<IRepositories>(repositories);
@@ -97,9 +104,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _vehicleSafetyProfile = _fixture.Create<SafetyProfile>();
             _vehicleSafetyProfile.IsTrailerProfile = false;
-            _vehicleSafetyProfile.IntLink = _infoService.CurrentVehicle.SafetyCheckProfileIntLink;
+            _vehicleSafetyProfile.IntLink = _vehicle.SafetyCheckProfileIntLink;
 
-            List<SafetyProfile> profiles = new List<SafetyProfile>() { _trailerSafetyProfile, _vehicleSafetyProfile };
+            var profiles = new List<SafetyProfile>() { _trailerSafetyProfile, _vehicleSafetyProfile };
 
             return profiles;
         }
@@ -122,7 +129,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await vm.DoneAsync();
 
-            //check the sfaety data has been signed
+            //check the safety data has been signed
             Assert.Equal(vm.SignatureEncodedImage, _safetyCheckService.CurrentVehicleSafetyCheckData.Signature.EncodedImage);
             Assert.Equal(vm.SignatureEncodedImage, _trailerSafetyCheckData.Signature.EncodedImage);
 

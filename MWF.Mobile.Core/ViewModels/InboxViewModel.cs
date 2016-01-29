@@ -71,7 +71,7 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task ReloadPageAsync()
         {
             //Show messages that are no older than a week
-            var allMessages = await _mobileDataRepository.GetAllMessagesAsync(_infoService.LoggedInDriver.ID);
+            var allMessages = await _mobileDataRepository.GetAllMessagesAsync(_infoService.CurrentDriverID.Value);
 
             var messages = allMessages
                 .Where(i => i.EffectiveDate > DateTime.Today.AddDays(-7))

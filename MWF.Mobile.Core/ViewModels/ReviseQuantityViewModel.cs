@@ -103,7 +103,7 @@ namespace MWF.Mobile.Core.ViewModels
                 }
             }
             //This value gets updated in HE.
-            await _dataChunkService.SendDataChunkAsync(_dataChunk, _mobileData, _infoService.LoggedInDriver, _infoService.CurrentVehicle, updateQuantity: true);
+            await _dataChunkService.SendDataChunkAsync(_dataChunk, _mobileData, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleRegistration, updateQuantity: true);
 
             this.ReturnResult(true);
         }

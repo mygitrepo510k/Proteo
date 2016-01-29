@@ -14,10 +14,39 @@ namespace MWF.Mobile.Core.Services
         : IInfoService
     {
 
-        public Driver LoggedInDriver { get; set; }
-        public Vehicle CurrentVehicle { get; set; }
-        public Trailer CurrentTrailer { get; set; }
+        public Guid? CurrentDriverID { get; set; }
+        public string CurrentDriverDisplayName { get; set; }
+        public Guid? CurrentVehicleID { get; set; }
+        public string CurrentVehicleRegistration { get; set; }
+        public Guid? CurrentTrailerID { get; set; }
+        public string CurrentTrailerRegistration { get; set; }
         public int Mileage { get; set; }
+
+        public void SetCurrentDriver(Driver driver)
+        {
+            this.CurrentDriverID = driver == null ? (Guid?)null : driver.ID;
+            this.CurrentDriverDisplayName = driver == null ? null : driver.DisplayName;
+        }
+
+        public void SetCurrentVehicle(Vehicle vehicle)
+        {
+            this.CurrentVehicleID = vehicle == null ? (Guid?)null : vehicle.ID;
+            this.CurrentVehicleRegistration = vehicle == null ? null : vehicle.Registration;
+        }
+
+        public void SetCurrentTrailer(Trailer trailer)
+        {
+            this.CurrentTrailerID = trailer == null ? (Guid?)null : trailer.ID;
+            this.CurrentTrailerRegistration = trailer == null ? null : trailer.Registration;
+        }
+
+        public void Clear()
+        {
+            this.SetCurrentDriver(null);
+            this.SetCurrentVehicle(null);
+            this.SetCurrentTrailer(null);
+        }
+
     }
 
 }

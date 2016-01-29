@@ -42,7 +42,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task Init()
         {
-            _latestSafetyCheckData = await _repositories.LatestSafetyCheckRepository.GetForDriverAsync(_infoService.LoggedInDriver.ID);
+            _latestSafetyCheckData = await _repositories.LatestSafetyCheckRepository.GetForDriverAsync(_infoService.CurrentDriverID.Value);
 
             var hasVehicleSafetyCheck = _latestSafetyCheckData.VehicleSafetyCheck != null;
             var hasTrailerSafetyCheck = _latestSafetyCheckData.TrailerSafetyCheck != null;
@@ -121,7 +121,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string DriverName
         {
-            get { return _infoService.LoggedInDriver.DisplayName; }
+            get { return _infoService.CurrentDriverDisplayName; }
         }
 
         private ObservableCollection<DisplaySafetyCheckFaultItemViewModel> _safetyCheckFaultItemViewModels = new ObservableCollection<DisplaySafetyCheckFaultItemViewModel>();

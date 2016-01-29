@@ -50,7 +50,7 @@ namespace MWF.Mobile.Core.ViewModels
                 mobileDatas = (_navigationService.CurrentNavData as NavData<MobileData>).GetAllInstructions();
             }
 
-            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _infoService.LoggedInDriver, mobileDatas);
+            await _imageUploadService.SendPhotoAndCommentAsync(CommentText, images, _infoService.CurrentDriverID.Value, _infoService.CurrentDriverDisplayName, mobileDatas);
         }
 
 

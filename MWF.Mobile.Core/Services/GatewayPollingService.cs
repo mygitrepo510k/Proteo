@@ -133,8 +133,8 @@ namespace MWF.Mobile.Core.Services
 
                     // Call to BlueSphere to check for instructions
                     var instructions = await _gatewayService.GetDriverInstructionsAsync(
-                        _infoService.CurrentVehicle.Registration,
-                        _infoService.LoggedInDriver.ID,
+                        _infoService.CurrentVehicleRegistration,
+                        _infoService.CurrentDriverID.Value,
                         DateTime.Today.AddDays(-_dataRetention.Value),
                         DateTime.Today.AddDays(_dataSpan.Value));
 
@@ -155,7 +155,7 @@ namespace MWF.Mobile.Core.Services
 
                             Mvx.Trace("started processing instruction." + instruction.ID);
 
-                            instruction.VehicleId = _infoService.CurrentVehicle.ID;
+                            instruction.VehicleId = _infoService.CurrentVehicleID.Value;
 
                             switch (instruction.SyncState)
                             {
@@ -271,7 +271,7 @@ namespace MWF.Mobile.Core.Services
         private Task SendReadChunksAsync(IEnumerable<ManifestInstructionViewModel> manifestInstructionViewModels)
         {
             var instructions = manifestInstructionViewModels.Select(i => i.MobileData).ToList();
-            return _dataChunkService.SendReadChunkAsync(instructions, _infoService.LoggedInDriver, _infoService.CurrentVehicle);
+            return _dataChunkService.SendReadChunkAsync(instructions, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleRegistration);
         }
 
         private Task AcknowledgeInstructionsAsync(IEnumerable<MobileData> instructions)

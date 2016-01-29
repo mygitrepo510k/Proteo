@@ -90,8 +90,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             Assert.Equal((mobileDataStartedList.Count + mobileDataNotStartedList.Count), viewModel.InstructionsCount);
             
             //check that the logged indriver id was used for the calls to the mobile data repository
-            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
-            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
+            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.CurrentDriverID)), Times.Once);
+            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.CurrentDriverID)), Times.Once);
 
         }
 
@@ -118,8 +118,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await viewModel.UpdateInstructionsListAsync();
 
-            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
-            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Once);
+            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.CurrentDriverID)), Times.Once);
+            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.CurrentDriverID)), Times.Once);
         }
 
         /// <summary>
@@ -332,8 +332,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             await viewModel.CheckInstructionNotificationAsync(new GatewayInstructionNotificationMessage(this, _mobileData.ID, GatewayInstructionNotificationMessage.NotificationCommand.Update));
 
             //It is checked twice because it checks on view model Init() and when you refresh.
-            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Exactly(2));
-            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.LoggedInDriver.ID)), Times.Exactly(2));
+            _mobileDataRepoMock.Verify(mdr => mdr.GetInProgressInstructionsAsync(It.Is<Guid>(i => i == _infoService.CurrentDriverID)), Times.Exactly(2));
+            _mobileDataRepoMock.Verify(mdr => mdr.GetNotStartedInstructionsAsync(It.Is<Guid>(i => i == _infoService.CurrentDriverID)), Times.Exactly(2));
 
         }
 

@@ -46,7 +46,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _vehicle = new Core.Models.Vehicle() { Registration = "TestRegistration", ID = new Guid() };
 
             _infoService = _fixture.Create<InfoService>();
-            _infoService.LoggedInDriver = _driver;
+            _infoService.CurrentDriverID = _driver.ID;
             _fixture.Inject<IInfoService>(_infoService);
 
             _currentDriverRepository = new Mock<ICurrentDriverRepository>();
@@ -93,8 +93,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await vm.VehicleDetailAsync(_vehicle);
 
-            Assert.NotNull(_infoService.LoggedInDriver);
-            Assert.Equal(_vehicle.ID, _infoService.LoggedInDriver.LastVehicleID);
+            Assert.NotNull(_infoService.CurrentDriverID);
+            Assert.Equal(_vehicle.ID, _infoService.CurrentVehicleID);
 
         }
 
@@ -112,7 +112,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await vm.VehicleDetailAsync(_vehicle);
 
-            _currentDriverRepository.Verify(cdr => cdr.InsertAsync(It.Is<CurrentDriver>(cd => cd.ID == _driver.LastVehicleID)), Times.Once);   
+            _currentDriverRepository.Verify(cdr => cdr.InsertAsync(It.Is<CurrentDriver>(cd => cd.ID == _vehicle.ID)), Times.Once);   
         }
 
         /// <summary>

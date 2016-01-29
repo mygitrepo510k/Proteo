@@ -38,26 +38,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public virtual async Task Init()
         {
-            Models.Vehicle vehicle = null;
-            Models.Trailer trailer = null;
+            var vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.CurrentVehicleID.Value);
+            var trailer = _infoService.CurrentTrailerID.HasValue ? await _repositories.TrailerRepository.GetByIDAsync(_infoService.CurrentTrailerID.Value) : null;
 
-            vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.LoggedInDriver.LastVehicleID);
-            _infoService.CurrentVehicle = vehicle;
-
-            if (_infoService.LoggedInDriver.LastSecondaryVehicleID != Guid.Empty)
-            {
-                trailer = await _repositories.TrailerRepository.GetByIDAsync(_infoService.LoggedInDriver.LastSecondaryVehicleID);
-                _infoService.CurrentTrailer = trailer;
-            }
-
-            var safetyProfileVehicleData = await _repositories.SafetyProfileRepository.GetAllAsync();
-            SafetyProfileVehicle = safetyProfileVehicleData.Where(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink).SingleOrDefault();
-
-            if (trailer != null)
-            {
-                var safetyProfileTrailerData = await _repositories.SafetyProfileRepository.GetAllAsync();
-                SafetyProfileTrailer = safetyProfileVehicleData.Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
-            }
+            var safetyProfiles = await _repositories.SafetyProfileRepository.GetAllAsync();
+            this.SafetyProfileVehicle = safetyProfiles.SingleOrDefault(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink);
+            this.SafetyProfileTrailer = trailer == null ? null : safetyProfiles.SingleOrDefault(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink);
 
             this.SafetyCheckItemViewModels = new List<SafetyCheckItemViewModel>();
 
@@ -66,13 +52,13 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (SafetyProfileVehicle != null && SafetyProfileVehicle.DisplayAtLogon)
             {
-                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileVehicle, _infoService.LoggedInDriver, _infoService.CurrentVehicle, false);
+                var safetyCheckData = await this.GenerateSafetyCheckDataAsync(this.SafetyProfileVehicle, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleID.Value, _infoService.CurrentTrailerRegistration, false);
                 _safetyCheckService.CurrentVehicleSafetyCheckData = safetyCheckData;
             }
 
             if (SafetyProfileTrailer != null && SafetyProfileTrailer.DisplayAtLogon)
             {
-                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileTrailer, _infoService.LoggedInDriver, _infoService.CurrentTrailer, true);
+                var safetyCheckData = await this.GenerateSafetyCheckDataAsync(this.SafetyProfileTrailer, _infoService.CurrentDriverID.Value, _infoService.CurrentTrailerID.Value, _infoService.CurrentTrailerRegistration, true);
                 _safetyCheckService.CurrentTrailerSafetyCheckData = safetyCheckData;
             }
 
@@ -86,7 +72,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        protected SafetyCheckData GenerateSafetyCheckData(SafetyProfile safetyProfile, Driver driver, BaseVehicle vehicle, bool isTrailer)
+        protected async Task<SafetyCheckData> GenerateSafetyCheckDataAsync(SafetyProfile safetyProfile, Guid driverID, Guid vehicleOrTrailerID, string vehicleOrTrailerRegistration, bool isTrailer)
         {
             var faults = safetyProfile.Children
                 .OrderBy(scft => scft.Order)
@@ -99,16 +85,18 @@ namespace MWF.Mobile.Core.ViewModels
                 })
                 .ToList();
 
+            var driver = await _repositories.DriverRepository.GetByIDAsync(driverID);
+
             // Set up the safety check data to be set in the startup service.
             // This is the result of the safety check which will be sent to bluesphere
             // and persisted locally in case the safety check needs to be shown by the driver.
             var safetyCheckData = new SafetyCheckData
             {
                 ProfileIntLink = safetyProfile.IntLink,
-                DriverID = driver.ID,
+                DriverID = driverID,
                 DriverTitle = driver.Title,
-                VehicleID = vehicle.ID,
-                VehicleRegistration = vehicle.Registration,
+                VehicleID = vehicleOrTrailerID,
+                VehicleRegistration = vehicleOrTrailerRegistration,
                 Faults = faults,
                 IsTrailer = isTrailer
             };

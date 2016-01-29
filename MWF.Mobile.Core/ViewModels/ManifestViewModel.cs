@@ -175,8 +175,8 @@ namespace MWF.Mobile.Core.ViewModels
                 var today = DateTime.Today;
 
                 // get instruction data models from repository and order them
-                var activeInstructionsDataModels = await _mobileDataRepository.GetInProgressInstructionsAsync(_infoService.LoggedInDriver.ID);
-                var nonActiveInstructionsDataModels = await _mobileDataRepository.GetNotStartedInstructionsAsync(_infoService.LoggedInDriver.ID);
+                var activeInstructionsDataModels = await _mobileDataRepository.GetInProgressInstructionsAsync(_infoService.CurrentDriverID.Value);
+                var nonActiveInstructionsDataModels = await _mobileDataRepository.GetNotStartedInstructionsAsync(_infoService.CurrentDriverID.Value);
                 mostRecentAction = "Got instructions from database";
 
                 if (!_displayRetention.HasValue || !_displaySpan.HasValue)
@@ -199,7 +199,7 @@ namespace MWF.Mobile.Core.ViewModels
                     .OrderBy(x => x.EffectiveDate);
 
                 mostRecentAction = "Getting non complete messages";
-                var nonCompletedeMessages = await _mobileDataRepository.GetNonCompletedMessagesAsync(_infoService.LoggedInDriver.ID);
+                var nonCompletedeMessages = await _mobileDataRepository.GetNonCompletedMessagesAsync(_infoService.CurrentDriverID.Value);
                 var messageDataModels = nonCompletedeMessages.OrderBy(x => x.EffectiveDate);
 
                 if (activeInstructionsDataModels.ToList().Count == 0)
@@ -247,15 +247,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
             catch (Exception ex)
             {
-                MvxTrace.Error("Exception while refreshing manifest screen: {0}; Most recent action: {1}\nCurrent values:\n_mobileDataRepository: {2}\n_infoService: {3}\n_displayRetention: {4}\n_applicationProfileRepository: {5}\n_activeInstructionsSection: {6}\nStack trace: {7}",
-                    ex.Message,
-                    mostRecentAction,
-                    _mobileDataRepository,
-                    _infoService,
-                    _displayRetention,
-                    _applicationProfileRepository,
-                    _activeInstructionsSection,
-                    ex.StackTrace);
+                MvxTrace.Error("Exception while refreshing manifest screen: {0} at Stack trace: {1}", ex.Message, ex.StackTrace);
             }
             finally
             {

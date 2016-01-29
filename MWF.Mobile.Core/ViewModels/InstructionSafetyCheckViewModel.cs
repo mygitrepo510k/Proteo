@@ -43,7 +43,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (SafetyProfileTrailer != null)
             {
-                var safetyCheckData = GenerateSafetyCheckData(SafetyProfileTrailer, _infoService.LoggedInDriver, trailer, true);
+                var safetyCheckData = await this.GenerateSafetyCheckDataAsync(SafetyProfileTrailer, _infoService.CurrentDriverID.Value, trailer.ID, trailer.Registration, true);
                 _navData.OtherData["UpdatedTrailerSafetyCheckData"] = safetyCheckData;
             }
 

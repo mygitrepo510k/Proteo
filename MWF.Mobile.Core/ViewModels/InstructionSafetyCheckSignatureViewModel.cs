@@ -32,64 +32,18 @@ namespace MWF.Mobile.Core.ViewModels
             // vehicle from start up service, trailer from navData
             var vehicleSafetyCheckData = _safetyCheckService.CurrentVehicleSafetyCheckData;
             var trailerSafetyCheckData = _navData.OtherData["UpdatedTrailerSafetyCheckData"] as SafetyCheckData;
-            var trailer = _navData.OtherData["UpdatedTrailer"] as Models.Trailer;
 
             _safetyCheckData = _safetyCheckService.GetSafetyCheckData(vehicleSafetyCheckData, trailerSafetyCheckData);
-
-            SafetyProfile safetyProfileVehicle = null;
-            SafetyProfile safetyProfileTrailer = null;
-
-            var data = await _repositories.SafetyProfileRepository.GetAllAsync();
-            safetyProfileVehicle = data.Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
-
-            if (trailer != null)
-            {
-                var safetyProfileData = await _repositories.SafetyProfileRepository.GetAllAsync();
-                safetyProfileTrailer = safetyProfileData.Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
-            }
 
             if (!_safetyCheckData.Any())
                 throw new Exception("Invalid application state - signature screen should not be displayed in cases where there are no safety checks.");
 
-            var combinedOverallStatus = Models.SafetyCheckData.GetOverallStatus(_safetyCheckData.Select(scd => scd.GetOverallStatus()));
+            var vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.CurrentVehicleID.Value);
+            var trailer = _navData.OtherData["UpdatedTrailer"] as Models.Trailer;
 
-            if ((combinedOverallStatus == Enums.SafetyCheckStatus.NotSet) &&
-               ((safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant)
-               || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant)))
-                throw new Exception("Cannot proceed to safety check signature screen because the safety check hasn't been completed");
-
-            DriverName = _infoService.LoggedInDriver.DisplayName;
-            VehicleRegistration = _infoService.CurrentVehicle.Registration;
-            TrailerRef = trailer == null ? "- no trailer -" : trailer.Registration;
-
-            var config = await _repositories.ConfigRepository.GetAsync();
-            if ((safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant)
-               || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant))
-            {
-
-                switch (combinedOverallStatus)
-                {
-                    case Enums.SafetyCheckStatus.Failed:
-                        this.ConfirmationText = config.SafetyCheckFailText;
-                        break;
-                    case Enums.SafetyCheckStatus.DiscretionaryPass:
-                        this.ConfirmationText = config.SafetyCheckDiscretionaryText;
-                        break;
-                    case Enums.SafetyCheckStatus.Passed:
-                        this.ConfirmationText = config.SafetyCheckPassText;
-                        break;
-                    default:
-                        throw new Exception("Unexpected safety check status");
-                }
-            }
-            else
-            {
-                this.ConfirmationText = config.SafetyCheckPassText;
-            }
-
+            await this.PopulateViewModelAsync(vehicle, trailer);
         }
 
-      
     }
 
 }

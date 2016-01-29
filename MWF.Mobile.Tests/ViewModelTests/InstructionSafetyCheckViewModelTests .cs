@@ -55,8 +55,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _driver = _fixture.Create<Driver>();
             _infoService = _fixture.Create<InfoService>();
             _fixture.Inject<IInfoService>(_infoService);
-            _infoService.LoggedInDriver = _driver;
-
+            _infoService.CurrentDriverID = _driver.ID;
 
             _mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             _navData = new NavData<MobileData>() { Data = _mobileData };

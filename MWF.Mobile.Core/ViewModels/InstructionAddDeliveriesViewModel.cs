@@ -58,7 +58,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var today = DateTime.Today;
 
-            var data = await _repositories.MobileDataRepository.GetNonCompletedInstructionsAsync(_infoService.LoggedInDriver.ID);
+            var data = await _repositories.MobileDataRepository.GetNonCompletedInstructionsAsync(_infoService.CurrentDriverID.Value);
             // get all non-complete deliveries (excluding the current one) that conform to the same "barcode scanning on delivery) type as the current one
             var nonCompletedDeliveries = data.Where(i => i.Order.Type == Enums.InstructionType.Deliver && 
                                                     i.ID != _navData.Data.ID &&                                                                                                                                              

@@ -50,7 +50,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _trailerItemViewModel = new TrailerItemViewModel() { Trailer = _trailer };
 
             _infoService = _fixture.Create<InfoService>();
-            _infoService.LoggedInDriver = _driver;
+            _infoService.CurrentDriverID = _driver.ID;
             _fixture.Inject<IInfoService>(_infoService);
 
             _currentDriverRepository = new Mock<ICurrentDriverRepository>();
@@ -109,8 +109,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await vm.ConfirmTrailerAsync(_trailerItemViewModel);
 
-            Assert.NotNull(_infoService.LoggedInDriver);
-            Assert.Equal(_trailer.ID, _infoService.LoggedInDriver.LastSecondaryVehicleID);
+            Assert.NotNull(_infoService.CurrentDriverID);
+            Assert.Equal(_trailer.ID, _infoService.CurrentTrailerID);
         }
 
         /// <summary>
@@ -125,8 +125,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             await vm.ConfirmNoTrailerAsync();
 
-            Assert.NotNull(_infoService.LoggedInDriver);
-            Assert.Equal(Guid.Empty, _infoService.LoggedInDriver.LastSecondaryVehicleID);
+            Assert.NotNull(_infoService.CurrentDriverID);
+            Assert.Null(_infoService.CurrentTrailerID);
         }
 
         /// <summary>

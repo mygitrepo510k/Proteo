@@ -90,7 +90,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var dataChunkService = _fixture.Create<DataChunkService>();
 
-            await dataChunkService.SendDataChunkAsync(new MobileApplicationDataChunkContentActivity(), mobileData, driver, vehicle, false);     
+            await dataChunkService.SendDataChunkAsync(new MobileApplicationDataChunkContentActivity(), mobileData, driver.ID, vehicle.Registration, false);     
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
@@ -121,7 +121,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var dataChunkService = _fixture.Create<DataChunkService>();
             var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
-            await dataChunkService.SendDataChunkAsync(dataChunk, mobileData, driver, vehicle, false);
+            await dataChunkService.SendDataChunkAsync(dataChunk, mobileData, driver.ID, vehicle.Registration, false);
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
@@ -153,7 +153,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             var dataChunkService = _fixture.Create<DataChunkService>();
             var dataChunk = _fixture.Create<MobileApplicationDataChunkContentActivity>();
 
-            await dataChunkService.SendDataChunkAsync(dataChunk, mobileData, driver, vehicle, false);
+            await dataChunkService.SendDataChunkAsync(dataChunk, mobileData, driver.ID, vehicle.Registration, false);
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);
@@ -184,7 +184,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             var instructions = _fixture.CreateMany<MobileData>();
 
-            await dataChunkService.SendReadChunkAsync(instructions, driver, vehicle);
+            await dataChunkService.SendReadChunkAsync(instructions, driver.ID, vehicle.Registration);
 
             _mockGatewayQueuedService.Verify(mgqs =>
                 mgqs.AddToQueueAsync("fwSyncChunkToServer", It.IsAny<MobileApplicationDataChunkCollection>(), null), Times.Once);

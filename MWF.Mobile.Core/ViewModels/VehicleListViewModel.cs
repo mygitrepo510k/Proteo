@@ -111,16 +111,15 @@ namespace MWF.Mobile.Core.ViewModels
             set { _vehicles = value; RaisePropertyChanged(() => Vehicles); }
         }
 
-        public Task ShowTrailerScreenAsync(Vehicle vehicle)
+        public Task MoveToNextAsync(Vehicle vehicle)
         {
-            _infoService.LoggedInDriver.LastVehicleID = vehicle.ID;
-            _infoService.CurrentVehicle = vehicle;
+            _infoService.SetCurrentVehicle(vehicle);
             return _navigationService.MoveToNextAsync();
         }
 
         private async Task LastVehicleSelectAsync()
         {
-            var currentDriver = await _currentDriverRepository.GetByIDAsync(_infoService.LoggedInDriver.ID);
+            var currentDriver = await _currentDriverRepository.GetByIDAsync(_infoService.CurrentDriverID.Value);
 
             if (currentDriver == null)
                 return;
@@ -136,7 +135,7 @@ namespace MWF.Mobile.Core.ViewModels
                 return;
 
             if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(vehicle.Registration, "Last Used Vehicle", "Confirm"))
-                await this.ShowTrailerScreenAsync(vehicle);
+                await this.MoveToNextAsync(vehicle);
         }
 
         private MvxCommand<Vehicle> _showVehicleDetailCommand;
@@ -149,7 +148,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(vehicle.Registration, "Confirm your vehicle", "Confirm"))
             {
-                var newDriver = await _currentDriverRepository.GetByIDAsync(_infoService.LoggedInDriver.ID);
+                var newDriver = await _currentDriverRepository.GetByIDAsync(_infoService.CurrentDriverID.Value);
 
                 if (newDriver == null)
                     return;
@@ -167,7 +166,7 @@ namespace MWF.Mobile.Core.ViewModels
                     throw;
                 }
 
-                await this.ShowTrailerScreenAsync(vehicle);
+                await this.MoveToNextAsync(vehicle);
             }
         }
 

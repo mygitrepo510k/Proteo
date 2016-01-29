@@ -43,7 +43,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             _infoService= _fixture.Create<InfoService>();
             _fixture.Inject<IInfoService>(_infoService);
             //(relies on driver TEST TEST (on Proteo test site) not being marked as revoked)
-            _infoService.LoggedInDriver.ID = new Guid("7B5657F7-A0C3-4CAF-AA5F-D76FE942074B");
+            _infoService.CurrentDriverID = new Guid("7B5657F7-A0C3-4CAF-AA5F-D76FE942074B");
             
             IEnumerable<Device> devices = new List<Device>() { new Device() { DeviceIdentifier = "021PROTEO0000001" } };
             IDeviceRepository repo = Mock.Of<IDeviceRepository>(dr => dr.GetAllAsync() == Task.FromResult(devices));
@@ -209,7 +209,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
 
             Guid driverId = Guid.NewGuid();
-            _infoService.LoggedInDriver.ID = driverId;
+            _infoService.CurrentDriverID = driverId;
             _fixture.Inject<Core.Services.IHttpService>(new Core.Services.HttpService());
             var service = _fixture.Create<Core.Services.GatewayService>();
             var driverInstructions = await service.GetDriverInstructionsAsync("004", driverId, DateTime.Now.AddYears(-1), DateTime.Now);

@@ -89,7 +89,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             Driver driver = _fixture.Create<Driver>();
             var imageUploadService = _fixture.Create<ImageUploadService>();
 
-            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
+            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver.ID, driver.DisplayName, null);
 
             _mockConfigRepo.Verify(mcr => mcr.GetAsync(), Times.Once);
 
@@ -119,7 +119,7 @@ namespace MWF.Mobile.Tests.ServiceTests
             MobileData mobileData = _fixture.Create<MobileData>();
             Driver driver = _fixture.Create<Driver>();
 
-            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
+            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver.ID, driver.DisplayName, null);
 
             _mockConfigRepo.Verify(mcr => mcr.GetAsync(), Times.Once);
 
@@ -158,7 +158,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockHttpService.Setup(mhs => mhs.SendAsyncPlainResponse<HttpResponseMessage>(It.IsAny<HttpRequestMessage>())).ReturnsAsync(response);
 
-            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver, null);
+            await imageUploadService.SendPhotoAndCommentAsync(comment, photos, driver.ID, driver.DisplayName, null);
 
             _mockConfigRepo.Verify(mcr => mcr.GetAsync(), Times.Once);
 

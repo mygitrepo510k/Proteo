@@ -44,20 +44,21 @@ namespace MWF.Mobile.Core.ViewModels
         {
             // Retrieve the vehicle and trailer safety check data from the startup info service
             _safetyCheckData = _safetyCheckService.GetCurrentSafetyCheckData();
-            SafetyProfile safetyProfileVehicle = null;
-            SafetyProfile safetyProfileTrailer = null;
-
-            var data = await _repositories.SafetyProfileRepository.GetAllAsync();
-            safetyProfileVehicle = data.Where(spv => spv.IntLink == _infoService.CurrentVehicle.SafetyCheckProfileIntLink).SingleOrDefault();
-
-            if (_infoService.CurrentTrailer != null)
-            {
-                var data1 = await _repositories.SafetyProfileRepository.GetAllAsync();
-                safetyProfileTrailer = data1.Where(spt => spt.IntLink == _infoService.CurrentTrailer.SafetyCheckProfileIntLink).SingleOrDefault();
-            }
 
             if (!_safetyCheckData.Any())
                 throw new Exception("Invalid application state - signature screen should not be displayed in cases where there are no safety checks.");
+
+            var vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.CurrentVehicleID.Value);
+            var trailer = _infoService.CurrentTrailerID.HasValue ? await _repositories.TrailerRepository.GetByIDAsync(_infoService.CurrentTrailerID.Value) : null;
+
+            await this.PopulateViewModelAsync(vehicle, trailer);
+        }
+
+        protected virtual async Task PopulateViewModelAsync(Models.Vehicle vehicle, Models.Trailer trailer)
+        {
+            var safetyProfiles = await _repositories.SafetyProfileRepository.GetAllAsync();
+            var safetyProfileVehicle = safetyProfiles.SingleOrDefault(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink);
+            var safetyProfileTrailer = trailer == null ? null : safetyProfiles.SingleOrDefault(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink);
 
             var combinedOverallStatus = Models.SafetyCheckData.GetOverallStatus(_safetyCheckData.Select(scd => scd.GetOverallStatus()));
 
@@ -66,13 +67,16 @@ namespace MWF.Mobile.Core.ViewModels
                || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant)))
                 throw new Exception("Cannot proceed to safety check signature screen because the safety check hasn't been completed");
 
-            DriverName = _infoService.LoggedInDriver.DisplayName;
-            VehicleRegistration = _infoService.CurrentVehicle.Registration;
-            TrailerRef = _infoService.CurrentTrailer == null ? "- no trailer -" : _infoService.CurrentTrailer.Registration;
+            this.DriverName = _infoService.CurrentDriverDisplayName;
+            this.VehicleRegistration = _infoService.CurrentVehicleRegistration;
+            this.TrailerRef = trailer == null ? "- no trailer -" : trailer.Registration;
 
             var config = await _repositories.ConfigRepository.GetAsync();
-            if ((safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant)
-               || (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant))
+            var hasVOSACompliantSafetyCheck =
+                (safetyProfileVehicle != null && safetyProfileVehicle.IsVOSACompliant) ||
+                (safetyProfileTrailer != null && safetyProfileTrailer.IsVOSACompliant);
+
+            if (hasVOSACompliantSafetyCheck)
             {
                 switch (combinedOverallStatus)
                 {

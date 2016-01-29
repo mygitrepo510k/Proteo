@@ -53,7 +53,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string Registration
         {
-            get { return _infoService.CurrentVehicle.Registration; }
+            get { return _infoService.CurrentVehicleRegistration; }
         }
         
         private Task DoStoreCommandAsync()

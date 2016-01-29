@@ -66,7 +66,7 @@ namespace MWF.Mobile.Core.Services
             var safetyCheckFailed = false;
 
             // Store the latest safety check so the driver can display it at a later point if required
-            var latestSafetyCheck = new LatestSafetyCheck { DriverID = _infoService.LoggedInDriver.ID };
+            var latestSafetyCheck = new LatestSafetyCheck { DriverID = _infoService.CurrentDriverID.Value };
 
             if (safetyCheckData.Any())
             {

@@ -42,11 +42,7 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         /// <param name="comment">The comment for the photos</param>
         /// <param name="photos">The collection of photos to be sent up</param>
-        public async Task SendPhotoAndCommentAsync(
-            string comment,
-            List<Image> photos,
-            Driver currentDriver,
-            IEnumerable<MobileData> mobileDatas)
+        public async Task SendPhotoAndCommentAsync(string comment, List<Image> photos, Guid driverID, string driverDisplayName, IEnumerable<MobileData> mobileDatas)
         {
 
             if (!_reachability.IsConnected())
@@ -68,8 +64,8 @@ namespace MWF.Mobile.Core.Services
             UploadCameraImageObject imageUpload = new UploadCameraImageObject();
             imageUpload.Smp = _gpsService.GetSmpData(Enums.ReportReason.Comment);
             imageUpload.ID = Guid.NewGuid();
-            imageUpload.DriverTitle = currentDriver.DisplayName;
-            imageUpload.DriverId = currentDriver.ID;
+            imageUpload.DriverTitle = driverDisplayName;
+            imageUpload.DriverId = driverID;
             imageUpload.Pictures = photos;
             imageUpload.Comment = comment;
             imageUpload.DateTimeOfUpload = DateTime.Now;

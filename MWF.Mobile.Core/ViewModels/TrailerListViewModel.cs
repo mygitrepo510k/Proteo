@@ -90,8 +90,7 @@ namespace MWF.Mobile.Core.ViewModels
                     this.IsBusy = false;
                 }
 
-                _infoService.LoggedInDriver.LastSecondaryVehicleID = trailerID;
-                _infoService.CurrentTrailer = trailer;
+                _infoService.SetCurrentTrailer(trailer);
                 await _navigationService.MoveToNextAsync();
             }
         }

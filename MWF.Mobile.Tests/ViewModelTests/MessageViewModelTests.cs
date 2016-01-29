@@ -29,6 +29,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         #region Setup
 
         private IFixture _fixture;
+        private IInfoService _infoService;
         private MobileData _mobileData;
         private Mock<IMobileDataRepository> _mockMobileDataRepo;
         private Mock<IMvxMessenger> _mockMvxMessenger;
@@ -40,6 +41,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
         protected override void AdditionalSetup()
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
+
+            _infoService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(_infoService);
 
             _mobileData = _fixture.Create<MobileData>();
             _mobileData.GroupTitle = "Run1010";

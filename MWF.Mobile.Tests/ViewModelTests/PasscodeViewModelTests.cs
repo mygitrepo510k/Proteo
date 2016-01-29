@@ -24,6 +24,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         private IFixture _fixture;
         private Driver _driver;
+        private IInfoService _infoService;
 
         protected override void AdditionalSetup()
         {
@@ -37,6 +38,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
 
             _driver = new Core.Models.Driver() { LastName = "TestName", ID = new Guid()};
+
+            _infoService = _fixture.Create<InfoService>();
+            _fixture.Inject<IInfoService>(_infoService);
 
             var mockAuthenticationService = new Mock<IAuthenticationService>();
             mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.IsAny<string>())).ReturnsAsync(new AuthenticationResult { Success = false });
@@ -63,7 +67,6 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             // check that the navigation service was called
             navigationServiceMock.Verify(ns => ns.MoveToNextAsync(), Times.Once);
-
         }
 
         /// <summary>
@@ -107,16 +110,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             _fixture.Inject(mockDriverRepo);
 
-            var startUpService = _fixture.Create<InfoService>();
-            _fixture.Inject<IInfoService>(startUpService);
-
             var vm = _fixture.Create<PasscodeViewModel>();
             vm.Passcode = testDriver.Passcode;
 
             await vm.LoginAsync();
 
-            Assert.NotNull(startUpService.CurrentDriverID);
-            Assert.Equal(testDriver.DisplayName, startUpService.CurrentDriverDisplayName);
+            Assert.NotNull(_infoService.CurrentDriverID);
+            Assert.Equal(testDriver.DisplayName, _infoService.CurrentDriverDisplayName);
         }
 
         /// <summary>

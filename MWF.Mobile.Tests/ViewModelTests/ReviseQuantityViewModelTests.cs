@@ -52,6 +52,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _navigationService = _fixture.InjectNewMock<INavigationService>();
 
             _mockInfoService = _fixture.InjectNewMock<IInfoService>();
+            _mockInfoService.Setup(s => s.CurrentDriverID).ReturnsUsingFixture(_fixture);
+            _mockInfoService.Setup(s => s.CurrentDriverID).ReturnsUsingFixture(_fixture);
 
             _mockUserInteraction = Ioc.RegisterNewMock<ICustomUserInteraction>();
 

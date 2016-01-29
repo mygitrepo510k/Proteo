@@ -63,6 +63,9 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mockMessenger.Setup(m => m.Subscribe(It.IsAny<Action<GatewayInstructionNotificationMessage>>(), It.IsAny<MvxReference>(), It.IsAny<string>())).Returns(_fixture.Create<MvxSubscriptionToken>());
 
             _mockInfoService = _fixture.InjectNewMock<IInfoService>();
+            _mockInfoService.Setup(s => s.CurrentDriverID).ReturnsUsingFixture(_fixture);
+            _mockInfoService.Setup(s => s.CurrentVehicleID).ReturnsUsingFixture(_fixture);
+
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
 
             _navData = new NavData<MobileData>() { Data = _mobileData };

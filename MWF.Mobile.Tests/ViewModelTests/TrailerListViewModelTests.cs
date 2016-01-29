@@ -123,6 +123,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
             var vm = _fixture.Create<TrailerListViewModel>();
 
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("No trailer");
+
             await vm.ConfirmNoTrailerAsync();
 
             Assert.NotNull(_infoService.CurrentDriverID);

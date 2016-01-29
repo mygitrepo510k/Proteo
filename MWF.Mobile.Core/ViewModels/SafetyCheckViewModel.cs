@@ -206,7 +206,8 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion
 
         #region Private Methods
-        private async Task MoveToNextAsync()
+
+        protected async Task MoveToNextAsync()
         {
             if (this.IsProgressing)
                 return;

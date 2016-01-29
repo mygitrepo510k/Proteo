@@ -56,24 +56,6 @@ namespace MWF.Mobile.Core.ViewModels
 
         }
 
-        private async Task MoveToNextAsync()
-        {
-            if (this.IsProgressing)
-                return;
-
-            this.IsProgressing = true;
-
-            try
-            {
-                RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
-                await _navigationService.MoveToNextAsync(_navData);
-            }
-            finally
-            {
-                this.IsProgressing = false;
-            }
-        }
-
         #endregion
 
     }

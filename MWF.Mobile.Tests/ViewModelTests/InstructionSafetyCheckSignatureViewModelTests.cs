@@ -67,13 +67,13 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _infoService.SetCurrentDriver(_driver);
             _infoService.SetCurrentVehicle(_vehicle);
 
-            _navData.OtherData["UpdatedTrailer"] = _trailer;
-
             _safetyCheckService = _fixture.Create<SafetyCheckService>();
             _fixture.Inject<ISafetyCheckService>(_safetyCheckService);
 
             _mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false,true, null);
             _navData = new NavData<MobileData>() { Data = _mobileData };
+
+            _navData.OtherData["UpdatedTrailer"] = _trailer;
 
             _safetyCheckService.CurrentVehicleSafetyCheckData = _vehicleSafetyCheckData = _fixture.Create<SafetyCheckData>();
             _navData.OtherData["UpdatedTrailerSafetyCheckData"] =_trailerSafetyCheckData = _fixture.Create<SafetyCheckData>();

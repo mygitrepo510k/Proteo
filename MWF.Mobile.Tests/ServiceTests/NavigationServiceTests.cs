@@ -1549,7 +1549,7 @@ namespace MWF.Mobile.Tests.ServiceTests
         {
             base.ClearAll();
 
-            _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels));
+            _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels).With(x => x.IsProgressing, false));
 
             // presenter will report the current activity view model as MainView, current fragment model as a the instruction safety check 
             this.InjectCustomPresenter<MainViewModel, InstructionSafetyCheckViewModel>();
@@ -1567,6 +1567,7 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             //safety profile repository will return a safety profile for the trailer
             var safetyCheckProfile = _fixture.Create<SafetyProfile>();
+            safetyCheckProfile.IntLink = trailer.SafetyCheckProfileIntLink;
             _mockSafetyProfileRepository.Setup(spr => spr.GetAllAsync()).ReturnsAsync(new List<SafetyProfile>() { safetyCheckProfile});
 
             // Move to the next view model

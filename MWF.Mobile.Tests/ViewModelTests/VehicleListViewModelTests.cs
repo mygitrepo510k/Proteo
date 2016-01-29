@@ -87,7 +87,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
         {
             base.ClearAll();
 
-            _mockUserInteraction.ConfirmReturnsTrueIfTitleStartsWith("Confirm your vehicle");
+            _mockUserInteraction.ConfirmAsyncReturnsTrueIfTitleStartsWith("Confirm your vehicle");
 
             var vm = _fixture.Create<VehicleListViewModel>();
 

@@ -31,10 +31,12 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private Mock<IMvxMessenger> _mockMessenger;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
+        private Core.Models.Driver _driver;
+        private Core.Models.Vehicle _vehicle;
         private Core.Models.Trailer _trailer;
         private Mock<ISafetyProfileRepository> _mockSafetyProfileRepository;
+        private Mock<IDriverRepository> _mockDriverRepository;
         private Mock<INavigationService> _mockNavigationService;
-        private Core.Models.Driver _driver;
         IEnumerable<SafetyProfile> _safetyProfiles;
         private SafetyProfile _safetyProfile;
         private Guid _navID;
@@ -52,15 +54,20 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyCheckItemViewModels));
             _fixture.Customize<InstructionSafetyCheckViewModel>(vm => vm.Without(x => x.SafetyProfileVehicle));
 
-            _driver = _fixture.Create<Driver>();
+            _driver = _fixture.Create<Core.Models.Driver>();
+            _vehicle = _fixture.Create<Core.Models.Vehicle>();
+            _trailer = _fixture.Create<Core.Models.Trailer>();
+
             _infoService = _fixture.Create<InfoService>();
             _fixture.Inject<IInfoService>(_infoService);
-            _infoService.CurrentDriverID = _driver.ID;
+            _infoService.SetCurrentDriver(_driver);
+            _infoService.SetCurrentVehicle(_vehicle);
+
+            _mockDriverRepository = _fixture.InjectNewMock<IDriverRepository>();
+            _mockDriverRepository.Setup(dr => dr.GetByIDAsync(_driver.ID)).ReturnsAsync(_driver);
 
             _mobileData = _fixture.SetUpInstruction(Core.Enums.InstructionType.Collect, false, true, false, false, false, false, true, null);
             _navData = new NavData<MobileData>() { Data = _mobileData };
-
-            _trailer = _fixture.Create<Core.Models.Trailer>();
 
             _navData.OtherData["UpdatedTrailer"] = _trailer;
 
@@ -131,7 +138,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
                 .Setup(cui => cui.AlertAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(0));
 
-            var vm = _fixture.Create<InstructionSafetyCheckViewModel>();
+            var vm = _fixture.Build<InstructionSafetyCheckViewModel>().With(iscvm => iscvm.IsProgressing, false).Create();
 
             await vm.Init(_navID);
 

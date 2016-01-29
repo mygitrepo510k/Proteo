@@ -35,6 +35,7 @@ namespace MWF.Mobile.Android.Views
         #region Protected/Private Fields
 
         protected IDictionary<Type, Type> _supportedFragmentViewModels;
+        private bool _isInSavedStateMode = false;
 
         #endregion Protected/Private Fields
 
@@ -64,12 +65,7 @@ namespace MWF.Mobile.Android.Views
 
                 var fragment = (MvxFragment)Activator.CreateInstance(fragmentType);
                 fragment.ViewModel = initialViewModel;
-
-                var transaction = FragmentManager.BeginTransaction();
-                transaction.Replace(this.FragmentHostID, fragment);
-                transaction.Commit();
-
-                this.FragmentChanged(fragment);
+                this.NavigateToFragment(fragment, false);
             }
         }
 
@@ -138,15 +134,7 @@ namespace MWF.Mobile.Android.Views
 
             var viewModel = fragment.ViewModel;
             this.ActionBar.Title = ((BaseFragmentViewModel)viewModel).FragmentTitle;
-
-            var transaction = FragmentManager.BeginTransaction();
-            // Note: this *replaces* the actual fragment host specified in Page_StartUp.axml
-            // but keeps the same id
-            transaction.Replace(this.FragmentHostID, fragment);
-            transaction.AddToBackStack(null);
-            transaction.Commit();
-
-            this.FragmentChanged(fragment);
+            this.NavigateToFragment(fragment, true);
 
             return true;
         }
@@ -238,8 +226,29 @@ namespace MWF.Mobile.Android.Views
             this.ActionBar.Title = fragmentViewModel == null ? string.Empty : fragmentViewModel.FragmentTitle;
         }
 
+        private void NavigateToFragment(MvxFragment fragment, bool addToBackStack)
+        {
+            if (_isInSavedStateMode)
+                return;
+
+            var transaction = FragmentManager.BeginTransaction();
+
+            // Note: this *replaces* the actual fragment host specified in Page_StartUp.axml
+            // but keeps the same id
+            transaction.Replace(this.FragmentHostID, fragment);
+
+            if (addToBackStack)
+                transaction.AddToBackStack(null);
+
+            transaction.Commit();
+
+            this.FragmentChanged(fragment);
+        }
+
         protected override void OnSaveInstanceState(Bundle outState)
         {
+            _isInSavedStateMode = true;
+
             // Store the info service data so we can pick up where we left off when the activity is recreated
             var infoService = Mvx.Resolve<Core.Services.IInfoService>();
 
@@ -256,6 +265,8 @@ namespace MWF.Mobile.Android.Views
 
         protected override void OnRestoreInstanceState(Bundle savedInstanceState)
         {
+            _isInSavedStateMode = false;
+
             base.OnRestoreInstanceState(savedInstanceState);
 
             var infoService = Mvx.Resolve<Core.Services.IInfoService>();

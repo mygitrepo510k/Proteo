@@ -245,43 +245,43 @@ namespace MWF.Mobile.Android.Views
             this.FragmentChanged(fragment);
         }
 
-        protected override void OnSaveInstanceState(Bundle outState)
-        {
-            _isInSavedStateMode = true;
+        //protected override void OnSaveInstanceState(Bundle outState)
+        //{
+        //    _isInSavedStateMode = true;
 
-            // Store the info service data so we can pick up where we left off when the activity is recreated
-            var infoService = Mvx.Resolve<Core.Services.IInfoService>();
+        //    // Store the info service data so we can pick up where we left off when the activity is recreated
+        //    var infoService = Mvx.Resolve<Core.Services.IInfoService>();
 
-            outState.PutString("CurrentDriverID", infoService.CurrentDriverID.ToString());
-            outState.PutString("CurrentDriverDisplayName", infoService.CurrentDriverDisplayName);
-            outState.PutString("CurrentVehicleID", infoService.CurrentVehicleID.ToString());
-            outState.PutString("CurrentVehicleRegistration", infoService.CurrentVehicleRegistration);
-            outState.PutString("CurrentTrailerID", infoService.CurrentTrailerID.ToString());
-            outState.PutString("CurrentTrailerRegistration", infoService.CurrentTrailerRegistration);
-            outState.PutInt("Mileage", infoService.Mileage);
+        //    outState.PutString("CurrentDriverID", infoService.CurrentDriverID.ToString());
+        //    outState.PutString("CurrentDriverDisplayName", infoService.CurrentDriverDisplayName);
+        //    outState.PutString("CurrentVehicleID", infoService.CurrentVehicleID.ToString());
+        //    outState.PutString("CurrentVehicleRegistration", infoService.CurrentVehicleRegistration);
+        //    outState.PutString("CurrentTrailerID", infoService.CurrentTrailerID.ToString());
+        //    outState.PutString("CurrentTrailerRegistration", infoService.CurrentTrailerRegistration);
+        //    outState.PutInt("Mileage", infoService.Mileage);
 
-            base.OnSaveInstanceState(outState);
-        }
+        //    base.OnSaveInstanceState(outState);
+        //}
 
-        protected override void OnRestoreInstanceState(Bundle savedInstanceState)
-        {
-            _isInSavedStateMode = false;
+        //protected override void OnRestoreInstanceState(Bundle savedInstanceState)
+        //{
+        //    _isInSavedStateMode = false;
 
-            base.OnRestoreInstanceState(savedInstanceState);
+        //    base.OnRestoreInstanceState(savedInstanceState);
 
-            var infoService = Mvx.Resolve<Core.Services.IInfoService>();
+        //    var infoService = Mvx.Resolve<Core.Services.IInfoService>();
 
-            if (!infoService.CurrentDriverID.HasValue)
-            {
-                infoService.CurrentDriverID = NullableGuidParse(savedInstanceState.GetString("CurrentDriverID"));
-                infoService.CurrentDriverDisplayName = savedInstanceState.GetString("CurrentDriverDisplayName");
-                infoService.CurrentVehicleID = NullableGuidParse(savedInstanceState.GetString("CurrentVehicleID"));
-                infoService.CurrentVehicleRegistration = savedInstanceState.GetString("CurrentVehicleRegistration");
-                infoService.CurrentTrailerID = NullableGuidParse(savedInstanceState.GetString("CurrentTrailerID"));
-                infoService.CurrentTrailerRegistration = savedInstanceState.GetString("CurrentTrailerRegistration");
-                infoService.Mileage = savedInstanceState.GetInt("Mileage");
-            }
-        }
+        //    if (!infoService.CurrentDriverID.HasValue)
+        //    {
+        //        infoService.CurrentDriverID = NullableGuidParse(savedInstanceState.GetString("CurrentDriverID"));
+        //        infoService.CurrentDriverDisplayName = savedInstanceState.GetString("CurrentDriverDisplayName");
+        //        infoService.CurrentVehicleID = NullableGuidParse(savedInstanceState.GetString("CurrentVehicleID"));
+        //        infoService.CurrentVehicleRegistration = savedInstanceState.GetString("CurrentVehicleRegistration");
+        //        infoService.CurrentTrailerID = NullableGuidParse(savedInstanceState.GetString("CurrentTrailerID"));
+        //        infoService.CurrentTrailerRegistration = savedInstanceState.GetString("CurrentTrailerRegistration");
+        //        infoService.Mileage = savedInstanceState.GetInt("Mileage");
+        //    }
+        //}
 
         private Guid? NullableGuidParse(string input)
         {

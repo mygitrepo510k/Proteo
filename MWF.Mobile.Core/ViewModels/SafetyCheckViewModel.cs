@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
@@ -45,7 +46,7 @@ namespace MWF.Mobile.Core.ViewModels
             this.SafetyProfileVehicle = safetyProfiles.SingleOrDefault(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink);
             this.SafetyProfileTrailer = trailer == null ? null : safetyProfiles.SingleOrDefault(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink);
 
-            this.SafetyCheckItemViewModels = new List<SafetyCheckItemViewModel>();
+            this.SafetyCheckItemViewModels = new ObservableCollection<SafetyCheckItemViewModel>();
 
             _safetyCheckService.CurrentVehicleSafetyCheckData = null;
             _safetyCheckService.CurrentTrailerSafetyCheckData = null;
@@ -102,15 +103,20 @@ namespace MWF.Mobile.Core.ViewModels
             };
 
             // Add the safety check item view models
-            this.SafetyCheckItemViewModels.AddRange(faults.Select(scf => new SafetyCheckItemViewModel(this, _navigationService)
+            foreach (var fault in faults)
             {
-                ID = scf.ID,
-                SafetyCheckFault = scf,
-                IsVehicle = !isTrailer,
-                Title = (isTrailer ? "TRL: " : "VEH: ") + scf.Title,
-                IsDiscretionaryQuestion = scf.IsDiscretionaryQuestion,
-                CheckStatus = scf.Status,
-            }));
+                this.SafetyCheckItemViewModels.Add(new SafetyCheckItemViewModel(this, _navigationService)
+                {
+                    ID = fault.ID,
+                    SafetyCheckFault = fault,
+                    IsVehicle = !isTrailer,
+                    Title = (isTrailer ? "TRL: " : "VEH: ") + fault.Title,
+                    IsDiscretionaryQuestion = fault.IsDiscretionaryQuestion,
+                    CheckStatus = fault.Status,
+                });
+            }
+
+            RaisePropertyChanged(() => this.SafetyCheckItemViewModels);
 
             return safetyCheckData;
         }
@@ -133,8 +139,8 @@ namespace MWF.Mobile.Core.ViewModels
             set { _safetyProfileTrailer = value; }
         }
 
-        private List<SafetyCheckItemViewModel> _safetyCheckItemViewModels;
-        public List<SafetyCheckItemViewModel> SafetyCheckItemViewModels
+        private ObservableCollection<SafetyCheckItemViewModel> _safetyCheckItemViewModels;
+        public ObservableCollection<SafetyCheckItemViewModel> SafetyCheckItemViewModels
         {
             get { return _safetyCheckItemViewModels; }
             set { _safetyCheckItemViewModels = value; RaisePropertyChanged(() => SafetyCheckItemViewModels); }

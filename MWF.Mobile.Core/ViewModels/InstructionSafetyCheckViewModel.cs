@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Cirrious.CrossCore;
@@ -38,7 +39,7 @@ namespace MWF.Mobile.Core.ViewModels
                 SafetyProfileTrailer = safetyProfileData.Where(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink).SingleOrDefault();
             }
 
-            this.SafetyCheckItemViewModels = new List<SafetyCheckItemViewModel>();
+            this.SafetyCheckItemViewModels = new ObservableCollection<SafetyCheckItemViewModel>();
             _navData.OtherData["UpdatedTrailerSafetyCheckData"] = null;
 
             if (SafetyProfileTrailer != null)

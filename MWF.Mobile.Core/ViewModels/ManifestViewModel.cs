@@ -172,6 +172,16 @@ namespace MWF.Mobile.Core.ViewModels
                 if (!_initialised)
                     return;
 
+                if (!_infoService.CurrentDriverID.HasValue)
+                {
+                    // If there is no current driver id then log the user out.
+                    // This can happen if the Android lifecycle causes the activity to be destroyed and recreated.
+                    // A better solution would be to implement save and restore of the state on the lifecyle events, but the
+                    // simple attempt at this that has been tried introduced more bugs than it solved, so more work is needed.
+                    await _navigationService.LogoutAsync();
+                    return;
+                }
+
                 var today = DateTime.Today;
 
                 // get instruction data models from repository and order them
@@ -247,7 +257,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
             catch (Exception ex)
             {
-                MvxTrace.Error("Exception while refreshing manifest screen: {0} at Stack trace: {1}", ex.Message, ex.StackTrace);
+                MvxTrace.Error("Exception while refreshing manifest screen: {0}, most recent action: '{1}', at stack trace: {2}", ex.Message, mostRecentAction, ex.StackTrace);
             }
             finally
             {

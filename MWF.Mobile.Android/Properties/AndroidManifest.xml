@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="Proteo.Mobile.Android" android:versionName="1.0.14.0" android:installLocation="auto" android:versionCode="71">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="Proteo.Mobile.Android" android:versionName="1.0.14.0" android:installLocation="auto" android:versionCode="72">
 	<uses-sdk android:minSdkVersion="15" android:targetSdkVersion="15" />
 	<application android:icon="@drawable/Icon" android:theme="@style/ProteoNoMargins" android:label="Proteo Mobile">
 		<activity android:name="net.hockeyapp.android.UpdateActivity" />

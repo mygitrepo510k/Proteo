@@ -311,6 +311,15 @@ namespace MWF.Mobile.Core.Services
             return this.Logout_ActionAsync(Guid.Empty, null);
         }
 
+        /// <summary>
+        /// Logout, skipping any safety checks.  This simply stops any timers and returns the user to the passcode screen.
+        /// This is intended for use in extreme cases such as when the device OS lifecycle has cleared out from memory key data needed for the app to function.
+        /// </summary>
+        public Task DirectLogoutAsync()
+        {
+            return this.DoLogoutAsync();
+        }
+
         private async Task Logout_ActionAsync(Guid navID, NavData navData)
         {
             var _vehicleSafetyProfile = await VehicleSafetyProfileAsync();

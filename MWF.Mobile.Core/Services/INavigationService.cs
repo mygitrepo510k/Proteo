@@ -15,6 +15,7 @@ namespace MWF.Mobile.Core.Services
         Task<Guid> MoveToNextAsync(NavData navData);
         Task GoToManifestAsync();
         Task LogoutAsync();
+        Task DirectLogoutAsync();
         NavData<T> GetNavData<T>(Guid navID) where T : class;
         NavData CurrentNavData { get; }
         bool ShowModalViewModel<TViewModel, TResult>(NavData navData, Action<TResult> onResult) where TViewModel : IModalViewModel<TResult>;

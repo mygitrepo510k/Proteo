@@ -167,21 +167,22 @@ namespace MWF.Mobile.Core.ViewModels
             this.IsRefreshingInstructions = true;
             var mostRecentAction = "Started refreshing manifest screen";
 
+            if (!_initialised)
+                return;
+
+            if (!_infoService.CurrentDriverID.HasValue)
+            {
+                // If there is no current driver id then log the user out.
+                // This can happen if the Android lifecycle causes the activity to be destroyed and recreated.
+                // A better solution would be to implement save and restore of the state on the lifecyle events, but the
+                // simple attempt at this that has been tried introduced more bugs than it solved, so more work is needed.
+                MvxTrace.Error("CurrentDriverID null when attempting to refresh the Manifest screen.");
+                await _navigationService.DirectLogoutAsync();
+                return;
+            }
+
             try
             {
-                if (!_initialised)
-                    return;
-
-                if (!_infoService.CurrentDriverID.HasValue)
-                {
-                    // If there is no current driver id then log the user out.
-                    // This can happen if the Android lifecycle causes the activity to be destroyed and recreated.
-                    // A better solution would be to implement save and restore of the state on the lifecyle events, but the
-                    // simple attempt at this that has been tried introduced more bugs than it solved, so more work is needed.
-                    await _navigationService.LogoutAsync();
-                    return;
-                }
-
                 var today = DateTime.Today;
 
                 // get instruction data models from repository and order them

@@ -53,7 +53,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (SafetyProfileVehicle != null && SafetyProfileVehicle.DisplayAtLogon)
             {
-                var safetyCheckData = await this.GenerateSafetyCheckDataAsync(this.SafetyProfileVehicle, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleID.Value, _infoService.CurrentTrailerRegistration, false);
+                var safetyCheckData = await this.GenerateSafetyCheckDataAsync(this.SafetyProfileVehicle, _infoService.CurrentDriverID.Value, _infoService.CurrentVehicleID.Value, _infoService.CurrentVehicleRegistration, false);
                 _safetyCheckService.CurrentVehicleSafetyCheckData = safetyCheckData;
             }
 

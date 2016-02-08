@@ -21,6 +21,7 @@ using MWF.Mobile.Android.Portable;
 using MWF.Mobile.Android.Helpers;
 using MWF.Mobile.Android.Controls;
 using Android.Views;
+using Cirrious.CrossCore.Platform;
 
 namespace MWF.Mobile.Android.Views
 {
@@ -65,7 +66,7 @@ namespace MWF.Mobile.Android.Views
 
                 var fragment = (MvxFragment)Activator.CreateInstance(fragmentType);
                 fragment.ViewModel = initialViewModel;
-                this.NavigateToFragment(fragment, false);
+                this.NavigateToFragment(fragment, addToBackStack: false);
             }
         }
 
@@ -118,8 +119,6 @@ namespace MWF.Mobile.Android.Views
         {
             // At this point simply display any supported fragment in the FrameLayout.
             // In future we may change this for different device form factors, for example to display tiled fragments.
-            // For this reason I have duplicated this code in both MainView and StartupView, rather than abstracting
-            // to a base class, since we may wish to handle fragements differently in each at some point.
             MvxFragment fragment = null;
 
             if (SupportedFragmentViewModels.ContainsKey(request.ViewModelType))
@@ -132,11 +131,7 @@ namespace MWF.Mobile.Android.Views
             if (fragment == null)
                 return false;
 
-            var viewModel = fragment.ViewModel;
-            this.ActionBar.Title = ((BaseFragmentViewModel)viewModel).FragmentTitle;
-            this.NavigateToFragment(fragment, true);
-
-            return true;
+            return this.NavigateToFragment(fragment, addToBackStack: true);
         }
 
         /// <summary>
@@ -226,23 +221,38 @@ namespace MWF.Mobile.Android.Views
             this.ActionBar.Title = fragmentViewModel == null ? string.Empty : fragmentViewModel.FragmentTitle;
         }
 
-        private void NavigateToFragment(MvxFragment fragment, bool addToBackStack)
+        private bool NavigateToFragment(MvxFragment fragment, bool addToBackStack)
         {
             if (_isInSavedStateMode)
-                return;
+                return false;
 
-            var transaction = FragmentManager.BeginTransaction();
+            var retVal = false;
 
-            // Note: this *replaces* the actual fragment host specified in Page_StartUp.axml
-            // but keeps the same id
-            transaction.Replace(this.FragmentHostID, fragment);
+            try
+            {
+                var transaction = FragmentManager.BeginTransaction();
 
-            if (addToBackStack)
-                transaction.AddToBackStack(null);
+                // Note: this *replaces* the actual fragment host specified in Page_StartUp.axml
+                // but keeps the same id
+                transaction.Replace(this.FragmentHostID, fragment);
 
-            transaction.Commit();
+                if (addToBackStack)
+                    transaction.AddToBackStack(null);
 
-            this.FragmentChanged(fragment);
+                transaction.Commit();
+
+                this.FragmentChanged(fragment);
+                retVal = true;
+            }
+            catch (Java.Lang.IllegalStateException ex)
+            {
+                MvxTrace.Warning("IllegalStateException occurred on fragment change: {0}", ex.Message);
+                // If the app is in the background, for example if the user has pressed the device Home button or put the device into sleep mode before the fragment change occurs,
+                // then an error will be thrown: "java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState".
+                // If this happens then swallow the exception rather than crash the app, in which case the user will need to re-trigger the fragment change when they resume the app.
+            }
+
+            return retVal;
         }
 
         //protected override void OnSaveInstanceState(Bundle outState)

@@ -38,10 +38,9 @@ namespace MWF.Mobile.Android.Presenters
             var currentFragmentHost = this.Activity as IFragmentHost;
 
             if (currentFragmentHost != null)
-                if (currentFragmentHost.Show(request))
-                    return;
-
-            base.Show(request);
+                currentFragmentHost.Show(request);
+            else
+                base.Show(request);
         }
 
         public override void Close(IMvxViewModel viewModel)

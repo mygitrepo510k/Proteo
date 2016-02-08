@@ -36,7 +36,6 @@ namespace MWF.Mobile.Android.Views
         #region Protected/Private Fields
 
         protected IDictionary<Type, Type> _supportedFragmentViewModels;
-        private bool _isInSavedStateMode = false;
 
         #endregion Protected/Private Fields
 
@@ -131,7 +130,9 @@ namespace MWF.Mobile.Android.Views
             if (fragment == null)
                 return false;
 
-            return this.NavigateToFragment(fragment, addToBackStack: true);
+            this.NavigateToFragment(fragment, addToBackStack: true);
+
+            return true;
         }
 
         /// <summary>
@@ -221,13 +222,8 @@ namespace MWF.Mobile.Android.Views
             this.ActionBar.Title = fragmentViewModel == null ? string.Empty : fragmentViewModel.FragmentTitle;
         }
 
-        private bool NavigateToFragment(MvxFragment fragment, bool addToBackStack)
+        private void NavigateToFragment(MvxFragment fragment, bool addToBackStack)
         {
-            if (_isInSavedStateMode)
-                return false;
-
-            var retVal = false;
-
             try
             {
                 var transaction = FragmentManager.BeginTransaction();
@@ -242,7 +238,6 @@ namespace MWF.Mobile.Android.Views
                 transaction.Commit();
 
                 this.FragmentChanged(fragment);
-                retVal = true;
             }
             catch (Java.Lang.IllegalStateException ex)
             {
@@ -251,14 +246,10 @@ namespace MWF.Mobile.Android.Views
                 // then an error will be thrown: "java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState".
                 // If this happens then swallow the exception rather than crash the app, in which case the user will need to re-trigger the fragment change when they resume the app.
             }
-
-            return retVal;
         }
 
         //protected override void OnSaveInstanceState(Bundle outState)
         //{
-        //    _isInSavedStateMode = true;
-
         //    // Store the info service data so we can pick up where we left off when the activity is recreated
         //    var infoService = Mvx.Resolve<Core.Services.IInfoService>();
 
@@ -275,8 +266,6 @@ namespace MWF.Mobile.Android.Views
 
         //protected override void OnRestoreInstanceState(Bundle savedInstanceState)
         //{
-        //    _isInSavedStateMode = false;
-
         //    base.OnRestoreInstanceState(savedInstanceState);
 
         //    var infoService = Mvx.Resolve<Core.Services.IInfoService>();

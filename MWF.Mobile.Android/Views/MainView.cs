@@ -18,7 +18,7 @@ using System.Windows.Input;
 namespace MWF.Mobile.Android.Views
 {
 
-    [Activity(ScreenOrientation = ScreenOrientation.Portrait)]
+    [Activity(ScreenOrientation = ScreenOrientation.User)]
     public class MainView
         : BaseActivityView, Presenters.IFragmentHost
     {

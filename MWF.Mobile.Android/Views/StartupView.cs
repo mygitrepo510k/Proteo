@@ -23,7 +23,7 @@ using System.IO;
 namespace MWF.Mobile.Android.Views
 {
 
-    [Activity(ScreenOrientation= ScreenOrientation.Portrait)]
+    [Activity(ScreenOrientation= ScreenOrientation.Landscape)]
     public class StartupView
         : BaseActivityView, Presenters.IFragmentHost
     {

@@ -11,7 +11,7 @@ namespace MWF.Mobile.Android
 		, Icon = "@drawable/icon"
 		, Theme = "@style/Theme.Splash"
 		, NoHistory = true
-		, ScreenOrientation = ScreenOrientation.User)]
+		, ScreenOrientation = ScreenOrientation.Portrait)]
     public class SplashScreen : MvxSplashScreenActivity
     {
 

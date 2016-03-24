@@ -24,7 +24,13 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            return this.BindingInflate(Resource.Layout.Fragment_InstructionAddDeliveries, null);
+            var view = this.BindingInflate(Resource.Layout.Fragment_InstructionAddDeliveries, null);
+            var doneButton = (Button)view.FindViewById(Resource.Id.DoneButton);
+            var set = this.CreateBindingSet<InstructionAddDeliveriesFragment, InstructionAddDeliveriesViewModel>();
+            set.Bind(doneButton).For(b => b.Enabled).To(vm => vm.DoneButtonEnabled);
+            set.Apply();
+
+            return view;
         }  
     }
 }

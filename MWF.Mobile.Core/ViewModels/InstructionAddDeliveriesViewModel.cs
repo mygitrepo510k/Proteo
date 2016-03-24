@@ -33,7 +33,7 @@ namespace MWF.Mobile.Core.ViewModels
         private INavigationService _navigationService;
         private List<MobileData> _additionalInstructions;
         private string _originalSelection;
-
+        private bool _doneButtonEnabled;
         #endregion
 
         #region Construction
@@ -47,11 +47,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task Init(Guid navID)
         {
+            DoneButtonEnabled = false;
             _navData = _navigationService.GetNavData<MobileData>(navID);
             this.MessageId = navID;
             _additionalInstructions = _navData.GetAdditionalInstructions();
             _appProfile = (await _repositories.ApplicationRepository.GetAllAsync()).First();
             await this.GetDeliveryInstructionsAsync();
+            DoneButtonEnabled = true;
         }
 
         private async Task GetDeliveryInstructionsAsync()
@@ -92,6 +94,16 @@ namespace MWF.Mobile.Core.ViewModels
         public string DoneButtonLabel
         {
             get { return "Done"; }
+        }
+
+        public bool DoneButtonEnabled
+        {
+            get { return _doneButtonEnabled; }
+            set
+            {
+                _doneButtonEnabled = value;
+                RaisePropertyChanged(() => DoneButtonEnabled);
+            }
         }
 
         public System.Windows.Input.ICommand DoneCommand

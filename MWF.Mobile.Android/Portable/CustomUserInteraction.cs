@@ -274,6 +274,7 @@ namespace MWF.Mobile.Android.Portable
         {
             Application.SynchronizationContext.Post(ignored =>
             {
+                bool complete = false; //This is used so that if both options are pressed only 1 is executed
                 if (CurrentActivity == null)
                     return;
 
@@ -291,13 +292,21 @@ namespace MWF.Mobile.Android.Portable
 
                     .SetPositiveButton(okButton, (s, e) =>
                         {
-                            if (answer != null)
+                            if (answer != null && !complete)
+                            {
+                                complete = true;
                                 answer(true);
+                            }
+                                
                         })
                     .SetNegativeButton(cancelButton, (s, e) =>
                         {
-                            if (answer != null)
+                            if (answer != null && !complete)
+                            {
+                                complete = true;
                                 answer(false);
+                            }
+                                
                         });
 
                 ConfirmDialog = notificationDialog.Create();

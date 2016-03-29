@@ -69,7 +69,7 @@ namespace MWF.Mobile.Core.ViewModels
                 { "Bomfords", "0DA9F71D-3A0F-4351-BCE1-A49D2D9AECC1" },
             };
 
-            var debugSuggestedCustomer = "Fagan & Whalley";
+            var debugSuggestedCustomer = "Firmin";
 
             if (await _userInteraction.ConfirmAsync(string.Format("DEBUGGING: use the {0} customer code?", debugSuggestedCustomer)))
                 this.CustomerCode = debugCustomerCodes[debugSuggestedCustomer];

@@ -35,12 +35,14 @@ namespace MWF.Mobile.Core.Services
             _infoService = infoService;
             _messenger = messenger;
 
+            string urlBase = "http://blueport.gateway.fleetwoodmobile.net:7090";
+
             //TODO: read this from config or somewhere?
-            _gatewayDeviceRequestUrl = "http://87.117.243.226:7090/api/gateway/devicerequest";
-            _gatewayDeviceCreateUrl = "http://87.117.243.226:7090/api/gateway/createdevice";
-            _gatewayConfigRequestUrl = "http://87.117.243.226:7090/api/gateway/configrequest";
-            _gatewayLogMessageUrl = "http://87.117.243.226:7090/api/gateway/logmessage";
-            _gatewayLicenceCheckUrl = "http://87.117.243.226:7090/api/gateway/systemcheck";
+            _gatewayDeviceRequestUrl = urlBase + "/api/gateway/devicerequest";
+            _gatewayDeviceCreateUrl = urlBase + "/api/gateway/createdevice";
+            _gatewayConfigRequestUrl = urlBase + "/api/gateway/configrequest";
+            _gatewayLogMessageUrl = urlBase + "/api/gateway/logmessage";
+            _gatewayLicenceCheckUrl = urlBase + "/api/gateway/systemcheck";
 
             //Local url, will need to change your own IP
             //_gatewayDeviceCreateUrl = "http://192.168.3.133:17337/api/gateway/createdevice";

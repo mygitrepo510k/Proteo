@@ -113,7 +113,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public bool UserChangesDetected
         {
-            get { return _originalSelection != GetSelectionSummary(); }
+            get { return (this.DeliveryInstructions != null && _originalSelection != GetSelectionSummary()); }
         }
 
         private ObservableCollection<ManifestInstructionViewModel> _deliveryInstructions;

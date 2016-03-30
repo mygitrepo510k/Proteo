@@ -75,7 +75,8 @@ namespace MWF.Mobile.Core.Services
                 _timer = new Timer(async state =>
                 {
                     await this.PollForInstructionsAsync();
-                    _timer.Reset();
+                    if(_timer != null)
+                        _timer.Reset();
                 },
                 null,
                 60000);

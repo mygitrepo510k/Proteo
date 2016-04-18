@@ -173,12 +173,17 @@ namespace MWF.Mobile.Core.ViewModels
                 if ((this.SafetyProfileVehicle != null && this.SafetyProfileVehicle.IsVOSACompliant)
                     || (this.SafetyProfileTrailer != null && this.SafetyProfileTrailer.IsVOSACompliant))
                 {
-                    foreach (var safetyCheckItem in SafetyCheckItemViewModels)
+                    if (SafetyCheckItemViewModels.Count == 0)
+                        allChecksCompleted = false;
+                    else
                     {
-                        if (!allChecksCompleted)
-                            return allChecksCompleted;
+                        foreach (var safetyCheckItem in SafetyCheckItemViewModels)
+                        {
+                            if (!allChecksCompleted)
+                                return allChecksCompleted;
 
-                        allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
+                            allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
+                        }
                     }
                 }
 

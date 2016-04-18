@@ -209,7 +209,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected async Task MoveToNextAsync()
         {
-            if (this.IsProgressing)
+            // cannot progress if the safety checks need completing.
+            if (!CanSafetyChecksBeCompleted)
+                return;
+
+                if (this.IsProgressing)
                 return;
 
             this.IsProgressing = true;

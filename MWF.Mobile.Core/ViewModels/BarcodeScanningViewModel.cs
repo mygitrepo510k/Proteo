@@ -256,6 +256,10 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Task CompleteScanningAsync()
         {
+
+            if (!CanScanningBeCompleted){
+                return Task.FromResult(0);
+            }
             // Update datachunk for this order
             var newScannedDelivery = GetScannedDelivery(_mobileData.ID);
             _navData.GetDataChunk().ScannedDelivery = newScannedDelivery;

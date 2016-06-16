@@ -597,10 +597,25 @@ namespace MWF.Mobile.Core.Services
 
         #region Mappings Definitions
 
-        private void SetMappings()
+        private async void SetMappings()
         {
+            var appProfile = await _repositories.ApplicationRepository.GetAsync();
+
             // StartUp Activity
-            InsertNavAction<StartupViewModel, CustomerCodeViewModel, PasscodeViewModel>();
+            if (appProfile.DeviceCheckOutRequired && !appProfile.DeviceCheckInRequired)
+            {
+                InsertNavAction<StartupViewModel, CustomerCodeViewModel, CheckOutViewModel>();
+                InsertNavAction<StartupViewModel, CheckOutViewModel, QRCodeViewModel>();
+                InsertNavAction<StartupViewModel, QRCodeViewModel, TermsAndConditionsViewModel>();
+                InsertNavAction<StartupViewModel, TermsAndConditionsViewModel, DriverSignatureViewModel>();
+                InsertNavAction<StartupViewModel, DriverSignatureViewModel, PasscodeViewModel>();
+
+                InsertNavAction<StartupViewModel, CheckInViewModel, CheckInCompleteViewModel>();
+            }
+            else
+            {
+                InsertNavAction<StartupViewModel, CustomerCodeViewModel, PasscodeViewModel>();
+            }
             InsertCustomNavAction<StartupViewModel, PasscodeViewModel>(Passcode_CustomActionAsync);
             InsertNavAction<StartupViewModel, DiagnosticsViewModel, PasscodeViewModel>();
             InsertNavAction<StartupViewModel, VehicleListViewModel, TrailerListViewModel>();

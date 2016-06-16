@@ -24,7 +24,9 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly ILoggingService _loggingService;
         private readonly IGatewayQueuedService _gatewayQueuedService;
+        private readonly IRepositories _repositories;
         private bool _isBusy = false;
+        private bool _checkInButtonVisible = false;
 
         public PasscodeViewModel(
             IAuthenticationService authenticationService, 
@@ -40,9 +42,12 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
             _loggingService = loggingService;
 
+            _repositories = repositories;
             _currentDriverRepository = repositories.CurrentDriverRepository;
             _closeApplication = closeApplication;
             _gatewayQueuedService = gatewayQueuedService;
+
+            setCheckInButtonVisibility();
         }
 
         #region Public Members
@@ -61,6 +66,21 @@ namespace MWF.Mobile.Core.ViewModels
         public string PasscodeButtonLabel
         {
             get { return "Submit"; }
+        }
+
+        public string CheckInButtonLabel
+        {
+            get { return "Check In"; }
+        }
+
+        public bool CheckInButtonVisible
+        {
+            get { return _checkInButtonVisible; }
+            private set
+            {
+                _checkInButtonVisible = value;
+                RaisePropertyChanged(() => CheckInButtonVisible);
+            }
         }
 
         public string VersionText
@@ -96,6 +116,13 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get { return (_sendDiagnosticsCommand = _sendDiagnosticsCommand ?? new MvxCommand(async () => await this.SendDiagnosticsAsync()));}
         }
+
+        private MvxCommand _checkInCommand;
+        public System.Windows.Input.ICommand CheckInCommand
+        {
+            get { return (_checkInCommand = _checkInCommand ?? new MvxCommand(async () => await this.CheckInDeviceAsync())); }
+        }
+
         public override string FragmentTitle
         {
             get { return "Passcode"; }
@@ -104,6 +131,12 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion Public Members
 
         #region Private Methods
+
+        private async Task setCheckInButtonVisibility()
+        {
+            var appProfile = await _repositories.ApplicationRepository.GetAsync();
+            CheckInButtonVisible = appProfile.DeviceCheckInRequired;
+        }
 
         public Task LoginAsync()
         {
@@ -114,6 +147,15 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             return this.AuthenticateAsync();
+        }
+
+        public async Task CheckInDeviceAsync()
+        {
+            var appProfile = await _repositories.ApplicationRepository.GetAsync();
+            if(appProfile.DeviceCheckInRequired)
+            {
+                ShowViewModel<CheckInViewModel>();
+            }
         }
 
         public Task SendDiagnosticsAsync()

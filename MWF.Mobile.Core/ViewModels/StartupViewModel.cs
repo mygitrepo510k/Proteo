@@ -30,9 +30,14 @@ namespace MWF.Mobile.Core.ViewModels
         {
             var customerRepository = _repositories.CustomerRepository;
             var customerRepositoryData = await customerRepository.GetAllAsync();
+            var appProfile = await _repositories.ApplicationRepository.GetAsync();
 
             if (customerRepositoryData.Any())
-                this.SetInitialViewModel<PasscodeViewModel>();
+            {
+                if (appProfile.DeviceCheckOutRequired)
+                    this.SetInitialViewModel<CheckOutViewModel>();
+                else this.SetInitialViewModel<PasscodeViewModel>();
+            }
             else
                 this.SetInitialViewModel<CustomerCodeViewModel>();
         }

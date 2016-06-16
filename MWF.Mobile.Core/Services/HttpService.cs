@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ModernHttpClient;
+using System.Net.Http.Headers;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -14,6 +15,25 @@ namespace MWF.Mobile.Core.Services
     public class HttpService
         : IHttpService
     {
+        public async Task<HttpResult> PostJsonWithAuthAsync(string jsonContent, string url, string userName, string password)
+        {
+            try
+            {
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+                request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                var client = new HttpClient();
+                var authData = string.Format("{0}:{1}", userName, password);
+                var authHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(authData));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authHeaderValue);
+                var response = await client.SendAsync(request);
+                return new HttpResult { StatusCode = response.StatusCode };
+            }
+            catch (Exception)
+            {
+                return new HttpResult { StatusCode = System.Net.HttpStatusCode.InternalServerError };
+            }
+        }
 
         public async Task<HttpResult<TResponse>> PostJsonAsync<TResponse>(string jsonContent, string url)
         {

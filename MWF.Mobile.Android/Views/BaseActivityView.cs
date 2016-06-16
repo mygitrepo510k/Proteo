@@ -53,6 +53,8 @@ namespace MWF.Mobile.Android.Views
             this.BaseActivityViewModel.WeakSubscribe(() => this.BaseActivityViewModel.InitialViewModel, (s, e) => this.PopulateFrameLayoutWithInitialViewModelFragment());
 
             this.PopulateFrameLayoutWithInitialViewModelFragment();
+
+            ZXing.Mobile.MobileBarcodeScanner.Initialize(Application);
         }
 
         private void PopulateFrameLayoutWithInitialViewModelFragment()

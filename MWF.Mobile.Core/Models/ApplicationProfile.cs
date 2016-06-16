@@ -117,6 +117,20 @@ namespace MWF.Mobile.Core.Models
 
         [JsonIgnore]
         public DateTime LastVehicleAndDriverSync { get; set; }
+
+        [JsonProperty("@devicecheckoutrequired")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
+        public bool DeviceCheckOutRequired { get; set; }
+
+        [JsonProperty("@devicecheckinrequired")]
+        [JsonConverter(typeof(JsonBooleanConverter))]
+        public bool DeviceCheckInRequired { get; set; }
+
+        [JsonProperty("@deviceeventurl")]
+        public string DeviceEventURL { get; set; }
+
+        [JsonProperty("@devicecheckouttermsandconditions")]
+        public string DeviceCheckOutTermsAndConditions { get; set; }
     }
 
 }

@@ -597,25 +597,16 @@ namespace MWF.Mobile.Core.Services
 
         #region Mappings Definitions
 
-        private async void SetMappings()
+        private void SetMappings()
         {
-            var appProfile = await _repositories.ApplicationRepository.GetAsync();
-
             // StartUp Activity
-            if (appProfile.DeviceCheckOutRequired && !appProfile.DeviceCheckInRequired)
-            {
-                InsertNavAction<StartupViewModel, CustomerCodeViewModel, CheckOutViewModel>();
-                InsertNavAction<StartupViewModel, CheckOutViewModel, QRCodeViewModel>();
-                InsertNavAction<StartupViewModel, QRCodeViewModel, TermsAndConditionsViewModel>();
-                InsertNavAction<StartupViewModel, TermsAndConditionsViewModel, DriverSignatureViewModel>();
-                InsertNavAction<StartupViewModel, DriverSignatureViewModel, PasscodeViewModel>();
+            InsertCustomNavAction<StartupViewModel, CustomerCodeViewModel>(CustomerCode_CustomActionAsync);
+            InsertNavAction<StartupViewModel, CheckOutViewModel, QRCodeViewModel>();
+            InsertNavAction<StartupViewModel, QRCodeViewModel, TermsAndConditionsViewModel>();
+            InsertNavAction<StartupViewModel, TermsAndConditionsViewModel, DriverSignatureViewModel>();
+            InsertNavAction<StartupViewModel, DriverSignatureViewModel, PasscodeViewModel>();
+            InsertNavAction<StartupViewModel, CheckInViewModel, CheckInCompleteViewModel>();
 
-                InsertNavAction<StartupViewModel, CheckInViewModel, CheckInCompleteViewModel>();
-            }
-            else
-            {
-                InsertNavAction<StartupViewModel, CustomerCodeViewModel, PasscodeViewModel>();
-            }
             InsertCustomNavAction<StartupViewModel, PasscodeViewModel>(Passcode_CustomActionAsync);
             InsertNavAction<StartupViewModel, DiagnosticsViewModel, PasscodeViewModel>();
             InsertNavAction<StartupViewModel, VehicleListViewModel, TrailerListViewModel>();
@@ -691,6 +682,16 @@ namespace MWF.Mobile.Core.Services
         {
             _closeApplication.CloseApp();
             return Task.FromResult(0);
+        }
+
+        public async Task CustomerCode_CustomActionAsync(Guid navID, NavData navData)
+        {
+            var appProfile = await _repositories.ApplicationRepository.GetAsync();
+
+            if (appProfile.DeviceCheckOutRequired && !appProfile.DeviceCheckInRequired)
+                await this.MoveToAsync<CheckOutViewModel>(navID);
+            else
+                await this.MoveToAsync<PasscodeViewModel>(navID);
         }
 
         public Task Passcode_CustomActionAsync(Guid navID, NavData navData)

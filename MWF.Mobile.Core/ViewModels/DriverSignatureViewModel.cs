@@ -112,11 +112,8 @@ namespace MWF.Mobile.Core.ViewModels
                 navData.Data.driverName = DriverName;
 
                 var appProfile = await _repositories.ApplicationRepository.GetAsync();
-#if DEBUG
-                string deviceEventUrl = "http://10.0.2.2:61001/api/devicemanagement/recordevent";
-#else                
                 string deviceEventUrl = appProfile.DeviceEventURL;
-#endif
+
                 //If you change pwd1stHalf below remember to change in Proteo Analytics too 
                 string pwd1stHalf = "{6A50F099-DEA4-4B34-9D2C-73C438D8A005}";
 

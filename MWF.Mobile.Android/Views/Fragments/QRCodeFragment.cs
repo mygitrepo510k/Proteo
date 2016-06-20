@@ -31,10 +31,9 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         private async void startScanning()
         {
-#if DEBUG
-            (this.ViewModel as Core.ViewModels.QRCodeViewModel).ScannedQRCode =
-                @"{deviceId:1, imei:'123456789012345',phoneNumber:'8989799898',actionPerformed:1,driverId:5}";
-#else
+            //(this.ViewModel as Core.ViewModels.QRCodeViewModel).ScannedQRCode =
+            //    @"{deviceId:1, imei:'123456789012345',phoneNumber:'8989799898',actionPerformed:1,driverId:5}";
+
             var scanner = new ZXing.Mobile.MobileBarcodeScanner();
             scanner.UseCustomOverlay = true;
             scanner.CustomOverlay = this.Activity.FindViewById(Resource.Id.qrcodeScanner);
@@ -42,7 +41,6 @@ namespace MWF.Mobile.Android.Views.Fragments
 
             if (result != null)
                 (this.ViewModel as Core.ViewModels.QRCodeViewModel).ScannedQRCode = result.Text;
-#endif
         }
     }
 }

@@ -104,7 +104,7 @@ namespace MWF.Mobile.Core.ViewModels
             }
             finally
             {
-                Interlocked.Exchange(ref _isBusy, 0;);
+                Interlocked.Exchange(ref _isBusy, 0);
             }
             
         }

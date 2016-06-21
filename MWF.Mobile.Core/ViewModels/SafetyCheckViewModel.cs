@@ -217,7 +217,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        int isBusy = 0;
+        int _isBusy = 0;
         protected async Task MoveToNextAsync()
         {
 

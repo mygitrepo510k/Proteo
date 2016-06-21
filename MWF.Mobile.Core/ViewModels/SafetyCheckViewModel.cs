@@ -11,6 +11,7 @@ using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using System.Threading;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -216,25 +217,38 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
+        int isBusy = 0;
         protected async Task MoveToNextAsync()
         {
-            // cannot progress if the safety checks need completing.
-            if (!CanSafetyChecksBeCompleted)
+
+            int isAvailable = Interlocked.Exchange(ref _isBusy, 1);
+            if (isAvailable != 0)
                 return;
-
-                if (this.IsProgressing)
-                return;
-
-            this.IsProgressing = true;
-
             try
             {
-                RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
-                await _navigationService.MoveToNextAsync(_navData);
+
+                // cannot progress if the safety checks need completing.
+                if (!CanSafetyChecksBeCompleted)
+                    return;
+
+                if (this.IsProgressing)
+                    return;
+
+                this.IsProgressing = true;
+
+                try
+                {
+                    RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
+                    await _navigationService.MoveToNextAsync(_navData);
+                }
+                finally
+                {
+                    this.IsProgressing = false;
+                }
             }
             finally
             {
-                this.IsProgressing = false;
+                Interlocked.Exchange(ref isBusy, 0);
             }
         }
 

@@ -33,7 +33,7 @@ namespace MWF.Mobile.Core.ViewModels
         private INavigationService _navigationService;
         private List<MobileData> _additionalInstructions;
         private string _originalSelection;
-        private bool _doneButtonEnabled;
+        private bool _doneButtonEnabled = false;
         #endregion
 
         #region Construction
@@ -136,26 +136,29 @@ namespace MWF.Mobile.Core.ViewModels
 
         private void DoDoneCommand()
         {
-            var selectedInstructionIDs = this.DeliveryInstructions.Where(di => di.IsSelected).Select(di => di.InstructionID).ToList();
-            var additionalInstructions = _navData.GetAdditionalInstructions();
-
-            // work out which instructions no longer are selected and remove them
-            var instructionsToRemove = additionalInstructions.Where(ai => !selectedInstructionIDs.Contains(ai.ID)).ToList(); ;
-
-            // work out which newly selected instructions need to be added         
-            var instructionsToAdd = this.DeliveryInstructions.Where(di => di.IsSelected && !additionalInstructions.Any(ai => ai.ID == di.InstructionID)).ToList();
-
-            foreach (var item in instructionsToRemove)
+            if (DoneButtonEnabled)
             {
-                additionalInstructions.Remove(item);
-            }         
+                var selectedInstructionIDs = this.DeliveryInstructions.Where(di => di.IsSelected).Select(di => di.InstructionID).ToList();
+                var additionalInstructions = _navData.GetAdditionalInstructions();
 
-            foreach (var item in instructionsToAdd)
-            {
-                additionalInstructions.Add(item.MobileData);
+                // work out which instructions no longer are selected and remove them
+                var instructionsToRemove = additionalInstructions.Where(ai => !selectedInstructionIDs.Contains(ai.ID)).ToList(); ;
+
+                // work out which newly selected instructions need to be added         
+                var instructionsToAdd = this.DeliveryInstructions.Where(di => di.IsSelected && !additionalInstructions.Any(ai => ai.ID == di.InstructionID)).ToList();
+
+                foreach (var item in instructionsToRemove)
+                {
+                    additionalInstructions.Remove(item);
+                }
+
+                foreach (var item in instructionsToAdd)
+                {
+                    additionalInstructions.Add(item.MobileData);
+                }
+
+                ReturnResult(true);
             }
-
-            ReturnResult(true);
         }
 
         private string GetSelectionSummary()

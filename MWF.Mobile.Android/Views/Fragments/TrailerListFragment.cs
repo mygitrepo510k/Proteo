@@ -16,9 +16,13 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
+            // reset the state of the button to allow this to be selcted again.
+            ((BaseTrailerListViewModel)this.ViewModel)._NoTrailerSelected = false;
+
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             return this.BindingInflate(Resource.Layout.Fragment_TrailerListView, null);
+            
         }
 
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)

@@ -168,7 +168,7 @@ namespace MWF.Mobile.Core.ViewModels
                 if (this.IsProgressing)
                     return false;
 
-                bool allChecksCompleted = true;
+                bool allChecksCompleted = false;
 
                 if ((this.SafetyProfileVehicle != null && this.SafetyProfileVehicle.IsVOSACompliant)
                     || (this.SafetyProfileTrailer != null && this.SafetyProfileTrailer.IsVOSACompliant))
@@ -185,6 +185,10 @@ namespace MWF.Mobile.Core.ViewModels
                             allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
                         }
                     }
+                }
+                else
+                {
+                    allChecksCompleted = true;
                 }
 
                 return allChecksCompleted;

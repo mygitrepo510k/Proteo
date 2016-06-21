@@ -31,6 +31,7 @@ namespace MWF.Mobile.Core.ViewModels
         protected BarcodeSectionViewModel _processedBarcodes;
         private IRepositories _repositories;
         private List<DamageStatus> _damageStatuses;
+        private MvxCommand _completeScanningCommand;
         List<MobileData> _additionalInstructions;
 
         public List<DamageStatus> DamageStatuses
@@ -97,6 +98,8 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             RaisePropertyChanged(() => BarcodeSections);
+
+            _completeScanningCommand = _completeScanningCommand ?? new MvxCommand( async () => await CompleteScanningAsync());
         }
 
         #endregion Construction
@@ -132,10 +135,10 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private MvxCommand _completeScanningCommand;
+       
         public ICommand CompleteScanningCommand
         {
-            get { return (_completeScanningCommand = _completeScanningCommand ?? new MvxCommand(async () => await this.CompleteScanningAsync())); }
+            get { return _completeScanningCommand; }
         }
 
         public string InstructionsText
@@ -148,7 +151,7 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Continue"; }
         }
 
-        private bool _canScanningBeCompleted;
+        private bool _canScanningBeCompleted = false;
         public bool CanScanningBeCompleted
         {
             get

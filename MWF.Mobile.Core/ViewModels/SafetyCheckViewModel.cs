@@ -44,7 +44,7 @@ namespace MWF.Mobile.Core.ViewModels
             var trailer = _infoService.CurrentTrailerID.HasValue ? await _repositories.TrailerRepository.GetByIDAsync(_infoService.CurrentTrailerID.Value) : null;
 
             var safetyProfiles = await _repositories.SafetyProfileRepository.GetAllAsync();
-            this.SafetyProfileVehicle = safetyProfiles.SingleOrDefault(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink);
+            this.SafetyProfileVehicle =  safetyProfiles.SingleOrDefault(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink);
             this.SafetyProfileTrailer = trailer == null ? null : safetyProfiles.SingleOrDefault(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink);
 
             this.SafetyCheckItemViewModels = new ObservableCollection<SafetyCheckItemViewModel>();
@@ -72,6 +72,8 @@ namespace MWF.Mobile.Core.ViewModels
 
                 await this.MoveToNextAsync();
             }
+
+            _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(async () => await this.MoveToNextAsync());
         }
 
         protected async Task<SafetyCheckData> GenerateSafetyCheckDataAsync(SafetyProfile safetyProfile, Guid driverID, Guid vehicleOrTrailerID, string vehicleOrTrailerRegistration, bool isTrailer)
@@ -157,7 +159,7 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(async () => await this.MoveToNextAsync());
+                
                 return _checksDoneCommand;
             }
         }
@@ -178,10 +180,11 @@ namespace MWF.Mobile.Core.ViewModels
                         allChecksCompleted = false;
                     else
                     {
+
                         foreach (var safetyCheckItem in SafetyCheckItemViewModels)
                         {
-                            if (!allChecksCompleted)
-                                return allChecksCompleted;
+                           // if (!allChecksCompleted)
+                           //     return allChecksCompleted;
 
                             allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
                         }
@@ -228,7 +231,7 @@ namespace MWF.Mobile.Core.ViewModels
             {
 
                 // cannot progress if the safety checks need completing.
-                if (!CanSafetyChecksBeCompleted)
+                if (!CanSafetyChecksBeCompleted )
                     return;
 
                 if (this.IsProgressing)

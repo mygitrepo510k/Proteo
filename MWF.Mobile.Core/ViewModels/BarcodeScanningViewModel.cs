@@ -32,6 +32,8 @@ namespace MWF.Mobile.Core.ViewModels
         private IRepositories _repositories;
         private List<DamageStatus> _damageStatuses;
         private MvxCommand _completeScanningCommand;
+        private bool _sectionsLoaded = false;
+
         List<MobileData> _additionalInstructions;
 
         public List<DamageStatus> DamageStatuses
@@ -55,6 +57,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             await this.BuildDamageStatusesAsync();
             this.CreateSections();
+            
         }
 
         private void CreateSections()
@@ -99,7 +102,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             RaisePropertyChanged(() => BarcodeSections);
 
-            _completeScanningCommand = _completeScanningCommand ?? new MvxCommand( async () => await CompleteScanningAsync());
+            _sectionsLoaded = true;
         }
 
         #endregion Construction
@@ -138,7 +141,7 @@ namespace MWF.Mobile.Core.ViewModels
        
         public ICommand CompleteScanningCommand
         {
-            get { return _completeScanningCommand; }
+            get { return _completeScanningCommand = _completeScanningCommand ?? new MvxCommand(async () => await CompleteScanningAsync()); ; }
         }
 
         public string InstructionsText
@@ -260,7 +263,7 @@ namespace MWF.Mobile.Core.ViewModels
         public Task CompleteScanningAsync()
         {
 
-            if (!CanScanningBeCompleted){
+            if (!CanScanningBeCompleted || !_sectionsLoaded){
                 return Task.FromResult(0);
             }
             // Update datachunk for this order

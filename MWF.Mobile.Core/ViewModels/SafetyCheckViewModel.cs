@@ -38,6 +38,7 @@ namespace MWF.Mobile.Core.ViewModels
             _safetyCheckService = safetyCheckService;
         }
 
+        private bool profileLoaded = false;
         public virtual async Task Init()
         {
             var vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.CurrentVehicleID.Value);
@@ -63,6 +64,7 @@ namespace MWF.Mobile.Core.ViewModels
                 var safetyCheckData = await this.GenerateSafetyCheckDataAsync(this.SafetyProfileTrailer, _infoService.CurrentDriverID.Value, _infoService.CurrentTrailerID.Value, _infoService.CurrentTrailerRegistration, true);
                 _safetyCheckService.CurrentTrailerSafetyCheckData = safetyCheckData;
             }
+            profileLoaded = true;
 
             if (_safetyCheckService.CurrentTrailerSafetyCheckData == null && _safetyCheckService.CurrentVehicleSafetyCheckData == null)
             {
@@ -73,7 +75,7 @@ namespace MWF.Mobile.Core.ViewModels
                 await this.MoveToNextAsync();
             }
 
-            _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(async () => await this.MoveToNextAsync());
+            
         }
 
         protected async Task<SafetyCheckData> GenerateSafetyCheckDataAsync(SafetyProfile safetyProfile, Guid driverID, Guid vehicleOrTrailerID, string vehicleOrTrailerRegistration, bool isTrailer)
@@ -160,7 +162,7 @@ namespace MWF.Mobile.Core.ViewModels
             get
             {
                 
-                return _checksDoneCommand;
+                return _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(async () => await this.MoveToNextAsync()); ;
             }
         }
 
@@ -183,10 +185,11 @@ namespace MWF.Mobile.Core.ViewModels
 
                         foreach (var safetyCheckItem in SafetyCheckItemViewModels)
                         {
-                           // if (!allChecksCompleted)
-                           //     return allChecksCompleted;
-
+                           
                             allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
+                            if (!allChecksCompleted)
+                                return allChecksCompleted;
+
                         }
                     }
                 }
@@ -220,18 +223,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
-        int _isBusy = 0;
         protected async Task MoveToNextAsync()
         {
 
-            int isAvailable = Interlocked.Exchange(ref _isBusy, 1);
-            if (isAvailable != 0)
-                return;
-            try
-            {
-
-                // cannot progress if the safety checks need completing.
-                if (!CanSafetyChecksBeCompleted )
+            
+               // cannot progress if the safety checks need completing.
+                if (!profileLoaded || !CanSafetyChecksBeCompleted )
                     return;
 
                 if (this.IsProgressing)
@@ -248,11 +245,6 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     this.IsProgressing = false;
                 }
-            }
-            finally
-            {
-                Interlocked.Exchange(ref _isBusy, 0);
-            }
         }
 
         public override string FragmentTitle

@@ -33,7 +33,7 @@ namespace MWF.Mobile.Core.ViewModels
         private List<DamageStatus> _damageStatuses;
         private MvxCommand _completeScanningCommand;
         private bool _sectionsLoaded = false;
-
+        private readonly ILoggingService _loggingService = null;
         List<MobileData> _additionalInstructions;
 
         public List<DamageStatus> DamageStatuses
@@ -43,10 +43,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         private INavigationService _navigationService;
 
-        public BarcodeScanningViewModel(INavigationService navigationService, IRepositories repositories)
+        public BarcodeScanningViewModel(INavigationService navigationService, IRepositories repositories, ILoggingService loggingService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
+            _loggingService = loggingService;
         }
 
         public async Task Init(Guid navID)
@@ -141,7 +142,16 @@ namespace MWF.Mobile.Core.ViewModels
        
         public ICommand CompleteScanningCommand
         {
-            get { return _completeScanningCommand = _completeScanningCommand ?? new MvxCommand(async () => await CompleteScanningAsync()); ; }
+            get {
+                if (_completeScanningCommand == null)
+                {
+                    _loggingService.LogEventAsync("CompletScanningCommand Set", Enums.LogType.Info);
+                  _completeScanningCommand =  new MvxCommand(async () => await CompleteScanningAsync());
+                }
+
+                
+                return _completeScanningCommand;
+            }
         }
 
         public string InstructionsText

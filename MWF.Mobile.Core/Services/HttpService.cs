@@ -42,15 +42,18 @@ namespace MWF.Mobile.Core.Services
             }
             var client = new HttpClient(handler);
 
-            using (var response = await client.SendAsync(request))
-            {
-                var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
+            var result = new HttpResult<TResponse>();
+                using (var response = await client.SendAsync(request))
+                {
+                    result.StatusCode = response.StatusCode;
 
-                if (response.IsSuccessStatusCode && response.Content != null)
-                    result.Content = await response.Content.ReadAsAsync<TResponse>();
+                    if (response.IsSuccessStatusCode && response.Content != null)
+                        result.Content = await response.Content.ReadAsAsync<TResponse>();
 
-                return result;
-            }
+
+                }
+           
+            return result;
         }
 
         /// <summary>

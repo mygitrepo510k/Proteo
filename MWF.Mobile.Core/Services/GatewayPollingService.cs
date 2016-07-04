@@ -102,7 +102,7 @@ namespace MWF.Mobile.Core.Services
                 using (await _lock.LockAsync())
                 {
                     var data = await _repositories.ApplicationRepository.GetAllAsync();
-                    var applicationProfile = data.First();
+                    var applicationProfile = data.OrderByDescending(x => x.IntLink).First();
                     _dataRetention = applicationProfile.DataRetention;
                     _dataSpan = applicationProfile.DataSpan;
                 }

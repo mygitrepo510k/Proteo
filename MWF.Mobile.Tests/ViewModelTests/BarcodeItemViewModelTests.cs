@@ -216,7 +216,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         public class TestBarcodeScanningModelVM : BarcodeScanningViewModel
         {
-            public TestBarcodeScanningModelVM(INavigationService navigationService, IRepositories repositories) : base(navigationService, repositories) { }
+            public TestBarcodeScanningModelVM(INavigationService navigationService, IRepositories repositories, ILoggingService loggingService) : base(navigationService, repositories, loggingService) { }
 
             public override void MarkBarcodeAsProcessed(BarcodeItemViewModel barcodeItem, bool wasScanned = true)
             {

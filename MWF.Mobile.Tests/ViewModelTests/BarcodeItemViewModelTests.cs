@@ -26,6 +26,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         private IFixture _fixture;
         private Mock<INavigationService> _mockNavigationService;
+        private Mock<ILoggingService> _mockLoggingService;
         private Mock<ICustomUserInteraction> _mockUserInteraction;
         private TestBarcodeScanningModelVM _barcodeScanningViewModel;
         private List<DamageStatus> _damageStatuses;
@@ -42,6 +43,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _mobileData.Order.Type = InstructionType.Deliver;
 
             _mockNavigationService = _fixture.InjectNewMock<INavigationService>();
+            _mockLoggingService = _fixture.InjectNewMock<ILoggingService>();
 
             _mockMessenger = Ioc.RegisterNewMock<IMvxMessenger>();
             _mockMessenger.Setup(m => m.Unsubscribe<GatewayInstructionNotificationMessage>(It.IsAny<MvxSubscriptionToken>()));
@@ -53,6 +55,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
             _fixture.Customize<BarcodeScanningViewModel>(vm => vm.Without(x => x.BarcodeInput));
 
             Ioc.RegisterSingleton<INavigationService>(_mockNavigationService.Object);
+            Ioc.RegisterSingleton<ILoggingService>(_mockLoggingService.Object);
 
             _barcodeScanningViewModel = _fixture.Create<TestBarcodeScanningModelVM>();
             _barcodeScanningViewModel.MarkAsProcessedBarcodeItem = null;
@@ -216,7 +219,7 @@ namespace MWF.Mobile.Tests.ViewModelTests
 
         public class TestBarcodeScanningModelVM : BarcodeScanningViewModel
         {
-            public TestBarcodeScanningModelVM(INavigationService navigationService, IRepositories repositories) : base(navigationService, repositories) { }
+            public TestBarcodeScanningModelVM(INavigationService navigationService, IRepositories repositories, ILoggingService loggingService) : base(navigationService, repositories, loggingService ) { }
 
             public override void MarkBarcodeAsProcessed(BarcodeItemViewModel barcodeItem, bool wasScanned = true)
             {

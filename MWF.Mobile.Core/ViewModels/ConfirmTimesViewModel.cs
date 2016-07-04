@@ -72,6 +72,12 @@ namespace MWF.Mobile.Core.ViewModels
             if (this.IsProgressing)
                 return;
 
+            if (this.CompleteDateTime.Year < DateTime.Now.Year)
+            {
+                // they have not completed the dates and times and therefore these will come through with 0000 or 1793 
+
+                return;
+            }
             this.IsProgressing = true;
 
             try

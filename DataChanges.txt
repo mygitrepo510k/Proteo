@@ -1,0 +1,5 @@
+On BlueSphere the following values need to be set, using the correct Customer ID, for ApplicationProfile table
+- DeviceCheckInOutRequired : to be set true for hauliers those will require their devices to be checked out and in. Else false.
+- DeviceEventURL : Set to http://<ProteoAnalyticsProductionURL>/api/devicemanagement/recordevent
+- DeviceStatusURL : Set to http://<ProteoAnalyticsProductionURL>/api/devicemanagement/status?
+- DeviceCheckOutTermsAndConditions : Set the Terms and conditions to be accpted for using the haulier's device

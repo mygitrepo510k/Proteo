@@ -601,10 +601,10 @@ namespace MWF.Mobile.Core.Services
         {
             // StartUp Activity
             InsertCustomNavAction<StartupViewModel, CustomerCodeViewModel>(CustomerCode_CustomActionAsync);
-            InsertNavAction<StartupViewModel, CheckOutViewModel, QRCodeViewModel>();
-            InsertNavAction<StartupViewModel, QRCodeViewModel, TermsAndConditionsViewModel>();
-            InsertNavAction<StartupViewModel, TermsAndConditionsViewModel, DriverSignatureViewModel>();
-            InsertNavAction<StartupViewModel, DriverSignatureViewModel, PasscodeViewModel>();
+            InsertNavAction<StartupViewModel, CheckOutViewModel, CheckOutQRCodeViewModel>();
+            InsertNavAction<StartupViewModel, CheckOutQRCodeViewModel, CheckOutTermsViewModel>();
+            InsertNavAction<StartupViewModel, CheckOutTermsViewModel, CheckOutSignatureViewModel>();
+            InsertNavAction<StartupViewModel, CheckOutSignatureViewModel, PasscodeViewModel>();
             InsertNavAction<StartupViewModel, CheckInViewModel, CheckInCompleteViewModel>();
 
             InsertCustomNavAction<StartupViewModel, PasscodeViewModel>(Passcode_CustomActionAsync);
@@ -687,9 +687,15 @@ namespace MWF.Mobile.Core.Services
         public async Task CustomerCode_CustomActionAsync(Guid navID, NavData navData)
         {
             var appProfile = await _repositories.ApplicationRepository.GetAsync();
-
-            if (appProfile.DeviceCheckOutRequired && !appProfile.DeviceCheckInRequired)
-                await this.MoveToAsync<CheckOutViewModel>(navID);
+            if (appProfile.DeviceCheckInOutRequired)
+            {
+                CheckInOutService service = new CheckInOutService(_repositories);
+                Enums.CheckInOutActions status = await service.GetDeviceStatus(Mvx.Resolve<IDeviceInfo>().IMEI);
+                if(status == Enums.CheckInOutActions.CheckIn)
+                    await this.MoveToAsync<CheckOutViewModel>(navID);
+                else
+                    await this.MoveToAsync<PasscodeViewModel>(navID);
+            }
             else
                 await this.MoveToAsync<PasscodeViewModel>(navID);
         }

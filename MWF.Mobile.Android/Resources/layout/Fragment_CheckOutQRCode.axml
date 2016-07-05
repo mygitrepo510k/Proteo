@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:local="http://schemas.android.com/apk/res-auto"
+    android:paddingTop="32dp"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
@@ -16,4 +17,4 @@
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/buttonContinue"
         local:MvxBind="Text ContinueButtonLabel; Click ContinueCommand; LongClick SendDiagnosticsCommand" />
-</RelativeLayout>
+</LinearLayout>

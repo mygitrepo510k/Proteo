@@ -1,5 +1,6 @@
 ﻿using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Enums;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
@@ -53,40 +54,23 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task<bool> OnBackButtonPressedAsync()
         {
-            var closeApp = true;
-#if DEBUG
-            closeApp = !await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("DEBUGGING: Return to Customer Code screen?", cancelButton: "No, close the app");
-#endif
-
-            if (closeApp)
-                _closeApplication.CloseApp();
-            else
-                ShowViewModel<CustomerCodeViewModel>();
-
+            await Task.Run(() => ShowViewModel<CheckInViewModel>());
             return false;
         }
 
         public async Task CheckInDeviceAsync()
         {
             NavData<Models.CheckInOutData> navData = _navigationService.CurrentNavData as NavData<Models.CheckInOutData>;
-            navData.Data.actualActionPerformed = 1;
+            navData.Data.actualActionPerformed = CheckInOutActions.CheckIn;
             navData.Data.actualIMEI = Mvx.Resolve<IDeviceInfo>().IMEI;
             navData.Data.signature = string.Empty;
             navData.Data.driverName = string.Empty;
 
-            var appProfile = await _repositories.ApplicationRepository.GetAsync();
-            string deviceEventUrl = appProfile.DeviceEventURL;
-
-            //If you change pwd1stHalf below remember to change in Proteo Analytics too 
-            string pwd1stHalf = "{6A50F099-DEA4-4B34-9D2C-73C438D8A005}";
-
-            HttpService service = new HttpService();
-            HttpResult result = await service.PostJsonWithAuthAsync(JsonConvert.SerializeObject(navData.Data),
-                deviceEventUrl, "ProteoMobile", pwd1stHalf + Guid.NewGuid().ToString());
+            CheckInOutService service = new CheckInOutService(_repositories);
+            HttpResult result = await service.CheckInDevice(navData.Data);
             if (result.Succeeded)
             {
                 Status = "Device successfully checked in.";
-                appProfile.DeviceCheckInRequired = false;
                 Task.Delay(2000).ContinueWith((x) => ShowViewModel<CheckOutViewModel>());
             }
             else if (result.StatusCode == System.Net.HttpStatusCode.NotAcceptable)

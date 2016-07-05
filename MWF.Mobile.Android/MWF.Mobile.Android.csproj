@@ -83,9 +83,6 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
-	<Reference Include="Xamarin.Android.Support.v4">
-      <HintPath>..\Components\xamandroidsupportv4-18-20.0.0\lib\android\Xamarin.Android.Support.v4.dll</HintPath>
-    </Reference>
     <Reference Include="Cirrious.CrossCore">
       <HintPath>..\packages\MvvmCross.HotTuna.CrossCore.3.2.2\lib\MonoAndroid\Cirrious.CrossCore.dll</HintPath>
     </Reference>
@@ -155,16 +152,16 @@
     <Reference Include="SQLite.Net.Platform.XamarinAndroid, Version=3.1.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\SQLite.Net-PCL.3.1.1\lib\MonoAndroid\SQLite.Net.Platform.XamarinAndroid.dll</HintPath>
     </Reference>
-    <Reference Include="ZXing.Net.Mobile.Core, Version=2.0.4.46, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZXing.Net.Mobile.2.0.4.46\lib\MonoAndroid403\ZXing.Net.Mobile.Core.dll</HintPath>
+    <Reference Include="Xamarin.Android.Support.v4, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.Mobile.1.4.6\lib\MonoAndroid\Xamarin.Android.Support.v4.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="zxing.portable, Version=2.0.4.46, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZXing.Net.Mobile.2.0.4.46\lib\MonoAndroid403\zxing.portable.dll</HintPath>
+    <Reference Include="zxing.monoandroid, Version=0.14.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.Mobile.1.4.6\lib\MonoAndroid\zxing.monoandroid.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ZXingNetMobile, Version=2.0.4.46, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ZXing.Net.Mobile.2.0.4.46\lib\MonoAndroid403\ZXingNetMobile.dll</HintPath>
+    <Reference Include="ZXing.Net.Mobile, Version=1.4.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.Mobile.1.4.6\lib\MonoAndroid\ZXing.Net.Mobile.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -206,7 +203,7 @@
     <Compile Include="Views\Fragments\CheckOutFragment.cs" />
     <Compile Include="Views\Fragments\ConfirmTimesFragment.cs" />
     <Compile Include="Views\Fragments\DiagnosticsFragment.cs" />
-    <Compile Include="Views\Fragments\DriverSignatureFragment.cs" />
+    <Compile Include="Views\Fragments\CheckOutSignatureFragment.cs" />
     <Compile Include="Views\Fragments\InstructionClausedFragment.cs" />
     <Compile Include="Views\Fragments\InstructionAddDeliveriesFragment.cs" />
     <Compile Include="Views\Fragments\ModalCameraFragment.cs" />
@@ -214,7 +211,7 @@
     <Compile Include="Views\Fragments\AboutFragment.cs" />
     <Compile Include="Views\Fragments\BarcodeFragment.cs" />
     <Compile Include="Views\Fragments\BaseFragment.cs" />
-    <Compile Include="Views\Fragments\QRCodeFragment.cs" />
+    <Compile Include="Views\Fragments\CheckOutQRCodeFragment.cs" />
     <Compile Include="Views\Fragments\SideBarCameraFragment.cs" />
     <Compile Include="Views\Fragments\CustomerCodeFragment.cs" />
     <Compile Include="Views\Fragments\DisplaySafetyCheckFragment.cs" />
@@ -243,7 +240,7 @@
     <Compile Include="Views\StartupView.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />      
+    <None Include="app.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -397,13 +394,13 @@
     <AndroidResource Include="Resources\layout\Fragment_CheckOut.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\Fragment_QRCode.axml">
+    <AndroidResource Include="Resources\layout\Fragment_CheckOutQRCode.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_TermsAndConditions.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\Fragment_DriverSignature.axml">
+    <AndroidResource Include="Resources\layout\Fragment_CheckOutSignature.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_CheckIn.axml">

@@ -17,6 +17,8 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly ICloseApplication _closeApplication;
         private readonly INavigationService _navigationService;
 
+        private string _message;
+
         public CheckInViewModel(ICloseApplication closeApplication,
             INavigationService navigationService)
         {
@@ -27,6 +29,16 @@ namespace MWF.Mobile.Core.ViewModels
         public override string FragmentTitle
         {
             get { return "Check In Device"; }
+        }
+
+        public string Message
+        {
+            get { return _message; }
+            set
+            {
+                _message = value;
+                RaisePropertyChanged(() => Message);
+            }
         }
 
         public string ContinueButtonLabel
@@ -56,6 +68,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Task MoveToNextAsync()
         {
+            if (string.IsNullOrEmpty(ScannedQRCode))
+                return Mvx.Resolve<ICustomUserInteraction>().AlertAsync(Message);
+
             NavData<Models.CheckInOutData> navData = new NavData<Models.CheckInOutData>();
             navData.Data = new Models.CheckInOutData();
             navData.Data.qrData = JsonConvert.DeserializeObject<Models.QRData>(this.ScannedQRCode);

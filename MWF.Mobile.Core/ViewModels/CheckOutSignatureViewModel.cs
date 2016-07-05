@@ -1,5 +1,6 @@
 ﻿using Cirrious.CrossCore;
 using Cirrious.MvvmCross.ViewModels;
+using MWF.Mobile.Core.Enums;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class DriverSignatureViewModel : BaseFragmentViewModel, IBackButtonHandler
+    public class CheckOutSignatureViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
         private readonly ICloseApplication _closeApplication;
         private readonly INavigationService _navigationService;
@@ -22,7 +23,7 @@ namespace MWF.Mobile.Core.ViewModels
         private string _driverName;
         private string _driverSignature;        
 
-        public DriverSignatureViewModel(ICloseApplication closeApplication,
+        public CheckOutSignatureViewModel(ICloseApplication closeApplication,
             INavigationService navigationService, IRepositories repositories)
         {
             _closeApplication = closeApplication;
@@ -57,6 +58,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Sign Device Out"; }
         }
 
+        public string Message
+        {
+            get { return "Enter your name and signature and click Complete"; }
+        }
+
         public string NameText
         {
             get { return "Name"; }
@@ -69,17 +75,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task<bool> OnBackButtonPressedAsync()
         {
-            var closeApp = true;
-
-#if DEBUG
-            closeApp = !await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("DEBUGGING: Return to Customer Code screen?", cancelButton: "No, close the app");
-#endif
-
-            if (closeApp)
-                _closeApplication.CloseApp();
-            else
-                ShowViewModel<TermsAndConditionsViewModel>();
-
+            await Task.Run(() => ShowViewModel<CheckOutTermsViewModel>());
             return false;
         }
 
@@ -106,23 +102,15 @@ namespace MWF.Mobile.Core.ViewModels
             if (!string.IsNullOrEmpty(DriverName) && !string.IsNullOrEmpty(DriverSignature))
             {
                 NavData<Models.CheckInOutData> navData = _navigationService.CurrentNavData as NavData<Models.CheckInOutData>;
-                navData.Data.actualActionPerformed = 2;
+                navData.Data.actualActionPerformed = CheckInOutActions.CheckOut;
                 navData.Data.actualIMEI = Mvx.Resolve<IDeviceInfo>().IMEI;
                 navData.Data.signature = DriverSignature;
                 navData.Data.driverName = DriverName;
 
-                var appProfile = await _repositories.ApplicationRepository.GetAsync();
-                string deviceEventUrl = appProfile.DeviceEventURL;
-
-                //If you change pwd1stHalf below remember to change in Proteo Analytics too 
-                string pwd1stHalf = "{6A50F099-DEA4-4B34-9D2C-73C438D8A005}";
-
-                HttpService service = new HttpService();
-                HttpResult result = await service.PostJsonWithAuthAsync(JsonConvert.SerializeObject(navData.Data), 
-                    deviceEventUrl, "ProteoMobile", pwd1stHalf + Guid.NewGuid().ToString());
+                CheckInOutService service = new CheckInOutService(_repositories);
+                HttpResult result = await service.CheckOutDevice(navData.Data);
                 if (result.Succeeded)
                 {
-                    appProfile.DeviceCheckInRequired = true;
                     await _navigationService.MoveToNextAsync();
                 }
                 else if (result.StatusCode == System.Net.HttpStatusCode.NotAcceptable)

@@ -12,12 +12,14 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class QRCodeViewModel : BaseFragmentViewModel, IBackButtonHandler
+    public class CheckOutQRCodeViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
         private readonly ICloseApplication _closeApplication;
         private readonly INavigationService _navigationService;
 
-        public QRCodeViewModel(ICloseApplication closeApplication,
+        private string _message;
+
+        public CheckOutQRCodeViewModel(ICloseApplication closeApplication,
             INavigationService navigationService)
         {
             _closeApplication = closeApplication;
@@ -29,6 +31,16 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Scan QR Code"; }
         }
 
+        public string Message
+        {
+            get { return _message; }
+            set
+            {
+                _message = value;
+                RaisePropertyChanged(() => Message);
+            }
+        }
+
         public string ContinueButtonLabel
         {
             get { return "Continue"; }
@@ -38,17 +50,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task<bool> OnBackButtonPressedAsync()
         {
-            var closeApp = true;
-
-#if DEBUG
-            closeApp = !await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("DEBUGGING: Return to Customer Code screen?", cancelButton: "No, close the app");
-#endif
-
-            if (closeApp)
-                _closeApplication.CloseApp();
-            else
-                ShowViewModel<CustomerCodeViewModel>();
-
+            await Task.Run(() => ShowViewModel<CheckOutViewModel>());
             return false;
         }
 
@@ -66,6 +68,9 @@ namespace MWF.Mobile.Core.ViewModels
 
         public Task MoveToNextAsync()
         {
+            if (string.IsNullOrEmpty(ScannedQRCode))
+                return Mvx.Resolve<ICustomUserInteraction>().AlertAsync(Message);
+
             NavData<Models.CheckInOutData> navData = new NavData<Models.CheckInOutData>();
             navData.Data = new Models.CheckInOutData();
             navData.Data.qrData = JsonConvert.DeserializeObject<Models.QRData>(this.ScannedQRCode);

@@ -30,6 +30,7 @@
         <Button
             style="@style/Proteo.Button"
             android:id="@+id/buttonCheckIn"
+            android:layout_margin="10dp"
             local:MvxBind="Text CheckInButtonLabel; Click CheckInCommand; LongClick SendDiagnosticsCommand; Visible CheckInButtonVisible" />
     </LinearLayout>
     <TextView

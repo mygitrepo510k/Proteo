@@ -6,6 +6,7 @@ using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using Cirrious.CrossCore;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -35,8 +36,15 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 var appProfile = await _repositories.ApplicationRepository.GetAsync();
 
-                if (appProfile.DeviceCheckOutRequired)
-                    this.SetInitialViewModel<CheckOutViewModel>();
+                if (appProfile.DeviceCheckInOutRequired)
+                {
+                    CheckInOutService service = new CheckInOutService(_repositories);
+                    Enums.CheckInOutActions status = await service.GetDeviceStatus(Mvx.Resolve<IDeviceInfo>().IMEI);
+                    if (status == Enums.CheckInOutActions.CheckIn)
+                        this.SetInitialViewModel<CheckOutViewModel>();
+                    else
+                        this.SetInitialViewModel<PasscodeViewModel>();
+                }
                 else
                     this.SetInitialViewModel<PasscodeViewModel>();
             }

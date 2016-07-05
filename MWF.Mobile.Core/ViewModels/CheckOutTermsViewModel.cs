@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MWF.Mobile.Core.ViewModels
 {
-    public class TermsAndConditionsViewModel : BaseFragmentViewModel, IBackButtonHandler
+    public class CheckOutTermsViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
         private readonly ICloseApplication _closeApplication;
         private readonly INavigationService _navigationService;
@@ -20,7 +20,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         private string _termsAndConditions = string.Empty;
 
-        public TermsAndConditionsViewModel(ICloseApplication closeApplication,
+        public CheckOutTermsViewModel(ICloseApplication closeApplication,
             INavigationService navigationService, IRepositories repositories)
         {
             _closeApplication = closeApplication;
@@ -64,17 +64,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task<bool> OnBackButtonPressedAsync()
         {
-            var closeApp = true;
-
-#if DEBUG
-            closeApp = !await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync("DEBUGGING: Return to Customer Code screen?", cancelButton: "No, close the app");
-#endif
-
-            if (closeApp)
-                _closeApplication.CloseApp();
-            else
-                ShowViewModel<QRCodeViewModel>();
-
+            await Task.Run(() => ShowViewModel<CheckOutQRCodeViewModel>());
             return false;
         }
 

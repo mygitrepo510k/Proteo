@@ -10,6 +10,7 @@ using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using MWF.Mobile.Core.Enums;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -47,7 +48,7 @@ namespace MWF.Mobile.Core.ViewModels
             _closeApplication = closeApplication;
             _gatewayQueuedService = gatewayQueuedService;
 
-            setCheckInButtonVisibility();
+            Task.Run(() => setCheckInButtonVisibility()).Wait();
         }
 
         #region Public Members
@@ -135,7 +136,7 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task setCheckInButtonVisibility()
         {
             var appProfile = await _repositories.ApplicationRepository.GetAsync();
-            CheckInButtonVisible = appProfile.DeviceCheckInRequired;
+            CheckInButtonVisible = appProfile.DeviceCheckInOutRequired;
         }
 
         public Task LoginAsync()
@@ -151,10 +152,16 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task CheckInDeviceAsync()
         {
-            var appProfile = await _repositories.ApplicationRepository.GetAsync();
-            if(appProfile.DeviceCheckInRequired)
+            CheckInOutService service = new CheckInOutService(_repositories);
+            CheckInOutActions status = await service.GetDeviceStatus(Mvx.Resolve<IDeviceInfo>().IMEI);
+
+            if(status == CheckInOutActions.CheckOut)
             {
                 ShowViewModel<CheckInViewModel>();
+            }
+            else
+            {
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("This device is not checked out, so can not be checked in.");
             }
         }
 

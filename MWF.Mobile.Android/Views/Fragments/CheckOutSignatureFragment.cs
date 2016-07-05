@@ -16,12 +16,12 @@ using System.IO;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
-    public class DriverSignatureFragment : BaseFragment
+    public class CheckOutSignatureFragment : BaseFragment
     {
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView(inflater, container, savedInstanceState);
-            return this.BindingInflate(Resource.Layout.Fragment_DriverSignature, null);            
+            return this.BindingInflate(Resource.Layout.Fragment_CheckOutSignature, null);            
         }
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
@@ -35,7 +35,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         private void CompleteButton_Click(object sender, EventArgs e)
         {
-            DriverSignatureViewModel viewModel = this.ViewModel as DriverSignatureViewModel;
+            CheckOutSignatureViewModel viewModel = this.ViewModel as CheckOutSignatureViewModel;
             SignaturePadView signaturePad = this.View.FindViewById<SignaturePadView>(Resource.Id.driverSignatureView);
             if (signaturePad.IsBlank) viewModel.DriverSignature = null;
             else

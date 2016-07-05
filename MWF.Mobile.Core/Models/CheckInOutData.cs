@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MWF.Mobile.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace MWF.Mobile.Core.Models
     {
         public QRData qrData { get; set; }
         public string actualIMEI { get; set; }
-        public int actualActionPerformed { get; set; }
+        public CheckInOutActions actualActionPerformed { get; set; }
         public string termsAndConditions { get; set; }
         public string signature { get; set; }
         public string driverName { get; set; }

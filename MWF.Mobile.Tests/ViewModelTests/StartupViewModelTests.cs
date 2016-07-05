@@ -20,10 +20,16 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private Mock<IMvxViewModelLoader> _viewModelLoader;
 
+        private Mock<IApplicationProfileRepository> _mockApplicationProfile;
+
         protected override void AdditionalSetup()
         {
             _fixture = new Fixture().Customize(new AutoMoqCustomization());
             _viewModelLoader = _fixture.InjectNewMock<IMvxViewModelLoader>();
+
+            _mockApplicationProfile = _fixture.InjectNewMock<IApplicationProfileRepository>();
+            _mockApplicationProfile.Setup(map => map.GetAsync()).ReturnsAsync(_fixture.Create<ApplicationProfile>());
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
         }
 
         [Fact]

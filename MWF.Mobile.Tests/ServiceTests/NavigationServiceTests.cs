@@ -71,6 +71,9 @@ namespace MWF.Mobile.Tests.ServiceTests
 
             _mockApplicationProfile = _fixture.InjectNewMock<IApplicationProfileRepository>();
             _mockApplicationProfile.Setup(map => map.GetAllAsync()).ReturnsAsync(_fixture.CreateMany<ApplicationProfile>());
+            var appProfileMock = _fixture.InjectNewMock<ApplicationProfile>();
+            appProfileMock.Object.DeviceCheckInOutRequired = false;
+            _mockApplicationProfile.Setup(map => map.GetAsync()).ReturnsAsync(appProfileMock.Object);
 
             _mockMobileDataRepo = _fixture.InjectNewMock<IMobileDataRepository>();
             _mockMobileDataRepo.Setup(mdr => mdr.GetByIDAsync(It.Is<Guid>(i => i == _mobileData.ID))).ReturnsAsync(_mobileData);
@@ -93,6 +96,10 @@ namespace MWF.Mobile.Tests.ServiceTests
             _mockInfoService = _fixture.InjectNewMock<IInfoService>();
             _mockInfoService.Setup(s => s.CurrentDriverID).ReturnsUsingFixture(_fixture);
             _mockInfoService.Setup(s => s.CurrentVehicleID).ReturnsUsingFixture(_fixture);
+
+            var mockDeviceInfo = new Mock<Core.Services.IDeviceInfo>();
+            mockDeviceInfo.SetupGet(m => m.IMEI).Returns("123456789012345");
+            _fixture.Inject<Core.Services.IDeviceInfo>(mockDeviceInfo.Object);
         }
 
         private void InjectCustomPresenter<TActivityViewModel, TFragmentViewModel>()

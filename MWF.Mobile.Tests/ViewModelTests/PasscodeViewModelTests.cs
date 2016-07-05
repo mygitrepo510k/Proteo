@@ -14,6 +14,7 @@ using MWF.Mobile.Core.ViewModels;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 using Xunit;
+using MWF.Mobile.Tests.Helpers;
 
 namespace MWF.Mobile.Tests.ViewModelTests
 {
@@ -25,6 +26,8 @@ namespace MWF.Mobile.Tests.ViewModelTests
         private IFixture _fixture;
         private Driver _driver;
         private IInfoService _infoService;
+
+        private Mock<IApplicationProfileRepository> _mockApplicationProfile;
 
         protected override void AdditionalSetup()
         {
@@ -46,6 +49,10 @@ namespace MWF.Mobile.Tests.ViewModelTests
             mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.IsAny<string>())).ReturnsAsync(new AuthenticationResult { Success = false });
             mockAuthenticationService.Setup(m => m.AuthenticateAsync(It.Is<string>(s => s == "9999"))).ReturnsAsync(new AuthenticationResult { Success = true, Driver = _driver });
             _fixture.Inject<IAuthenticationService>(mockAuthenticationService.Object);
+
+            _mockApplicationProfile = _fixture.InjectNewMock<IApplicationProfileRepository>();
+            _mockApplicationProfile.Setup(map => map.GetAsync()).ReturnsAsync(_fixture.Create<ApplicationProfile>());
+            _fixture.Inject<IRepositories>(_fixture.Create<Repositories>());
         }
 
         /// <summary>

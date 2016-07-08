@@ -77,6 +77,10 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 Status = "The QR code data and device details did not match. Please ensure that you are checking in the correct device.";
             }
+            else if(result.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+            {
+                Status = "Could not complete Check In process because of server error. Please try again later.";
+            }
             else
             {
                 Status = "Unable to communicate with Device management. Please ensure mobile data is ON.";

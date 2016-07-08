@@ -26,14 +26,21 @@ namespace MWF.Mobile.Core.Services
 
         public async Task<CheckInOutActions> GetDeviceStatus(string imei)
         {
-            var appProfile = await _repositories.ApplicationRepository.GetAsync();
-            string deviceStatusUrl = appProfile.DeviceStatusURL;
+            try
+            {
+                var appProfile = await _repositories.ApplicationRepository.GetAsync();
+                string deviceStatusUrl = appProfile.DeviceStatusURL;
 
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("imei", imei);
-            int value = await _httpService.GetWithAuthAsync<int>(parameters, deviceStatusUrl, 
-                "ProteoMobile", pwd1stHalf + Guid.NewGuid().ToString());
-            return (CheckInOutActions)value;
+                Dictionary<string, string> parameters = new Dictionary<string, string>();
+                parameters.Add("imei", imei);
+                int value = await _httpService.GetWithAuthAsync<int>(parameters, deviceStatusUrl,
+                    "ProteoMobile", pwd1stHalf + Guid.NewGuid().ToString());
+                return (CheckInOutActions)value;
+            }
+            catch
+            {
+                return CheckInOutActions.ErrorOrDeviceNotFound;
+            }
         }
 
         public async Task<HttpResult> CheckOutDevice(CheckInOutData checkOutData)
@@ -48,11 +55,18 @@ namespace MWF.Mobile.Core.Services
 
         private async Task<HttpResult> performDeviceAction(string jsonContent)
         {
-            var appProfile = await _repositories.ApplicationRepository.GetAsync();
-            string deviceEventUrl = appProfile.DeviceEventURL;
+            try
+            {
+                var appProfile = await _repositories.ApplicationRepository.GetAsync();
+                string deviceEventUrl = appProfile.DeviceEventURL;
 
-            return await _httpService.PostJsonWithAuthAsync(jsonContent, deviceEventUrl, 
-                "ProteoMobile", pwd1stHalf + Guid.NewGuid().ToString());
+                return await _httpService.PostJsonWithAuthAsync(jsonContent, deviceEventUrl,
+                    "ProteoMobile", pwd1stHalf + Guid.NewGuid().ToString());
+            }
+            catch
+            {
+                return new HttpResult { StatusCode = System.Net.HttpStatusCode.InternalServerError };
+            }
         }
     }
 }

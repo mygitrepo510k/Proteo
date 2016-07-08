@@ -118,6 +118,11 @@ namespace MWF.Mobile.Core.ViewModels
                     await Mvx.Resolve<ICustomUserInteraction>().AlertAsync(
                         "The QR code data and device details did not match. Please ensure that you are checking out the correct device.");
                 }
+                else if (result.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                {
+                    await Mvx.Resolve<ICustomUserInteraction>().AlertAsync(
+                        "Could not complete Check out process because of server error. Please try again later.");
+                }
                 else
                 {
                     await Mvx.Resolve<ICustomUserInteraction>().AlertAsync(

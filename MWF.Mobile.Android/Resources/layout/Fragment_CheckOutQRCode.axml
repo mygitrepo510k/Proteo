@@ -5,14 +5,15 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
-    <TextView
-        style="@style/Proteo.TextView.SubHeading"
-        local:MvxBind="Text Message" />
     <RelativeLayout
-        android:id="@+id/qrcodeScanner"
-        android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+    <TextView
+        style="@style/Proteo.TextView.SubHeading"
+        local:MvxBind="Text Message"
+        android:layout_height="0dp"
+        android:layout_width="fill_parent"
+        android:layout_weight="2" />
     <Button
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/buttonContinue"

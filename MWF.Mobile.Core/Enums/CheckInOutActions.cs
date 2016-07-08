@@ -8,6 +8,7 @@ namespace MWF.Mobile.Core.Enums
 {
     public enum CheckInOutActions
     {
+        ErrorOrDeviceNotFound = -1,
         CheckIn = 1,
         CheckOut = 2
     }

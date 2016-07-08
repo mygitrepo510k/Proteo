@@ -122,11 +122,8 @@ namespace MWF.Mobile.Core.Models
         [JsonConverter(typeof(JsonBooleanConverter))]
         public bool DeviceCheckInOutRequired { get; set; }
 
-        [JsonProperty("@deviceeventurl")]
-        public string DeviceEventURL { get; set; }
-
-        [JsonProperty("@devicestatusurl")]
-        public string DeviceStatusURL { get; set; }
+        [JsonProperty("@devicemanagementapiurl")]
+        public string DeviceManagementAPIURL { get; set; }
 
         [JsonProperty("@devicecheckouttermsandconditions")]
         public string DeviceCheckOutTermsAndConditions { get; set; }

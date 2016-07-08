@@ -29,7 +29,7 @@ namespace MWF.Mobile.Core.Services
             try
             {
                 var appProfile = await _repositories.ApplicationRepository.GetAsync();
-                string deviceStatusUrl = appProfile.DeviceStatusURL;
+                string deviceStatusUrl = appProfile.DeviceManagementAPIURL + "status?";
 
                 Dictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters.Add("imei", imei);
@@ -58,7 +58,7 @@ namespace MWF.Mobile.Core.Services
             try
             {
                 var appProfile = await _repositories.ApplicationRepository.GetAsync();
-                string deviceEventUrl = appProfile.DeviceEventURL;
+                string deviceEventUrl = appProfile.DeviceManagementAPIURL + "recordevent";
 
                 return await _httpService.PostJsonWithAuthAsync(jsonContent, deviceEventUrl,
                     "ProteoMobile", pwd1stHalf + Guid.NewGuid().ToString());

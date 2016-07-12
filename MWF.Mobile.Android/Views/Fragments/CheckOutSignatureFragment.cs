@@ -18,6 +18,8 @@ namespace MWF.Mobile.Android.Views.Fragments
 {
     public class CheckOutSignatureFragment : BaseFragment
     {
+        private SignaturePadView _signaturePad;
+
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             base.OnCreateView(inflater, container, savedInstanceState);
@@ -26,21 +28,26 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
-            this.Activity.ActionBar.Hide();
             base.OnViewCreated(view, savedInstanceState);
 
             var completeButton = view.FindViewById<Button>(Resource.Id.buttonComplete);
             completeButton.Click += CompleteButton_Click;
+
+            _signaturePad = this.View.FindViewById<SignaturePadView>(Resource.Id.driverSignatureView);
+            _signaturePad.BackgroundColor = AndroidGraphics.Color.Rgb(204, 207, 209);
+            _signaturePad.SignaturePrompt.Text = string.Empty;
+            _signaturePad.ClearLabel.TextSize = 20.0f;
+            _signaturePad.StrokeColor = AndroidGraphics.Color.Black;
         }
 
         private void CompleteButton_Click(object sender, EventArgs e)
         {
             CheckOutSignatureViewModel viewModel = this.ViewModel as CheckOutSignatureViewModel;
-            SignaturePadView signaturePad = this.View.FindViewById<SignaturePadView>(Resource.Id.driverSignatureView);
-            if (signaturePad.IsBlank) viewModel.DriverSignature = null;
+
+            if (_signaturePad.IsBlank) viewModel.DriverSignature = null;
             else
             {
-                var image = signaturePad.GetImage(AndroidGraphics.Color.Black,
+                var image = _signaturePad.GetImage(AndroidGraphics.Color.Black,
                     AndroidGraphics.Color.White, 0.5f, shouldCrop: false);
                 using (var ms = new MemoryStream())
                 {

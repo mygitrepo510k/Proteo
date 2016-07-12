@@ -23,7 +23,6 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
-            this.Activity.ActionBar.Hide();
             base.OnViewCreated(view, savedInstanceState);
         }
     }

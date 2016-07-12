@@ -25,6 +25,7 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
+            this.Activity.ActionBar.Show();
             base.OnViewCreated(view, savedInstanceState);
             Task.Run(() => startScanning());
         }
@@ -34,7 +35,8 @@ namespace MWF.Mobile.Android.Views.Fragments
             Core.ViewModels.CheckOutQRCodeViewModel viewModel = (this.ViewModel as Core.ViewModels.CheckOutQRCodeViewModel);
 
             var scanner = new ZXing.Mobile.MobileBarcodeScanner(this.Activity);
-            scanner.TopText = "Scan the Check Out QR code";
+            scanner.BottomText = "Scan the Check Out QR code";
+            scanner.TopText = "Proteo Mobile";
             var options = new ZXing.Mobile.MobileBarcodeScanningOptions();
             options.PossibleFormats = new List<ZXing.BarcodeFormat>() { ZXing.BarcodeFormat.QR_CODE };
             await scanner.Scan(options).ContinueWith(t => 

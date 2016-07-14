@@ -18,4 +18,8 @@
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/buttonContinue"
         local:MvxBind="Text ContinueButtonLabel; Click ContinueCommand; LongClick SendDiagnosticsCommand" />
+    <Button
+        style="@style/Proteo.Button.Bottom"
+        android:id="@+id/buttonScanAgain"
+        local:MvxBind="Text ScanAgainButtonLabel; LongClick SendDiagnosticsCommand" />
 </LinearLayout>

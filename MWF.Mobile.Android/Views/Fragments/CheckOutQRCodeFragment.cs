@@ -17,6 +17,8 @@ namespace MWF.Mobile.Android.Views.Fragments
 {
     public class CheckOutQRCodeFragment : BaseFragment
     {
+        private bool _scanning = false;
+
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {            
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
@@ -27,11 +29,20 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             this.Activity.ActionBar.Show();
             base.OnViewCreated(view, savedInstanceState);
+            var scanAgainButton = view.FindViewById<Button>(Resource.Id.buttonScanAgain);
+            scanAgainButton.Click += ScanAgainButton_Click;
+
             Task.Run(() => startScanning());
+        }
+
+        private void ScanAgainButton_Click(object sender, EventArgs e)
+        {
+            if (!_scanning) Task.Run(() => startScanning());
         }
 
         private async void startScanning()
         {
+            _scanning = true;
             Core.ViewModels.CheckOutQRCodeViewModel viewModel = (this.ViewModel as Core.ViewModels.CheckOutQRCodeViewModel);
 
             var scanner = new ZXing.Mobile.MobileBarcodeScanner(this.Activity);
@@ -43,11 +54,20 @@ namespace MWF.Mobile.Android.Views.Fragments
             {
                 if (t.Result != null)
                 {
-                    viewModel.ScannedQRCode = t.Result.Text;
-                    viewModel.Message = "The Check Out QR code has been successfully scanned. Click Continue to proceed.";
+                    if (Core.Helpers.CheckInOutQRCodeValidator.IsValidQRCode(t.Result.Text,
+                        Core.Enums.CheckInOutActions.CheckOut))
+                    {
+                        viewModel.ScannedQRCode = t.Result.Text;
+                        viewModel.Message = "The Check Out QR code has been successfully scanned. Click Continue to proceed.";
+                    }
+                    else
+                    {
+                        viewModel.Message = "The scanned QR code is not valid. Please go back and try again.";
+                    }
                 }
                 else
-                    viewModel.Message = "The Check Out QR code could not be scanned. Go back and try again.";
+                    viewModel.Message = "The Check Out QR code could not be scanned. Please go back and try again.";
+                _scanning = false;
             });
         }
     }

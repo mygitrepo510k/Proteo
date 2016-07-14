@@ -133,6 +133,7 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Helpers\CheckInOutQRCodeValidator.cs" />
     <Compile Include="Helpers\SMP.cs" />
     <Compile Include="Messages\InvalidLicenseNotificationMessage.cs" />
     <Compile Include="Messages\GatewayInstructionNotificationMessage.cs" />

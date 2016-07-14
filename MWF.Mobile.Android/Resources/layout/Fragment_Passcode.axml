@@ -24,9 +24,6 @@
             style="@style/Proteo.Button"
             android:id="@+id/buttonPasscode"
             local:MvxBind="Text PasscodeButtonLabel; Click LoginCommand; LongClick SendDiagnosticsCommand" />
-        <TextView
-            android:layout_height="0dp"
-            android:layout_weight="1" />
         <Button
             style="@style/Proteo.Button"
             android:id="@+id/buttonCheckIn"

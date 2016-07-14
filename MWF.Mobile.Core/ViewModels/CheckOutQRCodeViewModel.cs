@@ -46,6 +46,11 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Continue"; }
         }
 
+        public string ScanAgainButtonLabel
+        {
+            get { return "Scan Again"; }
+        }
+
         public string ScannedQRCode { get; set; }
 
         public async Task<bool> OnBackButtonPressedAsync()
@@ -58,7 +63,7 @@ namespace MWF.Mobile.Core.ViewModels
         public System.Windows.Input.ICommand ContinueCommand
         {
             get { return (_continueCommand = _continueCommand ?? new MvxCommand(async () => await this.MoveToNextAsync())); }
-        }
+        }        
 
         private MvxCommand _sendDiagnosticsCommand;
         public System.Windows.Input.ICommand SendDiagnosticsCommand

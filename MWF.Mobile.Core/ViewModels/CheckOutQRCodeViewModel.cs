@@ -18,12 +18,14 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
 
         private string _message;
+        private string _scannedQRCode;
 
         public CheckOutQRCodeViewModel(ICloseApplication closeApplication,
             INavigationService navigationService)
         {
             _closeApplication = closeApplication;
             _navigationService = navigationService;
+            _message = "Opening camera to scan the QR code.";
         }
 
         public override string FragmentTitle
@@ -51,18 +53,46 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Scan Again"; }
         }
 
-        public string ScannedQRCode { get; set; }
+        private bool _isBusy = false;
+        public bool IsBusy
+        {
+            get { return _isBusy; }
+            set { _isBusy = value; RaisePropertyChanged(() => IsBusy); }
+        }
+
+        public string ProgressTitle
+        {
+            get { return "Opening camera..."; }
+        }
+
+        public string ProgressMessage
+        {
+            get { return "Opening camera to scan the QR code."; }
+        }
+
+        public string ScannedQRCode
+        {
+            get { return _scannedQRCode; }
+            set
+            {
+                if (Core.Helpers.CheckInOutQRCodeValidator.IsValidQRCode(value,
+                    Core.Enums.CheckInOutActions.CheckOut))
+                {
+                    Message = "The Check Out QR code has been successfully scanned.";
+                    _scannedQRCode = value;
+                    Task.Delay(100).ContinueWith(dummy => MoveToNextAsync());
+                }
+                else
+                {
+                    Message = "The scanned QR code is not valid. Please scan again.";
+                }
+            }
+        }
 
         public async Task<bool> OnBackButtonPressedAsync()
         {
             await Task.Run(() => ShowViewModel<CheckOutViewModel>());
             return false;
-        }
-
-        private MvxCommand _continueCommand;
-        public System.Windows.Input.ICommand ContinueCommand
-        {
-            get { return (_continueCommand = _continueCommand ?? new MvxCommand(async () => await this.MoveToNextAsync())); }
         }        
 
         private MvxCommand _sendDiagnosticsCommand;

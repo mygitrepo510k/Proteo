@@ -44,31 +44,26 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             _scanning = true;
             Core.ViewModels.CheckOutQRCodeViewModel viewModel = (this.ViewModel as Core.ViewModels.CheckOutQRCodeViewModel);
+            viewModel.IsBusy = true;
 
             var scanner = new ZXing.Mobile.MobileBarcodeScanner(this.Activity);
             scanner.UseCustomOverlay = true;
             scanner.CustomOverlay = LayoutInflater.FromContext(this.Activity).Inflate(Resource.Layout.ZXingCustomLayout, null);
             var options = new ZXing.Mobile.MobileBarcodeScanningOptions();
-            options.PossibleFormats = new List<ZXing.BarcodeFormat>() { ZXing.BarcodeFormat.QR_CODE };
-            ZXing.Result result = await scanner.Scan(options);
-            if (result != null)
+            options.PossibleFormats = new List<ZXing.BarcodeFormat>() { ZXing.BarcodeFormat.QR_CODE };            
+            await scanner.Scan(options).ContinueWith(t =>
             {
-                if (Core.Helpers.CheckInOutQRCodeValidator.IsValidQRCode(result.Text,
-                    Core.Enums.CheckInOutActions.CheckOut))
+                if (t.Result != null)
                 {
-                    viewModel.ScannedQRCode = result.Text;
-                    viewModel.Message = "The Check Out QR code has been successfully scanned. Click Continue to proceed.";
+                    viewModel.ScannedQRCode = t.Result.Text;
                 }
                 else
                 {
-                    viewModel.Message = "The scanned QR code is not valid. Please go back and try again.";
+                    viewModel.Message = "The Check Out QR code could not be scanned.";
+                    Task.Delay(500).ContinueWith(async dummy => await viewModel.OnBackButtonPressedAsync());
                 }
-            }
-            else
-            {
-                viewModel.Message = "The Check Out QR code could not be scanned. Please go back and try again.";
-                Task.Delay(500).ContinueWith(async dummy => await viewModel.OnBackButtonPressedAsync());
-            }
+            });
+            viewModel.IsBusy = false;
             _scanning = false;
         }
     }

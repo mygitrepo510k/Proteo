@@ -46,29 +46,30 @@ namespace MWF.Mobile.Android.Views.Fragments
             Core.ViewModels.CheckOutQRCodeViewModel viewModel = (this.ViewModel as Core.ViewModels.CheckOutQRCodeViewModel);
 
             var scanner = new ZXing.Mobile.MobileBarcodeScanner(this.Activity);
-            scanner.BottomText = "Scan the Check Out QR code";
-            scanner.TopText = "Proteo Mobile";
+            scanner.UseCustomOverlay = true;
+            scanner.CustomOverlay = LayoutInflater.FromContext(this.Activity).Inflate(Resource.Layout.ZXingCustomLayout, null);
             var options = new ZXing.Mobile.MobileBarcodeScanningOptions();
             options.PossibleFormats = new List<ZXing.BarcodeFormat>() { ZXing.BarcodeFormat.QR_CODE };
-            await scanner.Scan(options).ContinueWith(t => 
+            ZXing.Result result = await scanner.Scan(options);
+            if (result != null)
             {
-                if (t.Result != null)
+                if (Core.Helpers.CheckInOutQRCodeValidator.IsValidQRCode(result.Text,
+                    Core.Enums.CheckInOutActions.CheckOut))
                 {
-                    if (Core.Helpers.CheckInOutQRCodeValidator.IsValidQRCode(t.Result.Text,
-                        Core.Enums.CheckInOutActions.CheckOut))
-                    {
-                        viewModel.ScannedQRCode = t.Result.Text;
-                        viewModel.Message = "The Check Out QR code has been successfully scanned. Click Continue to proceed.";
-                    }
-                    else
-                    {
-                        viewModel.Message = "The scanned QR code is not valid. Please go back and try again.";
-                    }
+                    viewModel.ScannedQRCode = result.Text;
+                    viewModel.Message = "The Check Out QR code has been successfully scanned. Click Continue to proceed.";
                 }
                 else
-                    viewModel.Message = "The Check Out QR code could not be scanned. Please go back and try again.";
-                _scanning = false;
-            });
+                {
+                    viewModel.Message = "The scanned QR code is not valid. Please go back and try again.";
+                }
+            }
+            else
+            {
+                viewModel.Message = "The Check Out QR code could not be scanned. Please go back and try again.";
+                Task.Delay(500).ContinueWith(async dummy => await viewModel.OnBackButtonPressedAsync());
+            }
+            _scanning = false;
         }
     }
 }

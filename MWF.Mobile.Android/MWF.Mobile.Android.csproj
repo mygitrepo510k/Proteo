@@ -409,6 +409,9 @@
     <AndroidResource Include="Resources\layout\Fragment_CheckInComplete.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\ZXingCustomLayout.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\Strings.xml" />

@@ -42,6 +42,23 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Check In Status"; }
         }
 
+        private bool _isBusy = false;
+        public bool IsBusy
+        {
+            get { return _isBusy; }
+            set { _isBusy = value; RaisePropertyChanged(() => IsBusy); }
+        }
+
+        public string ProgressTitle
+        {
+            get { return "Checking In..."; }
+        }
+
+        public string ProgressMessage
+        {
+            get { return "Checking in the device. Please wait."; }
+        }
+
         public string Status
         {
             get { return _status; }
@@ -60,6 +77,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task CheckInDeviceAsync()
         {
+            IsBusy = true;
             NavData<Models.CheckInOutData> navData = _navigationService.CurrentNavData as NavData<Models.CheckInOutData>;
             navData.Data.actualActionPerformed = CheckInOutActions.CheckIn;
             navData.Data.actualIMEI = Mvx.Resolve<IDeviceInfo>().IMEI;
@@ -68,10 +86,11 @@ namespace MWF.Mobile.Core.ViewModels
 
             CheckInOutService service = new CheckInOutService(_repositories);
             HttpResult result = await service.CheckInDevice(navData.Data);
+            IsBusy = false;
             if (result.Succeeded)
             {
                 Status = "Device successfully checked in.";
-                Task.Delay(2000).ContinueWith((x) => ShowViewModel<CheckOutViewModel>());
+                Task.Delay(1000).ContinueWith((x) => ShowViewModel<CheckOutViewModel>());
             }
             else if (result.StatusCode == System.Net.HttpStatusCode.NotAcceptable)
             {

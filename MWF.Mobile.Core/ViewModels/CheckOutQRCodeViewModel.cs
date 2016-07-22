@@ -80,7 +80,7 @@ namespace MWF.Mobile.Core.ViewModels
                 {
                     Message = "The Check Out QR code has been successfully scanned.";
                     _scannedQRCode = value;
-                    Task.Delay(100).ContinueWith(dummy => MoveToNextAsync());
+                    Task.Delay(500).ContinueWith(dummy => MoveToNextAsync());
                 }
                 else
                 {

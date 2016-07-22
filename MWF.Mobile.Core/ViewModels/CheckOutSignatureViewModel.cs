@@ -73,6 +73,23 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Complete"; }
         }
 
+        private bool _isBusy = false;
+        public bool IsBusy
+        {
+            get { return _isBusy; }
+            set { _isBusy = value; RaisePropertyChanged(() => IsBusy); }
+        }
+
+        public string ProgressTitle
+        {
+            get { return "Checking Out..."; }
+        }
+
+        public string ProgressMessage
+        {
+            get { return "Checking out the device. Please wait."; }
+        }
+
         public async Task<bool> OnBackButtonPressedAsync()
         {
             await Task.Run(() => ShowViewModel<CheckOutTermsViewModel>());
@@ -101,6 +118,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             if (!string.IsNullOrEmpty(DriverName) && !string.IsNullOrEmpty(DriverSignature))
             {
+                IsBusy = true;
                 NavData<Models.CheckInOutData> navData = _navigationService.CurrentNavData as NavData<Models.CheckInOutData>;
                 navData.Data.actualActionPerformed = CheckInOutActions.CheckOut;
                 navData.Data.actualIMEI = Mvx.Resolve<IDeviceInfo>().IMEI;
@@ -109,6 +127,7 @@ namespace MWF.Mobile.Core.ViewModels
 
                 CheckInOutService service = new CheckInOutService(_repositories);
                 HttpResult result = await service.CheckOutDevice(navData.Data);
+                IsBusy = false;
                 if (result.Succeeded)
                 {
                     await _navigationService.MoveToNextAsync();

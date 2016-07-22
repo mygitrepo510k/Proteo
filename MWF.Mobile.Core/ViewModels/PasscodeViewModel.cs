@@ -18,6 +18,12 @@ namespace MWF.Mobile.Core.ViewModels
     public class PasscodeViewModel
         : BaseFragmentViewModel, IBackButtonHandler
     {
+        private readonly string _progressTitleForPasscode = "Checking Passcode...";
+        private readonly string _progressMessageForPasscode = "Your driver passcode is being checked. This can take up to 5 minutes.";
+
+        private readonly string _progressTitleForCheckIn = "Status check...";
+        private readonly string _progressMessageForCheckIn = "Checking the check out status of the device.";
+
         private readonly ICurrentDriverRepository _currentDriverRepository = null;
         private readonly IAuthenticationService _authenticationService = null;
         private readonly IInfoService _infoService = null;
@@ -28,6 +34,8 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IRepositories _repositories;
         private bool _isBusy = false;
         private bool _checkInButtonVisible = false;
+        private string _progressTitle;
+        private string _progressMessage;
 
         public PasscodeViewModel(
             IAuthenticationService authenticationService, 
@@ -91,12 +99,22 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressTitle
         {
-            get { return "Checking Passcode..."; }
+            get { return _progressTitle; }
+            set
+            {
+                _progressTitle = value;
+                RaisePropertyChanged(() => ProgressTitle);
+            }
         }
 
         public string ProgressMessage
         {
-            get { return "Your driver passcode is being checked. This can take up to 5 minutes."; }
+            get { return _progressMessage; }
+            set
+            {
+                _progressMessage = value;
+                RaisePropertyChanged(() => ProgressMessage);
+            }
         }
 
         private string _passcode = null;
@@ -152,9 +170,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task CheckInDeviceAsync()
         {
+            ProgressTitle = _progressTitleForCheckIn;
+            ProgressMessage = _progressMessageForCheckIn;
+            IsBusy = true;
+
             CheckInOutService service = new CheckInOutService(_repositories);
             CheckInOutActions status = await service.GetDeviceStatus(Mvx.Resolve<IDeviceInfo>().IMEI);
 
+            IsBusy = false;
             if(status == CheckInOutActions.CheckOut)
             {
                 ShowViewModel<CheckInViewModel>();
@@ -176,6 +199,9 @@ namespace MWF.Mobile.Core.ViewModels
         {
             AuthenticationResult result;
 			LogMessage exceptionMsg = null;
+
+            ProgressTitle = _progressTitleForPasscode;
+            ProgressMessage = _progressMessageForPasscode;
 
             this.IsBusy = true;
 

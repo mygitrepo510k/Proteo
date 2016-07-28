@@ -36,9 +36,9 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _driverName; }
             set
             {
-                if (string.IsNullOrEmpty(value))
+                _driverName = value;
+                if (string.IsNullOrEmpty(_driverName) || string.IsNullOrWhiteSpace(_driverName))
                     Mvx.Resolve<ICustomUserInteraction>().AlertAsync("To complete, please enter your name");
-                else _driverName = value;
             }
         }
 
@@ -47,9 +47,9 @@ namespace MWF.Mobile.Core.ViewModels
             get { return _driverSignature; }
             set
             {
-                if (string.IsNullOrEmpty(value))
-                    Mvx.Resolve<ICustomUserInteraction>().AlertAsync("To continue, please sign on the pad");
-                else _driverSignature = value;
+                _driverSignature = value;
+                if (string.IsNullOrEmpty(_driverSignature) || string.IsNullOrWhiteSpace(_driverSignature))
+                    Mvx.Resolve<ICustomUserInteraction>().AlertAsync("To continue, please sign on the pad");                
             }
         }
 
@@ -110,13 +110,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task MoveToNextAsync()
         {
-            if (string.IsNullOrEmpty(DriverName))
+            if (string.IsNullOrEmpty(DriverName) || string.IsNullOrWhiteSpace(DriverName))
                 await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("To complete, please enter your name");
 
-            if (string.IsNullOrEmpty(DriverSignature))
+            if (string.IsNullOrEmpty(DriverSignature) || string.IsNullOrWhiteSpace(DriverSignature))
                 await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("To continue, please sign on the pad");
 
-            if (!string.IsNullOrEmpty(DriverName) && !string.IsNullOrEmpty(DriverSignature))
+            if (!string.IsNullOrEmpty(DriverName) && !string.IsNullOrWhiteSpace(DriverName) &&
+                !string.IsNullOrEmpty(DriverSignature) && !string.IsNullOrWhiteSpace(DriverSignature))
             {
                 IsBusy = true;
                 NavData<Models.CheckInOutData> navData = _navigationService.CurrentNavData as NavData<Models.CheckInOutData>;

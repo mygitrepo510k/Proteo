@@ -74,7 +74,14 @@ namespace MWF.Mobile.Core.Services
             {
                 _timer = new Timer(async state =>
                 {
-                    await this.PollForInstructionsAsync();
+                    try
+                    {
+                        await this.PollForInstructionsAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Mvx.Trace("Time out {0}", ex.Message);
+                    }
                     if(_timer != null)
                         _timer.Reset();
                 },

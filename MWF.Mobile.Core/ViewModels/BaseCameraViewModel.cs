@@ -134,13 +134,12 @@ namespace MWF.Mobile.Core.ViewModels
                 //Add to view model
                 CameraImageViewModel imageViewModel = new CameraImageViewModel(image, this);
                 ImagesVM.Add(imageViewModel);
-
                 RaisePropertyChanged(() => HasPhotoBeenTaken);
                 RaisePropertyChanged(() => CommentHintText);
             }
             catch(Exception ex)
             {
-                throw;
+                throw new Exception(ex.Message);
             }
         }
 
@@ -158,13 +157,12 @@ namespace MWF.Mobile.Core.ViewModels
                 //Add to view model
                 CameraImageViewModel imageViewModel = new CameraImageViewModel(image, this);
                 ImagesVM.Add(imageViewModel);
-
                 RaisePropertyChanged(() => HasPhotoBeenTaken);
                 RaisePropertyChanged(() => CommentHintText);
             }
             catch (Exception ex)
             {
-                throw;
+                throw new Exception(ex.Message);
             }
         }
 

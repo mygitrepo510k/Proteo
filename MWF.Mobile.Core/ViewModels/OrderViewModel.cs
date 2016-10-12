@@ -156,7 +156,7 @@ namespace MWF.Mobile.Core.ViewModels
             return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
                 _mobileData = _navData.Data;
-                _order = _mobileData.Order.Items.First(i => i.ID == orderID);
+                _order = _mobileData.Order.Items.FirstOrDefault(i => i.ID == orderID);
                 _navData.OtherData["Order"] = _order;
                 RaiseAllPropertiesChanged();
             });

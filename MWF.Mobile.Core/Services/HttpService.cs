@@ -37,6 +37,7 @@ namespace MWF.Mobile.Core.Services
             {
                 request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
+
                 var client = new HttpClient();
                 var authData = string.Format("{0}:{1}", userName, password);
                 var authHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(authData));
@@ -73,14 +74,31 @@ namespace MWF.Mobile.Core.Services
             }
             var client = new HttpClient(handler);
 
-            using (var response = await client.SendAsync(request))
+            try
             {
-                var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
 
-                if (response.IsSuccessStatusCode && response.Content != null)
-                    result.Content = await response.Content.ReadAsAsync<TResponse>();
+                using (var response = await client.SendAsync(request))
+                {
+                    var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
 
-                return result;
+                    if (response.IsSuccessStatusCode && response.Content != null)
+                    {
+                        try
+                        {
+                            result.Content = await response.Content.ReadAsAsync<TResponse>();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.Message);
+                        }
+                    }
+
+                    return result;
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HttpRequestException(e.InnerException.Message);
             }
         }
 

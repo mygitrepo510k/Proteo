@@ -111,16 +111,23 @@ namespace MWF.Mobile.Core.Services
                     formContent.Add(fileContent);
 
                     request.Content = formContent;
-
-                    var response = await _httpService.SendAsyncPlainResponse<HttpResponseMessage>(request);
-
-                    if (response.StatusCode == HttpStatusCode.OK)
+                    try
                     {
-                        await _loggingService.LogEventAsync("Image sent successfully.", Enums.LogType.Info);
-                        uploadedCount++;
+
+                        var response = await _httpService.SendAsyncPlainResponse<HttpResponseMessage>(request);
+
+                        if (response.StatusCode == HttpStatusCode.OK)
+                        {
+                            await _loggingService.LogEventAsync("Image sent successfully.", Enums.LogType.Info);
+                            uploadedCount++;
+                        }
+                        else
+                            await _loggingService.LogEventAsync(string.Format("Image failed to send, Status Code: {0}.", response.StatusCode), Enums.LogType.Error);
                     }
-                    else
-                        await _loggingService.LogEventAsync(string.Format("Image failed to send, Status Code: {0}.", response.StatusCode), Enums.LogType.Error);
+                    catch(Exception ex)
+                    {
+                        throw;
+                    }
                 }
             }
 

@@ -17,7 +17,14 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code
-            var ignored = base.OnCreateView(inflater, container, savedInstanceState);
+            if (savedInstanceState == null)
+            {
+
+            }
+            else
+            {
+                var ignored = base.OnCreateView(inflater, container, savedInstanceState);
+            }
             return this.BindingInflate(Resource.Layout.Fragment_TrailerListView, null);
         }
 
@@ -31,7 +38,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             var searchItem = menu.FindItem(Resource.Id.trailer_action_search).ActionView;
             _searchView = searchItem.JavaCast<SearchView>();
         }
-
+        
         public override void OnPrepareOptionsMenu(IMenu menu)
         {
             base.OnPrepareOptionsMenu(menu);

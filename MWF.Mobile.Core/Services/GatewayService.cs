@@ -182,28 +182,35 @@ namespace MWF.Mobile.Core.Services
         private async Task<ServiceCallResult<T>> ServiceCallAsync<T>(string command, Parameter[] parameters = null)
             where T: class
         {
-            var requestContent = await CreateRequestContentAsync(command, parameters);
-            var response = await this.PostAsync<T>(requestContent);
-
-            if (!response.Succeeded && response.StatusCode == HttpStatusCode.Forbidden)
+            try
             {
-                _messenger.Publish(new Messages.InvalidLicenseNotificationMessage(this));
-                return new ServiceCallResult<T> { Result = default(T) };
+                var requestContent = await CreateRequestContentAsync(command, parameters);
+                var response = await this.PostAsync<T>(requestContent);
+
+                if (!response.Succeeded && response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    _messenger.Publish(new Messages.InvalidLicenseNotificationMessage(this));
+                    return new ServiceCallResult<T> { Result = default(T) };
+                }
+
+                var responseActions = response.Content.Actions;
+
+                if (!response.Succeeded || responseActions.Count() != 1)
+                {
+                    throw new Exception("No actions returned from Gateway service call.");
+                }
+
+                var responseAction = responseActions.First();
+
+                if (!responseAction.Ack)
+                    return new ServiceCallResult<T> { Result = default(T), Errors = responseAction.Errors };
+
+                return new ServiceCallResult<T> { Result = responseAction.Data };
             }
-
-            var responseActions = response.Content.Actions;
-
-            if (!response.Succeeded || responseActions.Count() != 1)
+            catch(Exception ex)
             {
-                throw new Exception("No actions returned from Gateway service call.");
+                throw;
             }
-
-            var responseAction = responseActions.First();
-
-            if (!responseAction.Ack)
-                return new ServiceCallResult<T> { Result = default(T), Errors = responseAction.Errors };
-
-            return new ServiceCallResult<T> { Result = responseAction.Data };
         }
 
         private Task<HttpResult<Models.GatewayServiceResponse.Response<TData>>> PostAsync<TData>(Models.GatewayServiceRequest.Content content)

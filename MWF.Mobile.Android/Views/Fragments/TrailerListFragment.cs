@@ -17,14 +17,7 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code
-            if (savedInstanceState == null)
-            {
-
-            }
-            else
-            {
-                var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            }
+            var ignored = base.OnCreateView(inflater, container, savedInstanceState);
             return this.BindingInflate(Resource.Layout.Fragment_TrailerListView, null);
         }
 

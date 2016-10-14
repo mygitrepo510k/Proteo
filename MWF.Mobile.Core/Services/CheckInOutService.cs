@@ -37,7 +37,7 @@ namespace MWF.Mobile.Core.Services
                     "ProteoMobile", pwd1stHalf + Guid.NewGuid().ToString());
                 return (CheckInOutActions)value;
             }
-            catch
+            catch(Exception ex)
             {
                 return CheckInOutActions.ErrorOrDeviceNotFound;
             }

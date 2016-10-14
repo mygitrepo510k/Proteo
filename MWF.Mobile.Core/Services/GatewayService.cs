@@ -45,11 +45,11 @@ namespace MWF.Mobile.Core.Services
             _gatewayLicenceCheckUrl = urlBase + "/api/gateway/systemcheck";
 
             //Local url, will need to change your own IP
-            //_gatewayDeviceCreateUrl = "http://192.168.3.133:17337/api/gateway/createdevice";
-            //_gatewayDeviceRequestUrl = "http://192.168.3.133:17337/api/gateway/devicerequest";
-            //_gatewayLogMessageUrl = "http://192.168.3.133:17337/api/gateway/logmessage";
-            //_gatewayConfigRequestUrl = "http://192.168.3.133:17337/api/gateway/configrequest";
-            //_gatewayLicenceCheckUrl = "http://192.168.3.133:17337/api/gateway/systemcheck";
+            //_gatewayDeviceCreateUrl = "http://192.168.3.119:17337/api/gateway/createdevice";
+            //_gatewayDeviceRequestUrl = "http://192.168.3.119:17337/api/gateway/devicerequest";
+            //_gatewayLogMessageUrl = "http://192.168.3.119:17337/api/gateway/logmessage";
+            //_gatewayConfigRequestUrl = "http://192.168.3.119:17337/api/gateway/configrequest";
+            //_gatewayLicenceCheckUrl = "http://192.168.3.119:17337/api/gateway/systemcheck";
 
 
             _deviceRepository = repositories.DeviceRepository;

@@ -95,12 +95,12 @@ namespace MWF.Mobile.Core.ViewModels
 
         public System.Windows.Input.ICommand TakePictureCommand
         {
-            get { return (_takePictureCommand = _takePictureCommand ?? new MvxCommand(() => TakePictureAsync())); }
+            get { return (_takePictureCommand = _takePictureCommand ?? new MvxCommand(() => TakePicture())); }
         }
 
         public System.Windows.Input.ICommand SelectPictureFromLibraryCommand
         {
-            get { return (_selectPictureFromLibrary = _selectPictureFromLibrary ?? new MvxCommand(() => SelectPictureFromLibraryAsync()));}
+            get { return (_selectPictureFromLibrary = _selectPictureFromLibrary ?? new MvxCommand(() => SelectPictureFromLibrary()));}
         }
 
         public ObservableCollection<CameraImageViewModel> ImagesVM

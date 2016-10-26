@@ -26,7 +26,9 @@ namespace MWF.Mobile.Core.Models
         {
             if (trailer == null || instructionTrailer == null)
             {
-                return (trailer == null && instructionTrailer == null);
+                if (trailer == null && instructionTrailer != null)
+                    return true;
+                return (trailer == null || instructionTrailer == null);
             }
 
             return trailer.Registration == instructionTrailer.TrailerId;

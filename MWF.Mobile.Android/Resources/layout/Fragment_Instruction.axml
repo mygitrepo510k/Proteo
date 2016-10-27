@@ -64,21 +64,24 @@
             <TextView
                 style="@style/Proteo.TextView.SectionHeading"
                 local:MvxBind="Text TrailersLabelText" />
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:layout_marginTop="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_gravity="left">
-                <TextView
+              <TextView
+                    android:layout_gravity="left"
                     style="@style/Proteo.TextView.SectionContent"
                     android:layout_alignParentLeft="true"
                     local:MvxBind="Text TrailerReg" />
                 <Button
+                    android:layout_gravity="right"
                     style="@style/Proteo.Button.InSection"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="10dp"
                     local:MvxBind="Text TrailerChangeButtonText; Click EditTrailerCommand; Visibility ChangeTrailerAllowed, Converter=Visibility" />
-            </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
     <mwf.BindableProgress

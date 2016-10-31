@@ -121,9 +121,16 @@ namespace MWF.Mobile.Core.Services
 
         public async Task<IEnumerable<Models.Vehicle>> GetVehiclesAsync(string vehicleViewTitle)
         {
-            var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle} };
-            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles", parameters);
-            return data.Result == null ? Enumerable.Empty<Models.Vehicle>() : data.Result.List;
+            try
+            {
+                var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle } };
+                var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles", parameters);
+                return data.Result == null ? Enumerable.Empty<Models.Vehicle>() : data.Result.List;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<IEnumerable<Models.VehicleView>> GetVehicleViewsAsync()

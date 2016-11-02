@@ -848,7 +848,7 @@ namespace MWF.Mobile.Core.Services
                 var mobileNavData = navData as NavData<MobileData>;
 
                 var additionalContent = mobileNavData.Data.Order.Additional;
-                var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
+                var itemAdditionalContent = mobileNavData.Data.Order.Items.FirstOrDefault().Additional;
                 var deliveryOptions = mobileNavData.GetWorseCaseDeliveryOptions();
 
                 // Collection

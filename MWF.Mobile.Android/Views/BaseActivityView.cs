@@ -83,7 +83,7 @@ namespace MWF.Mobile.Android.Views
 
         public async override void OnBackPressed()
         {
-            try
+            if (CurrentFragment.DataContext != null)
             {
                 if (CurrentFragment.DataContext is IBackButtonHandler)
                 {
@@ -92,16 +92,13 @@ namespace MWF.Mobile.Android.Views
                     if (continueBack)
                         base.OnBackPressed();
                 }
-                else
-                {
-                    base.OnBackPressed();
-                }
-
-                this.FragmentChanged();
-            } catch (Exception ex)
-            {
-                throw;
             }
+            else
+            {
+                base.OnBackPressed();
+            }
+
+            this.FragmentChanged();
         }
 
         public virtual void FragmentChanged(MvxFragment fragment = null)

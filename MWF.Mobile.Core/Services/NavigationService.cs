@@ -761,17 +761,24 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public async Task Signature_CustomAction_SidebarAsync(Guid navID, NavData navData)
         {
-            // commit safety check data to repositories and bluesphere
-            await _safetyCheckService.CommitSafetyCheckDataAsync();
+            try
+            {
+                // commit safety check data to repositories and bluesphere
+                await _safetyCheckService.CommitSafetyCheckDataAsync();
 
-            if (_inLogoutSafetyCheck)
-            {
-                await this.DoLogoutAsync();
-                _inLogoutSafetyCheck = false;
+                if (_inLogoutSafetyCheck)
+                {
+                    await this.DoLogoutAsync();
+                    _inLogoutSafetyCheck = false;
+                }
+                else
+                {
+                    this.ShowViewModel<ManifestViewModel>();
+                }
             }
-            else
+            catch(Exception ex)
             {
-                this.ShowViewModel<ManifestViewModel>();
+                throw;
             }
         }
 
@@ -841,7 +848,7 @@ namespace MWF.Mobile.Core.Services
                 var mobileNavData = navData as NavData<MobileData>;
 
                 var additionalContent = mobileNavData.Data.Order.Additional;
-                var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
+                var itemAdditionalContent = mobileNavData.Data.Order.Items.FirstOrDefault().Additional;
                 var deliveryOptions = mobileNavData.GetWorseCaseDeliveryOptions();
 
                 // Collection

@@ -295,9 +295,16 @@ namespace MWF.Mobile.Core.Repositories
         /// <param name="parents"></param>
         protected async Task PopulateChildrenRecursiveAsync(IEnumerable parents, Database.IAsyncConnection connection)
         {
-            foreach (var parent in parents)
+            try
             {
-                await this.PopulateChildrenRecursiveAsync(parent as IBlueSphereEntity, connection);
+                foreach (var parent in parents)
+                {
+                    await this.PopulateChildrenRecursiveAsync(parent as IBlueSphereEntity, connection);
+                }
+            }
+            catch(ArgumentOutOfRangeException e)
+            {
+
             }
         }
 

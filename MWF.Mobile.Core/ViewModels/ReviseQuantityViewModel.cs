@@ -58,6 +58,9 @@ namespace MWF.Mobile.Core.ViewModels
             _mobileData = _navData.Data;
             _dataChunk = _navData.GetAdditionalDataChunk(_mobileData);
             OrderQuantity = _order.Quantity;
+            OrderCases = _order.Cases;
+            OrderPallets = _order.Pallets;
+            OrderWeight = _order.Weight;
         }
 
         #endregion Construction
@@ -67,6 +70,7 @@ namespace MWF.Mobile.Core.ViewModels
         public string ReviseQuantityButtonLabel{ get { return "Update Quantity"; } }
 
         public string ReviseQuantityHeaderLabel { get { return "Revise Quantity"; } }
+        
 
         public string OrderName { get { return "Order " + _order.ItemIdFormatted; } }
 
@@ -77,6 +81,31 @@ namespace MWF.Mobile.Core.ViewModels
             set { _orderQuantity = value; RaisePropertyChanged(() => OrderQuantity); }
         }
 
+        private string _orderCases;
+        public string OrderCases
+        {
+            get { return _orderCases; }
+            set { _orderCases = value; RaisePropertyChanged(() => OrderCases); }
+        }
+
+        private string _orderPallets;
+        public string OrderPallets
+        {
+            get { return _orderPallets; }
+            set { _orderPallets = value; RaisePropertyChanged(() => OrderPallets); }
+        }
+
+        private string _orderWeight;
+        public string OrderWeight
+        {
+            get { return _orderWeight; }
+            set { _orderWeight = value; RaisePropertyChanged(() => OrderWeight); }
+        }
+
+        public string OrderDeliveryNo
+        {
+            get { return _order.DeliveryOrderNumber ?? _order.OrderId.ToString(); }
+        }
         #endregion Public Properties
 
         #region Public Methods
@@ -98,7 +127,11 @@ namespace MWF.Mobile.Core.ViewModels
                 if (order.ID == _order.ID)
                 {
                     order.Quantity = OrderQuantity;
+                    order.Cases = OrderCases;
+                    order.Pallets = OrderPallets;
+                    order.Weight = OrderWeight;
                     order.Additional.ConfirmQuantity.Value = OrderQuantity;
+                    
                     _dataChunk.Data.Order.Add(order);
                 }
             }

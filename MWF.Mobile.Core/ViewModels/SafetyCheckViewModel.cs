@@ -25,6 +25,7 @@ namespace MWF.Mobile.Core.ViewModels
         protected INavigationService _navigationService;
         protected NavData<MobileData> _navData;
         protected ISafetyCheckService _safetyCheckService;
+        protected bool _manual = false;
 
         #endregion
 
@@ -71,6 +72,7 @@ namespace MWF.Mobile.Core.ViewModels
                 await Task.WhenAll(
                     Mvx.Resolve<ICustomUserInteraction>().AlertAsync("A safety check profile for your vehicle and/or trailer has not been found - Perform a manual safety check."),
                     _safetyCheckService.CommitSafetyCheckDataAsync());
+                this._manual = true;
 
                 await this.MoveToNextAsync();
             }
@@ -172,25 +174,32 @@ namespace MWF.Mobile.Core.ViewModels
             {
                 if (this.IsProgressing)
                     return false;
+                if (this._manual == true)
+                    return true;
 
                 bool allChecksCompleted = false;
+                int count = 0;
+                int index = 0;
 
-                if ((this.SafetyProfileVehicle != null && this.SafetyProfileVehicle.IsVOSACompliant)
+                    if ((this.SafetyProfileVehicle != null && this.SafetyProfileVehicle.IsVOSACompliant)
                     || (this.SafetyProfileTrailer != null && this.SafetyProfileTrailer.IsVOSACompliant))
                 {
                     if (SafetyCheckItemViewModels.Count == 0)
                         allChecksCompleted = false;
                     else
                     {
-
+                        count = SafetyCheckItemViewModels.Count;
                         foreach (var safetyCheckItem in SafetyCheckItemViewModels)
                         {
-                           
                             allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
-                            if (!allChecksCompleted)
-                                return allChecksCompleted;
-
+                            if (allChecksCompleted == true)
+                                index++;
                         }
+                        if (index == count)
+                            return true;
+                        else
+                            return false;
+
                     }
                 }
                 else

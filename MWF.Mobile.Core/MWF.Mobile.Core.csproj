@@ -121,6 +121,7 @@
     <Compile Include="Database\IAsyncConnection.cs" />
     <Compile Include="Database\IConnection.cs" />
     <Compile Include="Database\IAsyncTableQuery.cs" />
+    <Compile Include="Enums\CheckInOutActions.cs" />
     <Compile Include="Enums\ScanState.cs" />
     <Compile Include="Enums\DriverActivity.cs" />
     <Compile Include="Enums\InstructionProgress.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
+    <Compile Include="Helpers\CheckInOutQRCodeValidator.cs" />
     <Compile Include="Helpers\SMP.cs" />
     <Compile Include="Messages\InvalidLicenseNotificationMessage.cs" />
     <Compile Include="Messages\GatewayInstructionNotificationMessage.cs" />
@@ -143,6 +145,7 @@
     <Compile Include="Messages\TopLevelExceptionHandlerMessage.cs" />
     <Compile Include="Models\Attributes\ChildRelationshipAttribute.cs" />
     <Compile Include="Models\Attributes\ForeignKeyAttribute.cs" />
+    <Compile Include="Models\CheckInOutData.cs" />
     <Compile Include="Models\CurrentDriver.cs" />
     <Compile Include="Models\GatewayQueueItem.cs" />
     <Compile Include="Models\GatewayServiceRequest\Action.cs" />
@@ -173,6 +176,8 @@
     <Compile Include="Models\Instruction\Additional.cs" />
     <Compile Include="Models\Instruction\Address.cs" />
     <Compile Include="Models\Instruction\Barcode.cs" />
+    <Compile Include="Models\Instruction\ConfirmPallets.cs" />
+    <Compile Include="Models\Instruction\ConfirmCases.cs" />
     <Compile Include="Models\Instruction\ScannedDelivery.cs" />
     <Compile Include="Models\Instruction\ConfirmQuantity.cs" />
     <Compile Include="Models\Instruction\DeliveryDescription.cs" />
@@ -192,6 +197,7 @@
     <Compile Include="Models\LatestSafetyCheck.cs" />
     <Compile Include="Models\LogMessage.cs" />
     <Compile Include="Models\MWFMobileConfig.cs" />
+    <Compile Include="Models\QRData.cs" />
     <Compile Include="Models\Signature.cs" />
     <Compile Include="Models\SafetyCheckFault.cs" />
     <Compile Include="Models\SafetyCheckFaultType.cs" />
@@ -253,6 +259,7 @@
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="Repositories\VerbProfileRepository.cs" />
     <Compile Include="Services\AuthenticationService.cs" />
+    <Compile Include="Services\CheckInOutService.cs" />
     <Compile Include="Services\DataChunkService.cs" />
     <Compile Include="Services\IDataChunkService.cs" />
     <Compile Include="Services\IDiagnosticsService.cs" />
@@ -287,8 +294,12 @@
     <Compile Include="ViewModels\BarcodeItemViewModel.cs" />
     <Compile Include="ViewModels\BarcodeSectionViewModel.cs" />
     <Compile Include="ViewModels\BarcodeScanningViewModel.cs" />
+    <Compile Include="ViewModels\CheckInCompleteViewModel.cs" />
+    <Compile Include="ViewModels\CheckInViewModel.cs" />
+    <Compile Include="ViewModels\CheckOutViewModel.cs" />
     <Compile Include="ViewModels\ConfirmTimesViewModel.cs" />
     <Compile Include="ViewModels\DiagnosticsViewModel.cs" />
+    <Compile Include="ViewModels\CheckOutSignatureViewModel.cs" />
     <Compile Include="ViewModels\Extensions\ViewModelExtensions.cs" />
     <Compile Include="ViewModels\Interfaces\IInstructionNotificationViewModel.cs" />
     <Compile Include="ViewModels\InstructionAddDeliveriesViewModel.cs" />
@@ -320,6 +331,7 @@
     <Compile Include="ViewModels\MenuViewModel.cs" />
     <Compile Include="ViewModels\BaseFragmentViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IBackButtonHandler.cs" />
+    <Compile Include="ViewModels\CheckOutQRCodeViewModel.cs" />
     <Compile Include="ViewModels\ReviseQuantityViewModel.cs" />
     <Compile Include="ViewModels\CameraImageViewModel.cs" />
     <Compile Include="ViewModels\SafetyCheckFaultImageViewModel.cs" />
@@ -334,6 +346,7 @@
     <Compile Include="ViewModels\OdometerViewModel.cs" />
     <Compile Include="ViewModels\BaseTrailerListViewModel.cs" />
     <Compile Include="ViewModels\SidebarCameraViewModel.cs" />
+    <Compile Include="ViewModels\CheckOutTermsViewModel.cs" />
     <Compile Include="ViewModels\VehicleListViewModel.cs" />
     <Compile Include="ViewModels\CustomerCodeViewModel.cs" />
     <Compile Include="ViewModels\ManifestViewModel.cs" />

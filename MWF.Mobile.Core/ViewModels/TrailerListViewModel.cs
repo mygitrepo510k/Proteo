@@ -101,6 +101,21 @@ namespace MWF.Mobile.Core.ViewModels
                     _infoService.SetCurrentTrailer(trailer);
                     await _navigationService.MoveToNextAsync();
                 }
+                finally
+                {
+                    this.IsBusy = false;
+                }
+
+                _infoService.SetCurrentTrailer(trailer);
+                try
+                {
+                    await _navigationService.MoveToNextAsync();
+                }
+                catch (Exception ex)
+                {
+                    MvxTrace.Error("Next {0}", ex.Message);
+                    throw;
+                }
             }
             finally
             {

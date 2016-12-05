@@ -28,15 +28,17 @@ namespace MWF.Mobile.Android.Views.Fragments
 
         public override void OnPause()
         {
+            base.OnPause();
             this.HideKeyboard();
             this.SetVisible(false);
-            base.OnPause();
+            
         }
 
         public override void OnResume()
         {
-            this.SetVisible(true);
             base.OnResume();
+            this.SetVisible(true);
+            
         }
 
         public override void OnDestroy()

@@ -57,8 +57,10 @@ namespace MWF.Mobile.Core.ViewModels
 
             this.VehicleRegistration = "Vehicle: " + (hasVehicleSafetyCheck ? _latestSafetyCheckData.VehicleSafetyCheck.VehicleRegistration : string.Empty);
             this.TrailerRegistration = "Trailer: " + (hasTrailerSafetyCheck ? _latestSafetyCheckData.TrailerSafetyCheck.VehicleRegistration : string.Empty);
-            this.VehicleSafetyCheckStatus = "Checked: " + (hasVehicleSafetyCheck ? _latestSafetyCheckData.VehicleSafetyCheck.EffectiveDate.ToString("g") : string.Empty);
-            this.TrailerSafetyCheckStatus = "Checked: " + (hasTrailerSafetyCheck ? _latestSafetyCheckData.TrailerSafetyCheck.EffectiveDate.ToString("g") : string.Empty);
+//            this.VehicleSafetyCheckStatus = "Checked: " + (hasVehicleSafetyCheck ? _latestSafetyCheckData.VehicleSafetyCheck.EffectiveDate.ToString("g") : string.Empty);
+//            this.TrailerSafetyCheckStatus = "Checked: " + (hasTrailerSafetyCheck ? _latestSafetyCheckData.TrailerSafetyCheck.EffectiveDate.ToString("g") : string.Empty);
+            this.VehicleSafetyCheckStatus = "Checked: " + (hasVehicleSafetyCheck ? _latestSafetyCheckData.VehicleSafetyCheck.EffectiveDate.ToUniversalTime().ToString("dd/MM/yyyy HH:mm:ss") : string.Empty);
+            this.TrailerSafetyCheckStatus = "Checked: " + (hasTrailerSafetyCheck ? _latestSafetyCheckData.TrailerSafetyCheck.EffectiveDate.ToUniversalTime().ToString("dd/MM/yyyy HH:mm:ss") : string.Empty);
 
             if (hasVehicleSafetyCheck)
                 GenerateSafetyCheckFaultItems(_latestSafetyCheckData.VehicleSafetyCheck.Faults, false);

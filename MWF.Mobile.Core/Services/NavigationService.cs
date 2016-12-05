@@ -600,7 +600,13 @@ namespace MWF.Mobile.Core.Services
         private void SetMappings()
         {
             // StartUp Activity
-            InsertNavAction<StartupViewModel, CustomerCodeViewModel, PasscodeViewModel>();
+            InsertCustomNavAction<StartupViewModel, CustomerCodeViewModel>(CustomerCode_CustomActionAsync);
+            InsertNavAction<StartupViewModel, CheckOutViewModel, CheckOutQRCodeViewModel>();
+            InsertNavAction<StartupViewModel, CheckOutQRCodeViewModel, CheckOutTermsViewModel>();
+            InsertNavAction<StartupViewModel, CheckOutTermsViewModel, CheckOutSignatureViewModel>();
+            InsertNavAction<StartupViewModel, CheckOutSignatureViewModel, PasscodeViewModel>();
+            InsertNavAction<StartupViewModel, CheckInViewModel, CheckInCompleteViewModel>();
+
             InsertCustomNavAction<StartupViewModel, PasscodeViewModel>(Passcode_CustomActionAsync);
             InsertNavAction<StartupViewModel, DiagnosticsViewModel, PasscodeViewModel>();
             InsertNavAction<StartupViewModel, VehicleListViewModel, TrailerListViewModel>();
@@ -678,6 +684,22 @@ namespace MWF.Mobile.Core.Services
             return Task.FromResult(0);
         }
 
+        public async Task CustomerCode_CustomActionAsync(Guid navID, NavData navData)
+        {
+            var appProfile = await _repositories.ApplicationRepository.GetAsync();
+            if (appProfile.DeviceCheckInOutRequired)
+            {
+                CheckInOutService service = new CheckInOutService(_repositories);
+                Enums.CheckInOutActions status = await service.GetDeviceStatus(Mvx.Resolve<IDeviceInfo>().IMEI);
+                if(status == Enums.CheckInOutActions.CheckIn)
+                    await this.MoveToAsync<CheckOutViewModel>(navID);
+                else
+                    await this.MoveToAsync<PasscodeViewModel>(navID);
+            }
+            else
+                await this.MoveToAsync<PasscodeViewModel>(navID);
+        }
+
         public Task Passcode_CustomActionAsync(Guid navID, NavData navData)
         {
             if (navData != null)
@@ -739,17 +761,24 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public async Task Signature_CustomAction_SidebarAsync(Guid navID, NavData navData)
         {
-            // commit safety check data to repositories and bluesphere
-            await _safetyCheckService.CommitSafetyCheckDataAsync();
+            try
+            {
+                // commit safety check data to repositories and bluesphere
+                await _safetyCheckService.CommitSafetyCheckDataAsync();
 
-            if (_inLogoutSafetyCheck)
-            {
-                await this.DoLogoutAsync();
-                _inLogoutSafetyCheck = false;
+                if (_inLogoutSafetyCheck)
+                {
+                    await this.DoLogoutAsync();
+                    _inLogoutSafetyCheck = false;
+                }
+                else
+                {
+                    this.ShowViewModel<ManifestViewModel>();
+                }
             }
-            else
+            catch(Exception ex)
             {
-                this.ShowViewModel<ManifestViewModel>();
+                throw;
             }
         }
 
@@ -819,7 +848,7 @@ namespace MWF.Mobile.Core.Services
                 var mobileNavData = navData as NavData<MobileData>;
 
                 var additionalContent = mobileNavData.Data.Order.Additional;
-                var itemAdditionalContent = mobileNavData.Data.Order.Items.First().Additional;
+                var itemAdditionalContent = mobileNavData.Data.Order.Items.FirstOrDefault().Additional;
                 var deliveryOptions = mobileNavData.GetWorseCaseDeliveryOptions();
 
                 // Collection

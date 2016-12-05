@@ -10,6 +10,7 @@ using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using MWF.Mobile.Core.Enums;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -17,6 +18,12 @@ namespace MWF.Mobile.Core.ViewModels
     public class PasscodeViewModel
         : BaseFragmentViewModel, IBackButtonHandler
     {
+        private readonly string _progressTitleForPasscode = "Checking Passcode...";
+        private readonly string _progressMessageForPasscode = "Your driver passcode is being checked. This can take up to 5 minutes.";
+
+        private readonly string _progressTitleForCheckIn = "Status check...";
+        private readonly string _progressMessageForCheckIn = "Checking the check out status of the device.";
+
         private readonly ICurrentDriverRepository _currentDriverRepository = null;
         private readonly IAuthenticationService _authenticationService = null;
         private readonly IInfoService _infoService = null;
@@ -24,7 +31,11 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly INavigationService _navigationService;
         private readonly ILoggingService _loggingService;
         private readonly IGatewayQueuedService _gatewayQueuedService;
+        private readonly IRepositories _repositories;
         private bool _isBusy = false;
+        private bool _checkInButtonVisible = false;
+        private string _progressTitle;
+        private string _progressMessage;
 
         public PasscodeViewModel(
             IAuthenticationService authenticationService, 
@@ -40,9 +51,12 @@ namespace MWF.Mobile.Core.ViewModels
             _navigationService = navigationService;
             _loggingService = loggingService;
 
+            _repositories = repositories;
             _currentDriverRepository = repositories.CurrentDriverRepository;
             _closeApplication = closeApplication;
             _gatewayQueuedService = gatewayQueuedService;
+
+            Task.Run(() => setCheckInButtonVisibility()).Wait();
         }
 
         #region Public Members
@@ -63,6 +77,21 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Submit"; }
         }
 
+        public string CheckInButtonLabel
+        {
+            get { return "Check In"; }
+        }
+
+        public bool CheckInButtonVisible
+        {
+            get { return _checkInButtonVisible; }
+            private set
+            {
+                _checkInButtonVisible = value;
+                RaisePropertyChanged(() => CheckInButtonVisible);
+            }
+        }
+
         public string VersionText
         {
             get { return string.Format("Version: {0}           DeviceID: {1}", Mvx.Resolve<IDeviceInfo>().SoftwareVersion, Mvx.Resolve<IDeviceInfo>().IMEI); }
@@ -70,12 +99,22 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressTitle
         {
-            get { return "Checking Passcode..."; }
+            get { return _progressTitle; }
+            set
+            {
+                _progressTitle = value;
+                RaisePropertyChanged(() => ProgressTitle);
+            }
         }
 
         public string ProgressMessage
         {
-            get { return "Your driver passcode is being checked. This can take up to 5 minutes."; }
+            get { return _progressMessage; }
+            set
+            {
+                _progressMessage = value;
+                RaisePropertyChanged(() => ProgressMessage);
+            }
         }
 
         private string _passcode = null;
@@ -96,6 +135,13 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get { return (_sendDiagnosticsCommand = _sendDiagnosticsCommand ?? new MvxCommand(async () => await this.SendDiagnosticsAsync()));}
         }
+
+        private MvxCommand _checkInCommand;
+        public System.Windows.Input.ICommand CheckInCommand
+        {
+            get { return (_checkInCommand = _checkInCommand ?? new MvxCommand(async () => await this.CheckInDeviceAsync())); }
+        }
+
         public override string FragmentTitle
         {
             get { return "Passcode"; }
@@ -104,6 +150,12 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion Public Members
 
         #region Private Methods
+
+        private async Task setCheckInButtonVisibility()
+        {
+            var appProfile = await _repositories.ApplicationRepository.GetAsync();
+            CheckInButtonVisible = appProfile.DeviceCheckInOutRequired;
+        }
 
         public Task LoginAsync()
         {
@@ -114,6 +166,26 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             return this.AuthenticateAsync();
+        }
+
+        public async Task CheckInDeviceAsync()
+        {
+            ProgressTitle = _progressTitleForCheckIn;
+            ProgressMessage = _progressMessageForCheckIn;
+            IsBusy = true;
+
+            CheckInOutService service = new CheckInOutService(_repositories);
+            CheckInOutActions status = await service.GetDeviceStatus(Mvx.Resolve<IDeviceInfo>().IMEI);
+
+            IsBusy = false;
+            if(status == CheckInOutActions.CheckOut)
+            {
+                ShowViewModel<CheckInViewModel>();
+            }
+            else
+            {
+                await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("This device is not checked out, so can not be checked in.");
+            }
         }
 
         public Task SendDiagnosticsAsync()
@@ -127,6 +199,9 @@ namespace MWF.Mobile.Core.ViewModels
         {
             AuthenticationResult result;
 			LogMessage exceptionMsg = null;
+
+            ProgressTitle = _progressTitleForPasscode;
+            ProgressMessage = _progressMessageForPasscode;
 
             this.IsBusy = true;
 

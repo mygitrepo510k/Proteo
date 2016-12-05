@@ -120,12 +120,58 @@ namespace MWF.Mobile.Core.ViewModels
 
         public abstract Task DoDoneCommandAsync();
 
+        private async void SelectPictureFromLibraryAsync()
+        {
+            try
+            {
+                var stream = await _pictureChooserTask.ChoosePictureFromLibraryAsync(400, 95);
+                var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+
+                int sequenceNumber = (ImagesVM.Any()) ? _imagesVM.Max(i => i.Image.Sequence) + 1 : 1;
+                Image image = new Image() { ID = Guid.NewGuid(), Sequence = sequenceNumber, Bytes = memoryStream.ToArray(), Filename = string.Format("{0} {1}.jpg", _infoService.CurrentDriverDisplayName, DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss")) };
+
+                //Add to view model
+                CameraImageViewModel imageViewModel = new CameraImageViewModel(image, this);
+                ImagesVM.Add(imageViewModel);
+                RaisePropertyChanged(() => HasPhotoBeenTaken);
+                RaisePropertyChanged(() => CommentHintText);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        private async void TakePictureAsync()
+        {
+            try
+            {
+                var stream = await _pictureChooserTask.TakePictureAsync(400, 95);
+                var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+
+                int sequenceNumber = (ImagesVM.Any()) ? _imagesVM.Max(i => i.Image.Sequence) + 1 : 1;
+                Image image = new Image() { ID = Guid.NewGuid(), Sequence = sequenceNumber, Bytes = memoryStream.ToArray(), Filename = string.Format("{0} {1}.jpg", _infoService.CurrentDriverDisplayName, DateTime.Now.ToString("yyyy-MM-ddHH-mm-ss")) };
+
+                //Add to view model
+                CameraImageViewModel imageViewModel = new CameraImageViewModel(image, this);
+                ImagesVM.Add(imageViewModel);
+                RaisePropertyChanged(() => HasPhotoBeenTaken);
+                RaisePropertyChanged(() => CommentHintText);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         private void TakePicture()
         {
             // note use "TakePicture" for release
             // ChoosePictureFromLibrary should only be used when debugging with an emulator
             //_pictureChooserTask.ChoosePictureFromLibrary(400, 95, OnPictureTaken, () => { });
-            _pictureChooserTask.TakePicture(400, 95, OnPictureTaken, () => { });       
+            _pictureChooserTask.TakePicture(400, 95, OnPictureTaken, () => { });
         }
 
         private void SelectPictureFromLibrary()

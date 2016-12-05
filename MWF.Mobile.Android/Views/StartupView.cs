@@ -78,8 +78,14 @@ namespace MWF.Mobile.Android.Views
         }
 
         protected static IDictionary<Type, Type> _supportedViewModels = new Dictionary<Type, Type>
-            {            
+            {
+                { typeof(Core.ViewModels.CheckOutViewModel), typeof(Fragments.CheckOutFragment) },
+                { typeof(Core.ViewModels.CheckOutQRCodeViewModel), typeof(Fragments.CheckOutQRCodeFragment) },
+                { typeof(Core.ViewModels.CheckOutTermsViewModel), typeof(Fragments.TermsAndConditionsFragment) },
+                { typeof(Core.ViewModels.CheckOutSignatureViewModel), typeof(Fragments.CheckOutSignatureFragment) },
                 { typeof(Core.ViewModels.PasscodeViewModel), typeof(Fragments.PasscodeFragment) },
+                { typeof(Core.ViewModels.CheckInViewModel), typeof(Fragments.CheckInFragment) },
+                { typeof(Core.ViewModels.CheckInCompleteViewModel), typeof(Fragments.CheckInCompleteFragment) },
                 { typeof(Core.ViewModels.CustomerCodeViewModel), typeof(Fragments.CustomerCodeFragment)},
                 { typeof(Core.ViewModels.VehicleListViewModel), typeof(Fragments.VehicleListFragment)},
                 { typeof(Core.ViewModels.TrailerListViewModel), typeof(Fragments.TrailerListFragment)},

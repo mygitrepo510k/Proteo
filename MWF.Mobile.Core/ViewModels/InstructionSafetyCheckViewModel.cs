@@ -29,6 +29,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task Init(Guid navID)
         {
+            this._manual = false;
             _navData = _navigationService.GetNavData<MobileData>(navID);
 
             Models.Trailer trailer = _navData.OtherData["UpdatedTrailer"] as Models.Trailer;
@@ -51,6 +52,7 @@ namespace MWF.Mobile.Core.ViewModels
             if (_navData.OtherData["UpdatedTrailerSafetyCheckData"] == null)
             {
                 await Mvx.Resolve<ICustomUserInteraction>().AlertAsync("A safety check profile for your trailer has not been found - Perform a manual safety check.");
+                this._manual = true;
                 await this.MoveToNextAsync();
             }
 

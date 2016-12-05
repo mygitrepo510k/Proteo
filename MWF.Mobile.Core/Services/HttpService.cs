@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ModernHttpClient;
+using System.Net.Http.Headers;
 
 namespace MWF.Mobile.Core.Services
 {
@@ -14,6 +15,37 @@ namespace MWF.Mobile.Core.Services
     public class HttpService
         : IHttpService
     {
+        public async Task<T> GetWithAuthAsync<T>(Dictionary<string, string> parameters, string url, string userName, string password)
+        {
+            StringBuilder contentBuilder = new StringBuilder();
+            foreach (KeyValuePair<string, string> arg in parameters)
+                contentBuilder.AppendFormat("{0}={1}&", arg.Key, arg.Value);
+            using (var request = new HttpRequestMessage(HttpMethod.Get, url + contentBuilder.ToString()))
+            {
+                var client = new HttpClient();
+                var authData = string.Format("{0}:{1}", userName, password);
+                var authHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(authData));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authHeaderValue);
+                var response = await client.SendAsync(request);
+                return await response.Content.ReadAsAsync<T>();
+            }
+        }
+
+        public async Task<HttpResult> PostJsonWithAuthAsync(string jsonContent, string url, string userName, string password)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Post, url))
+            {
+                request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+
+                var client = new HttpClient();
+                var authData = string.Format("{0}:{1}", userName, password);
+                var authHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(authData));
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authHeaderValue);
+                var response = await client.SendAsync(request);
+                return new HttpResult { StatusCode = response.StatusCode };
+            }
+        }
 
         public async Task<HttpResult<TResponse>> PostJsonAsync<TResponse>(string jsonContent, string url)
         {
@@ -42,18 +74,32 @@ namespace MWF.Mobile.Core.Services
             }
             var client = new HttpClient(handler);
 
-            var result = new HttpResult<TResponse>();
+            try
+            {
+
                 using (var response = await client.SendAsync(request))
                 {
-                    result.StatusCode = response.StatusCode;
+                    var result = new HttpResult<TResponse> { StatusCode = response.StatusCode };
 
                     if (response.IsSuccessStatusCode && response.Content != null)
-                        result.Content = await response.Content.ReadAsAsync<TResponse>();
+                    {
+                        try
+                        {
+                            result.Content = await response.Content.ReadAsAsync<TResponse>();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.Message);
+                        }
+                    }
 
-
+                    return result;
                 }
-           
-            return result;
+            }
+            catch (HttpRequestException e)
+            {
+                throw new HttpRequestException(e.InnerException.Message);
+            }
         }
 
         /// <summary>

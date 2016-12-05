@@ -17,6 +17,11 @@ namespace MWF.Mobile.Core.ViewModels
 
     public class CustomerCodeViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
+        private readonly string _progressTitleForCustomerCode = "Downloading Data...";
+        private readonly string _progressMessageForCustomerCode = "Your customer code is being checked to set-up your device. This can take up to 5 minutes.";
+
+        private readonly string _progressTitleForCheckIn = "Status check...";
+        private readonly string _progressMessageForCheckIn = "Checking the check out status of the device.";
 
         private readonly Services.IGatewayService _gatewayService;
         private readonly Services.IDataService _dataService;
@@ -34,6 +39,9 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IVerbProfileRepository _verbProfileRepository;
         private readonly IConfigRepository _configRepository;
         private readonly ICloseApplication _closeApplication;
+
+        private string _progressTitle;
+        private string _progressMessage;
 
         public CustomerCodeViewModel(IGatewayService gatewayService, IReachability reachability, IDataService dataService, IRepositories repositories, ICustomUserInteraction userInteraction, INavigationService navigationService, ICloseApplication closeApplication)
         {
@@ -109,12 +117,22 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ProgressTitle
         {
-            get { return "Downloading Data...";  }
+            get { return _progressTitle; }
+            set
+            {
+                _progressTitle = value;
+                RaisePropertyChanged(() => ProgressTitle);
+            }
         }
 
         public string ProgressMessage
         {
-            get { return "Your customer code is being checked to set-up your device. This can take up to 5 minutes.";  }
+            get { return _progressMessage; }
+            set
+            {
+                _progressMessage = value;
+                RaisePropertyChanged(() => ProgressMessage);
+            }
         }
 
         private MvxCommand _enterCodeCommand;
@@ -146,6 +164,8 @@ namespace MWF.Mobile.Core.ViewModels
             else
             {
                 bool success = false;
+                ProgressTitle = _progressTitleForCustomerCode;
+                ProgressMessage = _progressMessageForCustomerCode;
 
                 this.IsBusy = true;
 
@@ -165,7 +185,13 @@ namespace MWF.Mobile.Core.ViewModels
                 }
 
                 if (success)
+                {
+                    ProgressTitle = _progressTitleForCheckIn;
+                    ProgressMessage = _progressMessageForCheckIn;
+                    IsBusy = true;
                     await _navigationService.MoveToNextAsync();
+                    IsBusy = false;
+                }
                 else
                     await _userInteraction.AlertAsync(_errorMessage);
             }

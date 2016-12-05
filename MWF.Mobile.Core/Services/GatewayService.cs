@@ -45,11 +45,11 @@ namespace MWF.Mobile.Core.Services
             _gatewayLicenceCheckUrl = urlBase + "/api/gateway/systemcheck";
 
             //Local url, will need to change your own IP
-            //_gatewayDeviceCreateUrl = "http://192.168.3.133:17337/api/gateway/createdevice";
-            //_gatewayDeviceRequestUrl = "http://192.168.3.133:17337/api/gateway/devicerequest";
-            //_gatewayLogMessageUrl = "http://192.168.3.133:17337/api/gateway/logmessage";
-            //_gatewayConfigRequestUrl = "http://192.168.3.133:17337/api/gateway/configrequest";
-            //_gatewayLicenceCheckUrl = "http://192.168.3.133:17337/api/gateway/systemcheck";
+            //_gatewayDeviceCreateUrl = "http://192.168.3.119:17337/api/gateway/createdevice";
+            //_gatewayDeviceRequestUrl = "http://192.168.3.119:17337/api/gateway/devicerequest";
+            //_gatewayLogMessageUrl = "http://192.168.3.119:17337/api/gateway/logmessage";
+            //_gatewayConfigRequestUrl = "http://192.168.3.119:17337/api/gateway/configrequest";
+            //_gatewayLicenceCheckUrl = "http://192.168.3.119:17337/api/gateway/systemcheck";
 
 
             _deviceRepository = repositories.DeviceRepository;
@@ -121,9 +121,16 @@ namespace MWF.Mobile.Core.Services
 
         public async Task<IEnumerable<Models.Vehicle>> GetVehiclesAsync(string vehicleViewTitle)
         {
-            var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle} };
-            var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles", parameters);
-            return data.Result == null ? Enumerable.Empty<Models.Vehicle>() : data.Result.List;
+            try
+            {
+                var parameters = new[] { new Models.GatewayServiceRequest.Parameter { Name = "VehicleView", Value = vehicleViewTitle } };
+                var data = await ServiceCallAsync<Models.GatewayServiceResponse.Vehicles>("fwGetVehicles", parameters);
+                return data.Result == null ? Enumerable.Empty<Models.Vehicle>() : data.Result.List;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<IEnumerable<Models.VehicleView>> GetVehicleViewsAsync()
@@ -182,28 +189,35 @@ namespace MWF.Mobile.Core.Services
         private async Task<ServiceCallResult<T>> ServiceCallAsync<T>(string command, Parameter[] parameters = null)
             where T: class
         {
-            var requestContent = await CreateRequestContentAsync(command, parameters);
-            var response = await this.PostAsync<T>(requestContent);
-
-            if (!response.Succeeded && response.StatusCode == HttpStatusCode.Forbidden)
+            try
             {
-                _messenger.Publish(new Messages.InvalidLicenseNotificationMessage(this));
-                return new ServiceCallResult<T> { Result = default(T) };
+                var requestContent = await CreateRequestContentAsync(command, parameters);
+                var response = await this.PostAsync<T>(requestContent);
+
+                if (!response.Succeeded && response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    _messenger.Publish(new Messages.InvalidLicenseNotificationMessage(this));
+                    return new ServiceCallResult<T> { Result = default(T) };
+                }
+
+                var responseActions = response.Content.Actions;
+
+                if (!response.Succeeded || responseActions.Count() != 1)
+                {
+                    throw new Exception("No actions returned from Gateway service call.");
+                }
+
+                var responseAction = responseActions.First();
+
+                if (!responseAction.Ack)
+                    return new ServiceCallResult<T> { Result = default(T), Errors = responseAction.Errors };
+
+                return new ServiceCallResult<T> { Result = responseAction.Data };
             }
-
-            var responseActions = response.Content.Actions;
-
-            if (!response.Succeeded || responseActions.Count() != 1)
+            catch(Exception ex)
             {
-                throw new Exception("No actions returned from Gateway service call.");
+                throw;
             }
-
-            var responseAction = responseActions.First();
-
-            if (!responseAction.Ack)
-                return new ServiceCallResult<T> { Result = default(T), Errors = responseAction.Errors };
-
-            return new ServiceCallResult<T> { Result = responseAction.Data };
         }
 
         private Task<HttpResult<Models.GatewayServiceResponse.Response<TData>>> PostAsync<TData>(Models.GatewayServiceRequest.Content content)

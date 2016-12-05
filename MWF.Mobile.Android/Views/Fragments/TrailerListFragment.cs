@@ -35,7 +35,7 @@ namespace MWF.Mobile.Android.Views.Fragments
             var searchItem = menu.FindItem(Resource.Id.trailer_action_search).ActionView;
             _searchView = searchItem.JavaCast<SearchView>();
         }
-
+        
         public override void OnPrepareOptionsMenu(IMenu menu)
         {
             base.OnPrepareOptionsMenu(menu);

@@ -40,7 +40,7 @@ namespace MWF.Mobile.Core.Models.Instruction
         public string Quantity { get; set; }
 
         [JsonProperty("weight")]
-        [XmlIgnore]
+        [XmlElement("weight")]
         public string Weight { get; set; }
 
         [JsonProperty("title")]
@@ -63,6 +63,14 @@ namespace MWF.Mobile.Core.Models.Instruction
         [XmlIgnore]
         [JsonIgnore]
         public Guid OrderId { get; set; }
+
+        [JsonProperty("cases")]
+        [XmlElement("cases")]
+        public string Cases { get; set; }
+        
+        [JsonProperty("pallets")]
+        [XmlElement("pallets")]
+        public string Pallets { get; set; }
 
         [ChildRelationship(typeof(ItemAdditional), RelationshipCardinality.OneToZeroOrOne)]
         [JsonProperty("additional")]

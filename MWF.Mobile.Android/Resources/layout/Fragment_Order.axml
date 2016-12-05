@@ -62,7 +62,7 @@
                     style="@style/Proteo.TextView.Order"
                     android:layout_weight="0.4"
                     android:background="#d1d1d1"
-                    android:text="Quantity" />
+                    android:text="Pallet Spaces" />
                 <textview
                     style="@style/Proteo.TextView.Order"
                     android:layout_weight="0.6"
@@ -77,11 +77,26 @@
                     style="@style/Proteo.TextView.Order"
                     android:layout_weight="0.4"
                     android:background="#ffffff"
-                    android:text="Weight" />
+                    android:text="Pallets" />
                 <textview
                     style="@style/Proteo.TextView.Order"
                     android:layout_weight="0.6"
                     android:background="#ffffff"
+                    local:MvxBind="Text OrderPallets" />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent">
+                <textview
+                    style="@style/Proteo.TextView.Order"
+                    android:layout_weight="0.4"
+                    android:background="#d1d1d1"
+                    android:text="Weight" />
+                <textview
+                    style="@style/Proteo.TextView.Order"
+                    android:layout_weight="0.6"
+                    android:background="#d1d1d1"
                     local:MvxBind="Text OrderWeight" />
             </LinearLayout>
             <LinearLayout
@@ -91,13 +106,13 @@
                 <textview
                     style="@style/Proteo.TextView.Order"
                     android:layout_weight="0.4"
-                    android:background="#d1d1d1"
-                    android:text="Business Type" />
+                    android:background="#ffffff"
+                    android:text="Cases" />
                 <textview
                     style="@style/Proteo.TextView.Order"
                     android:layout_weight="0.6"
-                    android:background="#d1d1d1"
-                    local:MvxBind="Text OrderBusinessType" />
+                    android:background="#ffffff"
+                    local:MvxBind="Text OrderCases" />
             </LinearLayout>
             <LinearLayout
                 android:orientation="horizontal"
@@ -106,12 +121,12 @@
                 <textview
                     style="@style/Proteo.TextView.Order"
                     android:layout_weight="0.4"
-                    android:background="#ffffff"
+                    android:background="#d1d1d1"
                     android:text="Goods Type" />
                 <textview
                     style="@style/Proteo.TextView.Order"
                     android:layout_weight="0.6"
-                    android:background="#ffffff"
+                    android:background="#d1d1d1"
                     local:MvxBind="Text OrderGoodsType" />
             </LinearLayout>
         </LinearLayout>

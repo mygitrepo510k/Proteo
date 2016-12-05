@@ -28,6 +28,7 @@ namespace MWF.Mobile.Core.Repositories
             var data = await this.GetAllAsync();
 			Debug.Assert(data.Count() == 1, string.Format("Expected one MWFMobileConfig record but found {0}", data.Count()));
             return data.First();
+
         }
 
     }

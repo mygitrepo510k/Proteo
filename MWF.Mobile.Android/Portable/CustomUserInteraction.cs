@@ -54,7 +54,16 @@ namespace MWF.Mobile.Android.Portable
 
                 //This closes the pop if its showing so it can reopen another, else it will play sound and vibrate first time.
                 if (InstructionNotificationDialog != null && InstructionNotificationDialog.IsShowing)
-                    InstructionNotificationDialog.Dismiss();
+                {
+                    try
+                    {
+                        InstructionNotificationDialog.Dismiss();
+                        InstructionNotificationDialog = null;
+                    } catch (Exception ex)
+                    {
+                        throw;
+                    }
+                }
                 else
                 {
                     Vibrate.VibrateDevice();
@@ -234,7 +243,17 @@ namespace MWF.Mobile.Android.Portable
                 //This closes the pop if its showing so it can reopen another, else it will play sound and vibrate first time.
 
                 if (CurrentPopUpAlertDialog != null && CurrentPopUpAlertDialog.IsShowing)
-                    CurrentPopUpAlertDialog.Dismiss();
+                {
+                    try
+                    {
+                        CurrentPopUpAlertDialog.Dismiss();
+                        CurrentPopUpAlertDialog = null;
+                    } catch (Exception ex)
+                    {
+                        throw;
+                    }
+
+                }
 
                 var customView = CurrentActivity.LayoutInflater.Inflate(Resource.Layout.PopUp_Alert, null);
                 var textView = (TextView)customView.FindViewById(Resource.Id.popUpAlertText);
@@ -297,7 +316,7 @@ namespace MWF.Mobile.Android.Portable
                                 complete = true;
                                 answer(true);
                             }
-                                
+
                         })
                     .SetNegativeButton(cancelButton, (s, e) =>
                         {
@@ -306,7 +325,7 @@ namespace MWF.Mobile.Android.Portable
                                 complete = true;
                                 answer(false);
                             }
-                                
+
                         });
 
                 ConfirmDialog = notificationDialog.Create();
@@ -375,7 +394,6 @@ namespace MWF.Mobile.Android.Portable
         }
 
         #endregion Private Methods
-
     }
 
     /// <summary>

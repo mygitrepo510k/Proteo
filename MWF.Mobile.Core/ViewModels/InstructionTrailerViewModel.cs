@@ -78,11 +78,18 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected override async Task ConfirmTrailerAsync(Models.Trailer trailer, string title, string message)
         {
-            if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, title, "Confirm"))
+            try
             {
-                await UpdateReadyForSafetyCheckAsync(trailer);
-                _navData.OtherData["UpdatedTrailer"] = trailer;
-                await _navigationService.MoveToNextAsync(_navData);
+                if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, title, "Confirm"))
+                {
+                    await UpdateReadyForSafetyCheckAsync(trailer);
+                    _navData.OtherData["UpdatedTrailer"] = trailer;
+                    await _navigationService.MoveToNextAsync(_navData);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
         }
 

@@ -83,12 +83,15 @@ namespace MWF.Mobile.Android.Views
 
         public async override void OnBackPressed()
         {
-            if (CurrentFragment.DataContext is IBackButtonHandler)
+            if (CurrentFragment.DataContext != null)
             {
-                var continueBack = await (CurrentFragment.DataContext as IBackButtonHandler).OnBackButtonPressedAsync();
+                if (CurrentFragment.DataContext is IBackButtonHandler)
+                {
+                    var continueBack = await (CurrentFragment.DataContext as IBackButtonHandler).OnBackButtonPressedAsync();
 
-                if (continueBack)
-                    base.OnBackPressed();
+                    if (continueBack)
+                        base.OnBackPressed();
+                }
             }
             else
             {

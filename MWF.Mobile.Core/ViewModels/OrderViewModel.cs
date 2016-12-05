@@ -52,7 +52,7 @@ namespace MWF.Mobile.Core.ViewModels
             _order = _navData.OtherData["Order"] as Item;
             _mobileData = _navData.Data;
             _mobileConfig = await _configRepository.GetByIDAsync(_mobileData.CustomerId);
-            this.ChangeOrderQuantity = _mobileConfig.QuantityIsEditable && _mobileData.Order.Type != Enums.InstructionType.Deliver;
+            this.ChangeOrderQuantity = true && _mobileData.Order.Type != Enums.InstructionType.Deliver;//_mobileConfig.QuantityIsEditable && _mobileData.Order.Type != Enums.InstructionType.Deliver;
         }
 
         #endregion Construction
@@ -74,6 +74,10 @@ namespace MWF.Mobile.Core.ViewModels
         public string OrderBusinessType { get { return _order.BusinessType; } }
 
         public string OrderGoodsType { get { return _order.GoodsType; } }
+
+        public string OrderCases { get { return _order.Cases; } }
+
+        public string OrderPallets { get { return _order.Pallets; } }
 
         public string ChangeOrderQuantityButtonLabel { get { return "Change Quantity"; } }
 
@@ -156,7 +160,7 @@ namespace MWF.Mobile.Core.ViewModels
             return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
                 _mobileData = _navData.Data;
-                _order = _mobileData.Order.Items.First(i => i.ID == orderID);
+                _order = _mobileData.Order.Items.FirstOrDefault(i => i.ID == orderID);
                 _navData.OtherData["Order"] = _order;
                 RaiseAllPropertiesChanged();
             });

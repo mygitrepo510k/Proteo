@@ -25,7 +25,7 @@ namespace MWF.Mobile.Core.Repositories
         {
             var data = await this.GetAllAsync();
 			Debug.Assert(data.Count() == 1, string.Format("Expected one ApplicationProfile record but found {0}", data.Count()));
-            return data.First();
+            return data.OrderByDescending(x => x.IntLink).First();
         }
 
         #endregion

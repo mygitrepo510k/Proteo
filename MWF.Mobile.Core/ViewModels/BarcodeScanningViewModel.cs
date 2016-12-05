@@ -31,6 +31,9 @@ namespace MWF.Mobile.Core.ViewModels
         protected BarcodeSectionViewModel _processedBarcodes;
         private IRepositories _repositories;
         private List<DamageStatus> _damageStatuses;
+        private MvxCommand _completeScanningCommand;
+        private bool _sectionsLoaded = false;
+        private readonly ILoggingService _loggingService = null;
         List<MobileData> _additionalInstructions;
 
         public List<DamageStatus> DamageStatuses
@@ -40,10 +43,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         private INavigationService _navigationService;
 
-        public BarcodeScanningViewModel(INavigationService navigationService, IRepositories repositories)
+        public BarcodeScanningViewModel(INavigationService navigationService, IRepositories repositories, ILoggingService loggingService)
         {
             _navigationService = navigationService;
             _repositories = repositories;
+            _loggingService = loggingService;
         }
 
         public async Task Init(Guid navID)
@@ -54,6 +58,7 @@ namespace MWF.Mobile.Core.ViewModels
 
             await this.BuildDamageStatusesAsync();
             this.CreateSections();
+            
         }
 
         private void CreateSections()
@@ -97,6 +102,8 @@ namespace MWF.Mobile.Core.ViewModels
             }
 
             RaisePropertyChanged(() => BarcodeSections);
+
+            _sectionsLoaded = true;
         }
 
         #endregion Construction
@@ -132,10 +139,19 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
-        private MvxCommand _completeScanningCommand;
+       
         public ICommand CompleteScanningCommand
         {
-            get { return (_completeScanningCommand = _completeScanningCommand ?? new MvxCommand(async () => await this.CompleteScanningAsync())); }
+            get {
+                if (_completeScanningCommand == null)
+                {
+                    _loggingService.LogEventAsync("CompletScanningCommand Set", Enums.LogType.Info);
+                  _completeScanningCommand =  new MvxCommand(async () => await CompleteScanningAsync());
+                }
+
+                
+                return _completeScanningCommand;
+            }
         }
 
         public string InstructionsText
@@ -148,7 +164,7 @@ namespace MWF.Mobile.Core.ViewModels
             get { return "Continue"; }
         }
 
-        private bool _canScanningBeCompleted;
+        private bool _canScanningBeCompleted = false;
         public bool CanScanningBeCompleted
         {
             get
@@ -257,7 +273,7 @@ namespace MWF.Mobile.Core.ViewModels
         public Task CompleteScanningAsync()
         {
 
-            if (!CanScanningBeCompleted){
+            if (!CanScanningBeCompleted || !_sectionsLoaded){
                 return Task.FromResult(0);
             }
             // Update datachunk for this order

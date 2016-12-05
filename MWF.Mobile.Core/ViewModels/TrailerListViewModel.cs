@@ -8,6 +8,7 @@ using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using System.Threading;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -28,62 +29,77 @@ namespace MWF.Mobile.Core.ViewModels
         }
 
         #region Protected/Private Methods
+        int _isBusy = 0;
 
         protected override async Task ConfirmTrailerAsync(Trailer trailer, string title, string message)
         {
-            Guid trailerID = Guid.Empty;
-
-            if (trailer != null)
-                trailerID = trailer.ID;
-
-            //This will take to the next view model with a trailer value of null.
-            if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, title, "Confirm"))
+            int isAvailable = Interlocked.Exchange(ref _isBusy, 1);
+            if (isAvailable != 0)
+                return;
+            try
             {
-                this.IsBusy = true;
 
-                try
+                Guid trailerID = Guid.Empty;
+
+                if (trailer != null)
+                    trailerID = trailer.ID;
+
+                //This will take to the next view model with a trailer value of null.
+                if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message, title, "Confirm"))
                 {
-                    // we only need to check profiles once a day
-                    var profileData = await _applicationProfileRepository.GetAllAsync();
+                    this.IsBusy = true;
 
-                    if (profileData.Count() == 0)
+                    try
                     {
-                        // we have seen an issue where there was no profile so lets cater for this now.
-                        var profile = await _gatewayService.GetApplicationProfileAsync();
+                        // we only need to check profiles once a day
+                        var profileData = await _applicationProfileRepository.GetAllAsync();
 
-                        try
+                        if (profileData.Count() == 0)
                         {
-                            await _applicationProfileRepository.InsertAsync(profile);
+                            // we have seen an issue where there was no profile so lets cater for this now.
+                            var profile = await _gatewayService.GetApplicationProfileAsync();
+
+                            try
+                            {
+                                await _applicationProfileRepository.InsertAsync(profile);
+                            }
+                            catch (Exception ex)
+                            {
+                                MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "ApplicationProfileRepository", "InsertAsync", ex.StackTrace);
+                                throw;
+                            }
                         }
-                        catch (Exception ex)
+
+                        var applicationProfile = profileData.OrderByDescending(x => x.IntLink).First();
+
+                        if (DateTime.Now.Subtract(applicationProfile.LastVehicleAndDriverSync).TotalHours > 23)
                         {
-                            MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "ApplicationProfileRepository", "InsertAsync", ex.StackTrace);
-                            throw;
+                            await UpdateVehicleListAsync();
+                            await UpdateTrailerListAsync();
+                            // Try and update safety profiles before continuing
+                            await UpdateSafetyProfilesAsync();
+                            ProgressMessage = "Updating Application Profile.";
+                            applicationProfile = await _gatewayService.GetApplicationProfileAsync();
+                            applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
+
+                            try
+                            {
+                                await _applicationProfileRepository.UpdateAsync(applicationProfile);
+                            }
+                            catch (Exception ex)
+                            {
+                                MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "ApplicationProfileRepository", "UpdateAsync", ex.StackTrace);
+                                throw;
+                            }
                         }
                     }
-
-                    var applicationProfile = profileData.OrderByDescending(x=> x.IntLink).First();
-
-                    if (DateTime.Now.Subtract( applicationProfile.LastVehicleAndDriverSync).TotalHours > 23)
+                    finally
                     {
-                        await UpdateVehicleListAsync();
-                        await UpdateTrailerListAsync();
-                        // Try and update safety profiles before continuing
-                        await UpdateSafetyProfilesAsync();
-                        ProgressMessage = "Updating Application Profile.";
-                        applicationProfile = await _gatewayService.GetApplicationProfileAsync();
-                        applicationProfile.LastVehicleAndDriverSync = DateTime.Now;
-
-                        try
-                        {
-                            await _applicationProfileRepository.UpdateAsync(applicationProfile);
-                        }
-                        catch (Exception ex)
-                        {
-                            MvxTrace.Error("\"{0}\" in {1}.{2}\n{3}", ex.Message, "ApplicationProfileRepository", "UpdateAsync", ex.StackTrace);
-                            throw;
-                        }
+                        this.IsBusy = false;
                     }
+
+                    _infoService.SetCurrentTrailer(trailer);
+                    await _navigationService.MoveToNextAsync();
                 }
                 finally
                 {
@@ -101,6 +117,11 @@ namespace MWF.Mobile.Core.ViewModels
                     throw;
                 }
             }
+            finally
+            {
+                Interlocked.Exchange(ref _isBusy, 0);
+            }
+            
         }
 
         #endregion

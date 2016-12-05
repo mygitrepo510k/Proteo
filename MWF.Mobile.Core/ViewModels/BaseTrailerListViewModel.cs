@@ -156,7 +156,11 @@ namespace MWF.Mobile.Core.ViewModels
         private MvxCommand<Trailer> _notrailerSelectCommand;
         public ICommand NoTrailerSelectCommand
         {
-            get { return (_notrailerSelectCommand = _notrailerSelectCommand ?? new MvxCommand<Trailer>(async t => await this.ConfirmNoTrailerAsync())); }
+            get {
+
+                return (_notrailerSelectCommand = _notrailerSelectCommand ?? new MvxCommand<Trailer>(async t => await this.ConfirmNoTrailerAsync() ));
+                
+            }
         }
 
         public string DefaultTrailerReg { get; private set; }
@@ -173,11 +177,20 @@ namespace MWF.Mobile.Core.ViewModels
                 await this.GetTrailerModelsAsync();
         }
 
+        public bool _NoTrailerSelected = false;
         public Task ConfirmNoTrailerAsync()
         {
-            var title = "No trailer";
-            var message = "Confirm you don't have a trailer";
-            return this.ConfirmTrailerAsync(null, title, message);
+            if (!_NoTrailerSelected)
+            {
+                var title = "No trailer";
+                var message = "Confirm you don't have a trailer";
+                _NoTrailerSelected = true;
+                return this.ConfirmTrailerAsync(null, title, message);
+            }
+            else
+            {
+                return Task.FromResult(0);
+            }
         }
 
         public Task ConfirmTrailerAsync(TrailerItemViewModel tivm)

@@ -29,8 +29,8 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnResume()
         {
             base.OnResume();
-            EditText odometerText = (EditText)this.View.FindViewById(Resource.Id.reviseQuantityText);
-            odometerText.RequestFocus();
+            EditText reviseQuantityText = (EditText)this.View.FindViewById(Resource.Id.reviseQuantityText);
+            reviseQuantityText.RequestFocus();
             this.ShowSoftKeyboard();
         }
 

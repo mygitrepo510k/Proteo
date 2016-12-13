@@ -197,12 +197,8 @@ namespace MWF.Mobile.Core.ViewModels
                     else
                         return false;
 
-                }
-                else
-                {
-                    allChecksCompleted = true;
-                }
-
+                }   
+                
                 return allChecksCompleted;
             }
         }

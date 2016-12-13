@@ -40,7 +40,7 @@ namespace MWF.Mobile.Core.Models.Instruction
         public string Quantity { get; set; }
 
         [JsonProperty("weight")]
-        [XmlIgnore]
+        [XmlElement("weight")]
         public string Weight { get; set; }
 
         [JsonProperty("title")]
@@ -63,6 +63,47 @@ namespace MWF.Mobile.Core.Models.Instruction
         [XmlIgnore]
         [JsonIgnore]
         public Guid OrderId { get; set; }
+
+        [JsonProperty("cases")]
+        [XmlElement("cases")]
+        public string Cases { get; set; }
+
+        [JsonProperty("pallets")]
+        [XmlElement("pallets")]
+        public string Pallets { get; set; }
+
+        [JsonProperty("confirmpalletsforcollection")]
+        [XmlElement("confirmpalletsforcollection")]
+        public bool ConfirmPalletsForCollection { get; set; }
+        [JsonProperty("confirmcasesforcollection")]
+        [XmlElement("confirmcasesforcollection")]
+        public bool ConfirmCasesForCollection { get; set; }
+        [JsonProperty("confirmweightforcollection")]
+        [XmlElement("confirmweightforcollection")]
+        public bool ConfirmWeightForCollection { get; set; }
+        [JsonProperty("confirmotherforcollection")]
+        [XmlElement("confirmotherforcollection")]
+        public bool ConfirmOtherForCollection { get; set; }
+        [JsonProperty("confirmothertextforcollection")]
+        [XmlElement("confirmothertextforcollection")]
+        public string ConfirmOtherTextForCollection { get; set; }
+
+        [JsonProperty("confirmpalletsfordelivery")]
+        [XmlElement("confirmpalletsfordelivery")]
+        public bool ConfirmPalletsForDelivery { get; set; }
+        [JsonProperty("confirmcasesfordelivery")]
+        [XmlElement("confirmcasesfordelivery")]
+        public bool ConfirmCasesForDelivery { get; set; }
+        [JsonProperty("confirmweightfordelivery")]
+        [XmlElement("confirmweightfordelivery")]
+        public bool ConfirmWeightForDelivery { get; set; }
+        [JsonProperty("confirmotherfordelivery")]
+        [XmlElement("confirmotherfordelivery")]
+        public bool ConfirmOtherForDelivery { get; set; }
+        [JsonProperty("confirmothertextfordelivery")]
+        [XmlElement("confirmothertextfordelivery")]
+        public string ConfirmOtherTextForDelivery { get; set; }
+
 
         [ChildRelationship(typeof(ItemAdditional), RelationshipCardinality.OneToZeroOrOne)]
         [JsonProperty("additional")]

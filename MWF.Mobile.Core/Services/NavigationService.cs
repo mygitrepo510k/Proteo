@@ -644,8 +644,10 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomActionAsync);
             InsertCustomBackNavAction<MainViewModel, InstructionSignatureViewModel>(InstructionSignature_CustomBackActionAsync);
 
+            InsertCustomNavAction<MainViewModel, ConfirmQuantityViewModel>(ConfirmQuantity_CustomActionAsync);
             InsertCustomNavAction<MainViewModel, ConfirmTimesViewModel>(ConfirmTimes_CustomActionAsync);
             InsertCustomBackNavAction<MainViewModel, ConfirmTimesViewModel>(ConfirmTimes_CustomBackActionAsync);
+            InsertCustomBackNavAction<MainViewModel, ConfirmQuantityViewModel>(ConfirmQuantity_CustomBackActionAsync);
 
             InsertCustomBackNavAction<MainViewModel, OrderViewModel>(Order_CustomBackActionAsync);
             InsertNavAction<MainViewModel, OrderViewModel, ReviseQuantityViewModel>();
@@ -1183,7 +1185,14 @@ namespace MWF.Mobile.Core.Services
 
             return Task.FromResult(0);
         }
+        public Task ConfirmQuantity_CustomActionAsync(Guid navID, NavData navData)
+        {
 
+            if (navData is NavData<MobileData>)
+                this.ShowViewModel<ConfirmTimesViewModel>(navID);
+
+            return Task.FromResult(0);
+        }
         /// <summary>
         /// Going back from the instruction comment screen we should skip back to instruction on site
         /// so as to avoid going back through the select trailer/safety check workflow (note: collection only)
@@ -1200,7 +1209,7 @@ namespace MWF.Mobile.Core.Services
         public Task InstructionSignature_CustomActionAsync(Guid navID, NavData navData)
         {
             if (navData is NavData<MobileData>)
-                this.ShowViewModel<ConfirmTimesViewModel>(navID);
+                this.ShowViewModel<ConfirmQuantityViewModel>(navID);
 
             return Task.FromResult(0);
         }
@@ -1211,7 +1220,7 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public Task InstructionSignature_CustomBackActionAsync(Guid navID, NavData navData)
         {
-
+            //TODO: Change for the new confirmation screen
             if (navData.OtherData.IsDefined("VisitedCommentScreen"))
                 this.ShowViewModel<InstructionCommentViewModel>(navID);
             else
@@ -1235,6 +1244,20 @@ namespace MWF.Mobile.Core.Services
             return Task.FromResult(0);
         }
 
+        public Task ConfirmQuantity_CustomBackActionAsync(Guid navID, NavData navData)
+        {
+            var mobileNavData = navData as NavData<MobileData>;
+
+            if (mobileNavData.Data.Order.Type == Enums.InstructionType.ProceedFrom || mobileNavData.Data.Order.Type == Enums.InstructionType.TrunkTo)
+                return GoToManifestAsync();
+
+            if (navData.OtherData.IsDefined("VisitedCommentScreen"))
+                this.ShowViewModel<InstructionCommentViewModel>(navID);
+            else
+                this.ShowViewModel<InstructionOnSiteViewModel>(navID);
+
+            return Task.FromResult(0);
+        }
         /// <summary>
         /// Instruction TrunkTo/Proceed screens, completes the instruction and goes back to manifest screen
         /// </summary>

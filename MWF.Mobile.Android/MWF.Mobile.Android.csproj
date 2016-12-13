@@ -201,6 +201,7 @@
     <Compile Include="Views\Fragments\CheckInCompleteFragment.cs" />
     <Compile Include="Views\Fragments\CheckInFragment.cs" />
     <Compile Include="Views\Fragments\CheckOutFragment.cs" />
+    <Compile Include="Views\Fragments\ConfirmQuantityFragment.cs" />
     <Compile Include="Views\Fragments\ConfirmTimesFragment.cs" />
     <Compile Include="Views\Fragments\DiagnosticsFragment.cs" />
     <Compile Include="Views\Fragments\CheckOutSignatureFragment.cs" />
@@ -411,6 +412,9 @@
     </AndroidResource>
     <AndroidResource Include="Resources\layout\ZXingCustomLayout.axml">
       <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Fragment_ConfimQuantity.axml">
+      <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>

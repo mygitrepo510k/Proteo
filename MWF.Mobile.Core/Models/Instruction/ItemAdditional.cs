@@ -20,10 +20,11 @@ namespace MWF.Mobile.Core.Models.Instruction
         [XmlIgnore]
         public Guid ID { get; set; }
 
-        [ChildRelationship(typeof(ConfirmQuantity), RelationshipCardinality.OneToOne)]
+        [ChildRelationship(typeof(ConfirmQuantity), RelationshipCardinality.OneToZeroOrOne)]
         [JsonProperty("Confirm_Quantity")]
         [XmlElement("Confirm_Quantity")]
         public ConfirmQuantity ConfirmQuantity { get; set; }
+
 
         [ChildRelationship(typeof(DeliveryDescription), RelationshipCardinality.OneToZeroOrOne)]
         [JsonProperty("Delivery_Description")]

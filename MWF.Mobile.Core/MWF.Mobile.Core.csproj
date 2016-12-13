@@ -176,6 +176,8 @@
     <Compile Include="Models\Instruction\Additional.cs" />
     <Compile Include="Models\Instruction\Address.cs" />
     <Compile Include="Models\Instruction\Barcode.cs" />
+    <Compile Include="Models\Instruction\ConfirmCases.cs" />
+    <Compile Include="Models\Instruction\ConfirmPallets.cs" />
     <Compile Include="Models\Instruction\ScannedDelivery.cs" />
     <Compile Include="Models\Instruction\ConfirmQuantity.cs" />
     <Compile Include="Models\Instruction\DeliveryDescription.cs" />
@@ -295,6 +297,7 @@
     <Compile Include="ViewModels\CheckInCompleteViewModel.cs" />
     <Compile Include="ViewModels\CheckInViewModel.cs" />
     <Compile Include="ViewModels\CheckOutViewModel.cs" />
+    <Compile Include="ViewModels\ConfirmQuantityViewModel.cs" />
     <Compile Include="ViewModels\ConfirmTimesViewModel.cs" />
     <Compile Include="ViewModels\DiagnosticsViewModel.cs" />
     <Compile Include="ViewModels\CheckOutSignatureViewModel.cs" />

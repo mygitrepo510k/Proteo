@@ -11,19 +11,18 @@ using Android.Views;
 using Android.Widget;
 using Cirrious.MvvmCross.Binding.Droid.BindingContext;
 using Cirrious.MvvmCross.Binding.BindingContext;
-using Cirrious.MvvmCross.Droid.FullFragging.Fragments;
-using MWF.Mobile.Core.ViewModels;
 using MWF.Mobile.Core.Converters;
+using MWF.Mobile.Core.ViewModels;
 
 namespace MWF.Mobile.Android.Views.Fragments
 {
-    public class ReviseQuantityFragment : BaseFragment
+    public class ConfirmQuantityFragment : BaseFragment
     {
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // MVVMCross fragment boilerplate code
             var ignored = base.OnCreateView(inflater, container, savedInstanceState);
-            return this.BindingInflate(Resource.Layout.Fragment_ReviseQuantity, null);
+            return this.BindingInflate(Resource.Layout.Fragment_ConfimQuantity, null);
         }
 
         public override void OnResume()
@@ -38,8 +37,8 @@ namespace MWF.Mobile.Android.Views.Fragments
         {
             base.OnViewCreated(view, savedInstanceState);
             var submitButton = (Button)view.FindViewById(Resource.Id.submit);
-            var set = this.CreateBindingSet<ReviseQuantityFragment, ReviseQuantityViewModel>();
-            set.Bind(submitButton).For(b => b.Enabled).To(vm => vm.OrderQuantity).WithConversion(new StringHasLengthConverter(), null);
+            var set = this.CreateBindingSet<ConfirmQuantityFragment, ConfirmQuantityViewModel>();
+            set.Bind(submitButton).For(b => b.Enabled).To(vm => vm.ConfirmQuantityEntered).WithConversion(new StringHasLengthConverter(), null);
             set.Apply();
         }
     }

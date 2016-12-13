@@ -176,26 +176,22 @@ namespace MWF.Mobile.Core.ViewModels
                 int count = 0;
                 int index = 0;
 
-                    if ((this.SafetyProfileVehicle != null && this.SafetyProfileVehicle.IsVOSACompliant)
-                    || (this.SafetyProfileTrailer != null && this.SafetyProfileTrailer.IsVOSACompliant))
+                if (SafetyCheckItemViewModels.Count == 0)
+                    allChecksCompleted = false;
+                else
                 {
-                    if (SafetyCheckItemViewModels.Count == 0)
-                        allChecksCompleted = false;
-                    else
+                    count = SafetyCheckItemViewModels.Count;
+                    foreach (var safetyCheckItem in SafetyCheckItemViewModels)
                     {
-                        count = SafetyCheckItemViewModels.Count;
-                        foreach (var safetyCheckItem in SafetyCheckItemViewModels)
-                        {
-                            allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
-                            if (allChecksCompleted == true)
-                                index++;
-                        }
-                        if (index == count)
-                            return true;
-                        else
-                            return false;
-
+                        allChecksCompleted = (safetyCheckItem.CheckStatus != Enums.SafetyCheckStatus.NotSet);
+                        if (allChecksCompleted == true)
+                            index++;
                     }
+                    if (index == count)
+                        return true;
+                    else
+                        return false;
+
                 }
 
                 return allChecksCompleted;

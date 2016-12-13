@@ -1,6 +1,8 @@
-﻿using Cirrious.MvvmCross.ViewModels;
+﻿using Cirrious.CrossCore;
+using Cirrious.MvvmCross.ViewModels;
 using MWF.Mobile.Core.Messages;
 using MWF.Mobile.Core.Models.Instruction;
+using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Extensions;
@@ -16,7 +18,7 @@ namespace MWF.Mobile.Core.ViewModels
 {
     public class ConfirmQuantityViewModel :
         BaseInstructionNotificationViewModel,
-          IModalViewModel<bool>
+          IModalViewModel<bool>, IBackButtonHandler
     {
         #region Private Fields
 
@@ -25,11 +27,13 @@ namespace MWF.Mobile.Core.ViewModels
         private readonly IInfoService _infoService;
         private readonly IDataChunkService _dataChunkService;
 
+
         private MobileApplicationDataChunkContentActivity _dataChunk;
         private MobileData _mobileData;
         private NavData<MobileData> _navData;
-        private Item _order;
-        
+        private Item _item;
+        private Order _order;
+
         #endregion Private Fields
 
         #region Construtor
@@ -49,25 +53,35 @@ namespace MWF.Mobile.Core.ViewModels
         {
             _navData = _navigationService.GetNavData<MobileData>(navID);
             this.MessageId = navID;
-            _order = _navData.OtherData["Order"] as Item;
-            
+            _order = _navData.Data.Order;
+            _item = _navData.Data.Order.Items[0];
+
             _mobileData = _navData.Data;
-            Cases = _order.Cases;
-            Pallets = _order.Pallets;
-            Weight = _order.Weight;
-            
-           if ((_navData.GetData() as Order).Type == Enums.InstructionType.Collect)
+
+            if (_order.Type == Enums.InstructionType.Collect)
             {
-                ConfirmCases = _order.ConfirmCasesForCollection;
-                ConfirmPallets = _order.ConfirmPalletsForCollection;
-                ConfirmWeight = _order.ConfirmWeightForCollection;
-                ConfirmOther = _order.ConfirmOtherForCollection;
+                ConfirmCases = _item.ConfirmCasesForCollection;
+                ConfirmPallets = _item.ConfirmPalletsForCollection;
+                ConfirmWeight = _item.ConfirmWeightForCollection;
+                ConfirmOther = _item.ConfirmOtherForCollection;
                 if (ConfirmOther)
                 {
-                    ConfirmOtherText = _order.ConfirmOtherTextForCollection;
+                    ConfirmOtherText = _item.ConfirmOtherTextForCollection;
                 }
             }
-            
+
+            if (_order.Type == Enums.InstructionType.Deliver)
+            {
+                ConfirmCases = _item.ConfirmCasesForDelivery;
+                ConfirmPallets = _item.ConfirmPalletsForDelivery;
+                ConfirmWeight = _item.ConfirmWeightForDelivery;
+                ConfirmOther = _item.ConfirmOtherForDelivery;
+                if (ConfirmOther)
+                {
+                    ConfirmOtherText = _item.ConfirmOtherTextForDelivery;
+                }
+            }
+
         }
         #endregion
 
@@ -75,7 +89,11 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ConfirmQuantityButtonLabel { get { return "Confirm Quantity"; } }
         public string ConfirmQuantityHeaderLabel { get { return "Confirm Quantity"; } }
-        public string OrderName { get { return "Order " + _order.ItemIdFormatted; } }
+        public string OrderName { get { return "Order " + _item.ItemIdFormatted; } }
+        private string _caseCount;
+        private string _palletCount;
+        private string _weightCount;
+
         private string _cases;
         public string Cases
         {
@@ -134,7 +152,7 @@ namespace MWF.Mobile.Core.ViewModels
         public string ConfirmOtherText
         {
             get { return _confirmOtherText; }
-            set { _confirmOtherText = value;  RaisePropertyChanged(() => ConfirmOtherText); CanContinue(); }
+            set { _confirmOtherText = value; RaisePropertyChanged(() => ConfirmOtherText); CanContinue(); }
         }
 
         public bool ConfirmQuantityEntered
@@ -145,10 +163,13 @@ namespace MWF.Mobile.Core.ViewModels
             }
             set
             {
-                _confirmQuantityEntered = value; 
+                _confirmQuantityEntered = value;
             }
         }
-
+        public string ConfirmQuantityTitle
+        {
+            get { return  _item.DeliveryOrderNumber ?? _order.OrderId; }
+        }
         #endregion
 
         #region Public Methods
@@ -160,18 +181,40 @@ namespace MWF.Mobile.Core.ViewModels
         #endregion
 
         #region Private Methods
-        private Task ConfirmQuantityAsync()
+        private async Task<bool> ConfirmQuantityAsync()
         {
-            bool retVal = false;
+            bool isClaused = false;
             // check to make sure that what was entered matches what is on the order.
-            retVal = ConfirmCases && (Cases == _order.Cases);
-            retVal = retVal && (ConfirmPallets && (Pallets == _order.Pallets));
-            retVal = retVal && (ConfirmWeight && (Weight == _order.Weight));
+            if (ConfirmCases)
+                isClaused =  (Cases != _item.Cases);
+            if (ConfirmPallets && !isClaused)
+                isClaused = (Pallets != _item.Pallets);
+            if (ConfirmWeight && !isClaused)
+                isClaused = (Weight != _item.Weight);
 
-            return Task.FromResult(retVal);
+            if (_navData.OtherData.ContainsKey("IsClaused"))
+                _navData.OtherData["IsClaused"] = isClaused;
+            else
+                _navData.OtherData.Add("IsClaused", isClaused);
+
+            if (isClaused)
+            {
+                if (await Mvx.Resolve<ICustomUserInteraction>().ConfirmAsync(message: "The numbers do not match are you sure you want to continue?", title: "Finished Quanities", okButton: "Yes"))
+                {
+                    await _navigationService.MoveToNextAsync(_navData);
+
+                }
+            }
+            else
+            {
+                await _navigationService.MoveToNextAsync(_navData);
+            }
+        
+
+            return isClaused;
         }
 
-        private void CanContinue()
+        private bool  CanContinue()
         {
             bool retVal = (ConfirmCases && !string.IsNullOrEmpty(Cases));
             retVal = retVal & (ConfirmPallets && !string.IsNullOrEmpty(Pallets));
@@ -179,6 +222,8 @@ namespace MWF.Mobile.Core.ViewModels
             retVal = retVal & (ConfirmOther&& !string.IsNullOrEmpty(Other));
 
             this.ConfirmQuantityEntered = retVal;
+
+            return retVal;
         }
         #endregion
 
@@ -201,8 +246,8 @@ namespace MWF.Mobile.Core.ViewModels
             return this.RespondToInstructionNotificationAsync(message, _navData, () =>
             {
                 _mobileData = _navData.Data;
-                _order = _mobileData.Order.Items.FirstOrDefault(i => i.ID == orderID);
-                _navData.OtherData["Order"] = _order;
+                _item = _mobileData.Order.Items.FirstOrDefault(i => i.ID == orderID);
+                _navData.OtherData["Order"] = _item;
                 RaiseAllPropertiesChanged();
             });
         }
@@ -219,6 +264,12 @@ namespace MWF.Mobile.Core.ViewModels
 
             this.Messenger.Publish(message);
             this.Close(this);
+        }
+
+        public async  Task<bool> OnBackButtonPressedAsync()
+        {
+                await _navigationService.GoBackAsync(_navData);
+                return false;
         }
 
         #endregion BaseInstructionNotificationViewModel

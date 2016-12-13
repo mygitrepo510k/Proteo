@@ -28,18 +28,22 @@ namespace MWF.Mobile.Android.Views.Fragments
         public override void OnResume()
         {
             base.OnResume();
-            EditText reviseQuantityText = (EditText)this.View.FindViewById(Resource.Id.reviseQuantityText);
-            reviseQuantityText.RequestFocus();
+            EditText revisePalletsText = (EditText)this.View.FindViewById(Resource.Id.revisePalletsText);
+            EditText reviseCasesText = (EditText)this.View.FindViewById(Resource.Id.reviseCasesText);
+            EditText reviseWeightText = (EditText)this.View.FindViewById(Resource.Id.reviseWeightText);
+
             this.ShowSoftKeyboard();
+            //reviseQuantityText.RequestFocus();
+            //this.ShowSoftKeyboard();
         }
 
         public override void OnViewCreated(View view, Bundle savedInstanceState)
         {
             base.OnViewCreated(view, savedInstanceState);
             var submitButton = (Button)view.FindViewById(Resource.Id.submit);
-            var set = this.CreateBindingSet<ConfirmQuantityFragment, ConfirmQuantityViewModel>();
-            set.Bind(submitButton).For(b => b.Enabled).To(vm => vm.ConfirmQuantityEntered).WithConversion(new StringHasLengthConverter(), null);
-            set.Apply();
+            //var set = this.CreateBindingSet<ConfirmQuantityFragment, ConfirmQuantityViewModel>();
+            //set.Bind(submitButton).For(b => b.Enabled).To(vm => vm.ConfirmQuantityEntered);
+            //set.Apply();
         }
     }
 }

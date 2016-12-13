@@ -920,7 +920,16 @@ namespace MWF.Mobile.Core.Services
                     return;
                 }
 
-                this.ShowViewModel<ConfirmTimesViewModel>(navID);
+                bool showConfirmQuantityScreen = ShowConfirmQuantityScreen(mobileNavData);
+                
+                if (showConfirmQuantityScreen)
+                {
+                    this.ShowViewModel<ConfirmQuantityViewModel>(navID);
+                }
+                    else
+                {
+                    this.ShowViewModel<ConfirmTimesViewModel>(navID);
+                }
             }
         }
 
@@ -960,6 +969,27 @@ namespace MWF.Mobile.Core.Services
             }
         }
 
+        private bool ShowConfirmQuantityScreen(NavData<MobileData> mobileNavData)
+        {
+            bool showConfirmQuantityScreen = false;
+            foreach (Item item in mobileNavData.Data.Order.Items)
+            {
+                if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
+                {
+                    showConfirmQuantityScreen = item.ConfirmCasesForCollection || item.ConfirmOtherForCollection || item.ConfirmPalletsForCollection || item.ConfirmWeightForCollection;
+                }
+                if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)
+                {
+                    showConfirmQuantityScreen = item.ConfirmCasesForDelivery || item.ConfirmOtherForDelivery || item.ConfirmPalletsForDelivery || item.ConfirmWeightForDelivery;
+                }
+                if (showConfirmQuantityScreen)
+                {
+                    break;
+                }
+            }
+
+            return showConfirmQuantityScreen;
+        }
         private async Task CompleteInstructionTrailerSelectionAsync(Guid navID, NavData<MobileData> mobileNavData)
         {
             if (mobileNavData.OtherData.IsDefined("IsProceedFrom"))
@@ -986,7 +1016,14 @@ namespace MWF.Mobile.Core.Services
                 return;
             }
 
-            this.ShowViewModel<ConfirmTimesViewModel>(navID);
+            if (ShowConfirmQuantityScreen(mobileNavData))
+            {
+                this.ShowViewModel<ConfirmQuantityViewModel>(navID);
+            }
+            else
+            {
+                this.ShowViewModel<ConfirmTimesViewModel>(navID);
+            }
         }
 
         private async Task UpdateTrailerForInstructionAsync(NavData<MobileData> mobileNavData, Models.Trailer trailer)
@@ -1164,7 +1201,10 @@ namespace MWF.Mobile.Core.Services
                 }
                 else
                 {
-                    this.ShowViewModel<ConfirmTimesViewModel>(navID);
+                    if (ShowConfirmQuantityScreen(mobileNavData))
+                        this.ShowViewModel<ConfirmQuantityViewModel>(navData);
+                    else
+                        this.ShowViewModel<ConfirmTimesViewModel>(navID);
                 }
             }
 
@@ -1189,7 +1229,12 @@ namespace MWF.Mobile.Core.Services
         {
 
             if (navData is NavData<MobileData>)
-                this.ShowViewModel<ConfirmTimesViewModel>(navID);
+            {
+                if (navData.OtherData.ContainsKey("IsClaused")  &&  (bool)navData.OtherData["IsClaused"] == true)
+                    this.ShowViewModel<InstructionClausedViewModel>(navID);
+                else
+                    this.ShowViewModel<ConfirmTimesViewModel>(navID);
+            }
 
             return Task.FromResult(0);
         }

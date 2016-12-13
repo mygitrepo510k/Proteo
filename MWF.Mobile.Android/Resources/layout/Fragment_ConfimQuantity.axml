@@ -6,95 +6,103 @@
     android:layout_height="fill_parent"
     android:layout_marginLeft="0dp"
     android:layout_marginRight="0dp">
-  <TextView
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      android:gravity="center_horizontal"
-      android:textSize="24.0dp"
-      local:MvxBind="Text OrderDeliveryNo" />
-  <TableLayout
-      android:layout_width="match_parent"
-      android:stretchColumns="2">
-    <TableRow
+    <TextView
         android:layout_width="fill_parent"
-        android:orientation="horizontal"
-        android:layout_weight="1"
-        local:MvxBind="Visibility IsPalletsCheckVisible">
-      <TextView
-          style="@style/Proteo.TextView.Revise"
-          android:layout_width="0dp"
-          android:layout_weight="1"
-          android:text="Pallets" />
-      <EditText
-          android:id="@+id/revisePalletsText"
-          android:maxLength="6"
-          android:layout_weight="1"
-          android:layout_width="fill_parent"
-          local:MvxBind="Text ConfirmPallets"
-          android:imeOptions="actionDone"
-          android:singleLine="true" />
-    </TableRow>
-    <TableRow
-        android:layout_width="fill_parent"
-        android:orientation="horizontal"
-        android:layout_weight="1"
-        local:MvxBind="Visibility IsCasesCheckVisible">
-      <TextView
-          style="@style/Proteo.TextView.Revise"
-          android:layout_weight="1"
-          android:layout_width="0dp"
-          android:text="Cases" />
-      <EditText
-          android:id="@+id/reviseCasesText"
-          android:maxLength="6"
-          android:layout_weight="1"
-          android:layout_width="fill_parent"
-          local:MvxBind="Text ConfirmCases"
-          android:imeOptions="actionDone"
-          android:singleLine="true" />
-    </TableRow>
-    <TableRow
-        android:layout_width="fill_parent"
-        android:orientation="horizontal"
-        android:layout_weight="1"
-        local:MvxBind="Visibility IsWeightCheckVisible">
-      <TextView
-          style="@style/Proteo.TextView.Revise"
-          android:layout_weight="1"
-          android:layout_width="0dp"
-          android:text="Weight" />
-      <EditText
-          android:id="@+id/reviseCasesText"
-          android:maxLength="6"
-          android:layout_weight="1"
-          android:layout_width="fill_parent"
-          local:MvxBind="Text ConfirmWeight"
-          android:imeOptions="actionDone"
-          android:singleLine="true" />
-    </TableRow>
-    <TableRow
-       android:layout_width="fill_parent"
-       android:orientation="horizontal"
-       android:layout_weight="1"
-       local:MvxBind="Visibility IsOtherCheckVisible">
-      <TextView
-          style="@style/Proteo.TextView.Revise"
-          android:layout_weight="1"
-          android:layout_width="0dp"
-          local:MvxBind="Text OtherText" />
-      <EditText
-          android:id="@+id/reviseCasesText"
-          android:maxLength="6"
-          android:layout_weight="1"
-          android:layout_width="fill_parent"
-          local:MvxBind="Text ConfirmOther"
-          android:imeOptions="actionDone"
-          android:singleLine="true" />
-    </TableRow>
-  </TableLayout>
-  <Button
-      style="@style/Proteo.Button"
-      android:id="@+id/submit"
-      android:background="#ffcf7b"
-      local:MvxBind="Text ConfirmQuantityButtonLabel; Click ConfirmQuantityCommand" />
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="24.0dp"
+        android:layout_marginBottom="10dip"
+        local:MvxBind="Text ConfirmQuantityTitle" />
+    <TableLayout
+        android:layout_width="match_parent"
+        android:stretchColumns="2">
+        <TableRow
+            android:layout_width="fill_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dip"
+            android:layout_weight="1"
+            local:MvxBind="Visibility Visibility(ConfirmPallets)">
+            <TextView
+                style="@style/Proteo.TextView.Revise"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="Pallets" />
+            <EditText
+                android:id="@+id/revisePalletsText"
+                android:maxLength="6"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                local:MvxBind="Text Pallets"
+                android:inputType="numberPassword"
+                android:imeOptions="actionDone"
+                android:singleLine="true" />
+        </TableRow>
+        <TableRow
+            android:layout_width="fill_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dip"
+            android:layout_weight="1"
+            local:MvxBind="Visibility Visibility(ConfirmCases)">
+            <TextView
+                style="@style/Proteo.TextView.Revise"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                
+                android:text="Cases" />
+            <EditText
+                android:id="@+id/reviseCasesText"
+                android:maxLength="6"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                local:MvxBind="Text Cases"
+                android:inputType="numberPassword"
+                android:imeOptions="actionDone"
+                android:singleLine="true" />
+        </TableRow>
+        <TableRow
+            android:layout_width="fill_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dip"
+            android:layout_weight="1"
+            local:MvxBind="Visibility Visibility(ConfirmWeight)">
+            <TextView
+                style="@style/Proteo.TextView.Revise"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:text="Weight" />
+            <EditText
+                android:id="@+id/reviseWeightText"
+                android:maxLength="6"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                android:inputType="numberPassword"
+                local:MvxBind="Text Weight"
+                android:imeOptions="actionDone"
+                android:singleLine="true" />
+        </TableRow>
+        <TableRow
+            android:layout_width="fill_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dip"
+            android:layout_weight="1"
+            local:MvxBind="Visibility Visibility(ConfirmOther)">
+            <TextView
+                style="@style/Proteo.TextView.Revise"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                local:MvxBind="Text OtherText" />
+            <EditText
+                android:id="@+id/reviseCasesText"
+                android:maxLength="6"
+                android:layout_weight="1"
+                android:layout_width="fill_parent"
+                local:MvxBind="Text Other"
+                android:imeOptions="actionDone"
+                android:singleLine="true" />
+        </TableRow>
+    </TableLayout>
+    <Button
+        style="@style/Proteo.Button"
+        android:id="@+id/submit"
+        local:MvxBind="Text ConfirmQuantityButtonLabel; Click ConfirmQuantityCommand" />
 </LinearLayout>

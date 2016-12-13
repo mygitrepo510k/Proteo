@@ -93,7 +93,8 @@ namespace MWF.Mobile.Core.Models.Instruction
                     return this.Order.Items[0].Description;
             }
         }
-
+        [XmlIgnore]
+        public bool IsClaused { get; set; }
         [XmlIgnore]
         public DateTime OnSiteDateTime { get; set; }
         [XmlIgnore]

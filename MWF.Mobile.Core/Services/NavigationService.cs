@@ -610,6 +610,8 @@ namespace MWF.Mobile.Core.Services
             InsertCustomNavAction<StartupViewModel, PasscodeViewModel>(Passcode_CustomActionAsync);
             InsertNavAction<StartupViewModel, DiagnosticsViewModel, PasscodeViewModel>();
             InsertNavAction<StartupViewModel, VehicleListViewModel, TrailerListViewModel>();
+
+            
             InsertNavAction<StartupViewModel, TrailerListViewModel, SafetyCheckViewModel>();
             InsertCustomNavAction<StartupViewModel, SafetyCheckViewModel>(SafetyCheck_CustomActionAsync);        //to odometer, signature screen or main activity (manifest)      
 
@@ -972,6 +974,11 @@ namespace MWF.Mobile.Core.Services
         private bool ShowConfirmQuantityScreen(NavData<MobileData> mobileNavData)
         {
             bool showConfirmQuantityScreen = false;
+
+            //reset the clause state
+            if (mobileNavData.OtherData.ContainsKey("IsClaused"))
+                mobileNavData.OtherData.Remove("IsClaused");
+
             foreach (Item item in mobileNavData.Data.Order.Items)
             {
                 if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
@@ -1202,7 +1209,7 @@ namespace MWF.Mobile.Core.Services
                 else
                 {
                     if (ShowConfirmQuantityScreen(mobileNavData))
-                        this.ShowViewModel<ConfirmQuantityViewModel>(navData);
+                        this.ShowViewModel<ConfirmQuantityViewModel>(navID);
                     else
                         this.ShowViewModel<ConfirmTimesViewModel>(navID);
                 }
@@ -1254,7 +1261,12 @@ namespace MWF.Mobile.Core.Services
         public Task InstructionSignature_CustomActionAsync(Guid navID, NavData navData)
         {
             if (navData is NavData<MobileData>)
-                this.ShowViewModel<ConfirmQuantityViewModel>(navID);
+            {
+                if (ShowConfirmQuantityScreen(navData as NavData<MobileData>))
+                    this.ShowViewModel<ConfirmQuantityViewModel>(navID);
+                else
+                    this.ShowViewModel<ConfirmTimesViewModel>(navID);
+            }
 
             return Task.FromResult(0);
         }
@@ -1296,10 +1308,8 @@ namespace MWF.Mobile.Core.Services
             if (mobileNavData.Data.Order.Type == Enums.InstructionType.ProceedFrom || mobileNavData.Data.Order.Type == Enums.InstructionType.TrunkTo)
                 return GoToManifestAsync();
 
-            if (navData.OtherData.IsDefined("VisitedCommentScreen"))
-                this.ShowViewModel<InstructionCommentViewModel>(navID);
-            else
-                this.ShowViewModel<InstructionOnSiteViewModel>(navID);
+            //return to Instruction On site to start process again
+            this.ShowViewModel<InstructionOnSiteViewModel>(navID);
 
             return Task.FromResult(0);
         }

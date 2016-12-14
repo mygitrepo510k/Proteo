@@ -207,6 +207,7 @@
     <Compile Include="Views\Fragments\CheckOutSignatureFragment.cs" />
     <Compile Include="Views\Fragments\InstructionClausedFragment.cs" />
     <Compile Include="Views\Fragments\InstructionAddDeliveriesFragment.cs" />
+    <Compile Include="Views\Fragments\ItemConfirmQuantityFragment.cs" />
     <Compile Include="Views\Fragments\ModalCameraFragment.cs" />
     <Compile Include="Controls\KeyboardlessEditText.cs" />
     <Compile Include="Views\Fragments\AboutFragment.cs" />
@@ -414,6 +415,9 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\Fragment_ConfimQuantity.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Item_ConfirmQuantity.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

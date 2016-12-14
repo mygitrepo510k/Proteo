@@ -8,23 +8,38 @@ using MWF.Mobile.Core.Models;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
 
     public class TrailerListViewModel
-        : BaseTrailerListViewModel
+        : BaseTrailerListViewModel, IBackButtonHandler
     {
         private readonly IApplicationProfileRepository _applicationProfileRepository;
+        
 
         public TrailerListViewModel(IGatewayService gatewayService, 
                                     IRepositories repositories, 
                                     IReachability reachabibilty, 
                                     IToast toast, 
                                     IInfoService infoService, 
-                                    INavigationService navigationService) : base(gatewayService, repositories, reachabibilty, toast, infoService, navigationService)
+                                    INavigationService navigationService
+                                    
+            ) : base(gatewayService, repositories, reachabibilty, toast, infoService, navigationService)
         {
             _applicationProfileRepository = repositories.ApplicationRepository;
+        
+        }
+
+        public async Task<bool> OnBackButtonPressedAsync()
+        {
+            if (_navigationService.IsBackActionDefined())
+            {
+                await _navigationService.GoBackAsync();
+                return false;
+            }
+            return true;
         }
 
         #region Protected/Private Methods

@@ -316,6 +316,7 @@
     <Compile Include="ViewModels\InstructionOnSiteViewModel.cs" />
     <Compile Include="ViewModels\InstructionTrunkProceedViewModel.cs" />
     <Compile Include="ViewModels\Interfaces\IModalViewModel.cs" />
+    <Compile Include="ViewModels\ItemConfirmQuantityViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\ModalCameraViewModel.cs" />
     <Compile Include="ViewModels\Navigation\NavDataExtensions.cs" />

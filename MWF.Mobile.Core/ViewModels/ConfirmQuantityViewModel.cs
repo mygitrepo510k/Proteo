@@ -9,6 +9,7 @@ using MWF.Mobile.Core.ViewModels.Extensions;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace MWF.Mobile.Core.ViewModels
         private NavData<MobileData> _navData;
         private Item _item;
         private Order _order;
-
+        public ObservableCollection<ItemConfirmQuantityViewModel> _items = new ObservableCollection<ItemConfirmQuantityViewModel>();
         #endregion Private Fields
 
         #region Construtor
@@ -58,28 +59,18 @@ namespace MWF.Mobile.Core.ViewModels
 
             _mobileData = _navData.Data;
 
-            if (_order.Type == Enums.InstructionType.Collect)
+            foreach(Item item in _navData.Data.Order.Items)
             {
-                ConfirmCases = _item.ConfirmCasesForCollection;
-                ConfirmPallets = _item.ConfirmPalletsForCollection;
-                ConfirmWeight = _item.ConfirmWeightForCollection;
-                ConfirmOther = _item.ConfirmOtherForCollection;
-                if (ConfirmOther)
+                if (_order.Type == Enums.InstructionType.Collect &&
+                    (item.ConfirmCasesForCollection || item.ConfirmOtherForCollection || item.ConfirmPalletsForCollection || item.ConfirmWeightForCollection ))
                 {
-                    ConfirmOtherText = _item.ConfirmOtherTextForCollection;
+                    this.Items.Add(new ItemConfirmQuantityViewModel(item, _order.Type));
                 }
-            }
-
-            if (_order.Type == Enums.InstructionType.Deliver)
-            {
-                ConfirmCases = _item.ConfirmCasesForDelivery;
-                ConfirmPallets = _item.ConfirmPalletsForDelivery;
-                ConfirmWeight = _item.ConfirmWeightForDelivery;
-                ConfirmOther = _item.ConfirmOtherForDelivery;
-                if (ConfirmOther)
-                {
-                    ConfirmOtherText = _item.ConfirmOtherTextForDelivery;
-                }
+                if (_order.Type == Enums.InstructionType.Deliver &&
+                    (item.ConfirmCasesForDelivery|| item.ConfirmOtherForDelivery || item.ConfirmPalletsForDelivery || item.ConfirmWeightForDelivery ))
+                    {
+                        this.Items.Add(new ItemConfirmQuantityViewModel(item, _order.Type));
+                    }
             }
 
         }
@@ -89,87 +80,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string ConfirmQuantityButtonLabel { get { return "Confirm Quantity"; } }
         public string ConfirmQuantityHeaderLabel { get { return "Confirm Quantity"; } }
-        public string OrderName { get { return "Order " + _item.ItemIdFormatted; } }
-        private string _caseCount;
-        private string _palletCount;
-        private string _weightCount;
-
-        private string _cases;
-        public string Cases
+       
+        public ObservableCollection<ItemConfirmQuantityViewModel> Items
         {
-            get { return _cases; }
-            set { _cases = value; RaisePropertyChanged(() => Cases); }
+            get { return _items; }
+            set { _items = value;  RaisePropertyChanged(() => Items); }
         }
-        private string _Pallets;
-        public string Pallets
-        {
-            get { return _Pallets; }
-            set { _Pallets = value; RaisePropertyChanged(() => Pallets); }
-        }
-
-        private string _weight;
-        public string Weight
-        {
-            get { return _weight; }
-            set { _weight = value; RaisePropertyChanged(() => Weight); }
-        }
-
-        private string _other;
-        public string Other
-        {
-            get { return _other; }
-            set { _other = value; RaisePropertyChanged(() => Other); }
-        }
-
-        private bool _confirmCases;
-        private bool _confirmPallets;
-        private bool _confirmWeight;
-        private bool _confirmOther;
-        private string _confirmOtherText;
-        private bool _confirmQuantityEntered;
-
-        public bool ConfirmCases
-        {
-            get { return _confirmCases; }
-            set { _confirmCases = value; RaisePropertyChanged(() => ConfirmCases); CanContinue(); }
-        }
-        public bool ConfirmPallets
-        {
-            get { return _confirmPallets; }
-            set { _confirmPallets = value; RaisePropertyChanged(() => ConfirmPallets); CanContinue(); }
-        }
-        public bool ConfirmWeight
-        {
-            get { return _confirmWeight; }
-            set { _confirmWeight = value; RaisePropertyChanged(() => ConfirmWeight); CanContinue(); }
-        }
-        public bool ConfirmOther
-        {
-            get { return _confirmOther; }
-            set { _confirmOther = value; RaisePropertyChanged(() => ConfirmOther); CanContinue(); }
-        }
-
-        public string ConfirmOtherText
-        {
-            get { return _confirmOtherText; }
-            set { _confirmOtherText = value; RaisePropertyChanged(() => ConfirmOtherText); CanContinue(); }
-        }
-
-        public bool ConfirmQuantityEntered
-        {
-            get
-            {
-                return _confirmQuantityEntered;
-            }
-            set
-            {
-                _confirmQuantityEntered = value;
-            }
-        }
-        public string ConfirmQuantityTitle
-        {
-            get { return  _item.DeliveryOrderNumber ?? _order.OrderId; }
-        }
+       
         #endregion
 
         #region Public Methods
@@ -184,14 +101,14 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task<bool> ConfirmQuantityAsync()
         {
             bool isClaused = false;
+            foreach (var item in Items)
+            {
+                isClaused = item.IsClaused;
+                if (isClaused) // no need to loop through all if anyone is claused.
+                    break;
+            }
             // check to make sure that what was entered matches what is on the order.
-            if (ConfirmCases)
-                isClaused =  (Cases != _item.Cases);
-            if (ConfirmPallets && !isClaused)
-                isClaused = (Pallets != _item.Pallets);
-            if (ConfirmWeight && !isClaused)
-                isClaused = (Weight != _item.Weight);
-
+            
             if (_navData.OtherData.ContainsKey("IsClaused"))
                 _navData.OtherData["IsClaused"] = isClaused;
             else
@@ -214,17 +131,7 @@ namespace MWF.Mobile.Core.ViewModels
             return isClaused;
         }
 
-        private bool  CanContinue()
-        {
-            bool retVal = (ConfirmCases && !string.IsNullOrEmpty(Cases));
-            retVal = retVal & (ConfirmPallets && !string.IsNullOrEmpty(Pallets));
-            retVal = retVal & (ConfirmWeight&& !string.IsNullOrEmpty(Weight));
-            retVal = retVal & (ConfirmOther&& !string.IsNullOrEmpty(Other));
-
-            this.ConfirmQuantityEntered = retVal;
-
-            return retVal;
-        }
+       
         #endregion
 
         #region BaseFragmentViewModel Overrides

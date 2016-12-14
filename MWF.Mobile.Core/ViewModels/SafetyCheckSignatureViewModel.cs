@@ -8,11 +8,12 @@ using MWF.Mobile.Core.Models.Instruction;
 using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
+using MWF.Mobile.Core.ViewModels.Interfaces;
 
 namespace MWF.Mobile.Core.ViewModels
 {
 
-    public class SafetyCheckSignatureViewModel : BaseFragmentViewModel
+    public class SafetyCheckSignatureViewModel : BaseFragmentViewModel, IBackButtonHandler
     {
 
         #region private/protected members
@@ -81,13 +82,13 @@ namespace MWF.Mobile.Core.ViewModels
                 switch (combinedOverallStatus)
                 {
                     case Enums.SafetyCheckStatus.Failed:
-                        this.ConfirmationText = config.SafetyCheckFailText;
+                        this.ConfirmationText = "Safety Check Fail";
                         break;
                     case Enums.SafetyCheckStatus.DiscretionaryPass:
-                        this.ConfirmationText = config.SafetyCheckDiscretionaryText;
+                        this.ConfirmationText = "Safety Check Discretionary";
                         break;
                     case Enums.SafetyCheckStatus.Passed:
-                        this.ConfirmationText = config.SafetyCheckPassText;
+                        this.ConfirmationText = "Safety Check Pass";
                         break;
                     default:
                         throw new Exception("Unexpected safety check status");
@@ -197,6 +198,11 @@ namespace MWF.Mobile.Core.ViewModels
             }
         }
 
+        public async Task<bool> OnBackButtonPressedAsync()
+        {
+            await _navigationService.GoBackAsync();
+            return true;
+        }
     }
 
 }

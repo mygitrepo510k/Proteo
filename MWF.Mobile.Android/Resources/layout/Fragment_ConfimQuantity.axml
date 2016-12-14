@@ -6,101 +6,14 @@
     android:layout_height="fill_parent"
     android:layout_marginLeft="0dp"
     android:layout_marginRight="0dp">
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:textSize="24.0dp"
-        android:layout_marginBottom="10dip"
-        local:MvxBind="Text ConfirmQuantityTitle" />
-    <TableLayout
-        android:layout_width="match_parent"
-        android:stretchColumns="2">
-        <TableRow
-            android:layout_width="fill_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="2dip"
-            android:layout_weight="1"
-            local:MvxBind="Visibility Visibility(ConfirmPallets)">
-            <TextView
-                style="@style/Proteo.TextView.Revise"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:text="Pallets" />
-            <EditText
-                android:id="@+id/revisePalletsText"
-                android:maxLength="6"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                local:MvxBind="Text Pallets"
-                android:inputType="numberPassword"
-                android:imeOptions="actionDone"
-                android:singleLine="true" />
-        </TableRow>
-        <TableRow
-            android:layout_width="fill_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="2dip"
-            android:layout_weight="1"
-            local:MvxBind="Visibility Visibility(ConfirmCases)">
-            <TextView
-                style="@style/Proteo.TextView.Revise"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                
-                android:text="Cases" />
-            <EditText
-                android:id="@+id/reviseCasesText"
-                android:maxLength="6"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                local:MvxBind="Text Cases"
-                android:inputType="numberPassword"
-                android:imeOptions="actionDone"
-                android:singleLine="true" />
-        </TableRow>
-        <TableRow
-            android:layout_width="fill_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="2dip"
-            android:layout_weight="1"
-            local:MvxBind="Visibility Visibility(ConfirmWeight)">
-            <TextView
-                style="@style/Proteo.TextView.Revise"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:text="Weight" />
-            <EditText
-                android:id="@+id/reviseWeightText"
-                android:maxLength="6"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                android:inputType="numberPassword"
-                local:MvxBind="Text Weight"
-                android:imeOptions="actionDone"
-                android:singleLine="true" />
-        </TableRow>
-        <TableRow
-            android:layout_width="fill_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="2dip"
-            android:layout_weight="1"
-            local:MvxBind="Visibility Visibility(ConfirmOther)">
-            <TextView
-                style="@style/Proteo.TextView.Revise"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                local:MvxBind="Text OtherText" />
-            <EditText
-                android:id="@+id/reviseCasesText"
-                android:maxLength="6"
-                android:layout_weight="1"
-                android:layout_width="fill_parent"
-                local:MvxBind="Text Other"
-                android:imeOptions="actionDone"
-                android:singleLine="true" />
-        </TableRow>
-    </TableLayout>
+
+  <Mvx.MvxLinearLayout
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    local:MvxBind="ItemsSource Items"
+    local:MvxItemTemplate="@layout/item_confirmquantity" />
+  
     <Button
         style="@style/Proteo.Button"
         android:id="@+id/submit"

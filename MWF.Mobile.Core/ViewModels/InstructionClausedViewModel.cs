@@ -18,7 +18,7 @@ using MWF.Mobile.Core.ViewModels.Extensions;
 namespace MWF.Mobile.Core.ViewModels
 {
     public class InstructionClausedViewModel
-        : BaseInstructionNotificationViewModel
+        : BaseInstructionNotificationViewModel, IBackButtonHandler
     {
 
         #region Private Properties

@@ -104,7 +104,7 @@ namespace MWF.Mobile.Core.ViewModels
 
         public string OrderDeliveryNo
         {
-            get { return _order.DeliveryOrderNumber ?? _order.OrderId.ToString(); }
+            get { return _order.DeliveryOrderNumber ?? _order.ItemIdFormatted; }
         }
         #endregion Public Properties
 

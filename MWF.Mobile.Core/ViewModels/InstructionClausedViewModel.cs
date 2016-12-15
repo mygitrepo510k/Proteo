@@ -150,7 +150,14 @@ namespace MWF.Mobile.Core.ViewModels
 
         public async Task<bool> OnBackButtonPressedAsync()
         {
-            await _navigationService.GoBackAsync(_navData);
+            if (_navigationService.IsBackActionDefined())
+            {
+                await _navigationService.GoBackAsync(_navData);
+            }
+            else
+            {
+                await _navigationService.GoToManifestAsync();
+            }
             return false;
         }
 

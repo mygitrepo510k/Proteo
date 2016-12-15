@@ -523,6 +523,10 @@ namespace MWF.Mobile.Core.Services
             if (isConfirmed)
             {
                 await this.SendMobileDataAsync(navData);
+
+                //reset confirmation checking
+                if (navData.OtherData.IsDefined("VisitedConfirmQuantityScreen"))
+                    navData.OtherData.Remove("VisitedConfirmQuantityScreen");
             }
         }
 
@@ -617,6 +621,7 @@ namespace MWF.Mobile.Core.Services
 
             InsertNavAction<StartupViewModel, OdometerViewModel, SafetyCheckSignatureViewModel>();
             InsertCustomNavAction<StartupViewModel, SafetyCheckSignatureViewModel>(Signature_CustomAction_LoginAsync); //to either main activity (manifest) or back to driver passcode
+            InsertBackNavAction<StartupViewModel, SafetyCheckSignatureViewModel, SafetyCheckViewModel>();
 
             InsertCustomBackNavAction<StartupViewModel, PasscodeViewModel>(CloseApplicationAsync);               //Back from passcode closes app
 
@@ -994,6 +999,8 @@ namespace MWF.Mobile.Core.Services
                     break;
                 }
             }
+            if (mobileNavData.OtherData.ContainsKey("VisitedConfirmQuantityScreen"))
+                showConfirmQuantityScreen = false;
 
             return showConfirmQuantityScreen;
         }
@@ -1178,8 +1185,11 @@ namespace MWF.Mobile.Core.Services
             if (((deliveryOptions.CustomerNameRequiredForDelivery || deliveryOptions.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
                     ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect))
             {
-                this.ShowViewModel<InstructionSignatureViewModel>(navID);
-                return;
+                if (!navData.OtherData.ContainsKey("VisitedSignatureScreen"))
+                {
+                    this.ShowViewModel<InstructionSignatureViewModel>(navID);
+                    return;
+                }
             }
 
             this.ShowViewModel<ConfirmTimesViewModel>(navID);
@@ -1234,15 +1244,19 @@ namespace MWF.Mobile.Core.Services
         }
         public Task ConfirmQuantity_CustomActionAsync(Guid navID, NavData navData)
         {
+           
 
             if (navData is NavData<MobileData>)
             {
-                if (navData.OtherData.ContainsKey("IsClaused")  &&  (bool)navData.OtherData["IsClaused"] == true)
+                if ((navData.OtherData.ContainsKey("IsClaused")  &&  (bool)navData.OtherData["IsClaused"] == true) &&
+                    !navData.OtherData.IsDefined("VisitedConfirmQuantityScreen"))
                     this.ShowViewModel<InstructionClausedViewModel>(navID);
                 else
                     this.ShowViewModel<ConfirmTimesViewModel>(navID);
             }
 
+            if (!navData.OtherData.ContainsKey("VisitedConfirmQuantityScreen"))
+                navData.OtherData.Add("VisitedConfirmQuantityScreen", true);
             return Task.FromResult(0);
         }
         /// <summary>
@@ -1260,9 +1274,13 @@ namespace MWF.Mobile.Core.Services
         /// </summary>
         public Task InstructionSignature_CustomActionAsync(Guid navID, NavData navData)
         {
+            if (!navData.OtherData.IsDefined("VisitedSignatureScreen"))
+                navData.OtherData.Add("VisitedSignatureScreen", true);
+
             if (navData is NavData<MobileData>)
             {
-                if (ShowConfirmQuantityScreen(navData as NavData<MobileData>))
+                if (ShowConfirmQuantityScreen(navData as NavData<MobileData>) &&
+                    !navData.OtherData.ContainsKey("VisitedConfirmQuantityScreen"))
                     this.ShowViewModel<ConfirmQuantityViewModel>(navID);
                 else
                     this.ShowViewModel<ConfirmTimesViewModel>(navID);

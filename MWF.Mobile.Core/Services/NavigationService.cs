@@ -1212,7 +1212,7 @@ namespace MWF.Mobile.Core.Services
                     ((deliveryOptions.CustomerNameRequiredForDelivery || deliveryOptions.CustomerSignatureRequiredForDelivery) && mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver) ||
                     ((additionalContent.CustomerNameRequiredForCollection || additionalContent.CustomerSignatureRequiredForCollection) && mobileNavData.Data.Order.Type == Enums.InstructionType.Collect);
 
-                if (requireSignature)
+                if (requireSignature && ! navData.OtherData.ContainsKey("VisitedSignatureScreen"))
                 {
                     this.ShowViewModel<InstructionSignatureViewModel>(navID);
                 }

@@ -6,14 +6,12 @@
     android:layout_height="fill_parent"
     android:layout_marginLeft="0dp"
     android:layout_marginRight="0dp">
-
-  <Mvx.MvxLinearLayout
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    local:MvxBind="ItemsSource Items"
-    local:MvxItemTemplate="@layout/item_confirmquantity" />
-  
+    <Mvx.MvxLinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        local:MvxBind="ItemsSource Items"
+        local:MvxItemTemplate="@layout/item_confirmquantity" />
     <Button
         style="@style/Proteo.Button"
         android:id="@+id/submit"

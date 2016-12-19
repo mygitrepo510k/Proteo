@@ -193,6 +193,10 @@ namespace MWF.Mobile.Core.ViewModels
                 _order = _mobileData.Order.Items.FirstOrDefault(i => i.ID == orderID);
                 _navData.OtherData["Order"] = _order;
                 OrderQuantity = _order.Quantity;
+                OrderPallets = _order.Pallets;
+                OrderWeight = _order.Weight;
+                OrderCases = _order.Cases;
+                
                 RaiseAllPropertiesChanged();
             });
         }

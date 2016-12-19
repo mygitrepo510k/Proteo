@@ -207,17 +207,46 @@ namespace MWF.Mobile.Core.ViewModels
         private async Task BuildDamageStatusesAsync()
         {
             _damageStatuses = new List<DamageStatus>();
-
-            _damageStatuses.Add(new DamageStatus() { Text = "Clean", Code = "POD" });
-
-            var data = await _repositories.VerbProfileRepository.GetAllAsync();
-            var palletForceVerbProfile = data.Where(vp => vp.Code == "PFORCE").FirstOrDefault();
-
-            if (palletForceVerbProfile != null)
+            var businessType = "";
+            if (_mobileData.Order.Items.Count() > 0)
             {
-                var customDamageStatuses = palletForceVerbProfile.Children.Select(vp => new DamageStatus() { Text = vp.Title, Code = vp.Category });
-                _damageStatuses.AddRange(customDamageStatuses);
+                businessType = _mobileData.Order.Items[0].BusinessType;
             }
+
+                // depending on the Pallet Network add the relevant items to the list
+            if (businessType.StartsWith("PT") || businessType == "PT Inbound" || businessType.Contains("PalletTrack") || businessType.Contains("Pallet Track")) // this is really nasty
+            {
+                _damageStatuses = await GetPalletTrackDamageStatusesAsync();
+            }
+            else
+            {
+                _damageStatuses = await GetPalletForceDamageStatusesAsync();
+            }            
+        }
+
+
+        private async Task<List<DamageStatus>> GetPalletForceDamageStatusesAsync()
+        {
+            var list = new List<DamageStatus>();
+            list.Add(new DamageStatus() { Text = "Clean", Code = "POD" });
+            list.Add(new DamageStatus() { Text = "Damaged", Code = "PODD" });
+            list.Add(new DamageStatus() { Text = "Other Excetion", Code = "PODE" });
+            return list;
+        }
+
+        private async Task<List<DamageStatus>> GetPalletTrackDamageStatusesAsync()
+        {
+            var list = new List<DamageStatus>();
+            list.Add(new DamageStatus() { Text = "Clean", Code = "EDC" });
+            list.Add(new DamageStatus() { Text = "Unable To Locate", Code = "UTL" });
+            list.Add(new DamageStatus() { Text = "Consignee Closed", Code = "CLS" });
+            list.Add(new DamageStatus() { Text = "Carded", Code = "CRD" });
+            list.Add(new DamageStatus() { Text = "Refused", Code = "REF" });
+            list.Add(new DamageStatus() { Text = "Unchecked", Code = "UNC" });
+            list.Add(new DamageStatus() { Text = "Damaged on Arrival", Code = "DAC" });
+            list.Add(new DamageStatus() { Text = "Delivered With Shortage", Code = "DWS" });
+
+            return list;
         }
 
         private void CheckScanInput()

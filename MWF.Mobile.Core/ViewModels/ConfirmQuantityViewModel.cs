@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -58,20 +59,30 @@ namespace MWF.Mobile.Core.ViewModels
             _item = _navData.Data.Order.Items[0];
 
             _mobileData = _navData.Data;
+            var additionalInstructions = _navData.GetAdditionalInstructions();
+            var mobileDataList = new List<MobileData>();
+            mobileDataList.Add(_navData.Data);
+            if (additionalInstructions.Count() > 0)
+                mobileDataList.AddRange(additionalInstructions);
 
-            foreach(Item item in _navData.Data.Order.Items)
+            foreach (var mobileData in mobileDataList)
             {
-                if (_order.Type == Enums.InstructionType.Collect &&
-                    (item.ConfirmCasesForCollection || item.ConfirmOtherForCollection || item.ConfirmPalletsForCollection || item.ConfirmWeightForCollection ))
+                foreach (Item item in mobileData.Order.Items)
                 {
-                    this.Items.Add(new ItemConfirmQuantityViewModel(item, _order.Type));
-                }
-                if (_order.Type == Enums.InstructionType.Deliver &&
-                    (item.ConfirmCasesForDelivery|| item.ConfirmOtherForDelivery || item.ConfirmPalletsForDelivery || item.ConfirmWeightForDelivery ))
+                    if (_order.Type == Enums.InstructionType.Collect &&
+                        (item.ConfirmCasesForCollection || item.ConfirmOtherForCollection || item.ConfirmPalletsForCollection || item.ConfirmWeightForCollection))
                     {
                         this.Items.Add(new ItemConfirmQuantityViewModel(item, _order.Type));
                     }
+                    if (_order.Type == Enums.InstructionType.Deliver &&
+                        (item.ConfirmCasesForDelivery || item.ConfirmOtherForDelivery || item.ConfirmPalletsForDelivery || item.ConfirmWeightForDelivery))
+                    {
+                        this.Items.Add(new ItemConfirmQuantityViewModel(item, _order.Type));
+                    }
+                }
             }
+
+            
 
         }
         #endregion

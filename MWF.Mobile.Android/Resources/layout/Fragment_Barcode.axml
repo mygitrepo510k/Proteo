@@ -11,9 +11,9 @@
         android:layout_height="0dp"
         local:MvxBind="Text BarcodeInput" />
     <TextView
-      android:id="@+id/InstructionsLabel"
-      style="@style/Proteo.TextView.ListHeadingNoSections"
-      local:MvxBind="Text InstructionsText" />
+        android:id="@+id/InstructionsLabel"
+        style="@style/Proteo.TextView.ListHeadingNoSections"
+        local:MvxBind="Text InstructionsText" />
     <Button
         style="@style/Proteo.Button.Bottom"
         android:id="@+id/ButtonCompleteScanning"

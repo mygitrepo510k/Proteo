@@ -984,19 +984,27 @@ namespace MWF.Mobile.Core.Services
             if (mobileNavData.OtherData.ContainsKey("IsClaused"))
                 mobileNavData.OtherData.Remove("IsClaused");
 
-            foreach (Item item in mobileNavData.Data.Order.Items)
+            var mobileData = new List<MobileData>();
+            mobileData.Add(mobileNavData.Data);
+            if (mobileNavData.GetAdditionalInstructions().Count() > 0)
+                mobileData.AddRange(mobileNavData.GetAdditionalInstructions());
+
+            foreach (var data in mobileData)
             {
-                if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
+                foreach (Item item in data.Order.Items)
                 {
-                    showConfirmQuantityScreen = item.ConfirmCasesForCollection || item.ConfirmOtherForCollection || item.ConfirmPalletsForCollection || item.ConfirmWeightForCollection;
-                }
-                if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)
-                {
-                    showConfirmQuantityScreen = item.ConfirmCasesForDelivery || item.ConfirmOtherForDelivery || item.ConfirmPalletsForDelivery || item.ConfirmWeightForDelivery;
-                }
-                if (showConfirmQuantityScreen)
-                {
-                    break;
+                    if (mobileNavData.Data.Order.Type == Enums.InstructionType.Collect)
+                    {
+                        showConfirmQuantityScreen = item.ConfirmCasesForCollection || item.ConfirmOtherForCollection || item.ConfirmPalletsForCollection || item.ConfirmWeightForCollection;
+                    }
+                    if (mobileNavData.Data.Order.Type == Enums.InstructionType.Deliver)
+                    {
+                        showConfirmQuantityScreen = item.ConfirmCasesForDelivery || item.ConfirmOtherForDelivery || item.ConfirmPalletsForDelivery || item.ConfirmWeightForDelivery;
+                    }
+                    if (showConfirmQuantityScreen)
+                    {
+                        break;
+                    }
                 }
             }
             if (mobileNavData.OtherData.ContainsKey("VisitedConfirmQuantityScreen"))

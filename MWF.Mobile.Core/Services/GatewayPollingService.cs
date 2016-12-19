@@ -109,12 +109,9 @@ namespace MWF.Mobile.Core.Services
                 using (await _lock.LockAsync())
                 {
                     var data = await _repositories.ApplicationRepository.GetAllAsync();
-                    var applicationProfile = data.FirstOrDefault();
-                    if (applicationProfile != null)
-                    {
-                        _dataRetention = applicationProfile.DataRetention;
-                        _dataSpan = applicationProfile.DataSpan;
-                    }
+                    var applicationProfile = data.OrderByDescending(x => x.IntLink).First();
+                    _dataRetention = applicationProfile.DataRetention;
+                    _dataSpan = applicationProfile.DataSpan;
                 }
 
                 Mvx.Trace("Begin Polling For Instructions");

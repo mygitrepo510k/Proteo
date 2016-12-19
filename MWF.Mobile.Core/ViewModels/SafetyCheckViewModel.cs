@@ -11,6 +11,7 @@ using MWF.Mobile.Core.Portable;
 using MWF.Mobile.Core.Repositories;
 using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Interfaces;
+using System.Threading;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -38,13 +39,14 @@ namespace MWF.Mobile.Core.ViewModels
             _safetyCheckService = safetyCheckService;
         }
 
+        private bool profileLoaded = false;
         public virtual async Task Init()
         {
             var vehicle = await _repositories.VehicleRepository.GetByIDAsync(_infoService.CurrentVehicleID.Value);
             var trailer = _infoService.CurrentTrailerID.HasValue ? await _repositories.TrailerRepository.GetByIDAsync(_infoService.CurrentTrailerID.Value) : null;
 
             var safetyProfiles = await _repositories.SafetyProfileRepository.GetAllAsync();
-            this.SafetyProfileVehicle = safetyProfiles.SingleOrDefault(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink);
+            this.SafetyProfileVehicle =  safetyProfiles.SingleOrDefault(spv => spv.IntLink == vehicle.SafetyCheckProfileIntLink);
             this.SafetyProfileTrailer = trailer == null ? null : safetyProfiles.SingleOrDefault(spt => spt.IntLink == trailer.SafetyCheckProfileIntLink);
 
             this.SafetyCheckItemViewModels = new ObservableCollection<SafetyCheckItemViewModel>();
@@ -63,6 +65,7 @@ namespace MWF.Mobile.Core.ViewModels
                 var safetyCheckData = await this.GenerateSafetyCheckDataAsync(this.SafetyProfileTrailer, _infoService.CurrentDriverID.Value, _infoService.CurrentTrailerID.Value, _infoService.CurrentTrailerRegistration, true);
                 _safetyCheckService.CurrentTrailerSafetyCheckData = safetyCheckData;
             }
+            profileLoaded = true;
 
             if (_safetyCheckService.CurrentTrailerSafetyCheckData == null && _safetyCheckService.CurrentVehicleSafetyCheckData == null)
             {
@@ -73,6 +76,8 @@ namespace MWF.Mobile.Core.ViewModels
 
                 await this.MoveToNextAsync();
             }
+
+            
         }
 
         protected async Task<SafetyCheckData> GenerateSafetyCheckDataAsync(SafetyProfile safetyProfile, Guid driverID, Guid vehicleOrTrailerID, string vehicleOrTrailerRegistration, bool isTrailer)
@@ -158,8 +163,8 @@ namespace MWF.Mobile.Core.ViewModels
         {
             get
             {
-                _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(async () => await this.MoveToNextAsync());
-                return _checksDoneCommand;
+                
+                return _checksDoneCommand = _checksDoneCommand ?? new MvxCommand(async () => await this.MoveToNextAsync()); ;
             }
         }
 
@@ -193,6 +198,10 @@ namespace MWF.Mobile.Core.ViewModels
                         return false;
 
                 }
+                else
+                {
+                    allChecksCompleted = true;
+                }
 
                 return allChecksCompleted;
             }
@@ -221,24 +230,26 @@ namespace MWF.Mobile.Core.ViewModels
 
         protected async Task MoveToNextAsync()
         {
-            // cannot progress if the safety checks need completing.
-            if (!CanSafetyChecksBeCompleted)
-                return;
+
+            
+               // cannot progress if the safety checks need completing.
+                if (!profileLoaded || !CanSafetyChecksBeCompleted )
+                    return;
 
                 if (this.IsProgressing)
-                return;
+                    return;
 
-            this.IsProgressing = true;
+                this.IsProgressing = true;
 
-            try
-            {
-                RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
-                await _navigationService.MoveToNextAsync(_navData);
-            }
-            finally
-            {
-                this.IsProgressing = false;
-            }
+                try
+                {
+                    RaisePropertyChanged(() => CanSafetyChecksBeCompleted);
+                    await _navigationService.MoveToNextAsync(_navData);
+                }
+                finally
+                {
+                    this.IsProgressing = false;
+                }
         }
 
         public override string FragmentTitle

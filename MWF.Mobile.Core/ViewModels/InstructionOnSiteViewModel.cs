@@ -14,6 +14,7 @@ using MWF.Mobile.Core.Services;
 using MWF.Mobile.Core.ViewModels.Extensions;
 using MWF.Mobile.Core.ViewModels.Interfaces;
 using MWF.Mobile.Core.ViewModels.Navigation.Extensions;
+using System.Threading;
 
 namespace MWF.Mobile.Core.ViewModels
 {
@@ -108,10 +109,22 @@ namespace MWF.Mobile.Core.ViewModels
 
         #region Private Methods
 
+
+        int _isBusy = 0;
         private async Task AdvanceInstructionOnSiteAsync()
         {
-            await this.SendAdditionalInstructionOnSiteDataChunksAsync();
-            await _navigationService.MoveToNextAsync(_navData);
+            int isAvailable = Interlocked.Exchange(ref _isBusy, 1);
+            if (isAvailable != 0)
+                return;
+            try
+            {
+                await this.SendAdditionalInstructionOnSiteDataChunksAsync();
+                await _navigationService.MoveToNextAsync(_navData);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _isBusy, 0);
+            }
         }
 
         private void ShowOrder(Item order)

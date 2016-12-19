@@ -39,6 +39,8 @@ namespace MWF.Mobile.Android.Views.Fragments
             base.OnViewCreated(view, savedInstanceState);
         }
 
+        
+
         private void itemList_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             ((ListView)sender).ShowContextMenuForChild(e.View);

@@ -100,7 +100,13 @@ namespace MWF.Mobile.Core.ViewModels
 
         public bool HasCommentText
         {
-            get { return !string.IsNullOrEmpty(_safetyCheckFault.Comment); }
+            get
+            {
+                var pass = false;
+                pass = !string.IsNullOrWhiteSpace(_safetyCheckFault.Comment);
+                pass = pass && _safetyCheckFault.Comment.Length > 4;
+                return pass;
+            }
         }
 
         public string DiscretionaryOrFailureText

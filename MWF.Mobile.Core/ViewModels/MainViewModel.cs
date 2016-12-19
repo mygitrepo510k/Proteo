@@ -30,7 +30,8 @@ namespace MWF.Mobile.Core.ViewModels
             Manifest,
             Inbox,
             About,
-            Diagnostics 
+            Diagnostics ,
+            LogOut
         }
 
         #region Constructor
@@ -117,13 +118,18 @@ namespace MWF.Mobile.Core.ViewModels
                 new MenuViewModel
                 {
                     Option = Option.About,
-                    Text = "About"   
+                    Text = "About"
                 },
                  new MenuViewModel
                 {
                     Option = Option.Diagnostics,
                     Text = "Support"
-                }
+                },
+                 new MenuViewModel
+                 {
+                     Option=Option.LogOut,
+                     Text= "Log Out"
+                 }
             };
         }
 
@@ -158,6 +164,9 @@ namespace MWF.Mobile.Core.ViewModels
                     break;
                 case Option.Diagnostics:
                     this.ShowViewModel<DiagnosticsViewModel>();
+                    break;
+                case Option.LogOut:
+                    DoLogoutCommandAsync();
                     break;
                 default:
                     break;
